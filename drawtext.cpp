@@ -43,7 +43,7 @@ void DrawText::makePropertyList() {
 //    auto bold = getProberties(QRegularExpression("\\*\\*\\w+\\*\\*"), fontChange::boldStart, fontChange::boldEnd);
     auto italic = getProberties(QRegularExpression("\\_\\w(.*?)\\w\\_"), fontChange::italicStart, fontChange::italicEnd);
     auto newLine = getProberties(QRegularExpression("\\n"), fontChange::newLine);
-    auto itemize = getProberties(QRegularExpression("\\n\\s+\\* "), fontChange::itemize);
+    auto itemize = getProberties(QRegularExpression("\\n\\s+\\* |\\n\\s+\\- "), fontChange::itemize);
     mProp.insert(mProp.end(), italic.begin(), italic.end());
     mProp.insert(mProp.end(), bold.begin(), bold.end());
     mProp.insert(mProp.end(), newLine.begin(), newLine.end());
@@ -88,7 +88,7 @@ void DrawText::drawProperty(fontChange change, QString text, QPainter& painter) 
             mFormateText.drawText(text, painter);
             break;
         case fontChange::itemize:
-            QRegularExpression re("\\* ");
+            QRegularExpression re("\\* |\\- ");
             QRegularExpressionMatch match = re.match(text);
             auto const word = match.captured(0);
             auto const start = match.capturedStart();

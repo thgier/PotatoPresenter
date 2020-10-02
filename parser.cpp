@@ -9,6 +9,7 @@
 #include "box.h"
 #include "titlefield.h"
 #include "bigtextfield.h"
+#include "picture.h"
 
 enum nineToSechsteen: int {
     titlet = 1,
@@ -32,13 +33,17 @@ std::vector<std::shared_ptr<Frame>> Parser::readJson(QString text)
     QJsonArray root = doc.array();
     for (int i = 0; i < root.size(); i++) {
         QJsonObject frame = root.at(i).toObject();
+
         QJsonValue title = frame.value("title");
         auto newTitle = std::make_shared<TextField>(title.toString(), QRect(25, 25, 750, 50));
+
         QJsonValue content = frame.value("text");
-        qInfo() << content;
         auto newText = std::make_shared<TextField>(content.toString(), QRect(25, 75, 750, 300));
-//        std::vector<std::shared_ptr<Box>> boxes{newText};
-        std::vector<std::shared_ptr<Box>> boxes{newTitle, newText};
+
+        QJsonValue imageName = frame.value("image");
+        auto newImage = std::make_shared<Picture>(imageName.toString(), QRect(25, 75, 750, 300));
+
+        std::vector<std::shared_ptr<Box>> boxes{newTitle, newText, newImage};
         auto newFrame = std::make_shared<Frame>();
         newFrame->setBoxes(boxes);
         frames.push_back(newFrame);

@@ -30,6 +30,7 @@ add_executable(praes
     property.cpp
     drawtext.cpp
     formatetext.cpp
+    picture.cpp
 )
 
 
