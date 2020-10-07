@@ -22,8 +22,6 @@ add_executable(praes
     frame.cpp
     textfield.cpp
     box.cpp
-    titlefield.cpp
-    bodytext.cpp
     parser.cpp
     painter.cpp
     paintdocument.cpp

@@ -1,13 +1,13 @@
 [
    {
-      "title": "**title**",
-      "text": "fhj das toll laaang noch länger so **lannng** hkljkj _fdfd fdfd_
+      "title": {"text": "**title**", "id": 1},
+      "body": {"text": "fhj das toll laaang noch länger so **lannng** hkljkj _fdfd fdfd_
       * jkjkjkjk
       * dfdfdf
-      dies ist ein super toller Text über Sonnen
+      dies ist ein super toller Text über Sonnenn
       mit Bergen
-      und Regenbögen",
-      "image": "/home/theresa/Pictures/test.png"
+      und Regenbögen", "id": 2},
+      "image": {"file": "/home/theresa/Pictures/test.png","id":3}
    },
    {
       "title": "Introduction",

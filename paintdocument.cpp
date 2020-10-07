@@ -58,3 +58,71 @@ void PaintDocument::resizeEvent(QResizeEvent*) {
     mSize = QSize(mWidth, mWidth*aspectRatio);
 }
 
+void PaintDocument::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton) {
+        lastPosition = event->pos();
+        for(auto box: mFrames[pageNumber]->getBoxes()) {
+            if(box->Rect().contains(lastPosition)) {
+                move = true;
+                movedBox = box;
+                movedBox->setBoundingBox(true);
+                break;
+            }
+        }
+    }
+}
+
+void PaintDocument::mouseMoveEvent(QMouseEvent *event)
+{
+    if ((event->buttons() & Qt::LeftButton) && move) {
+        auto const newPosition = event->pos();
+        movedBox->translateBox(newPosition - lastPosition);
+        lastPosition = newPosition;
+        update();
+    }
+}
+
+void PaintDocument::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton && move) {
+//        TODO: maybe translate again
+        move = false;
+        movedBox->setBoundingBox(false);
+    }
+}
+
+std::vector<std::shared_ptr<Box>> PaintDocument::getBoxes(std::vector<std::shared_ptr<Frame>> frames){
+    std::vector<std::shared_ptr<Box>> boxes = {};
+    for (auto frame : frames) {
+        auto const frameBoxes = frame->getBoxes();
+        boxes.insert(boxes.end(), frameBoxes.begin(), frameBoxes.end());
+    }
+    return boxes;
+}
+
+std::vector<std::shared_ptr<Box>> PaintDocument::getBoxes(){
+    return getBoxes(mFrames);
+}
+
+void PaintDocument::updateFrames(std::vector<std::shared_ptr<Frame> > frames){
+    if(mFrames.empty()){
+        setFrames(frames);
+    }
+    else{
+        auto boxes = getBoxes();
+        setFrames(frames);
+        for (auto frame: frames) {
+            for (auto box : frame->getBoxes()) {
+                for(auto oldBox: boxes){
+                    if(oldBox->id() == box->id()){
+                        box->setRect(oldBox->Rect());
+                        break;
+                    }
+                }
+            }
+
+        }
+        mFrames = frames;
+    }
+}

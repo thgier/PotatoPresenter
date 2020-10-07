@@ -11,6 +11,7 @@ class Parser
 public:
     Parser();
     std::vector<std::shared_ptr<Frame>> readJson(QString text);
+    std::vector<std::shared_ptr<Frame>> readJson(QString text, std::vector<std::shared_ptr<Frame>> frames);
 private:
 };
 

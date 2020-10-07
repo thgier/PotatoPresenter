@@ -6,8 +6,8 @@
 #include <vector>
 #include<QMargins>
 
-TextField::TextField(QString text, QRect rect)
-    : Box(rect), mText(text), mCharNumber{0}
+TextField::TextField(QString text, QRect rect, int id)
+    : Box(rect, id), mText(text), mCharNumber{0}
 {
 }
 
@@ -22,6 +22,9 @@ void TextField::drawContent(QPainter& painter) {
 //    painter.setPen(pen);
 //    painter.translate(QPoint(0, -sizeBrush));
 //    painter.drawRect(Box::Rect());
+    if(mBoundingBox){
+        drawBoundingBox(painter);
+    }
     auto draw = DrawText(mText, painter, Box::Rect());
     draw.drawWord(painter);
 }

@@ -46,6 +46,6 @@ void MainWindow::fileChanged(KTextEditor::Document *doc) {
     Parser parser;
     std::vector<std::shared_ptr<Frame>> frames = parser.readJson(doc->text());
 
-    mPaintDocument->setFrames(frames);
+    mPaintDocument->updateFrames(frames);
     mPaintDocument->update();
 }

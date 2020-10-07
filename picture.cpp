@@ -3,18 +3,19 @@
 #include <string>
 #include<QDebug>
 
-Picture::Picture(QString imagePath, QRect rect)
-    : Box(rect)
+Picture::Picture(QString imagePath, QRect rect, int id)
+    : Box(rect, id)
     , mImagePath{imagePath}
     , mImage(QImage())
 {
-    if(std::filesystem::exists(imagePath.toStdString())){
-        mImage.load(mImagePath);
-    }
-
+    mImage.load(mImagePath);
 }
 
 void Picture::drawContent(QPainter& painter){
+//    Box::drawContent(painter);
+    if(mBoundingBox){
+        drawBoundingBox(painter);
+    }
     if(mImage.isNull()){
         return;
     }
