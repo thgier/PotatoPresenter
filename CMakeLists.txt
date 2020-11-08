@@ -13,6 +13,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(KF5TextEditor)
+find_package(Qt5PrintSupport REQUIRED)
 
 add_executable(praes
     main.cpp
@@ -29,7 +30,9 @@ add_executable(praes
     drawtext.cpp
     formatetext.cpp
     picture.cpp
+    configboxes.cpp
+    layout.cpp
 )
 
-
 target_link_libraries(praes PRIVATE Qt5::Widgets KF5::TextEditor)
+target_link_libraries(praes PRIVATE Qt5::PrintSupport)

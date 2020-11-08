@@ -8,7 +8,9 @@ Picture::Picture(QString imagePath, QRect rect, int id)
     , mImagePath{imagePath}
     , mImage(QImage())
 {
-    mImage.load(mImagePath);
+    if(std::filesystem::exists(mImagePath.toStdString())){
+        mImage.load(mImagePath);
+    }
 }
 
 void Picture::drawContent(QPainter& painter){

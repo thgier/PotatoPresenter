@@ -1,21 +1,17 @@
 [
-   {
-      "title": {"text": "**title**", "id": 1},
-      "body": {"text": "fhj das toll laaang noch länger so **lannng** hkljkj _fdfd fdfd_
-      * jkjkjkjk
-      * dfdfdf
-      dies ist ein super toller Text über Sonnenn
-      mit Bergen
-      und Regenbögen", "id": 2},
-      "image": {"file": "/home/theresa/Pictures/test.png","id":3}
-   },
-   {
-      "title": "Introduction",
-      "text": "Kartoffeln sind besser"
-   },
-   {
-      "title": "Igjntroduction nö",
-      "text": "Kartoffeln sind besser"
-   }
+    [
+      {"type" : "text", "text": "**title**", "id": 1},
+      {"type" : "text", "text": "fhj das toll laaang noch länger so **lannng** hkljkj _fdfd fdfd_", "id": 2},
+      {"type" : "image", "file": "/home/theresa/Pictures/test.png", "id":3}
+    ],
+    [
+      {"type" : "text", "text": "**title**", "id": 4},
+      {"type" : "text", "text": "fhj das toll laaang noch länger so **lannng** hkljkj _fdfd fdfd_", "id": 5},
+      {"type" : "image", "file": "/home/theresa/Pictures/test.png", "id":6}
+    ],
+    [
+      {"type" : "text", "text": "**title**", "id": 7},
+      {"type" : "text", "text": "fhj das toll laaang noch länger so **lannng** hkljkj _fdfd fdfd_", "id": 8},
+      {"type" : "image", "file": "/home/theresa/Pictures/test.png", "id":9}
+    ]
 ]
-

@@ -8,6 +8,7 @@
 #include <KTextEditor/Document>
 #include "frame.h"
 #include "paintdocument.h"
+#include "configboxes.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -32,5 +33,6 @@ private:
     QGraphicsTextItem *text;
     KTextEditor::Document* doc;
     PaintDocument* mPaintDocument;
+    ConfigBoxes mConfiguration;
 };
 #endif // MAINWINDOW_H

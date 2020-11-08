@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+    #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include <QFile>
 #include <QTextStream>
@@ -12,6 +12,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , mConfiguration("/home/theresa/Documents/praes/inputConfig.json")
 {
     ui->setupUi(this);
     ui->splitter->setSizes(QList<int>{10000, 10000});
@@ -24,8 +25,10 @@ MainWindow::MainWindow(QWidget *parent)
     KTextEditor::View *view = doc->createView(this);
     ui->editor->addWidget(view);
 
+    mConfiguration.loadConfigurationFile();
+
     Parser parser;
-    std::vector<std::shared_ptr<Frame>> frames = parser.readJson(doc->text());
+    std::vector<std::shared_ptr<Frame>> frames = parser.readJson(doc->text(), &mConfiguration);
 
     mPaintDocument = new PaintDocument();
     mPaintDocument->setFrames(frames);
@@ -35,6 +38,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     QObject::connect(doc, &KTextEditor::Document::textChanged,
                      this, &MainWindow::fileChanged);
+
+    QObject::connect(ui->createPDF, &QPushButton::pressed,
+                     mPaintDocument, &PaintDocument::createPDF);
+
 }
 
 MainWindow::~MainWindow()
@@ -44,8 +51,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::fileChanged(KTextEditor::Document *doc) {
     Parser parser;
-    std::vector<std::shared_ptr<Frame>> frames = parser.readJson(doc->text());
+    std::vector<std::shared_ptr<Frame>> frames = parser.readJson(doc->text(), &mConfiguration);
 
-    mPaintDocument->updateFrames(frames);
+    mPaintDocument->setFrames(frames);
     mPaintDocument->update();
 }

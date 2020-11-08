@@ -57,7 +57,7 @@ void FormateText::drawItem(QPainter& painter) {
     auto x = mLinewidth + xHeight / 2;
     painter.setBrush(Qt::black);
     painter.drawEllipse(mRect.left()+x, mLinePositions[mLineN] - y, xHeight*0.45, xHeight*0.45);
-    painter.setBrush(Qt::white);
+    painter.setBrush(Qt::NoBrush);
     mLinewidth += 1.5 * xHeight;
     mLineStart = mLinewidth;
 }

@@ -4,8 +4,9 @@
 #include <QRect>
 #include <QPainter>
 
-class Box
+class Box : public QObject
 {
+    Q_OBJECT
 public:
     Box();
     Box(QRect rect, int idNumber);
@@ -15,9 +16,16 @@ public:
     void translateBox(QPoint translation);
     void setVisibility(bool vis);
     void setMovable(bool move);
-    void setBoundingBox(bool box);
+    void setBoundingBoxVisible(bool box);
     void setRect(QRect rect);
     int id();
+    void drawScaleMarker(QPainter& painter);
+    void scaleTopLeft(QPoint scale);
+    void scaleTopRight(QPoint scale);
+    void scaleBottomLeft(QPoint scale);
+    void scaleBottomRight(QPoint scale);
+signals:
+    void rectChanged(QRect newRect, int id);
 protected:
     bool mBoundingBox = false;
 private:

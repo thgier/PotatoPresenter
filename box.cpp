@@ -39,11 +39,13 @@ void Box::drawBoundingBox(QPainter& painter) {
     painter.setBrush(brush);
     painter.translate(QPoint(0, -sizePen));
     painter.drawRect(Rect());
+    drawScaleMarker(painter);
 }
 
 void Box::translateBox(QPoint translation) {
     if(mMovable){
         mRect.translate(translation);
+        emit rectChanged(Rect(), mIDNumber);
     }
 }
 
@@ -55,7 +57,7 @@ void Box::setMovable(bool move) {
     mMovable = move;
 }
 
-void Box::setBoundingBox(bool box) {
+void Box::setBoundingBoxVisible(bool box) {
     mBoundingBox = box;
 }
 
@@ -63,3 +65,48 @@ int Box::id() {
     return mIDNumber;
 }
 
+void Box::drawScaleMarker(QPainter& painter){
+    painter.setBrush(Qt::black);
+    auto const w = 5;
+    painter.drawEllipse(Rect().topLeft(), w, w);
+    painter.drawEllipse(Rect().topRight(), w, w);
+    painter.drawEllipse(Rect().bottomLeft(), w, w);
+    painter.drawEllipse(Rect().bottomRight(), w, w);
+    painter.setBrush(Qt::NoBrush);
+}
+
+void Box::scaleTopLeft(QPoint scale){
+    auto const point = Rect().bottomRight();
+    auto const width = Rect().width() - scale.x();
+    auto const heigth = Rect().height() - scale.y();
+    mRect.setSize(QSize(width, heigth));
+    mRect.moveBottomRight(point);
+    mRect = Rect().normalized();
+}
+
+void Box::scaleTopRight(QPoint scale){
+    auto const point = Rect().bottomLeft();
+    auto const width = Rect().width() + scale.x();
+    auto const heigth = Rect().height() - scale.y();
+    mRect.setSize(QSize(width, heigth));
+    mRect.moveBottomLeft(point);
+    mRect = Rect().normalized();
+}
+
+void Box::scaleBottomLeft(QPoint scale){
+    auto const point = Rect().topRight();
+    auto const width = Rect().width() - scale.x();
+    auto const heigth = Rect().height() + scale.y();
+    mRect.setSize(QSize(width, heigth));
+    mRect.moveTopRight(point);
+    mRect = Rect().normalized();
+}
+
+void Box::scaleBottomRight(QPoint scale){
+    auto const point = Rect().topLeft();
+    auto const width = Rect().width() + scale.x();
+    auto const heigth = Rect().height() + scale.y();
+    mRect.setSize(QSize(width, heigth));
+    mRect.moveTopRight(point);
+    mRect = Rect().normalized();
+}
