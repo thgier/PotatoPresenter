@@ -7,11 +7,6 @@
 
 typedef std::basic_string<char> string;
 
-enum Layout{
-    titleText,
-    titleColumns
-};
-
 class Frame
 {
 public:
@@ -24,7 +19,6 @@ public:
 private:
     string title;
     int pageNumber;
-    Layout layout;
     string text;
     std::vector<std::shared_ptr<Box>> mBoxes;
 };

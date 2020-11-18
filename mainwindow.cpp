@@ -32,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     mPaintDocument = new PaintDocument();
     mPaintDocument->setFrames(frames);
+    ui->pageNumber->setMaximum(frames.size());
     ui->paint->addWidget(mPaintDocument);
     QObject::connect(ui->pageNumber, QOverload<int>::of(&QSpinBox::valueChanged),
                 mPaintDocument, &PaintDocument::setCurrentPage);
@@ -41,6 +42,26 @@ MainWindow::MainWindow(QWidget *parent)
 
     QObject::connect(ui->createPDF, &QPushButton::pressed,
                      mPaintDocument, &PaintDocument::createPDF);
+
+    QObject::connect(ui->layoutTitle, &QPushButton::pressed,
+                     mPaintDocument, &PaintDocument::layoutTitle);
+    QObject::connect(ui->layoutBody, &QPushButton::pressed,
+                     mPaintDocument, &PaintDocument::layoutBody);
+    QObject::connect(ui->layoutFull, &QPushButton::pressed,
+                     mPaintDocument, &PaintDocument::layoutFull);
+    QObject::connect(ui->layoutLeft, &QPushButton::pressed,
+                     mPaintDocument, &PaintDocument::layoutLeft);
+    QObject::connect(ui->layoutRight, &QPushButton::pressed,
+                     mPaintDocument, &PaintDocument::layoutRight);
+
+    for(auto frame : frames){
+        for(auto box : frame->getBoxes()){
+            auto boxptr = box.get();
+            auto lambda = [boxptr, this](){mConfiguration.addRect(boxptr->Rect(), boxptr->id());};
+            QObject::connect(boxptr, &Box::rectChanged,
+                             this, lambda);
+        }
+    }
 
 }
 

@@ -15,9 +15,6 @@ Picture::Picture(QString imagePath, QRect rect, int id)
 
 void Picture::drawContent(QPainter& painter){
 //    Box::drawContent(painter);
-    if(mBoundingBox){
-        drawBoundingBox(painter);
-    }
     if(mImage.isNull()){
         return;
     }

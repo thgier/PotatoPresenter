@@ -9,6 +9,7 @@
 #include "frame.h"
 #include "paintdocument.h"
 #include "configboxes.h"
+#include "layout.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

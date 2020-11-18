@@ -46,7 +46,8 @@ std::vector<std::shared_ptr<Frame>> Parser::readJson(QString text, ConfigBoxes* 
                 if(!configuration->getRect(idNumber).isEmpty()){
                     rect = configuration->getRect(idNumber);
                 } else {
-                    rect = QRect(25, 25, 750, 50);
+//                    rect = QRect(83, 333, 2500, 1083);
+                    rect = QRect(50, 200, 1500, 650);
                 }
                 auto const newTitle = std::make_shared<TextField>(text, rect, idNumber);
                 newTitle->setMovable(box.value("movable").toBool(true));
@@ -58,7 +59,8 @@ std::vector<std::shared_ptr<Frame>> Parser::readJson(QString text, ConfigBoxes* 
                 if(!configuration->getRect(idNumber).isEmpty()){
                     rect = configuration->getRect(idNumber);
                 } else {
-                    rect = QRect(25, 75, 750, 300);
+                    rect = QRect(50, 200, 1500, 650);
+//                    rect = QRect(1384, 333, 1200, 1083);
                 }
                 auto const newImage = std::make_shared<Picture>(Imagefile, rect, idNumber);
                 boxes.push_back(newImage);

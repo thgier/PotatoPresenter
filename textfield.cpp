@@ -22,9 +22,6 @@ void TextField::drawContent(QPainter& painter) {
 //    painter.setPen(pen);
 //    painter.translate(QPoint(0, -sizeBrush));
 //    painter.drawRect(Box::Rect());
-    if(mBoundingBox){
-        drawBoundingBox(painter);
-    }
     auto draw = DrawText(mText, painter, Box::Rect());
     draw.drawWord(painter);
 }

@@ -12,41 +12,56 @@
 #include "parser.h"
 #include "layout.h"
 
-enum TransformationTyp {
+enum TransformationType {
     translate,
 //    rotate,
     scaleTopRight,
     scaleTopLeft,
     scaleBottomLeft,
     scaleBottomRight,
+    scaleTop,
+    scaleBottom,
+    scaleRight,
+    scaleLeft
 };
 
 struct BoxTransformation{
-    BoxTransformation(Box& box, TransformationTyp trafo)
+    BoxTransformation(Box& box, TransformationType trafo)
         : mBox{box}
         , mTrafo{trafo}
     {
     }
     BoxTransformation &operator = (const BoxTransformation &b) { mTrafo = b.mTrafo; return *this; }
     Box& mBox;
-    TransformationTyp mTrafo;
+    TransformationType mTrafo;
     void makeTransformation(QPoint mouseMovement){
-        mBox.setBoundingBoxVisible(true);
         switch (mTrafo) {
-        case TransformationTyp::translate:
+        case TransformationType::translate:
             mBox.translateBox(mouseMovement);
             break;
-        case TransformationTyp::scaleTopLeft:
+        case TransformationType::scaleTopLeft:
             mBox.scaleTopLeft(mouseMovement);
             break;
-        case TransformationTyp::scaleTopRight:
+        case TransformationType::scaleTopRight:
             mBox.scaleTopRight(mouseMovement);
             break;
-        case TransformationTyp::scaleBottomLeft:
+        case TransformationType::scaleBottomLeft:
             mBox.scaleBottomLeft(mouseMovement);
             break;
-        case TransformationTyp::scaleBottomRight:
+        case TransformationType::scaleBottomRight:
             mBox.scaleBottomRight(mouseMovement);
+            break;
+        case TransformationType::scaleTop:
+            mBox.scaleTop(mouseMovement);
+            break;
+        case TransformationType::scaleBottom:
+            mBox.scaleBottom(mouseMovement);
+            break;
+        case TransformationType::scaleLeft:
+            mBox.scaleLeft(mouseMovement);
+            break;
+        case TransformationType::scaleRight:
+            mBox.scaleRight(mouseMovement);
             break;
         }
     }
@@ -57,18 +72,23 @@ class PaintDocument : public QWidget
 {
 public:
     PaintDocument();
-    PaintDocument(int width);
     //    QSize minimumSizeHint() const override;
 //    QSize sizeHint() const override;
     void setFrames(std::vector<std::shared_ptr<Frame>> frames);
     void setCurrentPage(int);
     void resizeEvent(QResizeEvent *) override;
     void createPDF();
+    std::shared_ptr<Box> activeBox();
+    void layoutBody();
+    void layoutTitle();
+    void layoutFull();
+    void layoutLeft();
+    void layoutRight();
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
-    double aspectRatio;
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
     int mWidth;
     void paintEvent(QPaintEvent *event) override;
     std::vector<std::shared_ptr<Frame>> mFrames;
@@ -81,10 +101,16 @@ private:
     std::optional<BoxTransformation> momentTrafo;
     std::shared_ptr<Box> mBoxInFocus;
     void CursorApperance(QPoint mousePosition);
-    TransformationTyp getTransformationType(QPoint mousePosition);
-    int const diffToMouse = 20 * (800./mWidth);
+    TransformationType getTransformationType(QPoint mousePosition);
+    int const diffToMouse = 25;
     QPainter painter;
     Layout mLayout;
+    double mScale;
+    int mFontSize = 50;
+    QString mFont = "DejaVu Sans";
+    void drawBoundingBox(QRect rect);
+    void drawScaleMarker(QRect rect);
+    void determineBoxInFocus(QPoint mousePos);
 };
 
 #endif // PAINTDOCUMENT_H
