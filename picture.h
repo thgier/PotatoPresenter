@@ -11,7 +11,7 @@ public:
     int aspectRatio(QRect rect);
 private:
     QString mImagePath;
-    QImage mImage;
+    std::shared_ptr<QImage> mImage;
 };
 
 #endif // PICTURE_H

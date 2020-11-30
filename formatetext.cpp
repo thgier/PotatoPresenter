@@ -1,12 +1,19 @@
 #include "formatetext.h"
 #include <QPainterPath>
+#include <QDebug>
+#include <QProcess>
+#include <QSvgRenderer>
+#include <equationcachemanager.h>
+#include <QCryptographicHash>
 
-FormateText::FormateText(QFontMetrics metrics, QRect rect)
+
+FormateText::FormateText(QFontMetrics metrics, QRect rect, int id)
     : mMetrics{metrics}
     , mRect(rect)
     , mLineStart{metrics.xHeight()}
     , mLinewidth{mLineStart}
     , mLinePositions{getLinePosition()}
+    , mIdBox{id}
 {
 
 }
@@ -62,5 +69,28 @@ void FormateText::drawItem(QPainter& painter) {
     mLineStart = mLinewidth;
 }
 
-
+void FormateText::drawTeX(QString mathExpression, QPainter &painter){
+    auto const hash = QCryptographicHash::hash(mathExpression.toUtf8(), QCryptographicHash::Sha1).toHex().left(8);
+    auto const image = cacheManager().getCachedImage(hash);
+    if(!image){
+        cacheManager().startConversionProcess(mathExpression, hash);
+        return;
+    }
+    if(!image->isValid()){return;}
+    if(image->defaultSize().width() == 0){
+        return;
+    }
+    qWarning() << "view box" << image->viewBox();
+    auto const fontSize = painter.font().pixelSize();
+    auto const descent = painter.fontMetrics().descent();
+    auto const defaultSize = image->defaultSize();
+    qWarning() << defaultSize;
+    auto const height = 1.0 * defaultSize.height() / 8.5 * fontSize;
+    auto const width = 1.0 * defaultSize.width() / defaultSize.height() * height;
+    image->setAspectRatioMode(Qt::KeepAspectRatio);
+    auto const point = QPoint{mRect.left() + mLinewidth, mLinePositions[mLineN] - int(height) + descent};
+    auto const paintRect = QRectF(point, QSize(width, height));
+    image->render(&painter, paintRect);
+    mLinewidth += width;
+}
 

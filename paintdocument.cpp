@@ -3,7 +3,7 @@
 #include<QPainter>
 #include "painter.h"
 
-PaintDocument::PaintDocument()
+PaintDocument::PaintDocument(QWidget*&)
     : QWidget(), mWidth{frameSize().width()}, pageNumber{0}
     , mLayout{Layout(aspectRatio::sixteenToNine)}
 {
@@ -20,26 +20,47 @@ void PaintDocument::paintEvent(QPaintEvent*)
     auto font = QFont(mFont);
     font.setPixelSize(mFontSize);
     painter.setFont(font);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform);
 //    painter.scale(mScale, mScale);
     painter.fillRect(QRect(QPoint(0, 0), mSize), Qt::white);
-    if(mBoxInFocus != nullptr){
-        drawBoundingBox(mBoxInFocus->Rect());
-    }
     if(!mFrames.empty()){
         auto paint = std::make_shared<Painter>(painter);
         paint->paintFrame(mFrames[pageNumber]);
     }
+    if(mBoxInFocus != nullptr){
+        drawBoundingBox(mBoxInFocus->Rect());
+    }
     painter.end();
 }
 
-void PaintDocument::setFrames(std::vector<std::shared_ptr<Frame>> frames) {
-    if( pageNumber >= int(frames.size())){
-        pageNumber = int(frames.size()) - 1;
-    }
-    if(pageNumber == -1) {
-        pageNumber = 0;
+QSize PaintDocument::sizeHint() const{
+    return mLayout.mSize;
+}
+
+void PaintDocument::setFrames(std::vector<std::shared_ptr<Frame>> frames, int currentPage) {
+    if(frames.size() == 0){
+        return;
     }
     mFrames = frames;
+    if(pageNumber == -1) {
+        pageNumber = 0;
+        return;
+    } else if( currentPage >= int(frames.size())){
+        pageNumber = int(frames.size()) - 1;
+    }
+    else {
+        pageNumber = currentPage;
+    }
+    bool boxInFocusExists = false;
+    for(auto box: mFrames[pageNumber]->getBoxes()) {
+        if(box == mBoxInFocus){
+            boxInFocusExists = true;
+            break;
+        }
+    }
+    if(!boxInFocusExists){
+        mBoxInFocus = nullptr;
+    }
 }
 
 void PaintDocument::setCurrentPage(int page){
@@ -47,6 +68,7 @@ void PaintDocument::setCurrentPage(int page){
         return;
     }
     pageNumber = page;
+    mBoxInFocus = nullptr;
     update();
 }
 

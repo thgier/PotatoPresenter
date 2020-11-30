@@ -8,9 +8,12 @@
 #include <QMouseEvent>
 #include <QPdfWriter>
 #include <QPrinter>
+#include <QDebug>
+#include <QObject>
 #include "frame.h"
 #include "parser.h"
 #include "layout.h"
+#include "equationcachemanager.h"
 
 enum TransformationType {
     translate,
@@ -71,12 +74,13 @@ struct BoxTransformation{
 class PaintDocument : public QWidget
 {
 public:
-    PaintDocument();
+    PaintDocument(QWidget*&);
     //    QSize minimumSizeHint() const override;
 //    QSize sizeHint() const override;
-    void setFrames(std::vector<std::shared_ptr<Frame>> frames);
+    void setFrames(std::vector<std::shared_ptr<Frame>> frames, int currentPage);
     void setCurrentPage(int);
     void resizeEvent(QResizeEvent *) override;
+    QSize sizeHint() const override;
     void createPDF();
     std::shared_ptr<Box> activeBox();
     void layoutBody();

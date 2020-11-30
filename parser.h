@@ -8,12 +8,13 @@
 #include "configboxes.h"
 
 
+using FrameList = std::vector<std::shared_ptr<Frame>>;
 class Parser : public QObject
 {
     Q_OBJECT
 public:
     Parser();
-    std::vector<std::shared_ptr<Frame>> readJson(QString text, ConfigBoxes* configuration);
+    std::optional<FrameList> readJson(QString text, ConfigBoxes* configuration);
 private:
 };
 

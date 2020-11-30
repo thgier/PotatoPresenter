@@ -1,8 +1,8 @@
 #include "drawtext.h"
 #include <QDebug>
 
-DrawText::DrawText(QString text, QPainter& painter, QRect rect)
-    :mCharNumber{0}, mText{text}, mFormateText(painter.fontMetrics(), rect)
+DrawText::DrawText(QString text, QPainter& painter, QRect rect, int id)
+    :mCharNumber{0}, mText{text}, mFormateText(painter.fontMetrics(), rect, id)
 {
     makePropertyList();
 }
@@ -44,8 +44,10 @@ void DrawText::makePropertyList() {
     auto italic = getProberties(QRegularExpression("\\_\\w(.*?)\\w\\_"), fontChange::italicStart, fontChange::italicEnd);
     auto newLine = getProberties(QRegularExpression("\\n"), fontChange::newLine);
     auto itemize = getProberties(QRegularExpression("\\n\\s+\\* |\\n\\s+\\- "), fontChange::itemize);
+    auto tex = getProberties(QRegularExpression("\\$\\S+\\$"), fontChange::teXStart, fontChange::teXEnd);
     mProp.insert(mProp.end(), italic.begin(), italic.end());
     mProp.insert(mProp.end(), bold.begin(), bold.end());
+    mProp.insert(mProp.end(), tex.begin(), tex.end());
     mProp.insert(mProp.end(), newLine.begin(), newLine.end());
     mProp.insert(mProp.end(), itemize.begin(), itemize.end());
     std::sort(mProp.begin(), mProp.end(), [](auto a, auto b){return a.getPosition() < b.getPosition();});
@@ -82,6 +84,12 @@ void DrawText::drawProperty(fontChange change, QString text, QPainter& painter) 
             break;
         case fontChange::newLine:
             mFormateText.drawNewLine();
+            mFormateText.drawText(text, painter);
+            break;
+        case fontChange::teXStart:
+            mFormateText.drawTeX(text.mid(1, text.size()-2), painter);
+            break;
+        case fontChange::teXEnd:
             mFormateText.drawText(text, painter);
             break;
         case fontChange::empty:

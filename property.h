@@ -8,6 +8,8 @@ enum fontChange {
     italicEnd,
     newLine,
     itemize,
+    teXStart,
+    teXEnd,
     empty,
 //    underline,
 };

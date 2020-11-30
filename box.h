@@ -33,6 +33,7 @@ private:
     int mIDNumber = 0;
     bool mVisible = true;
     bool mMovable = true;
+    void boxChanged();
 };
 
 #endif // BOX_H

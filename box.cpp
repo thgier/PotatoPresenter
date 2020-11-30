@@ -11,10 +11,13 @@ Box::Box(QRect rect, int idNumber)
 {
 }
 
+void Box::boxChanged() {
+    emit rectChanged(Rect(), mIDNumber);
+}
 
 void Box::setRect(QRect rect){
     mRect = rect;
-    emit rectChanged(Rect(), mIDNumber);
+    boxChanged();
 }
 
 QRect Box::Rect(){
@@ -35,7 +38,7 @@ void Box::drawContent(QPainter& painter) {
 void Box::translateBox(QPoint translation) {
     if(mMovable){
         mRect.translate(translation);
-        emit rectChanged(Rect(), mIDNumber);
+        boxChanged();
     }
 }
 
@@ -58,6 +61,7 @@ void Box::scaleTopLeft(QPoint scale){
     mRect.setSize(QSize(width, heigth));
     mRect.moveBottomRight(point);
     mRect = Rect().normalized();
+    boxChanged();
 }
 
 void Box::scaleTopRight(QPoint scale){
@@ -67,6 +71,7 @@ void Box::scaleTopRight(QPoint scale){
     mRect.setSize(QSize(width, heigth));
     mRect.moveBottomLeft(point);
     mRect = Rect().normalized();
+    boxChanged();
 }
 
 void Box::scaleBottomLeft(QPoint scale){
@@ -76,6 +81,7 @@ void Box::scaleBottomLeft(QPoint scale){
     mRect.setSize(QSize(width, heigth));
     mRect.moveTopRight(point);
     mRect = Rect().normalized();
+    boxChanged();
 }
 
 void Box::scaleBottomRight(QPoint scale){
@@ -85,6 +91,7 @@ void Box::scaleBottomRight(QPoint scale){
     mRect.setSize(QSize(width, heigth));
     mRect.moveTopLeft(point);
     mRect = Rect().normalized();
+    boxChanged();
 }
 
 void Box::scaleTop(QPoint scale){
@@ -93,12 +100,14 @@ void Box::scaleTop(QPoint scale){
     mRect.setHeight(heigth);
     mRect.moveBottomLeft(point);
     mRect = Rect().normalized();
+    boxChanged();
 }
 
 void Box::scaleBottom(QPoint scale){
     auto const heigth = Rect().height() + scale.y();
     mRect.setHeight(heigth);
     mRect = Rect().normalized();
+    boxChanged();
 }
 
 void Box::scaleLeft(QPoint scale){
@@ -107,10 +116,12 @@ void Box::scaleLeft(QPoint scale){
     mRect.setWidth(width);
     mRect.moveTopRight(point);
     mRect = Rect().normalized();
+    boxChanged();
 }
 
 void Box::scaleRight(QPoint scale){
     auto const width = Rect().width() + scale.x();
     mRect.setWidth(width);
     mRect = Rect().normalized();
+    boxChanged();
 }

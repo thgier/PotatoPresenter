@@ -29,53 +29,16 @@
          <number>1</number>
         </property>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <widget class="QPushButton" name="layoutTitle">
-            <property name="text">
-             <string>Title</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="layoutBody">
-            <property name="text">
-             <string>Body</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="layoutFull">
-            <property name="text">
-             <string>Full Size</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="layoutLeft">
-            <property name="text">
-             <string>Left Column</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QPushButton" name="layoutRight">
-            <property name="text">
-             <string>Right Column</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="QPushButton" name="createPDF">
-          <property name="text">
-           <string>Create PDF</string>
-          </property>
-         </widget>
+         <widget class="QLineEdit" name="error"/>
         </item>
         <item>
          <widget class="QSpinBox" name="pageNumber"/>
+        </item>
+        <item>
+         <widget class="PaintDocument" name="paintDocument" native="true"/>
+        </item>
+        <item>
+         <widget class="QTableView" name="pagePreview"/>
         </item>
        </layout>
       </widget>
@@ -94,16 +57,31 @@
    </property>
    <widget class="QMenu" name="menufile">
     <property name="title">
-     <string>file</string>
+     <string>File</string>
     </property>
     <addaction name="actionsave"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionLayoutTitle"/>
+    <addaction name="actionLayoutBody"/>
+    <addaction name="actionLayoutFullscreen"/>
+    <addaction name="actionLayoutRight"/>
+    <addaction name="actionLayoutLeft"/>
+    <addaction name="actionCreatePDF"/>
+   </widget>
    <addaction name="menufile"/>
+   <addaction name="menuEdit"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
     <string>toolBar</string>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonTextUnderIcon</enum>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -111,11 +89,21 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actiontest"/>
+   <addaction name="actionsave"/>
+   <addaction name="actionLayoutTitle"/>
+   <addaction name="actionLayoutBody"/>
+   <addaction name="actionLayoutFullscreen"/>
+   <addaction name="actionLayoutLeft"/>
+   <addaction name="actionLayoutRight"/>
+   <addaction name="actionCreatePDF"/>
   </widget>
   <action name="actionsave">
+   <property name="icon">
+    <iconset theme="document-save">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
    <property name="text">
-    <string>save</string>
+    <string>Save</string>
    </property>
   </action>
   <action name="actiontest">
@@ -123,7 +111,105 @@
     <string>test</string>
    </property>
   </action>
+  <action name="actionLayoutTitle">
+   <property name="icon">
+    <iconset theme="format-align-vertical-top">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Title</string>
+   </property>
+   <property name="toolTip">
+    <string>Title (Ctrl+T)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
+  </action>
+  <action name="actionLayoutBody">
+   <property name="icon">
+    <iconset theme="gnumeric-format-valign-center">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Body</string>
+   </property>
+   <property name="toolTip">
+    <string>Body (Ctrl+B)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+B</string>
+   </property>
+  </action>
+  <action name="actionLayoutFullscreen">
+   <property name="icon">
+    <iconset theme="box">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Fullscreen</string>
+   </property>
+   <property name="toolTip">
+    <string>Fullscreen (Ctrl+U)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+U</string>
+   </property>
+  </action>
+  <action name="actionLayoutRight">
+   <property name="icon">
+    <iconset theme="bboxnext">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Right Column</string>
+   </property>
+   <property name="toolTip">
+    <string>Right Column (Ctrl+R)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionLayoutLeft">
+   <property name="icon">
+    <iconset theme="bboxprev">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Left Column</string>
+   </property>
+   <property name="toolTip">
+    <string>Left Column (Ctrl+L)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
+   </property>
+  </action>
+  <action name="actionCreatePDF">
+   <property name="icon">
+    <iconset theme="pdflatex">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>create PDF</string>
+   </property>
+   <property name="toolTip">
+    <string>create PDF (Ctrl+G)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+G</string>
+   </property>
+  </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PaintDocument</class>
+   <extends>QWidget</extends>
+   <header>paintdocument.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

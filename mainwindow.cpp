@@ -5,9 +5,12 @@
 #include <KTextEditor/Editor>
 #include <KTextEditor/View>
 #include <KParts/ReadOnlyPart>
-
+#include <QProcess>
+#include <QDebug>
 #include<QObject>
 #include "parser.h"
+#include "equationcachemanager.h"
+#include "imagecachemanager.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -26,43 +29,41 @@ MainWindow::MainWindow(QWidget *parent)
     ui->editor->addWidget(view);
 
     mConfiguration.loadConfigurationFile();
-
-    Parser parser;
-    std::vector<std::shared_ptr<Frame>> frames = parser.readJson(doc->text(), &mConfiguration);
-
-    mPaintDocument = new PaintDocument();
-    mPaintDocument->setFrames(frames);
-    ui->pageNumber->setMaximum(frames.size());
-    ui->paint->addWidget(mPaintDocument);
+    mPaintDocument = ui->paintDocument;
+    fileChanged(doc);
+    connect(ui->actionsave, &QAction::triggered,
+            doc, &KTextEditor::Document::documentSave);
     QObject::connect(ui->pageNumber, QOverload<int>::of(&QSpinBox::valueChanged),
                 mPaintDocument, &PaintDocument::setCurrentPage);
 
     QObject::connect(doc, &KTextEditor::Document::textChanged,
                      this, &MainWindow::fileChanged);
 
-    QObject::connect(ui->createPDF, &QPushButton::pressed,
+    QObject::connect(ui->actionCreatePDF, &QAction::triggered,
                      mPaintDocument, &PaintDocument::createPDF);
 
-    QObject::connect(ui->layoutTitle, &QPushButton::pressed,
+    QObject::connect(ui->actionLayoutTitle, &QAction::triggered,
                      mPaintDocument, &PaintDocument::layoutTitle);
-    QObject::connect(ui->layoutBody, &QPushButton::pressed,
+    QObject::connect(ui->actionLayoutBody, &QAction::triggered,
                      mPaintDocument, &PaintDocument::layoutBody);
-    QObject::connect(ui->layoutFull, &QPushButton::pressed,
+    QObject::connect(ui->actionLayoutFullscreen, &QAction::triggered,
                      mPaintDocument, &PaintDocument::layoutFull);
-    QObject::connect(ui->layoutLeft, &QPushButton::pressed,
+    QObject::connect(ui->actionLayoutLeft, &QAction::triggered,
                      mPaintDocument, &PaintDocument::layoutLeft);
-    QObject::connect(ui->layoutRight, &QPushButton::pressed,
+    QObject::connect(ui->actionLayoutRight, &QAction::triggered,
                      mPaintDocument, &PaintDocument::layoutRight);
 
-    for(auto frame : frames){
-        for(auto box : frame->getBoxes()){
-            auto boxptr = box.get();
-            auto lambda = [boxptr, this](){mConfiguration.addRect(boxptr->Rect(), boxptr->id());};
-            QObject::connect(boxptr, &Box::rectChanged,
-                             this, lambda);
-        }
-    }
+    QObject::connect(&cacheManager(), &EquationCacheManager::conversionFinished,
+            mPaintDocument, QOverload<>::of(&PaintDocument::update));
+    ui->error->setReadOnly(true);
+    QObject::connect(&cacheManager(), &EquationCacheManager::errorWhileLatexConversion,
+                     ui->error, &QLineEdit::setText);
+    QObject::connect(&cacheManager(), &EquationCacheManager::conversionFinished,
+                     this, [this](){ui->error->setText("");});
+    connect(&cacheManagerImages(), &ImageCacheManager::imageChanged,
+            this, [this, doc](){MainWindow::fileChanged(doc);});
 
+    ui->actionLayoutBody->setShortcutVisibleInContextMenu(true);
 }
 
 MainWindow::~MainWindow()
@@ -72,8 +73,20 @@ MainWindow::~MainWindow()
 
 void MainWindow::fileChanged(KTextEditor::Document *doc) {
     Parser parser;
-    std::vector<std::shared_ptr<Frame>> frames = parser.readJson(doc->text(), &mConfiguration);
+    auto frames = parser.readJson(doc->text(), &mConfiguration);
+    if(!frames){
+        return;
+    }
 
-    mPaintDocument->setFrames(frames);
+    mPaintDocument->setFrames(*frames, ui->pageNumber->value());
+    ui->pageNumber->setMaximum(frames->size()-1);
+    for(auto frame : *frames){
+        for(auto box : frame->getBoxes()){
+            auto boxptr = box.get();
+            auto lambda = [boxptr, this](){mConfiguration.addRect(boxptr->Rect(), boxptr->id());};
+            QObject::connect(boxptr, &Box::rectChanged,
+                             this, lambda);
+        }
+    }
     mPaintDocument->update();
 }
