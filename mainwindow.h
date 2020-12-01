@@ -6,10 +6,12 @@
 #include <QGraphicsView>
 #include <QGraphicsItem>
 #include <KTextEditor/Document>
+#include <QListWidget>
 #include "frame.h"
 #include "paintdocument.h"
 #include "configboxes.h"
 #include "layout.h"
+#include "framelistmodel.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -35,5 +37,7 @@ private:
     KTextEditor::Document* doc;
     PaintDocument* mPaintDocument;
     ConfigBoxes mConfiguration;
+    QListWidget *mListWidget;
+    FrameListModel *mFrameModel;
 };
 #endif // MAINWINDOW_H

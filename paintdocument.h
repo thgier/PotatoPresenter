@@ -110,8 +110,6 @@ private:
     QPainter painter;
     Layout mLayout;
     double mScale;
-    int mFontSize = 50;
-    QString mFont = "DejaVu Sans";
     void drawBoundingBox(QRect rect);
     void drawScaleMarker(QRect rect);
     void determineBoxInFocus(QPoint mousePos);

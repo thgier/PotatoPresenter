@@ -38,7 +38,29 @@
          <widget class="PaintDocument" name="paintDocument" native="true"/>
         </item>
         <item>
-         <widget class="QTableView" name="pagePreview"/>
+         <widget class="QListView" name="pagePreview">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>180</height>
+           </size>
+          </property>
+          <property name="isWrapping" stdset="0">
+           <bool>false</bool>
+          </property>
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="gridSize">
+           <size>
+            <width>255</width>
+            <height>150</height>
+           </size>
+          </property>
+          <property name="viewMode">
+           <enum>QListView::IconMode</enum>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>

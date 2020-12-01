@@ -35,6 +35,8 @@ add_executable(praes
     layout.cpp
     equationcachemanager.cpp
     imagecachemanager.cpp
+    framelistmodel.cpp
+    framelistdelegate.cpp
 )
 
 target_link_libraries(praes PRIVATE Qt5::Widgets KF5::TextEditor)

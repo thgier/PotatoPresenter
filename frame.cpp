@@ -5,7 +5,7 @@ Frame::Frame()
 
 }
 
-std::vector<std::shared_ptr<Box>> Frame::getBoxes()
+std::vector<std::shared_ptr<Box>> Frame::getBoxes() const
 {
     return mBoxes;
 }
@@ -17,4 +17,8 @@ void Frame::appendBox(std::shared_ptr<Box> box)
 
 void Frame::setBoxes(std::vector<std::shared_ptr<Box>> boxes){
     mBoxes = boxes;
+}
+
+bool Frame::empty() {
+    return mBoxes.empty();
 }

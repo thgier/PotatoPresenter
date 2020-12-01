@@ -7,10 +7,13 @@
 #include <KParts/ReadOnlyPart>
 #include <QProcess>
 #include <QDebug>
-#include<QObject>
+#include <QObject>
+#include <QTableWidget>
 #include "parser.h"
 #include "equationcachemanager.h"
 #include "imagecachemanager.h"
+#include "framelistmodel.h"
+#include "framelistdelegate.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -30,6 +33,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     mConfiguration.loadConfigurationFile();
     mPaintDocument = ui->paintDocument;
+
+    mFrameModel = new FrameListModel();
+    ui->pagePreview->setModel(mFrameModel);
+    FrameListDelegate *delegate = new FrameListDelegate(this);
+    ui->pagePreview->setItemDelegate(delegate);
+    ui->pagePreview->setViewMode(QListView::IconMode);
+
     fileChanged(doc);
     connect(ui->actionsave, &QAction::triggered,
             doc, &KTextEditor::Document::documentSave);
@@ -63,7 +73,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(&cacheManagerImages(), &ImageCacheManager::imageChanged,
             this, [this, doc](){MainWindow::fileChanged(doc);});
 
-    ui->actionLayoutBody->setShortcutVisibleInContextMenu(true);
 }
 
 MainWindow::~MainWindow()
@@ -88,5 +97,7 @@ void MainWindow::fileChanged(KTextEditor::Document *doc) {
                              this, lambda);
         }
     }
+    mFrameModel->setFrames(frames.value());
+
     mPaintDocument->update();
 }

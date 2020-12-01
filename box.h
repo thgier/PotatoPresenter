@@ -28,6 +28,8 @@ public:
 signals:
     void rectChanged(QRect newRect, int id);
 protected:
+    int mFontSize = 50;
+    QString mFont = "DejaVu Sans";
 private:
     QRect mRect;
     int mIDNumber = 0;

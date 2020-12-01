@@ -17,9 +17,6 @@ void PaintDocument::paintEvent(QPaintEvent*)
     painter.begin(this);
     painter.setViewport(QRect(0, 0, mWidth, 1.0 * mWidth/mSize.width()*mSize.height()));
     painter.setWindow(QRect(QPoint(0, 0), mSize));
-    auto font = QFont(mFont);
-    font.setPixelSize(mFontSize);
-    painter.setFont(font);
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
 //    painter.scale(mScale, mScale);
     painter.fillRect(QRect(QPoint(0, 0), mSize), Qt::white);
@@ -228,10 +225,6 @@ void PaintDocument::createPDF(){
 
     QPainter painter(&pdfWriter);
     painter.setWindow(QRect(QPoint(0, 0), mSize));
-
-    auto font = QFont(mFont);
-    font.setPixelSize(mFontSize);
-    painter.setFont(font);
 
     painter.begin(&pdfWriter);
     for(auto frame: mFrames){
