@@ -92,6 +92,7 @@ public:
     void layoutRight();
 signals:
     void pageNumberChanged(int page);
+    void selectionChanged(std::shared_ptr<Frame>);
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;

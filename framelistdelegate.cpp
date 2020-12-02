@@ -10,9 +10,15 @@ void FrameListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     auto const frame = index.model()->data(index, Qt::DisplayRole).value<std::shared_ptr<Frame>>();
     painter->save();
     painter->setViewport(option.rect);
-    painter->setWindow(-50, -50, 1700, 1200);
+    auto const windowRect = QRect(-50, -50, 1700, 1200);
+    auto const frameRect = QRect(0, 0, 1600, 900);
+    painter->setWindow(windowRect);
     painter->save();
-    painter->setClipRect(QRect(0, 0, 1600, 900));
+    if(option.state & QStyle::State_Selected){
+        painter->fillRect(windowRect, option.palette.highlight());
+    }
+    painter->fillRect(frameRect, Qt::white);
+    painter->setClipRect(frameRect);
     for(auto box: frame->getBoxes()){
         box->drawContent(*painter);
     }
@@ -26,12 +32,6 @@ void FrameListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     painter->setPen(Qt::blue);
     painter->drawRect(QRect(0, 0, 1600, 900));
 
-    if(option.state & QStyle::State_Selected){
-        painter->save();
-        painter->setPen(Qt::red);
-        painter->drawRect(QRect(0, 0, 1600, 900));
-        painter->restore();
-    }
     painter->restore();
 }
 

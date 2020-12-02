@@ -27,6 +27,7 @@ void PaintDocument::paintEvent(QPaintEvent*)
     if(mBoxInFocus != nullptr){
         drawBoundingBox(mBoxInFocus->Rect());
     }
+    painter.drawText(QRect(0, mSize.height(), mSize.width(), 80), Qt::AlignCenter, mCurrentFrameId);
     painter.end();
 }
 
@@ -42,6 +43,9 @@ void PaintDocument::setFrames(std::vector<std::shared_ptr<Frame>> frames, int cu
     if(pageNumber == -1) {
         pageNumber = 0;
         return;
+    }
+    if(mCurrentFrameId == ""){
+        mCurrentFrameId = mFrames[0]->id();
     }
     setCurrentPage(mCurrentFrameId);
 
@@ -64,13 +68,13 @@ void PaintDocument::setCurrentPage(int page){
     pageNumber = page;
     mCurrentFrameId = mFrames[page]->id();
     mBoxInFocus = nullptr;
+    selectionChanged(mFrames[pageNumber]);
     update();
 }
 
 void PaintDocument::setCurrentPage(QString id){
-//    std::find(mFrames.begin(), mFrames.end(), [id](auto a){return a.id() == id;});
     int counter = 0;
-    for(auto const frame: mFrames) {
+    for(auto const & frame: mFrames) {
         if(frame->id() == id) {
             pageNumber = counter;
             emit pageNumberChanged(pageNumber);

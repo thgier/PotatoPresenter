@@ -40,12 +40,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->pagePreview->setItemDelegate(delegate);
     ui->pagePreview->setViewMode(QListView::IconMode);
     QItemSelectionModel *selectionModel = ui->pagePreview->selectionModel();
-    connect(selectionModel, &QItemSelectionModel::selectionChanged,
-            this, [this](const QItemSelection &selected, const QItemSelection &deselected){
-            if(selected.empty()){return ;}
-            auto const id = selected.indexes().first().data(Qt::DisplayRole).value<std::shared_ptr<Frame>>()->id();
-            mPaintDocument->setCurrentPage(id);
-    });
+//    connect(selectionModel, &QItemSelectionModel::selectionChanged,
+//            this, [this](const QItemSelection &selected, const QItemSelection /* &deselected */){
+//            if(selected.empty()){return ;}
+//            auto const id = selected.indexes().first().data(Qt::DisplayRole).value<std::shared_ptr<Frame>>()->id();
+//            mPaintDocument->setCurrentPage(id);
+//    });
 
     fileChanged(doc);
     connect(ui->actionsave, &QAction::triggered,
@@ -54,6 +54,12 @@ MainWindow::MainWindow(QWidget *parent)
                 mPaintDocument, QOverload<int>::of(&PaintDocument::setCurrentPage));
     connect(mPaintDocument, &PaintDocument::pageNumberChanged,
             ui->pageNumber, &QSpinBox::setValue);
+    connect(selectionModel, &QItemSelectionModel::currentChanged,
+            this, [this](const QModelIndex &current, const QModelIndex &previous){
+            ui->pageNumber->setValue(current.row());});
+    connect(ui->pageNumber, QOverload<int>::of(&QSpinBox::valueChanged),
+            this, [selectionModel, this](int page){
+            selectionModel->select(mFrameModel->index(page), QItemSelectionModel::ClearAndSelect);});
 
     QObject::connect(doc, &KTextEditor::Document::textChanged,
                      this, &MainWindow::fileChanged);

@@ -19,6 +19,7 @@ void TextField::drawContent(QPainter& painter) {
     auto font = QFont(mFont);
     font.setPixelSize(mFontSize);
     painter.setFont(font);
+    painter.setPen(Qt::black);
     auto draw = DrawText(mText, painter, Rect(), id());
     draw.drawWord(painter);
 }
