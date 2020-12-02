@@ -34,6 +34,7 @@ private:
     QString mFolder;
     QStringList mRemoveFiles;
     void removeFiles(QByteArray hash);
+    int mProcessCounter = 0;
 };
 
 EquationCacheManager& cacheManager();

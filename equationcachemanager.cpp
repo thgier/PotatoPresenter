@@ -29,6 +29,12 @@ void EquationCacheManager::startConversionProcess(QString mathExpression, QByteA
         }
         return;
     }
+
+    if(mProcessCounter > 5){
+        return;
+    }
+    qWarning() << "process counter" << mProcessCounter;
+    mProcessCounter++;
     mCachedImages[hash] = SvgEntry{SvgStatus::pending, nullptr};
 
     auto standardFile = QFile("/home/theresa/Documents/praes/generaterLatex.tex");
@@ -67,6 +73,7 @@ void EquationCacheManager::startSvgGeneration(QByteArray hash, QProcess* latex){
     qWarning() << "latex exit code " << latex->exitCode();
     if(latex->exitCode() != 0){
         mCachedImages[hash].status = SvgStatus::error;
+        mProcessCounter--;
         emit errorWhileLatexConversion(QString("error"));
         removeFiles(hash);
         return;
@@ -86,6 +93,7 @@ void EquationCacheManager::writeSvgToMap(QByteArray hash){
     mCachedImages[hash] = SvgEntry{SvgStatus::success, std::make_shared<QSvgRenderer>(folder + "a.svg")};
     qWarning() << "status when finished" << mCachedImages[hash].status;
     removeFiles(hash);
+    mProcessCounter--;
     emit conversionFinished();
 }
 
