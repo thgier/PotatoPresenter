@@ -1,8 +1,14 @@
 #include "frame.h"
 
 Frame::Frame()
+    : mId{""}
 {
 
+}
+
+Frame::Frame(QString id)
+    : mId{id}
+{
 }
 
 std::vector<std::shared_ptr<Box>> Frame::getBoxes() const
@@ -21,4 +27,8 @@ void Frame::setBoxes(std::vector<std::shared_ptr<Box>> boxes){
 
 bool Frame::empty() {
     return mBoxes.empty();
+}
+
+QString Frame::id() {
+    return mId;
 }

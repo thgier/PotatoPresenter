@@ -34,8 +34,10 @@ std::optional<FrameList> Parser::readJson(QString text, ConfigBoxes* configurati
     QJsonArray root = doc.array();
     qWarning() << "Size" << root.size();
     for (int i = 0; i < root.size(); i++) {
+        QJsonObject frameStart = root.at(i).toObject();
+        auto const frameId = frameStart.value("frame").toString();
         std::vector<std::shared_ptr<Box>> boxes;
-        QJsonArray frame = root.at(i).toArray();
+        QJsonArray frame = frameStart.value("content").toArray();
 
         for (int j = 0; j < frame.size(); j++){
             auto const box = frame.at(j).toObject();
@@ -65,7 +67,7 @@ std::optional<FrameList> Parser::readJson(QString text, ConfigBoxes* configurati
                 boxes.push_back(newImage);
             }
         }
-        auto newFrame = std::make_shared<Frame>();
+        auto newFrame = std::make_shared<Frame>(frameId);
         newFrame->setBoxes(boxes);
         frames.push_back(newFrame);
     }

@@ -73,12 +73,14 @@ struct BoxTransformation{
 
 class PaintDocument : public QWidget
 {
+    Q_OBJECT
 public:
     PaintDocument(QWidget*&);
     //    QSize minimumSizeHint() const override;
 //    QSize sizeHint() const override;
     void setFrames(std::vector<std::shared_ptr<Frame>> frames, int currentPage);
     void setCurrentPage(int);
+    void setCurrentPage(QString id);
     void resizeEvent(QResizeEvent *) override;
     QSize sizeHint() const override;
     void createPDF();
@@ -88,6 +90,8 @@ public:
     void layoutFull();
     void layoutLeft();
     void layoutRight();
+signals:
+    void pageNumberChanged(int page);
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -113,6 +117,7 @@ private:
     void drawBoundingBox(QRect rect);
     void drawScaleMarker(QRect rect);
     void determineBoxInFocus(QPoint mousePos);
+    QString mCurrentFrameId;
 };
 
 #endif // PAINTDOCUMENT_H

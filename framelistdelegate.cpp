@@ -10,13 +10,19 @@ void FrameListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     auto const frame = index.model()->data(index, Qt::DisplayRole).value<std::shared_ptr<Frame>>();
     painter->save();
     painter->setViewport(option.rect);
-    painter->setWindow(-50, -50, 1700, 1000);
+    painter->setWindow(-50, -50, 1700, 1200);
     painter->save();
     painter->setClipRect(QRect(0, 0, 1600, 900));
     for(auto box: frame->getBoxes()){
         box->drawContent(*painter);
     }
     painter->restore();
+
+    QFont font = painter->font();
+    font.setPixelSize(100);
+    painter->setFont(font);
+    painter->drawText(QRect(0, 900, 1700, 200), Qt::AlignCenter, frame->id());
+
     painter->setPen(Qt::blue);
     painter->drawRect(QRect(0, 0, 1600, 900));
 

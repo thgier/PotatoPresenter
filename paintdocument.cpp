@@ -42,12 +42,9 @@ void PaintDocument::setFrames(std::vector<std::shared_ptr<Frame>> frames, int cu
     if(pageNumber == -1) {
         pageNumber = 0;
         return;
-    } else if( currentPage >= int(frames.size())){
-        pageNumber = int(frames.size()) - 1;
     }
-    else {
-        pageNumber = currentPage;
-    }
+    setCurrentPage(mCurrentFrameId);
+
     bool boxInFocusExists = false;
     for(auto box: mFrames[pageNumber]->getBoxes()) {
         if(box == mBoxInFocus){
@@ -65,8 +62,22 @@ void PaintDocument::setCurrentPage(int page){
         return;
     }
     pageNumber = page;
+    mCurrentFrameId = mFrames[page]->id();
     mBoxInFocus = nullptr;
     update();
+}
+
+void PaintDocument::setCurrentPage(QString id){
+//    std::find(mFrames.begin(), mFrames.end(), [id](auto a){return a.id() == id;});
+    int counter = 0;
+    for(auto const frame: mFrames) {
+        if(frame->id() == id) {
+            pageNumber = counter;
+            emit pageNumberChanged(pageNumber);
+            break;
+        }
+        counter++;
+    }
 }
 
 void PaintDocument::resizeEvent(QResizeEvent*) {

@@ -39,12 +39,21 @@ MainWindow::MainWindow(QWidget *parent)
     FrameListDelegate *delegate = new FrameListDelegate(this);
     ui->pagePreview->setItemDelegate(delegate);
     ui->pagePreview->setViewMode(QListView::IconMode);
+    QItemSelectionModel *selectionModel = ui->pagePreview->selectionModel();
+    connect(selectionModel, &QItemSelectionModel::selectionChanged,
+            this, [this](const QItemSelection &selected, const QItemSelection &deselected){
+            if(selected.empty()){return ;}
+            auto const id = selected.indexes().first().data(Qt::DisplayRole).value<std::shared_ptr<Frame>>()->id();
+            mPaintDocument->setCurrentPage(id);
+    });
 
     fileChanged(doc);
     connect(ui->actionsave, &QAction::triggered,
             doc, &KTextEditor::Document::documentSave);
     QObject::connect(ui->pageNumber, QOverload<int>::of(&QSpinBox::valueChanged),
-                mPaintDocument, &PaintDocument::setCurrentPage);
+                mPaintDocument, QOverload<int>::of(&PaintDocument::setCurrentPage));
+    connect(mPaintDocument, &PaintDocument::pageNumberChanged,
+            ui->pageNumber, &QSpinBox::setValue);
 
     QObject::connect(doc, &KTextEditor::Document::textChanged,
                      this, &MainWindow::fileChanged);
