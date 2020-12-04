@@ -12,6 +12,10 @@ PaintDocument::PaintDocument(QWidget*&)
     mScale = 1.0 * mSize.width() / mWidth;
 }
 
+void PaintDocument::setPresentation(Presentation* pres){
+    mPresentation = pres;
+}
+
 void PaintDocument::paintEvent(QPaintEvent*)
 {
     painter.begin(this);
@@ -20,9 +24,9 @@ void PaintDocument::paintEvent(QPaintEvent*)
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
 //    painter.scale(mScale, mScale);
     painter.fillRect(QRect(QPoint(0, 0), mSize), Qt::white);
-    if(!mFrames.empty()){
+    if(!mPresentation->empty()){
         auto paint = std::make_shared<Painter>(painter);
-        paint->paintFrame(mFrames[pageNumber]);
+        paint->paintFrame(mPresentation->at(pageNumber));
     }
     if(mBoxInFocus != nullptr){
         drawBoundingBox(mBoxInFocus->Rect());
@@ -35,47 +39,29 @@ QSize PaintDocument::sizeHint() const{
     return mLayout.mSize;
 }
 
-void PaintDocument::setFrames(std::vector<std::shared_ptr<Frame>> frames, int currentPage) {
-    if(frames.size() == 0){
-        return;
-    }
-    mFrames = frames;
-    if(pageNumber == -1) {
-        pageNumber = 0;
-        return;
-    }
-    if(mCurrentFrameId == ""){
-        mCurrentFrameId = mFrames[0]->id();
-    }
+void PaintDocument::updateFrames(){
     setCurrentPage(mCurrentFrameId);
-
-    bool boxInFocusExists = false;
-    for(auto box: mFrames[pageNumber]->getBoxes()) {
-        if(box == mBoxInFocus){
-            boxInFocusExists = true;
-            break;
-        }
-    }
-    if(!boxInFocusExists){
-        mBoxInFocus = nullptr;
-    }
+    update();
 }
 
 void PaintDocument::setCurrentPage(int page){
-    if(page >= int(mFrames.size()) || page < 0) {
+    if(page >= int(mPresentation->size()) || page < 0) {
         return;
     }
     pageNumber = page;
-    mCurrentFrameId = mFrames[page]->id();
+    mCurrentFrameId = mPresentation->at(page)->id();
     mBoxInFocus = nullptr;
-    selectionChanged(mFrames[pageNumber]);
+    selectionChanged(mPresentation->at(pageNumber));
     update();
 }
 
 void PaintDocument::setCurrentPage(QString id){
     int counter = 0;
-    for(auto const & frame: mFrames) {
+    for(auto const & frame: mPresentation->frames()) {
         if(frame->id() == id) {
+            if(pageNumber != counter){
+                mBoxInFocus = nullptr;
+            }
             pageNumber = counter;
             emit pageNumberChanged(pageNumber);
             break;
@@ -91,7 +77,7 @@ void PaintDocument::resizeEvent(QResizeEvent*) {
 
 void PaintDocument::determineBoxInFocus(QPoint mousePos){
     mBoxInFocus = nullptr;
-    for(auto box: mFrames[pageNumber]->getBoxes()) {
+    for(auto box: mPresentation->at(pageNumber)->getBoxes()) {
         auto const boxMargins = box->Rect().marginsAdded(QMargins(diffToMouse, diffToMouse, diffToMouse, diffToMouse));
         if(boxMargins.contains(mousePos)) {
             mBoxInFocus = box;
@@ -120,7 +106,7 @@ void PaintDocument::mousePressEvent(QMouseEvent *event)
     }
     auto const trafoType = getTransformationType(lastPosition);
     qWarning() << "trafotype" << trafoType;
-    momentTrafo = BoxTransformation(*mBoxInFocus.get(), trafoType);
+    momentTrafo = BoxTransformation(mBoxInFocus, trafoType, pageNumber);
     CursorApperance(lastPosition);
 }
 
@@ -130,7 +116,7 @@ void PaintDocument::mouseDoubleClickEvent(QMouseEvent *event){
         determineBoxInFocus(mousePos);
         return;
     }
-    for(auto box: mFrames[pageNumber]->getBoxes()) {
+    for(auto box: mPresentation->at(pageNumber)->getBoxes()) {
         auto const boxMargins = box->Rect().marginsAdded(QMargins(diffToMouse, diffToMouse, diffToMouse, diffToMouse));
         if(boxMargins.contains(mousePos) && mBoxInFocus != box) {
             mBoxInFocus = box;
@@ -144,7 +130,7 @@ void PaintDocument::mouseMoveEvent(QMouseEvent *event)
     CursorApperance(event->pos() * mScale);
     if ((event->buttons() & Qt::LeftButton)) {
         auto const newPosition = event->pos() * mScale;
-        momentTrafo->makeTransformation(newPosition - lastPosition);
+        momentTrafo->makeTransformation(newPosition - lastPosition, mPresentation);
         lastPosition = newPosition;
         update();
     }
@@ -242,10 +228,10 @@ void PaintDocument::createPDF(){
     painter.setWindow(QRect(QPoint(0, 0), mSize));
 
     painter.begin(&pdfWriter);
-    for(auto frame: mFrames){
+    for(auto frame: mPresentation->frames()){
         auto paint = std::make_shared<Painter>(painter);
         paint->paintFrame(frame);
-        if(frame != mFrames.back()){
+        if(frame != mPresentation->frames().back()){
             pdfWriter.newPage();
         }
     }

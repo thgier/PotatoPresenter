@@ -36,8 +36,8 @@ private:
     QGraphicsTextItem *text;
     KTextEditor::Document* doc;
     PaintDocument* mPaintDocument;
-    ConfigBoxes mConfiguration;
     QListWidget *mListWidget;
     FrameListModel *mFrameModel;
+    Presentation mPresentation;
 };
 #endif // MAINWINDOW_H

@@ -1,13 +1,15 @@
 #include "configboxes.h"
 #include <QDebug>
+#include <QFileInfo>
+#include <QDir>
 
-ConfigBoxes::ConfigBoxes(QString const& filename)
-    : mFilename (filename)
+ConfigBoxes::ConfigBoxes()
 {
 
 }
 
-void ConfigBoxes::loadConfigurationFile(){
+void ConfigBoxes::loadConfigurationFile(QString filename){
+    mFilename = filename;
     QFile file(mFilename);
     if (!file.open(QIODevice::ReadOnly))
         return;

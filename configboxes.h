@@ -18,8 +18,8 @@ class ConfigBoxes : public QObject
 {
     Q_OBJECT
 public:
-    ConfigBoxes(QString const& filename);
-    void loadConfigurationFile();
+    ConfigBoxes();
+    void loadConfigurationFile(QString filename);
     void loadConfigFromJson(QJsonDocument doc);
     void saveConfig();
     configurations readJsonConfigurations(const QJsonObject &json);

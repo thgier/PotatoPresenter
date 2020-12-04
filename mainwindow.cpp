@@ -18,12 +18,12 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , mConfiguration("/home/theresa/Documents/praes/inputConfig.json")
 {
     ui->setupUi(this);
     ui->splitter->setSizes(QList<int>{10000, 10000});
     KTextEditor::Editor *editor = KTextEditor::Editor::instance();
-    auto url = QUrl::fromLocalFile("/home/theresa/Documents/praes/input.json");
+    QString inputFile = "/home/theresa/Documents/praes/input.json";
+    auto url = QUrl::fromLocalFile(inputFile);
     KTextEditor::Document *doc = editor->createDocument(this);
     if (!doc->openUrl(url)){
         qWarning() << "file not found";
@@ -31,21 +31,17 @@ MainWindow::MainWindow(QWidget *parent)
     KTextEditor::View *view = doc->createView(this);
     ui->editor->addWidget(view);
 
-    mConfiguration.loadConfigurationFile();
+    mPresentation.loadInput();
     mPaintDocument = ui->paintDocument;
+    mPaintDocument->setPresentation(&mPresentation);
 
     mFrameModel = new FrameListModel();
+    mFrameModel->setPresentation(&mPresentation);
     ui->pagePreview->setModel(mFrameModel);
     FrameListDelegate *delegate = new FrameListDelegate(this);
     ui->pagePreview->setItemDelegate(delegate);
     ui->pagePreview->setViewMode(QListView::IconMode);
     QItemSelectionModel *selectionModel = ui->pagePreview->selectionModel();
-//    connect(selectionModel, &QItemSelectionModel::selectionChanged,
-//            this, [this](const QItemSelection &selected, const QItemSelection /* &deselected */){
-//            if(selected.empty()){return ;}
-//            auto const id = selected.indexes().first().data(Qt::DisplayRole).value<std::shared_ptr<Frame>>()->id();
-//            mPaintDocument->setCurrentPage(id);
-//    });
 
     fileChanged(doc);
     connect(ui->actionsave, &QAction::triggered,
@@ -54,12 +50,16 @@ MainWindow::MainWindow(QWidget *parent)
                 mPaintDocument, QOverload<int>::of(&PaintDocument::setCurrentPage));
     connect(mPaintDocument, &PaintDocument::pageNumberChanged,
             ui->pageNumber, &QSpinBox::setValue);
-    connect(selectionModel, &QItemSelectionModel::currentChanged,
-            this, [this](const QModelIndex &current, const QModelIndex &previous){
-            ui->pageNumber->setValue(current.row());});
-    connect(ui->pageNumber, QOverload<int>::of(&QSpinBox::valueChanged),
-            this, [selectionModel, this](int page){
-            selectionModel->select(mFrameModel->index(page), QItemSelectionModel::ClearAndSelect);});
+    connect(selectionModel, &QItemSelectionModel::currentChanged, this,
+        [this](const QModelIndex &current){
+            ui->pageNumber->setValue(current.row());
+        });
+    connect(ui->pageNumber, QOverload<int>::of(&QSpinBox::valueChanged), this,
+        [selectionModel, this](int page) {
+            auto const index = mFrameModel->index(page);
+            selectionModel->select(index, QItemSelectionModel::ClearAndSelect);
+            ui->pagePreview->scrollTo(index);
+        });
 
     QObject::connect(doc, &KTextEditor::Document::textChanged,
                      this, &MainWindow::fileChanged);
@@ -96,23 +96,8 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::fileChanged(KTextEditor::Document *doc) {
-    Parser parser;
-    auto frames = parser.readJson(doc->text(), &mConfiguration);
-    if(!frames){
-        return;
-    }
-
-    mPaintDocument->setFrames(*frames, ui->pageNumber->value());
-    ui->pageNumber->setMaximum(frames->size()-1);
-    for(auto frame : *frames){
-        for(auto box : frame->getBoxes()){
-            auto boxptr = box.get();
-            auto lambda = [boxptr, this](){mConfiguration.addRect(boxptr->Rect(), boxptr->id());};
-            QObject::connect(boxptr, &Box::rectChanged,
-                             this, lambda);
-        }
-    }
-    mFrameModel->setFrames(frames.value());
-
-    mPaintDocument->update();
+    mPresentation.updateFrames(doc->text().toUtf8());
+    ui->pageNumber->setMaximum(mPresentation.frames().size()-1);
+//    mFrameModel->setPresentation(&mPresentation);
+    mPaintDocument->updateFrames();
 }

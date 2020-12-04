@@ -14,6 +14,7 @@
 #include "parser.h"
 #include "layout.h"
 #include "equationcachemanager.h"
+#include "presentation.h"
 
 enum TransformationType {
     translate,
@@ -29,44 +30,89 @@ enum TransformationType {
 };
 
 struct BoxTransformation{
-    BoxTransformation(Box& box, TransformationType trafo)
+    BoxTransformation(std::shared_ptr<Box> box, TransformationType trafo, int pageNumber)
         : mBox{box}
         , mTrafo{trafo}
+        , mPageNumber{pageNumber}
     {
     }
     BoxTransformation &operator = (const BoxTransformation &b) { mTrafo = b.mTrafo; return *this; }
-    Box& mBox;
+    std::shared_ptr<Box> mBox;
     TransformationType mTrafo;
-    void makeTransformation(QPoint mouseMovement){
+    int mPageNumber;
+    void makeTransformation(QPoint mouseMovement, Presentation* pres){
+        auto rect = mBox->Rect();
         switch (mTrafo) {
-        case TransformationType::translate:
-            mBox.translateBox(mouseMovement);
-            break;
-        case TransformationType::scaleTopLeft:
-            mBox.scaleTopLeft(mouseMovement);
-            break;
-        case TransformationType::scaleTopRight:
-            mBox.scaleTopRight(mouseMovement);
-            break;
-        case TransformationType::scaleBottomLeft:
-            mBox.scaleBottomLeft(mouseMovement);
-            break;
-        case TransformationType::scaleBottomRight:
-            mBox.scaleBottomRight(mouseMovement);
-            break;
-        case TransformationType::scaleTop:
-            mBox.scaleTop(mouseMovement);
-            break;
-        case TransformationType::scaleBottom:
-            mBox.scaleBottom(mouseMovement);
-            break;
-        case TransformationType::scaleLeft:
-            mBox.scaleLeft(mouseMovement);
-            break;
-        case TransformationType::scaleRight:
-            mBox.scaleRight(mouseMovement);
+        case TransformationType::translate:{
+            rect.translate(mouseMovement);
             break;
         }
+        case TransformationType::scaleTopLeft:{
+            auto const point = rect.bottomRight();
+            auto const width = rect.width() - mouseMovement.x();
+            auto const heigth = rect.height() - mouseMovement.y();
+            rect.setSize(QSize(width, heigth));
+            rect.moveBottomRight(point);
+            rect = rect.normalized();
+            break;
+        }
+        case TransformationType::scaleTopRight:{
+            auto const point = rect.bottomLeft();
+            auto const width = rect.width() + mouseMovement.x();
+            auto const heigth = rect.height() - mouseMovement.y();
+            rect.setSize(QSize(width, heigth));
+            rect.moveBottomLeft(point);
+            rect = rect.normalized();
+            break;
+        }
+        case TransformationType::scaleBottomLeft:{
+            auto const point = rect.topRight();
+            auto const width = rect.width() - mouseMovement.x();
+            auto const heigth = rect.height() + mouseMovement.y();
+            rect.setSize(QSize(width, heigth));
+            rect.moveTopRight(point);
+            rect = rect.normalized();
+            break;
+        }
+        case TransformationType::scaleBottomRight:{
+            auto const point = rect.topLeft();
+            auto const width = rect.width() + mouseMovement.x();
+            auto const heigth = rect.height() + mouseMovement.y();
+            rect.setSize(QSize(width, heigth));
+            rect.moveTopLeft(point);
+            rect = rect.normalized();
+            break;
+        }
+        case TransformationType::scaleTop:{
+            auto const point = rect.bottomLeft();
+            auto const heigth = rect.height() - mouseMovement.y();
+            rect.setHeight(heigth);
+            rect.moveBottomLeft(point);
+            rect = rect.normalized();
+            break;
+        }
+        case TransformationType::scaleBottom:{
+            auto const heigth = rect.height() + mouseMovement.y();
+            rect.setHeight(heigth);
+            rect = rect.normalized();
+            break;
+        }
+        case TransformationType::scaleLeft:{
+            auto const point = rect.topRight();
+            auto const width = rect.width() - mouseMovement.x();
+            rect.setWidth(width);
+            rect.moveTopRight(point);
+            rect = rect.normalized();
+            break;
+        }
+        case TransformationType::scaleRight:{
+            auto const width = rect.width() + mouseMovement.x();
+            rect.setWidth(width);
+            rect = rect.normalized();
+            break;
+        }
+        }
+        pres->setBox(mBox, rect, mPageNumber);
     }
 };
 
@@ -78,12 +124,13 @@ public:
     PaintDocument(QWidget*&);
     //    QSize minimumSizeHint() const override;
 //    QSize sizeHint() const override;
-    void setFrames(std::vector<std::shared_ptr<Frame>> frames, int currentPage);
+    void setPresentation(Presentation* pres);
     void setCurrentPage(int);
     void setCurrentPage(QString id);
     void resizeEvent(QResizeEvent *) override;
     QSize sizeHint() const override;
     void createPDF();
+    void updateFrames();
     std::shared_ptr<Box> activeBox();
     void layoutBody();
     void layoutTitle();
@@ -100,7 +147,6 @@ protected:
     void mouseDoubleClickEvent(QMouseEvent *event) override;
     int mWidth;
     void paintEvent(QPaintEvent *event) override;
-    std::vector<std::shared_ptr<Frame>> mFrames;
     QSize mSize;
     int pageNumber;
 private:
@@ -119,6 +165,8 @@ private:
     void drawScaleMarker(QRect rect);
     void determineBoxInFocus(QPoint mousePos);
     QString mCurrentFrameId;
+    Presentation * mPresentation;
+
 };
 
 #endif // PAINTDOCUMENT_H

@@ -24,8 +24,7 @@ Parser::Parser()
 std::optional<FrameList> Parser::readJson(QString text, ConfigBoxes* configuration)
 {
     QJsonParseError error;
-    QJsonDocument doc = QJsonDocument::fromJson(text.toUtf8(), &error);
-    qWarning() << error.errorString();
+    auto doc = QJsonDocument::fromJson(text.toUtf8(), &error);
     if(error.error != QJsonParseError::NoError){
         return {};
     }
