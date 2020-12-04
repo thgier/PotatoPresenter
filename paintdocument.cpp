@@ -246,7 +246,7 @@ void PaintDocument::layoutTitle(){
     if(!mBoxInFocus) {
         return;
     }
-    mBoxInFocus->setRect(mLayout.mTitlePos);
+    mPresentation->setBox(mBoxInFocus, mLayout.mTitlePos, pageNumber);
     update();
 }
 
@@ -254,7 +254,7 @@ void PaintDocument::layoutBody(){
     if(!mBoxInFocus) {
         return;
     }
-    mBoxInFocus->setRect(mLayout.mBodyPos);
+    mPresentation->setBox(mBoxInFocus, mLayout.mBodyPos, pageNumber);
     update();
 }
 
@@ -262,7 +262,7 @@ void PaintDocument::layoutFull(){
     if(!mBoxInFocus) {
         return;
     }
-    mBoxInFocus->setRect(mLayout.mFullPos);
+    mPresentation->setBox(mBoxInFocus, mLayout.mFullPos, pageNumber);
     update();
 }
 
@@ -270,7 +270,7 @@ void PaintDocument::layoutLeft(){
     if(!mBoxInFocus) {
         return;
     }
-    mBoxInFocus->setRect(mLayout.mLeftPos);
+    mPresentation->setBox(mBoxInFocus, mLayout.mLeftPos, pageNumber);
     update();
 }
 
@@ -278,7 +278,23 @@ void PaintDocument::layoutRight(){
     if(!mBoxInFocus) {
         return;
     }
-    mBoxInFocus->setRect(mLayout.mRightPos);
+    mPresentation->setBox(mBoxInFocus, mLayout.mRightPos, pageNumber);
+    update();
+}
+
+void PaintDocument::layoutPresTitle(){
+    if(!mBoxInFocus) {
+        return;
+    }
+    mPresentation->setBox(mBoxInFocus, mLayout.mPresTitlePos, pageNumber);
+    update();
+}
+
+void PaintDocument::layoutSubtitle(){
+    if(!mBoxInFocus) {
+        return;
+    }
+    mPresentation->setBox(mBoxInFocus, mLayout.mSubtitlePos, pageNumber);
     update();
 }
 

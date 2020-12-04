@@ -20,6 +20,8 @@ public:
     QRect mFullPos;
     QRect mLeftPos;
     QRect mRightPos;
+    QRect mPresTitlePos;
+    QRect mSubtitlePos;
 private:
 };
 

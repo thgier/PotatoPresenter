@@ -137,6 +137,8 @@ public:
     void layoutFull();
     void layoutLeft();
     void layoutRight();
+    void layoutPresTitle();
+    void layoutSubtitle();
 signals:
     void pageNumberChanged(int page);
     void selectionChanged(std::shared_ptr<Frame>);

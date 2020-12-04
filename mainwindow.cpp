@@ -77,6 +77,10 @@ MainWindow::MainWindow(QWidget *parent)
                      mPaintDocument, &PaintDocument::layoutLeft);
     QObject::connect(ui->actionLayoutRight, &QAction::triggered,
                      mPaintDocument, &PaintDocument::layoutRight);
+    QObject::connect(ui->actionPresentationTitle, &QAction::triggered,
+                     mPaintDocument, &PaintDocument::layoutPresTitle);
+    QObject::connect(ui->actionSubtitle, &QAction::triggered,
+                     mPaintDocument, &PaintDocument::layoutSubtitle);
 
     QObject::connect(&cacheManager(), &EquationCacheManager::conversionFinished,
             mPaintDocument, QOverload<>::of(&PaintDocument::update));

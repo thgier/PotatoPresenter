@@ -117,6 +117,8 @@
    <addaction name="actionLayoutFullscreen"/>
    <addaction name="actionLayoutLeft"/>
    <addaction name="actionLayoutRight"/>
+   <addaction name="actionPresentationTitle"/>
+   <addaction name="actionSubtitle"/>
    <addaction name="actionCreatePDF"/>
   </widget>
   <action name="actionsave">
@@ -150,7 +152,7 @@
   </action>
   <action name="actionLayoutBody">
    <property name="icon">
-    <iconset theme="gnumeric-format-valign-center">
+    <iconset theme="menu_new">
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
@@ -165,7 +167,7 @@
   </action>
   <action name="actionLayoutFullscreen">
    <property name="icon">
-    <iconset theme="box">
+    <iconset theme="statetool">
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
@@ -221,6 +223,22 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+G</string>
+   </property>
+  </action>
+  <action name="actionPresentationTitle">
+   <property name="icon">
+    <iconset theme="menu_new_sep"/>
+   </property>
+   <property name="text">
+    <string>Presentation Title</string>
+   </property>
+  </action>
+  <action name="actionSubtitle">
+   <property name="icon">
+    <iconset theme="newline"/>
+   </property>
+   <property name="text">
+    <string>Subtitle</string>
    </property>
   </action>
  </widget>

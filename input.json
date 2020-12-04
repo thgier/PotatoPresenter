@@ -9,8 +9,7 @@
     [
       {"type" : "text", "text": "**title**", "id": 4},
       {"type" : "text", "text": "fhj das toll laaang noch länger so **lannng** hkljkj _fdfd fdfd_
-      - jkdf", "id": 5},
-      {"type" : "image", "file": "/home/theresa/Pictures/test.png", "id":6}
+      - jkdf", "id": 5}
     ]},
     {"frame": "second page", "content" :
     [

@@ -11,6 +11,8 @@ Layout::Layout(aspectRatio ratio)
             mFullPos = QRect(0, 0, 1600, 900);
             mLeftPos = QRect(50, 200, 720, 650);
             mRightPos = QRect(830, 200, 720, 650);
+            mPresTitlePos = QRect(50, 350, 1500, 100);
+            mSubtitlePos = QRect(50, 500, 1500, 100);
 //            mSize = QSize(160, 90);
 //            mTitlePos = QRect(5, 5, 150, 10);
 //            mBodyPos = QRect(5, 20, 150, 65);
