@@ -3,6 +3,8 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QCryptographicHash>
+#include <charconv>
 
 #include "parser.h"
 #include "frame.h"
@@ -41,28 +43,30 @@ std::optional<FrameList> Parser::readJson(QString text, ConfigBoxes* configurati
         for (int j = 0; j < frame.size(); j++){
             auto const box = frame.at(j).toObject();
             auto const type = box.value("type").toString();
-            auto idNumber = box.value("id").toInt();
+//            auto idNumber = box.value("id").toInt();
+            auto id = frameId;
+            id += "-" + QString::number(j);
             if (type == "text"){
                 auto const text = box.value("text").toString();
                 QRect rect;
-                if(configuration->getRect(idNumber).isEmpty()){
+                if(configuration->getRect(id).isEmpty()){
                     rect = QRect(50, 200, 1500, 650);
                 } else {
-                    rect = configuration->getRect(idNumber);
+                    rect = configuration->getRect(id);
                 }
-                auto const newText = std::make_shared<TextField>(text, rect, idNumber);
+                auto const newText = std::make_shared<TextField>(text, rect, id);
                 newText->setMovable(box.value("movable").toBool(true));
                 boxes.push_back(newText);
             }
             else if (type == "image"){
                 auto const Imagefile = box.value("file").toString();
                 QRect rect;
-                if(configuration->getRect(idNumber).isEmpty()){
+                if(configuration->getRect(id).isEmpty()){
                     rect = QRect(50, 200, 1500, 650);
                 } else {
-                    rect = configuration->getRect(idNumber);
+                    rect = configuration->getRect(id);
                 }
-                auto const newImage = std::make_shared<Picture>(Imagefile, rect, idNumber);
+                auto const newImage = std::make_shared<Picture>(Imagefile, rect, id);
                 boxes.push_back(newImage);
             }
         }

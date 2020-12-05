@@ -27,7 +27,12 @@ void FrameListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     QFont font = painter->font();
     font.setPixelSize(100);
     painter->setFont(font);
-    painter->drawText(QRect(0, 900, 1700, 200), Qt::AlignCenter, frame->id());
+    if(option.state & QStyle::State_Selected){
+        painter->setPen(option.palette.HighlightedText);
+        painter->drawText(QRect(0, 900, 1700, 200), Qt::AlignCenter, frame->id());
+    }else{
+        painter->drawText(QRect(0, 900, 1700, 200), Qt::AlignCenter, frame->id());
+    }
 
     painter->setPen(Qt::blue);
     painter->drawRect(QRect(0, 0, 1600, 900));

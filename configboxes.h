@@ -24,10 +24,10 @@ public:
     void saveConfig();
     configurations readJsonConfigurations(const QJsonObject &json);
     void saveJsonConfigurations(QJsonObject &json, const configurations config);
-    void addRect(QRect rect, int id);
-    QRect getRect(int id);
+    void addRect(QRect rect, QString id);
+    QRect getRect(QString id);
 private:
-    std::map<int, configurations> mConfigMap;
+    std::map<QString, configurations> mConfigMap;
     QString mFilename;
 };
 

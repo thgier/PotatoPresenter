@@ -5,9 +5,9 @@ Box::Box()
     mRect = QRect();
 }
 
-Box::Box(QRect rect, int idNumber)
+Box::Box(QRect rect, QString id)
     : mRect{rect}
-    , mIDNumber{idNumber}
+    , mId{id}
 {
 }
 
@@ -39,7 +39,7 @@ void Box::setMovable(bool move) {
     mMovable = move;
 }
 
-int Box::id() {
-    return mIDNumber;
+QString Box::id() {
+    return mId;
 }
 

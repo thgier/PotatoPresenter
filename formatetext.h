@@ -22,7 +22,7 @@
 class FormateText
 {
 public:
-    FormateText(QFontMetrics metrics, QRect rect, int id);
+    FormateText(QFontMetrics metrics, QRect rect, QString id);
     void drawText(QString text, QPainter& painter);
     std::vector<int> getLinePosition() const;
     void drawNewLine();
@@ -37,7 +37,7 @@ private:
     int mLinewidth;
     std::vector<int> mLinePositions;
     int mLineN = 0;
-    int mIdBox;
+    QString mIdBox;
 };
 
 #endif // FORMATETEXT_H

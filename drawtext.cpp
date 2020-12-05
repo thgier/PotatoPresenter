@@ -1,7 +1,7 @@
 #include "drawtext.h"
 #include <QDebug>
 
-DrawText::DrawText(QString text, QPainter& painter, QRect rect, int id)
+DrawText::DrawText(QString text, QPainter& painter, QRect rect, QString id)
     :mCharNumber{0}, mText{text}, mFormateText(painter.fontMetrics(), rect, id)
 {
     makePropertyList();

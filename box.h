@@ -9,19 +9,19 @@ class Box : public QObject
     Q_OBJECT
 public:
     Box();
-    Box(QRect rect, int idNumber);
+    Box(QRect rect, QString id);
     QRect Rect();
     virtual void drawContent(QPainter& painter);
     void setVisibility(bool vis);
     void setMovable(bool move);
     void setRect(QRect rect);
-    int id();
+    QString id();
 protected:
     int mFontSize = 50;
     QString mFont = "DejaVu Sans";
 private:
     QRect mRect;
-    int mIDNumber = 0;
+    QString mId = 0;
     bool mVisible = true;
     bool mMovable = true;
 };

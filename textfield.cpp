@@ -6,7 +6,7 @@
 #include <vector>
 #include<QMargins>
 
-TextField::TextField(QString text, QRect rect, int id)
+TextField::TextField(QString text, QRect rect, QString id)
     : Box(rect, id), mText(text), mCharNumber{0}
 {
 }

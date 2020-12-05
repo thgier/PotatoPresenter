@@ -45,7 +45,7 @@ void ConfigBoxes::loadConfigFromJson(QJsonDocument doc){
     QJsonArray root = doc.array();
     for (int i = 0; i < root.size(); i++) {
         QJsonObject configBox = root.at(i).toObject();
-        auto const id = configBox.value("id").toInt();
+        auto const id = configBox.value("id").toString();
         auto const newConfig = readJsonConfigurations(configBox);
         mConfigMap[id] = newConfig;
     }
@@ -69,14 +69,14 @@ void ConfigBoxes::saveConfig()
     file.write(doc.toJson());
 }
 
-void ConfigBoxes::addRect(QRect rect, int id) {
+void ConfigBoxes::addRect(QRect rect, QString id) {
     configurations newConfig;
     newConfig.rect = rect;
     mConfigMap[id] = newConfig;
     saveConfig();
 }
 
-QRect ConfigBoxes::getRect(int id){
+QRect ConfigBoxes::getRect(QString id){
     if(auto it = mConfigMap.find(id); it != mConfigMap.end()){
         return it->second.rect;
     }

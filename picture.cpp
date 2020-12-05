@@ -4,7 +4,7 @@
 #include<QDebug>
 #include "imagecachemanager.h"
 
-Picture::Picture(QString imagePath, QRect rect, int id)
+Picture::Picture(QString imagePath, QRect rect, QString id)
     : Box(rect, id)
     , mImagePath{imagePath}
 //    , mImage{std::make_shared<QImage>()}

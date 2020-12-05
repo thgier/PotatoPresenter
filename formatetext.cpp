@@ -7,7 +7,7 @@
 #include <QCryptographicHash>
 
 
-FormateText::FormateText(QFontMetrics metrics, QRect rect, int id)
+FormateText::FormateText(QFontMetrics metrics, QRect rect, QString id)
     : mMetrics{metrics}
     , mRect(rect)
     , mLineStart{metrics.xHeight()}
