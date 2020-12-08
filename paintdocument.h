@@ -112,7 +112,7 @@ struct BoxTransformation{
             break;
         }
         }
-        pres->setBox(mBox, rect, mPageNumber);
+        pres->setBox(mBox->id(), rect, mPageNumber);
     }
 };
 
@@ -131,7 +131,6 @@ public:
     QSize sizeHint() const override;
     void createPDF();
     void updateFrames();
-    std::shared_ptr<Box> activeBox();
     void layoutBody();
     void layoutTitle();
     void layoutFull();
@@ -156,7 +155,7 @@ private:
     bool scale = false;
     QPoint lastPosition;
     std::optional<BoxTransformation> momentTrafo;
-    std::shared_ptr<Box> mBoxInFocus;
+    QString mActiveBoxId;
     void CursorApperance(QPoint mousePosition);
     TransformationType getTransformationType(QPoint mousePosition);
     int const diffToMouse = 25;
