@@ -27,6 +27,24 @@
         }
     },
     {
+        "id": "hallo -0",
+        "rect": {
+            "height": 584,
+            "width": 873,
+            "xPosition": 163,
+            "yPosition": 104
+        }
+    },
+    {
+        "id": "hallo-0",
+        "rect": {
+            "height": 100,
+            "width": 1500,
+            "xPosition": 50,
+            "yPosition": 50
+        }
+    },
+    {
         "id": "island-0",
         "rect": {
             "height": 900,
@@ -65,10 +83,10 @@
     {
         "id": "second page-2",
         "rect": {
-            "height": 650,
-            "width": 720,
-            "xPosition": 830,
-            "yPosition": 200
+            "height": 775,
+            "width": 783,
+            "xPosition": 767,
+            "yPosition": 47
         }
     },
     {
@@ -87,6 +105,24 @@
             "width": 1500,
             "xPosition": 50,
             "yPosition": 200
+        }
+    },
+    {
+        "id": "unkreativ-0",
+        "rect": {
+            "height": 100,
+            "width": 1500,
+            "xPosition": 50,
+            "yPosition": 50
+        }
+    },
+    {
+        "id": "unkreativ-2",
+        "rect": {
+            "height": 900,
+            "width": 1600,
+            "xPosition": 0,
+            "yPosition": 0
         }
     }
 ]

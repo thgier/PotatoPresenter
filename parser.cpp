@@ -22,6 +22,94 @@ Parser::Parser()
 {
 }
 
+void Parser::loadInput(QIODevice *input, ConfigBoxes *configuration){
+    mTokenizer.loadInput(input);
+    mConfigBoxes = configuration;
+}
+
+void Parser::loadInput(QByteArray input, ConfigBoxes *configuration){
+    mTokenizer.loadInput(input);
+    mConfigBoxes = configuration;
+}
+
+FrameList Parser::readInput(){
+    auto token = mTokenizer.next();
+    while(token.mKind != Token::Kind::EndOfFile) {
+        if (token.mKind == Token::Kind::Command) {
+            command(token.mText);
+        }
+        else{
+        }
+        token = mTokenizer.next();
+    }
+    if(mCurrentFrame != nullptr){
+        mFrames.push_back(mCurrentFrame);
+    }
+    return mFrames;
+}
+
+void Parser::command(QByteArray text){
+    if(text == "\\frame"){
+        newFrame();
+    }
+    else if(text == "\\text"){
+        newTextField();
+    }
+    else if(text == "\\image"){
+        newImage();
+    }
+}
+
+void Parser::newFrame(){
+    if(mCurrentFrame != nullptr){
+        mFrames.push_back(mCurrentFrame);
+        mBoxCounter = 0;
+    }
+    auto const token = mTokenizer.peekNext();
+    if(token.mKind != Token::Kind::Text || token.mText.isEmpty()) {
+        return;
+    }
+    mCurrentFrame = std::make_shared<Frame>(QString(mTokenizer.next().mText));
+}
+
+void Parser::newTextField(){
+    if(mCurrentFrame == nullptr){
+        return;
+    }
+    QString text = "";
+    auto const peekNextKind = mTokenizer.peekNext().mKind;
+    auto const peeknext =mTokenizer.peekNext();
+    if(peekNextKind == Token::Kind::Text || peekNextKind == Token::Kind::MultiLineText) {
+        text = QString(mTokenizer.next().mText);
+    }
+    auto const id = mCurrentFrame->id() + "-" + QString::number(mBoxCounter);
+    auto const textField = std::make_shared<TextField>(text, getRect(id), id);
+    mBoxCounter++;
+    mCurrentFrame->appendBox(textField);
+}
+
+void Parser::newImage() {
+    if(mCurrentFrame == nullptr){
+        return;
+    }
+    QString text = "";
+    if(mTokenizer.peekNext().mKind == Token::Kind::Text) {
+        text = QString(mTokenizer.next().mText);
+    }
+    auto const id = mCurrentFrame->id() + "-" + QString::number(mBoxCounter);
+    auto const textField = std::make_shared<Picture>(text, getRect(id), id);
+    mBoxCounter++;
+    mCurrentFrame->appendBox(textField);
+}
+
+QRect const Parser::getRect(QString id) {
+    auto rect = mConfigBoxes->getRect(id);
+    if(rect.isEmpty()){
+        rect = QRect(50, 200, 1500, 650);
+    }
+    return rect;
+}
+
 
 std::optional<FrameList> Parser::readJson(QString text, ConfigBoxes* configuration)
 {

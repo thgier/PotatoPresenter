@@ -1,6 +1,7 @@
 #include "presentation.h"
 #include <QFileInfo>
 #include <QDir>
+#include <QBuffer>
 
 Presentation::Presentation() : QObject()
 {
@@ -14,12 +15,11 @@ FrameList Presentation::frames(){
     return mFrames;
 }
 
-void Presentation::updateFrames(QString doc){
-    auto frames = mParser.readJson(doc, &mConfig);
-    if(frames){
-        mFrames = frames.value();
-        emit presentationChanged();
-    }
+void Presentation::updateFrames(QByteArray doc){
+    mParser = Parser();
+    mParser.loadInput(doc, &mConfig);
+    mFrames = mParser.readInput();
+    emit presentationChanged();
 }
 
 bool Presentation::empty(){
@@ -49,4 +49,8 @@ std::shared_ptr<Box> Presentation::getBox(QString id) {
         }
     }
     return {};
+}
+
+Parser* const Presentation::parser(){
+    return &mParser;
 }

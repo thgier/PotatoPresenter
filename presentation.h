@@ -15,12 +15,13 @@ public:
     Presentation();
     void loadInput();
     FrameList frames();
-    void updateFrames(QString doc);
+    void updateFrames(QByteArray doc);
     bool empty();
     int size();
     std::shared_ptr<Frame> at(int pageNumber);
     void setBox(QString boxId, QRect rect, int pageNumber);
     std::shared_ptr<Box> getBox(QString id);
+    Parser* const parser();
 signals:
     void presentationChanged();
     void frameChanged(int pageNumber);

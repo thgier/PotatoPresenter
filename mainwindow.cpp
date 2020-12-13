@@ -102,6 +102,5 @@ MainWindow::~MainWindow()
 void MainWindow::fileChanged(KTextEditor::Document *doc) {
     mPresentation.updateFrames(doc->text().toUtf8());
     ui->pageNumber->setMaximum(mPresentation.frames().size()-1);
-//    mFrameModel->setPresentation(&mPresentation);
     mPaintDocument->updateFrames();
 }

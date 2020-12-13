@@ -15,6 +15,9 @@ find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(KF5TextEditor)
 find_package(Qt5PrintSupport REQUIRED)
 find_package(Qt5Svg REQUIRED)
+find_package(Qt5Test REQUIRED)
+
+enable_testing(true)
 
 add_executable(praes
     main.cpp
@@ -38,8 +41,15 @@ add_executable(praes
     framelistmodel.cpp
     framelistdelegate.cpp
     presentation.cpp
+    tokenizer.cpp
 )
+
+add_executable(testtokenizer
+    testtokenizer.cpp
+    tokenizer.cpp)
+add_test(NAME testtokenizer COMMAND testtokenizer)
 
 target_link_libraries(praes PRIVATE Qt5::Widgets KF5::TextEditor)
 target_link_libraries(praes PRIVATE Qt5::PrintSupport)
 target_link_libraries(praes PRIVATE Qt5::Svg)
+target_link_libraries(testtokenizer PRIVATE Qt5::Test)
