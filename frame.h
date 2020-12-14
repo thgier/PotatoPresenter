@@ -5,8 +5,6 @@
 #include <QVariant>
 #include "box.h"
 
-typedef std::basic_string<char> string;
-
 class Frame
 {
 public:
@@ -20,9 +18,6 @@ public:
     QString id();
 
 private:
-    string title;
-    int pageNumber;
-    string text;
     std::vector<std::shared_ptr<Box>> mBoxes;
     QString mId;
 };

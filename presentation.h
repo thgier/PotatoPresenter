@@ -21,7 +21,6 @@ public:
     std::shared_ptr<Frame> at(int pageNumber);
     void setBox(QString boxId, QRect rect, int pageNumber);
     std::shared_ptr<Box> getBox(QString id);
-    Parser* const parser();
 signals:
     void presentationChanged();
     void frameChanged(int pageNumber);

@@ -12,13 +12,8 @@
 #include "picture.h"
 #include "textfield.h"
 
-enum nineToSechsteen: int {
-    titlet = 1,
-
-};
-
-
 Parser::Parser()
+    : mLayout(aspectRatio::sixteenToNine)
 {
 }
 
@@ -42,9 +37,6 @@ FrameList Parser::readInput(){
         }
         token = mTokenizer.next();
     }
-    if(mCurrentFrame != nullptr){
-        mFrames.push_back(mCurrentFrame);
-    }
     return mFrames;
 }
 
@@ -61,19 +53,16 @@ void Parser::command(QByteArray text){
 }
 
 void Parser::newFrame(){
-    if(mCurrentFrame != nullptr){
-        mFrames.push_back(mCurrentFrame);
-        mBoxCounter = 0;
-    }
+    mBoxCounter = 0;
     auto const token = mTokenizer.peekNext();
     if(token.mKind != Token::Kind::Text || token.mText.isEmpty()) {
         return;
     }
-    mCurrentFrame = std::make_shared<Frame>(QString(mTokenizer.next().mText));
+    mFrames.push_back(std::make_shared<Frame>(QString(mTokenizer.next().mText)));
 }
 
 void Parser::newTextField(){
-    if(mCurrentFrame == nullptr){
+    if(mFrames.empty()){
         return;
     }
     QString text = "";
@@ -82,30 +71,45 @@ void Parser::newTextField(){
     if(peekNextKind == Token::Kind::Text || peekNextKind == Token::Kind::MultiLineText) {
         text = QString(mTokenizer.next().mText);
     }
-    auto const id = mCurrentFrame->id() + "-" + QString::number(mBoxCounter);
+    auto const id = mFrames.back()->id() + "-" + QString::number(mBoxCounter);
     auto const textField = std::make_shared<TextField>(text, getRect(id), id);
     mBoxCounter++;
-    mCurrentFrame->appendBox(textField);
+    mFrames.back()->appendBox(textField);
 }
 
 void Parser::newImage() {
-    if(mCurrentFrame == nullptr){
+    if(mFrames.empty()){
         return;
     }
     QString text = "";
     if(mTokenizer.peekNext().mKind == Token::Kind::Text) {
         text = QString(mTokenizer.next().mText);
     }
-    auto const id = mCurrentFrame->id() + "-" + QString::number(mBoxCounter);
+    auto const id = mFrames.back()->id() + "-" + QString::number(mBoxCounter);
     auto const textField = std::make_shared<Picture>(text, getRect(id), id);
     mBoxCounter++;
-    mCurrentFrame->appendBox(textField);
+    mFrames.back()->appendBox(textField);
 }
 
 QRect const Parser::getRect(QString id) {
     auto rect = mConfigBoxes->getRect(id);
     if(rect.isEmpty()){
-        rect = QRect(50, 200, 1500, 650);
+        rect = mLayout.mBodyPos;
+        switch (mBoxCounter) {
+        case 0:
+            rect = mLayout.mTitlePos;
+            break;
+        case 1:
+            rect = mLayout.mBodyPos;
+            break;
+        case 2:
+            auto const idPrevious = mFrames.back()->id() + "-1";
+            if(mConfigBoxes->getRect(idPrevious).isEmpty()) {
+                mFrames.back()->getBoxes()[1]->setRect(mLayout.mLeftPos);
+                rect = mLayout.mRightPos;
+            }
+            break;
+        }
     }
     return rect;
 }

@@ -50,7 +50,3 @@ std::shared_ptr<Box> Presentation::getBox(QString id) {
     }
     return {};
 }
-
-Parser* const Presentation::parser(){
-    return &mParser;
-}

@@ -32,11 +32,11 @@ void TestTokenizer::tokenTest_data(){
     QTest::addColumn<QByteArray>("inputText");
     QTest::addColumn<QVector<Token>>("tokens");
     QTest::newRow("first test") << QByteArray("\\frame first page") << QVector<Token>{Token{Token::Kind::Command, "\\frame"}, Token{Token::Kind::Text, "first page"}};
-    QTest::newRow("split command") << QByteArray("\\text hallo \\image du")
+    QTest::newRow("split command") << QByteArray("\\text hallo \n\\image du")
                                    << QVector<Token>{Token{Token::Kind::Command, "\\text"}, Token{Token::Kind::Text, "hallo "}
                                       ,Token{Token::Kind::Command, "\\image"}, Token{Token::Kind::Text, "du"}};
     QTest::newRow("two commands") << QByteArray("\\text \\image")
-                                   << QVector<Token>{Token{Token::Kind::Command, "\\text"}, Token{Token::Kind::Command, "\\image"}};
+                                   << QVector<Token>{Token{Token::Kind::Command, "\\text"}, Token{Token::Kind::Text, "\\image"}};
     QTest::newRow("one word") << QByteArray("hallo")
                                   << QVector<Token>{Token{Token::Kind::Text, "hallo"}};
     QTest::newRow("empty text") << QByteArray("\\text ")
@@ -50,9 +50,12 @@ void TestTokenizer::tokenTest_data(){
                                << QVector<Token>{Token{Token::Kind::Command, "\\text"}, Token{Token::Kind::Text, "hallo"},
                                 Token{Token::Kind::Command, "\\frame"}, Token{Token::Kind::Text, "du"}};
     QTest::newRow("next line after command") << QByteArray("\\text\n\\frame du")
-                               << QVector<Token>{Token{Token::Kind::Command, "\\text"},
+                               << QVector<Token>{Token{Token::Kind::Command, "\\text"}, Token{Token::Kind::Text, ""},
                                   Token{Token::Kind::Command, "\\frame"}, Token{Token::Kind::Text, "du"}};
     QTest::newRow("next line with text after command") << QByteArray("\\text\ndu")
-                                             << QVector<Token>{Token{Token::Kind::Command, "\\text"}, Token{Token::Kind::Text, "du"}};
+                                             << QVector<Token>{Token{Token::Kind::Command, "\\text"}, Token{Token::Kind::MultiLineText, "\ndu"}};
+    QTest::newRow("space") << QByteArray("\\frame first \n\\text title")
+                                             << QVector<Token>{Token{Token::Kind::Command, "\\frame"}, Token{Token::Kind::Text, "first "},
+                                                Token{Token::Kind::Command, "\\text"}, Token{Token::Kind::Text, "title"}};
 }
 
