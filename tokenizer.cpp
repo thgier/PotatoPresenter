@@ -13,12 +13,14 @@ void Tokenizer::loadInput(QIODevice *input){
     mText = input->readAll();
     mPos = 0;
     mIsAtStartOfLine = true;
+    mLine = 1;
 }
 
 void Tokenizer::loadInput(QByteArray input){
     mText = input;
     mPos = 0;
     mIsAtStartOfLine = true;
+    mLine = 1;
 }
 
 QByteArray Tokenizer::readCmdText(){
@@ -31,24 +33,27 @@ QByteArray Tokenizer::readCmdText(){
     if(mText[mPos] == ' '){
         mPos++;
     }
-    return command;
+    return removeSpacesNewLines(command);
 }
 
 Token Tokenizer::readText(){
     Token ret;
+    ret.mLine = mLine;
     QByteArray text = "";
     bool multiline = false;
-    while((!(mText[mPos] == '\n' && mText[mPos+1] == '\\')
-          && !(mText[mPos] == '\n' && mText[mPos+1] == '\n') )
-          && mPos < mText.size())
+    while(!(mText[mPos] == '\n' && mText[mPos+1] == '\\')
+            && !(mText[mPos] == '\n' && mText[mPos+1] == '\n')
+            && !(mText[mPos] == '\n' && mPos+1 >= mText.size())
+            && mPos < mText.size())
     {
         if(mText[mPos] == '\n' ) {
             multiline = true;
+            mLine++;
         }
         text += mText[mPos];
         mPos++;
     }
-    ret.mText = text;
+    ret.mText = removeSpacesNewLines(text);
     if(multiline){
         ret.mKind = Token::Kind::MultiLineText;
     } else{
@@ -57,12 +62,14 @@ Token Tokenizer::readText(){
     if(mText[mPos] == '\n'){
         mPos++;
         mIsAtStartOfLine = true;
+        mLine++;
     }
     else{
         mIsAtStartOfLine = false;
     }
     if(mText[mPos] == '\n'){
         mPos++;
+        mLine++;
     }
     return ret;
 }
@@ -75,6 +82,7 @@ Token Tokenizer::next(){
         if (ch == '\\' && mIsAtStartOfLine){
             ret.mKind = Token::Kind::Command;
             ret.mText = readCmdText();
+            ret.mLine = mLine;
         }
         else {
             ret = readText();
@@ -83,10 +91,31 @@ Token Tokenizer::next(){
     else{
         ret.mKind = Token::Kind::EndOfFile;
     }
+    if(ret.mText.isEmpty() && ret.mKind != Token::Kind::EndOfFile){
+        ret = next();
+    }
     return ret;
 }
 
-Token const Tokenizer::peekNext() {
+QByteArray Tokenizer::removeSpacesNewLines(QByteArray text) const{
+    if(text.isEmpty()) {
+        return {};
+    }
+    while(text.front() == ' ' || text.front() == '\n'){
+        text = text.mid(1);
+    }
+    if(text.isEmpty()) {
+        return {};
+    }
+    while(text.back() == ' ' || text.back() == '\n'){
+        text.chop(1);
+    }
+    return text;
+}
+
+Token Tokenizer::peekNext() const {
     Tokenizer copyTokenizer(*this);
     return copyTokenizer.next();
 }
+
+

@@ -31,24 +31,31 @@ FrameList Parser::readInput(){
     auto token = mTokenizer.next();
     while(token.mKind != Token::Kind::EndOfFile) {
         if (token.mKind == Token::Kind::Command) {
-            command(token.mText);
+            command(token);
         }
         else{
+            throw ParserError{"missing command", token.mLine};
         }
         token = mTokenizer.next();
     }
     return mFrames;
 }
 
-void Parser::command(QByteArray text){
-    if(text == "\\frame"){
+void Parser::command(Token token){
+    if(token.mText == "\\frame"){
         newFrame();
     }
-    else if(text == "\\text"){
-        newTextField();
+    else if(token.mText == "\\text"){
+        newTextField(token.mLine);
     }
-    else if(text == "\\image"){
-        newImage();
+    else if(token.mText == "\\image"){
+        newImage(token.mLine);
+    }
+    else if(token.mText == "\\title"){
+        newTitle(token.mLine);
+    }
+    else{
+        throw ParserError{"command does not exist", token.mLine};
     }
 }
 
@@ -56,13 +63,21 @@ void Parser::newFrame(){
     mBoxCounter = 0;
     auto const token = mTokenizer.peekNext();
     if(token.mKind != Token::Kind::Text || token.mText.isEmpty()) {
+        throw ParserError{"missing frame id", token.mLine};
         return;
     }
-    mFrames.push_back(std::make_shared<Frame>(QString(mTokenizer.next().mText)));
+    auto const id = QString(mTokenizer.next().mText);
+    for(auto const& frame: mFrames) {
+        if(frame->id() == id){
+            throw ParserError{"frame id already exist", token.mLine};
+        }
+    }
+    mFrames.push_back(std::make_shared<Frame>(id));
 }
 
-void Parser::newTextField(){
+void Parser::newTextField(int line){
     if(mFrames.empty()){
+        throw ParserError{"missing frame: type \\frame id", line};
         return;
     }
     QString text = "";
@@ -77,8 +92,9 @@ void Parser::newTextField(){
     mFrames.back()->appendBox(textField);
 }
 
-void Parser::newImage() {
+void Parser::newImage(int line) {
     if(mFrames.empty()){
+        throw ParserError{"missing frame: type \frame id", line};
         return;
     }
     QString text = "";
@@ -87,6 +103,27 @@ void Parser::newImage() {
     }
     auto const id = mFrames.back()->id() + "-" + QString::number(mBoxCounter);
     auto const textField = std::make_shared<Picture>(text, getRect(id), id);
+    mBoxCounter++;
+    mFrames.back()->appendBox(textField);
+}
+
+void Parser::newTitle(int line){
+    if(mFrames.empty()){
+        throw ParserError{"missing frame: type \frame id", line};
+        return;
+    }
+    auto const frameId = mFrames.back()->id();
+    QString text = frameId;
+    auto const nextToken = mTokenizer.peekNext();
+    if(nextToken.mKind == Token::Kind::Text && !nextToken.mText.isEmpty()) {
+        text = QString(mTokenizer.next().mText);
+    }
+    auto const id = frameId + "-" + QString::number(mBoxCounter);
+    auto rect = mConfigBoxes->getRect(id);
+    if(rect.isEmpty()){
+        rect = mLayout.mTitlePos;
+    }
+    auto const textField = std::make_shared<TextField>(text, rect, id);
     mBoxCounter++;
     mFrames.back()->appendBox(textField);
 }
@@ -112,59 +149,4 @@ QRect const Parser::getRect(QString id) {
         }
     }
     return rect;
-}
-
-
-std::optional<FrameList> Parser::readJson(QString text, ConfigBoxes* configuration)
-{
-    QJsonParseError error;
-    auto doc = QJsonDocument::fromJson(text.toUtf8(), &error);
-    if(error.error != QJsonParseError::NoError){
-        return {};
-    }
-    FrameList frames;
-
-    QJsonArray root = doc.array();
-    qWarning() << "Size" << root.size();
-    for (int i = 0; i < root.size(); i++) {
-        QJsonObject frameStart = root.at(i).toObject();
-        auto const frameId = frameStart.value("frame").toString();
-        std::vector<std::shared_ptr<Box>> boxes;
-        QJsonArray frame = frameStart.value("content").toArray();
-
-        for (int j = 0; j < frame.size(); j++){
-            auto const box = frame.at(j).toObject();
-            auto const type = box.value("type").toString();
-//            auto idNumber = box.value("id").toInt();
-            auto id = frameId;
-            id += "-" + QString::number(j);
-            if (type == "text"){
-                auto const text = box.value("text").toString();
-                QRect rect;
-                if(configuration->getRect(id).isEmpty()){
-                    rect = QRect(50, 200, 1500, 650);
-                } else {
-                    rect = configuration->getRect(id);
-                }
-                auto const newText = std::make_shared<TextField>(text, rect, id);
-                newText->setMovable(box.value("movable").toBool(true));
-                boxes.push_back(newText);
-            }
-            else if (type == "image"){
-                auto const Imagefile = box.value("file").toString();
-                QRect rect;
-                if(configuration->getRect(id).isEmpty()){
-                    rect = QRect(50, 200, 1500, 650);
-                } else {
-                    rect = configuration->getRect(id);
-                }
-                auto const newImage = std::make_shared<Picture>(Imagefile, rect, id);
-                boxes.push_back(newImage);
-            }
-        }
-        auto newFrame = std::make_shared<Frame>(frameId);
-        newFrame->setBoxes(boxes);
-        frames.push_back(newFrame);
-    }
-    return frames;
 }

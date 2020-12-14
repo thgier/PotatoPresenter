@@ -5,6 +5,7 @@
 #include <KTextEditor/Editor>
 #include <KTextEditor/View>
 #include <KParts/ReadOnlyPart>
+#include <KTextEditor/MarkInterface>
 #include <QProcess>
 #include <QDebug>
 #include <QObject>
@@ -28,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
     if (!doc->openUrl(url)){
         qWarning() << "file not found";
     }
+    doc->setHighlightingMode("LaTeX");
     KTextEditor::View *view = doc->createView(this);
     ui->editor->addWidget(view);
 
@@ -100,7 +102,16 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::fileChanged(KTextEditor::Document *doc) {
-    mPresentation.updateFrames(doc->text().toUtf8());
+    auto iface = qobject_cast<KTextEditor::MarkInterface*>(doc);
+    iface->clearMarks();
+    try {
+        mPresentation.updateFrames(doc->text().toUtf8());
+    }  catch (ParserError& error) {
+        ui->error->setText("Line " + QString::number(error.line) + ": " + error.message);
+        iface->addMark(error.line-1, KTextEditor::MarkInterface::MarkTypes::Error);
+        return;
+    }
+    ui->error->setText("");
     ui->pageNumber->setMaximum(mPresentation.frames().size()-1);
     mPaintDocument->updateFrames();
 }

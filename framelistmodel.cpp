@@ -33,7 +33,8 @@ void FrameListModel::setPresentation(Presentation * presentation){
             this, [this](int pageNumber){emit dataChanged(index(pageNumber), index(pageNumber));});
     connect(mPresentation, &Presentation::presentationChanged,
             this, [this](){
-                emit dataChanged(index(0), index(rowCount()));
+            beginResetModel();
+            endResetModel();
             });
 
 }

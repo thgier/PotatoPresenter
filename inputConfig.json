@@ -1,11 +1,29 @@
 [
     {
+        "id": "My Presentation-0",
+        "rect": {
+            "height": 100,
+            "width": 1500,
+            "xPosition": 50,
+            "yPosition": 350
+        }
+    },
+    {
+        "id": "My Presentation-1",
+        "rect": {
+            "height": 100,
+            "width": 1500,
+            "xPosition": 50,
+            "yPosition": 500
+        }
+    },
+    {
         "id": "fdfd-0",
         "rect": {
             "height": 100,
             "width": 1500,
-            "xPosition": 47,
-            "yPosition": 37
+            "xPosition": 242,
+            "yPosition": 300
         }
     },
     {
@@ -27,12 +45,30 @@
         }
     },
     {
+        "id": "first frame-2",
+        "rect": {
+            "height": 650,
+            "width": 720,
+            "xPosition": 830,
+            "yPosition": 200
+        }
+    },
+    {
+        "id": "first frame-3",
+        "rect": {
+            "height": 368,
+            "width": 1154,
+            "xPosition": 17,
+            "yPosition": 364
+        }
+    },
+    {
         "id": "hallo-0",
         "rect": {
             "height": 650,
             "width": 1500,
-            "xPosition": 315,
-            "yPosition": 193
+            "xPosition": 196,
+            "yPosition": 302
         }
     },
     {
@@ -40,8 +76,8 @@
         "rect": {
             "height": 650,
             "width": 720,
-            "xPosition": 82,
-            "yPosition": 78
+            "xPosition": 572,
+            "yPosition": 23
         }
     },
     {
@@ -51,6 +87,24 @@
             "width": 720,
             "xPosition": 750,
             "yPosition": 132
+        }
+    },
+    {
+        "id": "hallo-3",
+        "rect": {
+            "height": 650,
+            "width": 1500,
+            "xPosition": 149,
+            "yPosition": 613
+        }
+    },
+    {
+        "id": "hjhk-0",
+        "rect": {
+            "height": 650,
+            "width": 1500,
+            "xPosition": 50,
+            "yPosition": 200
         }
     },
     {

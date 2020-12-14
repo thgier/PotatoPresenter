@@ -9,6 +9,11 @@
 #include "tokenizer.h"
 #include "layout.h"
 
+struct ParserError{
+    QString message;
+    int line;
+};
+
 using FrameList = std::vector<std::shared_ptr<Frame>>;
 class Parser
 {
@@ -16,12 +21,12 @@ public:
     Parser();
     void loadInput(QIODevice *input, ConfigBoxes* configuration);
     void loadInput(QByteArray input, ConfigBoxes* configuration);
-    std::optional<FrameList> readJson(QString text, ConfigBoxes* configuration);
     FrameList readInput();
-    void command(QByteArray text);
+    void command(Token token);
     void newFrame();
-    void newTextField();
-    void newImage();
+    void newTextField(int line);
+    void newImage(int line);
+    void newTitle(int line);
     QRect const getRect(QString id);
 
 private:

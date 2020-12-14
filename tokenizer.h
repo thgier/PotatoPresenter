@@ -13,6 +13,7 @@ struct Token {
     };
     Kind mKind;
     QByteArray mText;   
+    int mLine;
 };
 
 class Tokenizer
@@ -24,11 +25,13 @@ public:
     Token next();
     QByteArray readCmdText();
     Token readText();
-    Token const peekNext();
+    Token peekNext() const;
+    QByteArray removeSpacesNewLines(QByteArray text) const;
 private:
     QByteArray mText;
     int mPos = 0;
     bool mIsAtStartOfLine = true;
+    int mLine = 1;
 };
 
 #endif // TOKENIZER_H
