@@ -13,14 +13,14 @@ void Tokenizer::loadInput(QIODevice *input){
     mText = input->readAll();
     mPos = 0;
     mIsAtStartOfLine = true;
-    mLine = 1;
+    mLine = 0;
 }
 
 void Tokenizer::loadInput(QByteArray input){
     mText = input;
     mPos = 0;
     mIsAtStartOfLine = true;
-    mLine = 1;
+    mLine = 0;
 }
 
 QByteArray Tokenizer::readCmdText(){

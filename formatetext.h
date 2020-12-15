@@ -6,18 +6,7 @@
 #include <vector>
 #include <QRegularExpression>
 #include <QRegularExpressionMatchIterator>
-
-//class EquationCacheManager {
-
-//};
-
-//EquationCacheManager& cacheManager()
-//{
-//    static EquationCacheManager instance;
-//    return instance;
-//}
-
-//auto image = cacheManager().getCachedImage(...);
+#include <QSvgRenderer>
 
 class FormateText
 {
@@ -28,8 +17,7 @@ public:
     void drawNewLine();
     void drawItem(QPainter& painter);
     void drawTeX(QString mathExpression, QPainter& painter);
-//signals:
-//    void mathFormular(QString mathExpression);
+    void drawSvg(std::shared_ptr<QSvgRenderer> image, QPainter& painter);
 private:
     QFontMetrics mMetrics;
     QRect mRect;

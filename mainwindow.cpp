@@ -86,13 +86,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     QObject::connect(&cacheManager(), &EquationCacheManager::conversionFinished,
             mPaintDocument, QOverload<>::of(&PaintDocument::update));
-    ui->error->setReadOnly(true);
-    QObject::connect(&cacheManager(), &EquationCacheManager::errorWhileLatexConversion,
-                     ui->error, &QLineEdit::setText);
-    QObject::connect(&cacheManager(), &EquationCacheManager::conversionFinished,
-                     this, [this](){ui->error->setText("");});
     connect(&cacheManagerImages(), &ImageCacheManager::imageChanged,
             this, [this, doc](){MainWindow::fileChanged(doc);});
+    ui->error->setWordWrap(true);
 
 }
 
@@ -106,12 +102,12 @@ void MainWindow::fileChanged(KTextEditor::Document *doc) {
     iface->clearMarks();
     try {
         mPresentation.updateFrames(doc->text().toUtf8());
+        ui->error->setText("Conversion succeeded \u2714");
     }  catch (ParserError& error) {
-        ui->error->setText("Line " + QString::number(error.line) + ": " + error.message);
-        iface->addMark(error.line-1, KTextEditor::MarkInterface::MarkTypes::Error);
+        ui->error->setText("Line " + QString::number(error.line + 1) + ": " + error.message + " \u26A0");
+        iface->addMark(error.line, KTextEditor::MarkInterface::MarkTypes::Error);
         return;
     }
-    ui->error->setText("");
     ui->pageNumber->setMaximum(mPresentation.frames().size()-1);
     mPaintDocument->updateFrames();
 }

@@ -3,8 +3,8 @@
         "id": "My Presentation-0",
         "rect": {
             "height": 100,
-            "width": 1500,
-            "xPosition": 50,
+            "width": 1400,
+            "xPosition": 100,
             "yPosition": 350
         }
     },
@@ -12,9 +12,27 @@
         "id": "My Presentation-1",
         "rect": {
             "height": 100,
-            "width": 1500,
-            "xPosition": 50,
+            "width": 1400,
+            "xPosition": 100,
             "yPosition": 500
+        }
+    },
+    {
+        "id": "Nice Picture-0",
+        "rect": {
+            "height": 100,
+            "width": 1500,
+            "xPosition": 84,
+            "yPosition": 30
+        }
+    },
+    {
+        "id": "Nice Picture-1",
+        "rect": {
+            "height": 683,
+            "width": 1256,
+            "xPosition": 194,
+            "yPosition": 147
         }
     },
     {

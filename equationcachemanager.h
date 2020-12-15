@@ -9,6 +9,7 @@ enum SvgStatus{
     success,
     error,
     pending,
+    notStarted,
 };
 
 struct SvgEntry{
@@ -22,13 +23,12 @@ class EquationCacheManager : public QObject
 public:
     EquationCacheManager();    
     void startConversionProcess(QString mathExpression, QByteArray hash);
-    std::shared_ptr<QSvgRenderer> getCachedImage(QByteArray hash) const;
+    SvgEntry getCachedImage(QByteArray hash) const;
     void startSvgGeneration(QByteArray hash, QProcess* latex);
     void writeSvgToMap(QByteArray hash);
     void errorOccured(QByteArray hash, QProcess::ProcessError error);
 signals:
     void conversionFinished();
-    void errorWhileLatexConversion(QString error);
 private:
     std::map<QByteArray, SvgEntry> mCachedImages;
     QString mFolder;

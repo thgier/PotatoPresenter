@@ -23,7 +23,7 @@ public:
     void loadInput(QByteArray input, ConfigBoxes* configuration);
     FrameList readInput();
     void command(Token token);
-    void newFrame();
+    void newFrame(int line);
     void newTextField(int line);
     void newImage(int line);
     void newTitle(int line);

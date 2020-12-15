@@ -16,26 +16,13 @@ EquationCacheManager& cacheManager()
 }
 
 void EquationCacheManager::startConversionProcess(QString mathExpression, QByteArray hash) {
-    if(mCachedImages.find(hash) != mCachedImages.end()){
-        switch (mCachedImages[hash].status) {
-        case SvgStatus::success:
-            emit conversionFinished();
-            break;
-        case SvgStatus::error:
-            emit errorWhileLatexConversion(QString("error"));
-            break;
-        case SvgStatus::pending:
-            break;
-        }
-        return;
-    }
-
     if(mProcessCounter > 5){
+        mCachedImages[hash] = SvgEntry{SvgStatus::notStarted, nullptr};
         return;
     }
+    mCachedImages[hash] = SvgEntry{SvgStatus::pending, nullptr};
     qWarning() << "process counter" << mProcessCounter;
     mProcessCounter++;
-    mCachedImages[hash] = SvgEntry{SvgStatus::pending, nullptr};
 
     auto standardFile = QFile("/home/theresa/Documents/praes/generaterLatex.tex");
     QDir(mFolder).mkpath(hash);
@@ -58,13 +45,13 @@ void EquationCacheManager::startConversionProcess(QString mathExpression, QByteA
 }
 
 
-std::shared_ptr<QSvgRenderer> EquationCacheManager::getCachedImage(QByteArray hash) const{
+SvgEntry EquationCacheManager::getCachedImage(QByteArray hash) const{
     const auto it = mCachedImages.find(hash);
-    if(it == mCachedImages.end() || it->second.status != SvgStatus::success){
-        return nullptr;
+    if(it == mCachedImages.end()){
+        return SvgEntry{SvgStatus::notStarted, nullptr};
     }
     else{
-        return it->second.svg;
+        return it->second;
     }
 }
 
@@ -74,7 +61,7 @@ void EquationCacheManager::startSvgGeneration(QByteArray hash, QProcess* latex){
     if(latex->exitCode() != 0){
         mCachedImages[hash].status = SvgStatus::error;
         mProcessCounter--;
-        emit errorWhileLatexConversion(QString("error"));
+        emit conversionFinished();
         removeFiles(hash);
         return;
     }

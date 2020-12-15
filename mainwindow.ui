@@ -29,7 +29,11 @@
          <number>1</number>
         </property>
         <item>
-         <widget class="QLineEdit" name="error"/>
+         <widget class="QLabel" name="error">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QSpinBox" name="pageNumber"/>
@@ -227,7 +231,8 @@
   </action>
   <action name="actionPresentationTitle">
    <property name="icon">
-    <iconset theme="menu_new_sep"/>
+    <iconset theme="menu_new_sep">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Presentation Title</string>
@@ -235,7 +240,8 @@
   </action>
   <action name="actionSubtitle">
    <property name="icon">
-    <iconset theme="newline"/>
+    <iconset theme="newline">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Subtitle</string>

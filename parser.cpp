@@ -43,7 +43,7 @@ FrameList Parser::readInput(){
 
 void Parser::command(Token token){
     if(token.mText == "\\frame"){
-        newFrame();
+        newFrame(token.mLine);
     }
     else if(token.mText == "\\text"){
         newTextField(token.mLine);
@@ -59,17 +59,17 @@ void Parser::command(Token token){
     }
 }
 
-void Parser::newFrame(){
+void Parser::newFrame(int line){
     mBoxCounter = 0;
     auto const token = mTokenizer.peekNext();
     if(token.mKind != Token::Kind::Text || token.mText.isEmpty()) {
-        throw ParserError{"missing frame id", token.mLine};
+        throw ParserError{"missing frame id", line};
         return;
     }
     auto const id = QString(mTokenizer.next().mText);
     for(auto const& frame: mFrames) {
         if(frame->id() == id){
-            throw ParserError{"frame id already exist", token.mLine};
+            throw ParserError{"frame id already exist", line};
         }
     }
     mFrames.push_back(std::make_shared<Frame>(id));

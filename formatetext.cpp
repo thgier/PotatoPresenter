@@ -2,7 +2,6 @@
 #include <QPainterPath>
 #include <QDebug>
 #include <QProcess>
-#include <QSvgRenderer>
 #include <equationcachemanager.h>
 #include <QCryptographicHash>
 
@@ -71,12 +70,32 @@ void FormateText::drawItem(QPainter& painter) {
 
 void FormateText::drawTeX(QString mathExpression, QPainter &painter){
     auto const hash = QCryptographicHash::hash(mathExpression.toUtf8(), QCryptographicHash::Sha1).toHex().left(8);
-    auto const image = cacheManager().getCachedImage(hash);
-    if(!image){
+    auto const equation = cacheManager().getCachedImage(hash);
+    switch(equation.status){
+    case SvgStatus::error:
+        painter.save();
+        painter.setPen(Qt::red);
+        drawText("LaTeX error", painter);
+        painter.restore();
+        break;
+    case SvgStatus::notStarted:
         cacheManager().startConversionProcess(mathExpression, hash);
+        break;
+    case SvgStatus::pending:
+        break;
+    case SvgStatus::success:
+        drawSvg(equation.svg, painter);
+        break;
+    }
+}
+
+void FormateText::drawSvg(std::shared_ptr<QSvgRenderer> image, QPainter& painter){
+    if(!image){
         return;
     }
-    if(!image->isValid()){return;}
+    if(!image->isValid()){
+        return;
+    }
     if(image->defaultSize().width() == 0){
         return;
     }

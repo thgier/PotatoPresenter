@@ -31,7 +31,7 @@ private:
     QByteArray mText;
     int mPos = 0;
     bool mIsAtStartOfLine = true;
-    int mLine = 1;
+    int mLine = 0;
 };
 
 #endif // TOKENIZER_H
