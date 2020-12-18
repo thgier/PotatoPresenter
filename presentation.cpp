@@ -34,7 +34,7 @@ std::shared_ptr<Frame> Presentation::at(int pageNumber){
     return mFrames[pageNumber];
 }
 
-void Presentation::setBox(QString boxId, QRect rect, int pageNumber){
+void Presentation::setBox(QString boxId, BoxRect rect, int pageNumber){
     getBox(boxId)->setRect(rect);
     mConfig.addRect(rect, boxId);
     emit frameChanged(pageNumber);

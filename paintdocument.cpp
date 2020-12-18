@@ -1,4 +1,7 @@
 #include "paintdocument.h"
+#include <KTextEditor/Document>
+#include <QMouseEvent>
+
 
 #include<QPainter>
 #include "painter.h"
@@ -28,8 +31,10 @@ void PaintDocument::paintEvent(QPaintEvent*)
         auto paint = std::make_shared<Painter>(painter);
         paint->paintFrame(mPresentation->at(pageNumber));
     }
-    if(mPresentation->getBox(mActiveBoxId) != nullptr){
-        drawBoundingBox(mPresentation->getBox(mActiveBoxId)->Rect());
+    auto const box = mPresentation->getBox(mActiveBoxId);
+    if(box != nullptr){
+        box->drawBoundingBox(painter);
+        box->drawScaleMarker(painter, diffToMouse);
     }
     auto font = painter.font();
     font.setPixelSize(50);
@@ -81,8 +86,7 @@ void PaintDocument::resizeEvent(QResizeEvent*) {
 void PaintDocument::determineBoxInFocus(QPoint mousePos){
     mActiveBoxId = QString();
     for(auto box: mPresentation->at(pageNumber)->getBoxes()) {
-        auto const boxMargins = box->Rect().marginsAdded(QMargins(diffToMouse, diffToMouse, diffToMouse, diffToMouse));
-        if(boxMargins.contains(mousePos)) {
+        if(box->Rect().contains(mousePos)) {
             mActiveBoxId = box->id();
             break;
         }
@@ -96,8 +100,8 @@ void PaintDocument::mousePressEvent(QMouseEvent *event)
     }
     lastPosition = event->pos() * mScale;
     if(!mActiveBoxId.isEmpty()){
-        auto const boxMargins = mPresentation->getBox(mActiveBoxId)->Rect().marginsAdded(QMargins(diffToMouse, diffToMouse, diffToMouse, diffToMouse));
-        if(!boxMargins.contains(lastPosition)){
+        auto const lastAcitiveBox = mPresentation->getBox(mActiveBoxId)->Rect();
+        if(!lastAcitiveBox.contains(lastPosition)){
             determineBoxInFocus(lastPosition);
         }
     }
@@ -107,9 +111,8 @@ void PaintDocument::mousePressEvent(QMouseEvent *event)
     if(mActiveBoxId.isEmpty()) {
         return;
     }
-    auto const trafoType = getTransformationType(lastPosition);
-    qWarning() << "trafotype" << trafoType;
-    momentTrafo = BoxTransformation(mPresentation->getBox(mActiveBoxId), trafoType, pageNumber);
+    auto const posMouseBox = mPresentation->getBox(mActiveBoxId)->Rect().includePoint(lastPosition, diffToMouse);
+    momentTrafo = BoxTransformation(mPresentation->getBox(mActiveBoxId), mTranform, posMouseBox, pageNumber);
     CursorApperance(lastPosition);
 }
 
@@ -120,8 +123,7 @@ void PaintDocument::mouseDoubleClickEvent(QMouseEvent *event){
         return;
     }
     for(auto box: mPresentation->at(pageNumber)->getBoxes()) {
-        auto const boxMargins = box->Rect().marginsAdded(QMargins(diffToMouse, diffToMouse, diffToMouse, diffToMouse));
-        if(boxMargins.contains(mousePos) && mActiveBoxId != box->id()) {
+        if(box->Rect().contains(mousePos) && mActiveBoxId != box->id()) {
             mActiveBoxId = box->id();
             break;
         }
@@ -141,83 +143,79 @@ void PaintDocument::mouseMoveEvent(QMouseEvent *event)
 
 void PaintDocument::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::LeftButton) {
-//        TODO: maybe translate again
-        momentTrafo.reset();
-        update();
+    if (event->button() != Qt::LeftButton) {
+        return;
     }
+    momentTrafo.reset();
+    update();
 }
 
-TransformationType PaintDocument::getTransformationType(QPoint mousePosition){
-    if(mActiveBoxId.isEmpty()){
-        return {};
-    }
-    auto cursor = QCursor();
-    auto const rect = mPresentation->getBox(mActiveBoxId)->Rect();
-    TransformationType type = {};
-    if((rect.topLeft() - mousePosition).manhattanLength() < diffToMouse){
-        type = TransformationType::scaleTopLeft;
-        cursor.setShape(Qt::SizeFDiagCursor);
-    }
-    else if((rect.topRight() - mousePosition).manhattanLength() < diffToMouse){
-        type = TransformationType::scaleTopRight;
-        cursor.setShape(Qt::SizeBDiagCursor);
-    }
-    else if((rect.bottomLeft() - mousePosition).manhattanLength() < diffToMouse){
-        type = TransformationType::scaleBottomLeft;
-        cursor.setShape(Qt::SizeBDiagCursor);
-    }
-    else if((rect.bottomRight() - mousePosition).manhattanLength() < diffToMouse){
-        type = TransformationType::scaleBottomRight;
-        cursor.setShape(Qt::SizeFDiagCursor);
-    }
-    else if(abs(rect.top() - mousePosition.y()) < diffToMouse){
-        type = TransformationType::scaleTop;
-        cursor.setShape(Qt::SizeVerCursor);
-    }
-    else if(abs(rect.bottom() - mousePosition.y()) < diffToMouse){
-        type = TransformationType::scaleBottom;
-        cursor.setShape(Qt::SizeVerCursor);
-    }
-    else if(abs(rect.left() - mousePosition.x()) < diffToMouse){
-        type = TransformationType::scaleLeft;
-        cursor.setShape(Qt::SizeHorCursor);
-    }
-    else if(abs(rect.right() - mousePosition.x()) < diffToMouse){
-        type = TransformationType::scaleRight;
-        cursor.setShape(Qt::SizeHorCursor);
-    }
-    else if(rect.contains(mousePosition)){
-        type = TransformationType::translate;
-        cursor.setShape(Qt::ArrowCursor);
-    }
-    setCursor(cursor);
-    return type;
-}
 
 void PaintDocument::CursorApperance(QPoint mousePosition){
     auto cursor = QCursor();
     if(mActiveBoxId.isEmpty()){
+        cursor.setShape(Qt::ArrowCursor);
+        setCursor(cursor);
         return;
     }
+    cursor.setShape(Qt::ArrowCursor);
     auto const rect = mPresentation->getBox(mActiveBoxId)->Rect();
-    if((rect.topLeft() - mousePosition).manhattanLength() < diffToMouse || (rect.bottomRight() - mousePosition).manhattanLength() < diffToMouse){
-        cursor.setShape(Qt::SizeFDiagCursor);
-    }
-    else if((rect.topRight() - mousePosition).manhattanLength() < diffToMouse || (rect.bottomLeft() - mousePosition).manhattanLength() < diffToMouse) {
-        cursor.setShape(Qt::SizeBDiagCursor);
-    }
-    else if(abs(rect.top() - mousePosition.y()) < diffToMouse || abs(rect.bottom() - mousePosition.y()) < diffToMouse) {
-        cursor.setShape(Qt::SizeVerCursor);
-    }
-    else if(abs(rect.left() - mousePosition.x()) < diffToMouse || abs(rect.right() - mousePosition.x()) < diffToMouse) {
-        cursor.setShape(Qt::SizeHorCursor);
-    }
-    else if(rect.contains(mousePosition)){
-        cursor.setShape(Qt::SizeAllCursor);
-    }
-    else{
-        cursor.setShape(Qt::ArrowCursor);
+    auto const posMouseBox = rect.includePoint(mousePosition, diffToMouse);
+    switch(mTranform){
+    case(TransformationType::translate):
+        switch(posMouseBox){
+        case pointPosition::topBorder:
+            cursor.setShape(Qt::SizeVerCursor);
+            break;
+        case pointPosition::bottomBorder:
+            cursor.setShape(Qt::SizeVerCursor);
+            break;
+        case pointPosition::leftBorder:
+            cursor.setShape(Qt::SizeHorCursor);
+            break;
+        case pointPosition::rightBorder:
+            cursor.setShape(Qt::SizeHorCursor);
+            break;
+        case pointPosition::topLeftCorner:
+            cursor.setShape(Qt::SizeFDiagCursor);
+            break;
+        case pointPosition::bottomRightCorner:
+            cursor.setShape(Qt::SizeFDiagCursor);
+            break;
+        case pointPosition::topRightCorner:
+            cursor.setShape(Qt::SizeBDiagCursor);
+            break;
+        case pointPosition::bottomLeftCorner:
+            cursor.setShape(Qt::SizeBDiagCursor);
+            break;
+        case pointPosition::inBox:
+            cursor.setShape(Qt::SizeAllCursor);
+            break;
+        case pointPosition::notInBox:
+            cursor.setShape(Qt::ArrowCursor);
+        }
+        break;
+    case TransformationType::rotate:
+        switch (posMouseBox) {
+        case pointPosition::topLeftCorner:
+            cursor.setShape(Qt::CrossCursor);
+            break;
+        case pointPosition::bottomRightCorner:
+            cursor.setShape(Qt::CrossCursor);
+            break;
+        case pointPosition::topRightCorner:
+            cursor.setShape(Qt::CrossCursor);
+            break;
+        case pointPosition::bottomLeftCorner:
+            cursor.setShape(Qt::CrossCursor);
+            break;
+        case pointPosition::inBox:
+            cursor.setShape(Qt::SizeAllCursor);
+            break;
+        default:
+            cursor.setShape(Qt::ArrowCursor);
+            break;
+        }
     }
     setCursor(cursor);
 }
@@ -296,30 +294,7 @@ void PaintDocument::layoutSubtitle(){
     mPresentation->setBox(mActiveBoxId, mLayout.mSubtitlePos, pageNumber);
     update();
 }
-
-void PaintDocument::drawBoundingBox(QRect rect) {
-    painter.save();
-    auto pen = painter.pen();
-    auto const sizePen = 0.1;
-    pen.setWidth(sizePen);
-    painter.setPen(pen);
-    auto brush = painter.brush();
-    brush.setStyle(Qt::NoBrush);
-    painter.setBrush(brush);
-    painter.translate(QPoint(0, -sizePen));
-    painter.drawRect(rect);
-    drawScaleMarker(rect);
-    painter.restore();
-}
-
-void PaintDocument::drawScaleMarker(QRect rect){
-    painter.setBrush(Qt::black);
-    auto const w = diffToMouse;
-    painter.fillRect(QRect(rect.topLeft(), QSize(w, w)), Qt::black);
-    painter.fillRect(QRect(rect.topRight(), QSize(-w, w)), Qt::black);
-    painter.fillRect(QRect(rect.bottomLeft(), QSize(w, -w)), Qt::black);
-    painter.fillRect(QRect(rect.bottomRight(), QSize(-w, -w)), Qt::black);
-
-    painter.setBrush(Qt::NoBrush);
+void PaintDocument::setTransformationType(TransformationType type){
+    mTranform = type;
 }
 

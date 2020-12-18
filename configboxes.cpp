@@ -21,11 +21,12 @@ void ConfigBoxes::loadConfigurationFile(QString filename){
 
 void ConfigBoxes::saveJsonConfigurations(QJsonObject &json, const configurations config){
     QJsonObject jsonRect;
-    auto const rect = config.rect;
-    jsonRect["xPosition"] = rect.left();
-    jsonRect["yPosition"] = rect.top();
-    jsonRect["width"] = rect.width();
-    jsonRect["height"] = rect.height();
+    auto const boxrect = config.rect;
+    jsonRect["xPosition"] = boxrect.rect().left();
+    jsonRect["yPosition"] = boxrect.rect().top();
+    jsonRect["width"] = boxrect.rect().width();
+    jsonRect["height"] = boxrect.rect().height();
+    jsonRect["angle"] = boxrect.angle();
     json["rect"] = jsonRect;
 
 }
@@ -36,8 +37,9 @@ configurations ConfigBoxes::readJsonConfigurations(const QJsonObject &json){
     auto const y = rect["yPosition"].toInt();
     auto const width = rect["width"].toInt();
     auto const height = rect["height"].toInt();
+    auto const angle = rect["angle"].toDouble();
     configurations newConfig;
-    newConfig.rect = QRect(x, y, width, height);
+    newConfig.rect = BoxRect(QRect(x, y, width, height), angle);
     return newConfig;
 }
 
@@ -69,14 +71,14 @@ void ConfigBoxes::saveConfig()
     file.write(doc.toJson());
 }
 
-void ConfigBoxes::addRect(QRect rect, QString id) {
+void ConfigBoxes::addRect(BoxRect rect, QString id) {
     configurations newConfig;
     newConfig.rect = rect;
     mConfigMap[id] = newConfig;
     saveConfig();
 }
 
-QRect ConfigBoxes::getRect(QString id){
+BoxRect ConfigBoxes::getRect(QString id){
     if(auto it = mConfigMap.find(id); it != mConfigMap.end()){
         return it->second.rect;
     }

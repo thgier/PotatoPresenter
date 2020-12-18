@@ -8,7 +8,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
@@ -23,7 +23,7 @@ add_executable(praes
     main.cpp
     mainwindow.cpp
     mainwindow.ui
-    textfinder.qrc
+    files.qrc
     frame.cpp
     textfield.cpp
     box.cpp
@@ -42,14 +42,16 @@ add_executable(praes
     framelistdelegate.cpp
     presentation.cpp
     tokenizer.cpp
+    boxrect.cpp
+    boxtransformation.cpp
 )
 
-add_executable(testtokenizer
-    testtokenizer.cpp
-    tokenizer.cpp)
-add_test(NAME testtokenizer COMMAND testtokenizer)
+#add_executable(testtokenizer
+#    testtokenizer.cpp
+#    tokenizer.cpp)
+#add_test(NAME testtokenizer COMMAND testtokenizer)
 
 target_link_libraries(praes PRIVATE Qt5::Widgets KF5::TextEditor)
 target_link_libraries(praes PRIVATE Qt5::PrintSupport)
 target_link_libraries(praes PRIVATE Qt5::Svg)
-target_link_libraries(testtokenizer PRIVATE Qt5::Test)
+#target_link_libraries(testtokenizer PRIVATE Qt5::Test)

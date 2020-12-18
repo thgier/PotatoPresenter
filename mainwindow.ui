@@ -124,6 +124,8 @@
    <addaction name="actionPresentationTitle"/>
    <addaction name="actionSubtitle"/>
    <addaction name="actionCreatePDF"/>
+   <addaction name="actionTranslate"/>
+   <addaction name="actionRotate"/>
   </widget>
   <action name="actionsave">
    <property name="icon">
@@ -245,6 +247,34 @@
    </property>
    <property name="text">
     <string>Subtitle</string>
+   </property>
+  </action>
+  <action name="actionTranslate">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="transform-move"/>
+   </property>
+   <property name="text">
+    <string>Translate</string>
+   </property>
+  </action>
+  <action name="actionRotate">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="object-rotate-right"/>
+   </property>
+   <property name="text">
+    <string>Rotate</string>
    </property>
   </action>
  </widget>

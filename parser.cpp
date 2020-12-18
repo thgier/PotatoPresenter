@@ -123,12 +123,13 @@ void Parser::newTitle(int line){
     if(rect.isEmpty()){
         rect = mLayout.mTitlePos;
     }
+    rect.setAngle(180);
     auto const textField = std::make_shared<TextField>(text, rect, id);
     mBoxCounter++;
     mFrames.back()->appendBox(textField);
 }
 
-QRect const Parser::getRect(QString id) {
+BoxRect const Parser::getRect(QString id) {
     auto rect = mConfigBoxes->getRect(id);
     if(rect.isEmpty()){
         rect = mLayout.mBodyPos;

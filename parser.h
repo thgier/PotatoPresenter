@@ -27,7 +27,7 @@ public:
     void newTextField(int line);
     void newImage(int line);
     void newTitle(int line);
-    QRect const getRect(QString id);
+    BoxRect const getRect(QString id);
 
 private:
     Tokenizer mTokenizer;

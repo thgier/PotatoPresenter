@@ -1,16 +1,16 @@
 #ifndef CONFIGBOXES_H
 #define CONFIGBOXES_H
 
-#include <QRect>
 #include <map>
 #include <QObject>
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
+#include "boxrect.h"
 
 struct configurations{
-    QRect rect;
+    BoxRect rect;
 };
 
 
@@ -24,8 +24,8 @@ public:
     void saveConfig();
     configurations readJsonConfigurations(const QJsonObject &json);
     void saveJsonConfigurations(QJsonObject &json, const configurations config);
-    void addRect(QRect rect, QString id);
-    QRect getRect(QString id);
+    void addRect(BoxRect rect, QString id);
+    BoxRect getRect(QString id);
 private:
     std::map<QString, configurations> mConfigMap;
     QString mFilename;

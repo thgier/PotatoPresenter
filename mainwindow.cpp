@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->splitter->setSizes(QList<int>{10000, 10000});
     KTextEditor::Editor *editor = KTextEditor::Editor::instance();
-    QString inputFile = "/home/theresa/Documents/praes/input.json";
+    QString inputFile = "/home/theresa/Documents/praes/input";
     auto url = QUrl::fromLocalFile(inputFile);
     KTextEditor::Document *doc = editor->createDocument(this);
     if (!doc->openUrl(url)){
@@ -90,6 +90,14 @@ MainWindow::MainWindow(QWidget *parent)
             this, [this, doc](){MainWindow::fileChanged(doc);});
     ui->error->setWordWrap(true);
 
+    auto transformGroup = new QActionGroup(this);
+    transformGroup->addAction(ui->actionRotate);
+    transformGroup->addAction(ui->actionTranslate);
+    ui->actionTranslate->setChecked(true);
+    connect(ui->actionRotate, &QAction::triggered,
+           this, [this](){mPaintDocument->setTransformationType(TransformationType::rotate);});
+    connect(ui->actionTranslate, &QAction::triggered,
+            this, [this](){mPaintDocument->setTransformationType(TransformationType::translate);});
 }
 
 MainWindow::~MainWindow()
