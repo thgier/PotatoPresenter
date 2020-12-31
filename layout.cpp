@@ -6,13 +6,14 @@ Layout::Layout(aspectRatio ratio)
     switch (mAspectRatio) {
         case aspectRatio::sixteenToNine:
             mSize = QSize(1600, 900);
-            mTitlePos = BoxRect(50, 50, 1500, 100);
-            mBodyPos = BoxRect(50, 200, 1500, 650);
-            mFullPos = BoxRect(0, 0, 1600, 900);
-            mLeftPos = BoxRect(50, 200, 720, 650);
-            mRightPos = BoxRect(830, 200, 720, 650);
-            mPresTitlePos = BoxRect(100, 350, 1400, 100);
-            mSubtitlePos = BoxRect(100, 500, 1400, 100);
+            mTitlePos = BoxGeometry(50, 50, 1500, 100);
+            mBodyPos = BoxGeometry(50, 200, 1500, 650);
+            mFullPos = BoxGeometry(0, 0, 1600, 900);
+            mLeftPos = BoxGeometry(50, 200, 720, 650);
+            mRightPos = BoxGeometry(830, 200, 720, 650);
+            mPresTitlePos = BoxGeometry(100, 350, 1400, 100);
+            mSubtitlePos = BoxGeometry(100, 500, 1400, 100);
+            mArrowPos = BoxGeometry(100, 500, 500, 100);
 //            mSize = QSize(160, 90);
 //            mTitlePos = QRect(5, 5, 150, 10);
 //            mBodyPos = QRect(5, 20, 150, 65);

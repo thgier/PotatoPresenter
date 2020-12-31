@@ -42,8 +42,9 @@ add_executable(praes
     framelistdelegate.cpp
     presentation.cpp
     tokenizer.cpp
-    boxrect.cpp
+    boxgeometry.cpp
     boxtransformation.cpp
+    arrowbox.cpp
 )
 
 #add_executable(testtokenizer

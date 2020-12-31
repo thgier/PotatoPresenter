@@ -11,7 +11,7 @@
 class TextField: public Box
 {
 public:
-    TextField(QString text, BoxRect rect, QString id);
+    TextField(QString text, BoxGeometry rect, QString id);
     QString mText;
     QString Text();
     void drawContent(QPainter& painter) override;

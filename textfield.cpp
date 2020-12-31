@@ -6,7 +6,7 @@
 #include <vector>
 #include<QMargins>
 
-TextField::TextField(QString text, BoxRect rect, QString id)
+TextField::TextField(QString text, BoxGeometry rect, QString id)
     : Box(rect, id), mText(text)
 {
 }
@@ -21,7 +21,7 @@ void TextField::drawContent(QPainter& painter) {
     font.setPixelSize(mFontSize);
     painter.setFont(font);
     painter.setPen(Qt::black);
-    auto draw = DrawText(mText, painter, Rect().rect(), id());
+    auto draw = DrawText(mText, painter, geometry().rect(), id());
     draw.drawWord(painter);
     endDraw(painter);
 }

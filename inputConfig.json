@@ -1,62 +1,222 @@
 [
     {
+        "id": "Arrow-0",
+        "rect": {
+            "angle": 0,
+            "height": 0,
+            "width": 0,
+            "xPosition": 0,
+            "yPosition": 0
+        }
+    },
+    {
+        "id": "Arrow-1",
+        "rect": {
+            "angle": 0,
+            "height": 134,
+            "width": 261,
+            "xPosition": 62,
+            "yPosition": 439
+        }
+    },
+    {
+        "id": "Arrow-2",
+        "rect": {
+            "angle": 0,
+            "height": 662,
+            "width": 720,
+            "xPosition": 1085,
+            "yPosition": 263
+        }
+    },
+    {
+        "id": "Arrow-3",
+        "rect": {
+            "angle": 4.899092453787767,
+            "height": 315,
+            "width": 687,
+            "xPosition": 394,
+            "yPosition": 319
+        }
+    },
+    {
+        "id": "Hallo-0",
+        "rect": {
+            "angle": 0,
+            "height": 73,
+            "width": 1500,
+            "xPosition": 50,
+            "yPosition": 77
+        }
+    },
+    {
+        "id": "Hallo-1",
+        "rect": {
+            "angle": 0,
+            "height": 0,
+            "width": 0,
+            "xPosition": 0,
+            "yPosition": 0
+        }
+    },
+    {
+        "id": "Hallo-2",
+        "rect": {
+            "angle": 0,
+            "height": 650,
+            "width": 720,
+            "xPosition": 924,
+            "yPosition": 254
+        }
+    },
+    {
+        "id": "Latin-0",
+        "rect": {
+            "angle": -45,
+            "height": 539,
+            "width": 626,
+            "xPosition": 523,
+            "yPosition": 172
+        }
+    },
+    {
         "id": "Latin-1",
         "rect": {
             "angle": 0,
             "height": 650,
             "width": 1500,
-            "xPosition": 86,
-            "yPosition": 120
+            "xPosition": 9,
+            "yPosition": 1147
         }
     },
     {
         "id": "My Presentation-0",
         "rect": {
-            "angle": 180,
-            "height": 122,
+            "angle": 0,
+            "height": 318,
             "width": 1500,
-            "xPosition": 117,
-            "yPosition": 25
+            "xPosition": -65,
+            "yPosition": 601
         }
     },
     {
         "id": "My Presentation-1",
         "rect": {
-            "angle": 26.471115425453437,
-            "height": 532,
-            "width": 679,
-            "xPosition": 563,
-            "yPosition": 101
+            "angle": 118.97321554739763,
+            "height": 348,
+            "width": 157,
+            "xPosition": 823,
+            "yPosition": 643
         }
     },
     {
-        "id": "Nice Picture-0",
+        "id": "My Presentation-2",
         "rect": {
-            "angle": 180,
-            "height": 3,
-            "width": 1500,
-            "xPosition": 50,
-            "yPosition": 46
+            "angle": -4.828792068855421,
+            "height": 84,
+            "width": 520,
+            "xPosition": 861,
+            "yPosition": 135
+        }
+    },
+    {
+        "id": "My Presentation-3",
+        "rect": {
+            "angle": 0,
+            "height": 298,
+            "width": 500,
+            "xPosition": 487,
+            "yPosition": 82
+        }
+    },
+    {
+        "id": "My Presentation-4",
+        "rect": {
+            "angle": 0,
+            "height": 161,
+            "width": 377,
+            "xPosition": 565,
+            "yPosition": 628
+        }
+    },
+    {
+        "id": "My Presentation-5",
+        "rect": {
+            "angle": 0,
+            "height": 268,
+            "width": 427,
+            "xPosition": 302,
+            "yPosition": 142
+        }
+    },
+    {
+        "id": "My Presentation-6",
+        "rect": {
+            "angle": 0,
+            "height": 4,
+            "width": 500,
+            "xPosition": 100,
+            "yPosition": 762
+        }
+    },
+    {
+        "id": "My Presentation-7",
+        "rect": {
+            "angle": 0,
+            "height": 100,
+            "width": 500,
+            "xPosition": 611,
+            "yPosition": 507
+        }
+    },
+    {
+        "id": "My Presentation-8",
+        "rect": {
+            "angle": 0,
+            "height": 0,
+            "width": 0,
+            "xPosition": 0,
+            "yPosition": 0
+        }
+    },
+    {
+        "id": "My Presentation-9",
+        "rect": {
+            "angle": -94.4636759829086,
+            "height": 382,
+            "width": 936,
+            "xPosition": 65,
+            "yPosition": 226
         }
     },
     {
         "id": "Nice Picture-1",
         "rect": {
-            "angle": 79.20808180002925,
-            "height": 116,
-            "width": 1201,
-            "xPosition": 341,
-            "yPosition": 500
+            "angle": 0,
+            "height": 624,
+            "width": 1278,
+            "xPosition": 272,
+            "yPosition": 226
         }
     },
     {
-        "id": "Two Columns-0",
+        "id": "Two Columns-1",
         "rect": {
-            "angle": 180,
-            "height": 102,
-            "width": 1500,
-            "xPosition": 50,
-            "yPosition": 52
+            "angle": 0,
+            "height": 650,
+            "width": 720,
+            "xPosition": 41,
+            "yPosition": 187
+        }
+    },
+    {
+        "id": "Two Columns-2",
+        "rect": {
+            "angle": 0,
+            "height": 613,
+            "width": 542,
+            "xPosition": 941,
+            "yPosition": 198
         }
     }
 ]

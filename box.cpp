@@ -1,18 +1,18 @@
 #include "box.h"
 
-Box::Box(BoxRect rect, QString id)
+Box::Box(BoxGeometry rect, QString id)
     : mRect{rect}
     , mId{id}
 {
 }
 
-void Box::setRect(BoxRect rect){
+void Box::setRect(BoxGeometry rect){
     if(mMovable){
         mRect = rect;
     }
 }
 
-BoxRect Box::Rect(){
+BoxGeometry Box::geometry(){
     return mRect;
 }
 

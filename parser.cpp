@@ -11,6 +11,7 @@
 #include "box.h"
 #include "picture.h"
 #include "textfield.h"
+#include "arrowbox.h"
 
 Parser::Parser()
     : mLayout(aspectRatio::sixteenToNine)
@@ -54,6 +55,9 @@ void Parser::command(Token token){
     else if(token.mText == "\\title"){
         newTitle(token.mLine);
     }
+    else if(token.mText == "\\arrow"){
+        newArrow(token.mLine);
+    }
     else{
         throw ParserError{"command does not exist", token.mLine};
     }
@@ -94,7 +98,7 @@ void Parser::newTextField(int line){
 
 void Parser::newImage(int line) {
     if(mFrames.empty()){
-        throw ParserError{"missing frame: type \frame id", line};
+        throw ParserError{"missing frame: type \\frame id", line};
         return;
     }
     QString text = "";
@@ -109,7 +113,7 @@ void Parser::newImage(int line) {
 
 void Parser::newTitle(int line){
     if(mFrames.empty()){
-        throw ParserError{"missing frame: type \frame id", line};
+        throw ParserError{"missing frame: type \\frame id", line};
         return;
     }
     auto const frameId = mFrames.back()->id();
@@ -123,13 +127,34 @@ void Parser::newTitle(int line){
     if(rect.isEmpty()){
         rect = mLayout.mTitlePos;
     }
-    rect.setAngle(180);
     auto const textField = std::make_shared<TextField>(text, rect, id);
     mBoxCounter++;
     mFrames.back()->appendBox(textField);
 }
 
-BoxRect const Parser::getRect(QString id) {
+void Parser::newArrow(int line){
+    if(mFrames.empty()){
+        throw ParserError{"missing frame: type \\frame id", line};
+        return;
+    }
+    auto const frameId = mFrames.back()->id();
+    auto const id = frameId + "-" + QString::number(mBoxCounter);
+    auto rect = mConfigBoxes->getRect(id);
+    if(rect.isEmpty()){
+        rect = mLayout.mArrowPos;
+    }
+    auto const arrow = std::make_shared<ArrowBox>(rect, id);
+    mFrames.back()->appendBox(arrow);
+    mBoxCounter++;
+
+    auto const nextToken = mTokenizer.peekNext();
+    if(nextToken.mKind != Token::Kind::Command && nextToken.mKind != Token::Kind::EndOfFile){
+        throw ParserError{"\\arrow command need no text", line};
+        return;
+    }
+}
+
+BoxGeometry const Parser::getRect(QString id) {
     auto rect = mConfigBoxes->getRect(id);
     if(rect.isEmpty()){
         rect = mLayout.mBodyPos;

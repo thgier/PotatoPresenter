@@ -27,7 +27,8 @@ public:
     void newTextField(int line);
     void newImage(int line);
     void newTitle(int line);
-    BoxRect const getRect(QString id);
+    void newArrow(int line);
+    BoxGeometry const getRect(QString id);
 
 private:
     Tokenizer mTokenizer;

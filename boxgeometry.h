@@ -17,19 +17,20 @@ enum pointPosition{
     notInBox
 };
 
-struct BoxRect
+struct BoxGeometry
 {
 public:
-    BoxRect();
-    BoxRect(QRect rect, qreal angle);
-    BoxRect(QRect rect);
-    BoxRect(int x, int y, int width, int height);
+    BoxGeometry();
+    BoxGeometry(QRect rect, qreal angle);
+    BoxGeometry(QRect rect);
+    BoxGeometry(int x, int y, int width, int height);
     QRect rect() const;
     qreal angle() const;
     void setRect(QRect rect);
     void setAngle(qreal angle);
     void addAngle(qreal dAngle);
-    pointPosition includePoint(QPoint point, int margin) const;
+    pointPosition classifyPoint(QPoint point, int margin) const;
+    bool contains(QPoint point, int margin) const;
     bool contains(QPoint point) const;
     QTransform transform() const;
     QTransform rotateTransform() const;

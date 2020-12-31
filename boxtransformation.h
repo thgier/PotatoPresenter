@@ -16,19 +16,19 @@ struct BoxTransformation
 {
 public:
     BoxTransformation();
-    BoxTransformation(std::shared_ptr<Box> box, TransformationType trafo, pointPosition posMouseBox, int pageNumber);
-    void makeTransformation(QPoint mouseMovement, Presentation* pres);
-    BoxRect makeScaleTransformation(QPoint mouseMovement);
-    BoxRect makeRotateTransformation(QPoint mouseMovement);
+    BoxTransformation(std::shared_ptr<Box> box, TransformationType trafo, pointPosition posMouseBox, int pageNumber, QPoint mousePos);
+    void doTransformation(QPoint mousePos, Presentation* pres);
+    BoxGeometry makeScaleTransformation(QPoint mousePos);
+    BoxGeometry makeRotateTransformation(QPoint mousePos);
 
 private:
-    QRect scale(QPoint mouse, QPointF v, BoxRect* boxrect) const;
+    QRect scale(QPoint mouse, QPointF v, BoxGeometry* boxrect) const;
 //    BoxTransformation &operator = (const BoxTransformation &b) { mTrafo = b.mTrafo; return *this; }
     std::shared_ptr<Box> mBox;
     TransformationType mTrafo;
     pointPosition mPosMouseBox;
     int mPageNumber;
-
+    QPoint mLastMousePosition;
 
 };
 

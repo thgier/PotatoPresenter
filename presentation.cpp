@@ -30,17 +30,20 @@ int Presentation::size(){
     return int(mFrames.size());
 }
 
-std::shared_ptr<Frame> Presentation::at(int pageNumber){
+std::shared_ptr<Frame> Presentation::frameAt(int pageNumber){
     return mFrames[pageNumber];
 }
 
-void Presentation::setBox(QString boxId, BoxRect rect, int pageNumber){
+void Presentation::setBox(QString boxId, BoxGeometry rect, int pageNumber){
     getBox(boxId)->setRect(rect);
     mConfig.addRect(rect, boxId);
     emit frameChanged(pageNumber);
 }
 
 std::shared_ptr<Box> Presentation::getBox(QString id) {
+    if(id.isEmpty()){
+        return {};
+    }
     for(auto const& frame: frames()){
         for(auto const& box: frame->getBoxes()){
             if(box->id() == id) {

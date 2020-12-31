@@ -3,7 +3,7 @@
 
 #include <QSize>
 #include "box.h"
-#include "boxrect.h"
+#include "boxgeometry.h"
 
 enum aspectRatio {
   sixteenToNine,
@@ -15,13 +15,14 @@ public:
     Layout(aspectRatio ratio);
     aspectRatio mAspectRatio;
     QSize mSize;
-    BoxRect mTitlePos;
-    BoxRect mBodyPos;
-    BoxRect mFullPos;
-    BoxRect mLeftPos;
-    BoxRect mRightPos;
-    BoxRect mPresTitlePos;
-    BoxRect mSubtitlePos;
+    BoxGeometry mTitlePos;
+    BoxGeometry mBodyPos;
+    BoxGeometry mFullPos;
+    BoxGeometry mLeftPos;
+    BoxGeometry mRightPos;
+    BoxGeometry mPresTitlePos;
+    BoxGeometry mSubtitlePos;
+    BoxGeometry mArrowPos;
 private:
 };
 

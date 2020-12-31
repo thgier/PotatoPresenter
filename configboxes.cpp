@@ -39,7 +39,7 @@ configurations ConfigBoxes::readJsonConfigurations(const QJsonObject &json){
     auto const height = rect["height"].toInt();
     auto const angle = rect["angle"].toDouble();
     configurations newConfig;
-    newConfig.rect = BoxRect(QRect(x, y, width, height), angle);
+    newConfig.rect = BoxGeometry(QRect(x, y, width, height), angle);
     return newConfig;
 }
 
@@ -71,14 +71,14 @@ void ConfigBoxes::saveConfig()
     file.write(doc.toJson());
 }
 
-void ConfigBoxes::addRect(BoxRect rect, QString id) {
+void ConfigBoxes::addRect(BoxGeometry rect, QString id) {
     configurations newConfig;
     newConfig.rect = rect;
     mConfigMap[id] = newConfig;
     saveConfig();
 }
 
-BoxRect ConfigBoxes::getRect(QString id){
+BoxGeometry ConfigBoxes::getRect(QString id){
     if(auto it = mConfigMap.find(id); it != mConfigMap.end()){
         return it->second.rect;
     }

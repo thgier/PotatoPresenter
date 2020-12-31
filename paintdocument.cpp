@@ -25,11 +25,10 @@ void PaintDocument::paintEvent(QPaintEvent*)
     painter.setViewport(QRect(0, 0, mWidth, 1.0 * mWidth/mSize.width()*mSize.height()));
     painter.setWindow(QRect(QPoint(0, 0), mSize));
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
-//    painter.scale(mScale, mScale);
     painter.fillRect(QRect(QPoint(0, 0), mSize), Qt::white);
     if(!mPresentation->empty()){
         auto paint = std::make_shared<Painter>(painter);
-        paint->paintFrame(mPresentation->at(pageNumber));
+        paint->paintFrame(mPresentation->frameAt(pageNumber));
     }
     auto const box = mPresentation->getBox(mActiveBoxId);
     if(box != nullptr){
@@ -57,9 +56,9 @@ void PaintDocument::setCurrentPage(int page){
         return;
     }
     pageNumber = page;
-    mCurrentFrameId = mPresentation->at(page)->id();
+    mCurrentFrameId = mPresentation->frameAt(page)->id();
     mActiveBoxId = QString();
-    selectionChanged(mPresentation->at(pageNumber));
+    selectionChanged(mPresentation->frameAt(pageNumber));
     update();
 }
 
@@ -85,8 +84,8 @@ void PaintDocument::resizeEvent(QResizeEvent*) {
 
 void PaintDocument::determineBoxInFocus(QPoint mousePos){
     mActiveBoxId = QString();
-    for(auto box: mPresentation->at(pageNumber)->getBoxes()) {
-        if(box->Rect().contains(mousePos)) {
+    for(auto box: mPresentation->frameAt(pageNumber)->getBoxes()) {
+        if(box->geometry().contains(mousePos, diffToMouse)) {
             mActiveBoxId = box->id();
             break;
         }
@@ -95,25 +94,16 @@ void PaintDocument::determineBoxInFocus(QPoint mousePos){
 
 void PaintDocument::mousePressEvent(QMouseEvent *event)
 {
+    momentTrafo.reset();
     if (event->button() != Qt::LeftButton) {
         return;
     }
     lastPosition = event->pos() * mScale;
-    if(!mActiveBoxId.isEmpty()){
-        auto const lastAcitiveBox = mPresentation->getBox(mActiveBoxId)->Rect();
-        if(!lastAcitiveBox.contains(lastPosition)){
-            determineBoxInFocus(lastPosition);
-        }
-    }
-    else{
-        determineBoxInFocus(lastPosition);
-    }
+    cursorApperance(lastPosition);
+    update();
     if(mActiveBoxId.isEmpty()) {
         return;
     }
-    auto const posMouseBox = mPresentation->getBox(mActiveBoxId)->Rect().includePoint(lastPosition, diffToMouse);
-    momentTrafo = BoxTransformation(mPresentation->getBox(mActiveBoxId), mTranform, posMouseBox, pageNumber);
-    CursorApperance(lastPosition);
 }
 
 void PaintDocument::mouseDoubleClickEvent(QMouseEvent *event){
@@ -122,8 +112,8 @@ void PaintDocument::mouseDoubleClickEvent(QMouseEvent *event){
         determineBoxInFocus(mousePos);
         return;
     }
-    for(auto box: mPresentation->at(pageNumber)->getBoxes()) {
-        if(box->Rect().contains(mousePos) && mActiveBoxId != box->id()) {
+    for(auto box: mPresentation->frameAt(pageNumber)->getBoxes()) {
+        if(box->geometry().contains(mousePos) && mActiveBoxId != box->id()) {
             mActiveBoxId = box->id();
             break;
         }
@@ -132,13 +122,28 @@ void PaintDocument::mouseDoubleClickEvent(QMouseEvent *event){
 
 void PaintDocument::mouseMoveEvent(QMouseEvent *event)
 {
-    CursorApperance(event->pos() * mScale);
-    if ((event->buttons() & Qt::LeftButton)) {
-        auto const newPosition = event->pos() * mScale;
-        momentTrafo->makeTransformation(newPosition - lastPosition, mPresentation);
-        lastPosition = newPosition;
-        update();
+    auto const newPosition = event->pos() * mScale;
+    if(event->buttons() != Qt::LeftButton){
+        cursorApperance(newPosition);
+        return;
     }
+    auto const mouseMovement = newPosition - lastPosition;
+    if(mouseMovement.manhattanLength() < diffToMouse / 5){
+        return;
+    }
+    if(!momentTrafo){
+        cursorApperance(newPosition);
+        determineBoxInFocus(lastPosition);
+        if(mActiveBoxId.isEmpty()){
+            return;
+        }
+        auto const activeBox = mPresentation->getBox(mActiveBoxId);
+        auto const posMouseBox = activeBox->geometry().classifyPoint(lastPosition, diffToMouse);
+        momentTrafo = BoxTransformation(activeBox, mTransform, posMouseBox, pageNumber, newPosition);
+    }
+    momentTrafo->doTransformation(newPosition, mPresentation);
+    lastPosition = newPosition;
+    update();
 }
 
 void PaintDocument::mouseReleaseEvent(QMouseEvent *event)
@@ -146,12 +151,14 @@ void PaintDocument::mouseReleaseEvent(QMouseEvent *event)
     if (event->button() != Qt::LeftButton) {
         return;
     }
-    momentTrafo.reset();
+    if(!momentTrafo){
+        determineBoxInFocus(lastPosition);
+    }
     update();
 }
 
 
-void PaintDocument::CursorApperance(QPoint mousePosition){
+void PaintDocument::cursorApperance(QPoint mousePosition){
     auto cursor = QCursor();
     if(mActiveBoxId.isEmpty()){
         cursor.setShape(Qt::ArrowCursor);
@@ -159,9 +166,9 @@ void PaintDocument::CursorApperance(QPoint mousePosition){
         return;
     }
     cursor.setShape(Qt::ArrowCursor);
-    auto const rect = mPresentation->getBox(mActiveBoxId)->Rect();
-    auto const posMouseBox = rect.includePoint(mousePosition, diffToMouse);
-    switch(mTranform){
+    auto const rect = mPresentation->getBox(mActiveBoxId)->geometry();
+    auto const posMouseBox = rect.classifyPoint(mousePosition, diffToMouse);
+    switch(mTransform){
     case(TransformationType::translate):
         switch(posMouseBox){
         case pointPosition::topBorder:
@@ -295,6 +302,6 @@ void PaintDocument::layoutSubtitle(){
     update();
 }
 void PaintDocument::setTransformationType(TransformationType type){
-    mTranform = type;
+    mTransform = type;
 }
 

@@ -13,7 +13,7 @@
 #include "layout.h"
 #include "equationcachemanager.h"
 #include "presentation.h"
-#include "boxrect.h"
+#include "boxgeometry.h"
 #include "boxtransformation.h"
 
 class PaintDocument : public QWidget
@@ -56,7 +56,7 @@ private:
     QPoint lastPosition;
     std::optional<BoxTransformation> momentTrafo;
     QString mActiveBoxId;
-    void CursorApperance(QPoint mousePosition);
+    void cursorApperance(QPoint mousePosition);
     TransformationType getTransformationType(QPoint mousePosition);
     int const diffToMouse = 40;
     QPainter painter;
@@ -65,7 +65,7 @@ private:
     void determineBoxInFocus(QPoint mousePos);
     QString mCurrentFrameId;
     Presentation * mPresentation;
-    TransformationType mTranform = TransformationType::translate;
+    TransformationType mTransform = TransformationType::translate;
 
 };
 

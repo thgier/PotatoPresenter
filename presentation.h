@@ -18,8 +18,8 @@ public:
     void updateFrames(QByteArray doc);
     bool empty();
     int size();
-    std::shared_ptr<Frame> at(int pageNumber);
-    void setBox(QString boxId, BoxRect rect, int pageNumber);
+    std::shared_ptr<Frame> frameAt(int pageNumber);
+    void setBox(QString boxId, BoxGeometry rect, int pageNumber);
     std::shared_ptr<Box> getBox(QString id);
 signals:
     void presentationChanged();
