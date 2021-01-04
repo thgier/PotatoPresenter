@@ -11,8 +11,10 @@ ConfigBoxes::ConfigBoxes()
 void ConfigBoxes::loadConfigurationFile(QString filename){
     mFilename = filename;
     QFile file(mFilename);
-    if (!file.open(QIODevice::ReadOnly))
+    if (!file.open(QIODevice::ReadOnly)){
+        throw ConfigError{"Cannot open file", mFilename};
         return;
+    }
     auto const val = file.readAll();
     qDebug() << val;
     auto doc = QJsonDocument::fromJson(val);
@@ -53,11 +55,11 @@ void ConfigBoxes::loadConfigFromJson(QJsonDocument doc){
     }
 }
 
-void ConfigBoxes::saveConfig()
+void ConfigBoxes::saveConfig(QString filename)
 {
-    QFile file(mFilename);
+    QFile file(filename);
     if (!file.open(QIODevice::WriteOnly)) {
-        qWarning() << "Failed to open output file" << mFilename << ":" << file.error();
+        throw ConfigError{tr("Cannot open file %1").arg(filename), filename};
         return;
     }
     QJsonArray array;
@@ -75,7 +77,6 @@ void ConfigBoxes::addRect(BoxGeometry rect, QString id) {
     configurations newConfig;
     newConfig.rect = rect;
     mConfigMap[id] = newConfig;
-    saveConfig();
 }
 
 BoxGeometry ConfigBoxes::getRect(QString id){

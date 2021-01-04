@@ -98,6 +98,13 @@ QTransform BoxGeometry::transform() const{
     return transform;
 }
 
+QTransform BoxGeometry::transformCenter() const{
+    QTransform transform;
+    transform.translate(-mRect.center().x(), -mRect.center().y());
+    transform.rotate(mAngle);
+    return transform;
+}
+
 QTransform BoxGeometry::rotateTransform() const{
     QTransform transform;
     transform.rotate(mAngle);
@@ -115,4 +122,8 @@ qreal BoxGeometry::distanceToAngle(qreal x) const{
 
 bool BoxGeometry::isEmpty() const{
     return mRect.isEmpty();
+}
+
+qreal BoxGeometry::lengthDiagonal(){
+    return std::sqrt(mRect.width() * mRect.width() + mRect.height() * mRect.height());
 }

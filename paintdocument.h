@@ -23,7 +23,7 @@ public:
     PaintDocument(QWidget*&);
     //    QSize minimumSizeHint() const override;
 //    QSize sizeHint() const override;
-    void setPresentation(Presentation* pres);
+    void setPresentation(std::shared_ptr<Presentation> pres);
     void setCurrentPage(int);
     void setCurrentPage(QString id);
     void resizeEvent(QResizeEvent *) override;
@@ -64,7 +64,7 @@ private:
     double mScale;
     void determineBoxInFocus(QPoint mousePos);
     QString mCurrentFrameId;
-    Presentation * mPresentation;
+    std::shared_ptr<Presentation> mPresentation;
     TransformationType mTransform = TransformationType::translate;
 
 };

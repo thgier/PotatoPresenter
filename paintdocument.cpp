@@ -15,7 +15,7 @@ PaintDocument::PaintDocument(QWidget*&)
     mScale = 1.0 * mSize.width() / mWidth;
 }
 
-void PaintDocument::setPresentation(Presentation* pres){
+void PaintDocument::setPresentation(std::shared_ptr<Presentation> pres){
     mPresentation = pres;
 }
 
@@ -94,6 +94,9 @@ void PaintDocument::determineBoxInFocus(QPoint mousePos){
 
 void PaintDocument::mousePressEvent(QMouseEvent *event)
 {
+    if(mPresentation->empty()){
+        return;
+    }
     momentTrafo.reset();
     if (event->button() != Qt::LeftButton) {
         return;
@@ -107,6 +110,9 @@ void PaintDocument::mousePressEvent(QMouseEvent *event)
 }
 
 void PaintDocument::mouseDoubleClickEvent(QMouseEvent *event){
+    if(mPresentation->empty()){
+        return;
+    }
     auto const mousePos = event->pos() * mScale;
     if(mActiveBoxId.isEmpty()){
         determineBoxInFocus(mousePos);
@@ -122,6 +128,9 @@ void PaintDocument::mouseDoubleClickEvent(QMouseEvent *event){
 
 void PaintDocument::mouseMoveEvent(QMouseEvent *event)
 {
+    if(mPresentation->empty()){
+        return;
+    }
     auto const newPosition = event->pos() * mScale;
     if(event->buttons() != Qt::LeftButton){
         cursorApperance(newPosition);
@@ -148,6 +157,9 @@ void PaintDocument::mouseMoveEvent(QMouseEvent *event)
 
 void PaintDocument::mouseReleaseEvent(QMouseEvent *event)
 {
+    if(mPresentation->empty()){
+        return;
+    }
     if (event->button() != Qt::LeftButton) {
         return;
     }

@@ -14,11 +14,11 @@ public:
     FrameListModel(QObject *parent = nullptr)
         : QAbstractListModel(parent){}
 
-    void setPresentation(Presentation * presentation);
+    void setPresentation(std::shared_ptr<Presentation> presentation);
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role) const override;
 private:
-    Presentation* mPresentation = nullptr;
+    std::shared_ptr<Presentation> mPresentation = nullptr;
 };
 
 #endif // FRAMELISTMODEL_H

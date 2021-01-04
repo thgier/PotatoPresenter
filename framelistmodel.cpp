@@ -22,16 +22,16 @@ QVariant FrameListModel::data(const QModelIndex &index, int role) const
         return QVariant();
 }
 
-void FrameListModel::setPresentation(Presentation * presentation){
+void FrameListModel::setPresentation(std::shared_ptr<Presentation> presentation){
     if(mPresentation){
         mPresentation->disconnect(this);
     }
     beginResetModel();
     mPresentation = presentation;
     endResetModel();
-    connect(mPresentation, &Presentation::frameChanged,
+    connect(mPresentation.get(), &Presentation::frameChanged,
             this, [this](int pageNumber){emit dataChanged(index(pageNumber), index(pageNumber));});
-    connect(mPresentation, &Presentation::presentationChanged,
+    connect(mPresentation.get(), &Presentation::presentationChanged,
             this, [this](){
             beginResetModel();
             endResetModel();

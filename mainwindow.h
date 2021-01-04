@@ -6,6 +6,7 @@
 #include <QGraphicsView>
 #include <QGraphicsItem>
 #include <KTextEditor/Document>
+#include <KTextEditor/Editor>
 #include <QListWidget>
 #include "frame.h"
 #include "paintdocument.h"
@@ -24,20 +25,27 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    void fileChanged(KTextEditor::Document *doc);
+    void fileChanged();
+    void openFile();
+    void openDocument();
+    void newDocument();
+    void save();
+    void saveAs();
+    void writeToFile(QString filename) const;
+    void resetPresentation();
+    QString getConfigFilename(QUrl inputUrl);
 
 private slots:
 
 private:
     Ui::MainWindow *ui;
-    QGraphicsScene *scene;
-    QGraphicsEllipseItem *ellipse;
-    QGraphicsRectItem *rectangle;
-    QGraphicsTextItem *text;
-    KTextEditor::Document* doc;
+    KTextEditor::Document* mDoc;
+    KTextEditor::Editor* mEditor;
     PaintDocument* mPaintDocument;
+    QWidget* mViewTextDoc = nullptr;
     QListWidget *mListWidget;
     FrameListModel *mFrameModel;
-    Presentation mPresentation;
+    std::shared_ptr<Presentation> mPresentation;
+    QString mFilename;
 };
 #endif // MAINWINDOW_H

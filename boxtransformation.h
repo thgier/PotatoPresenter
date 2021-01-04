@@ -17,7 +17,7 @@ struct BoxTransformation
 public:
     BoxTransformation();
     BoxTransformation(std::shared_ptr<Box> box, TransformationType trafo, pointPosition posMouseBox, int pageNumber, QPoint mousePos);
-    void doTransformation(QPoint mousePos, Presentation* pres);
+    void doTransformation(QPoint mousePos, std::shared_ptr<Presentation> pres);
     BoxGeometry makeScaleTransformation(QPoint mousePos);
     BoxGeometry makeRotateTransformation(QPoint mousePos);
 

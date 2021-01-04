@@ -13,6 +13,11 @@ struct configurations{
     BoxGeometry rect;
 };
 
+struct ConfigError{
+    QString errorMessage;
+    QString filename;
+};
+
 
 class ConfigBoxes : public QObject
 {
@@ -21,7 +26,7 @@ public:
     ConfigBoxes();
     void loadConfigurationFile(QString filename);
     void loadConfigFromJson(QJsonDocument doc);
-    void saveConfig();
+    void saveConfig(QString filename);
     configurations readJsonConfigurations(const QJsonObject &json);
     void saveJsonConfigurations(QJsonObject &json, const configurations config);
     void addRect(BoxGeometry rect, QString id);
