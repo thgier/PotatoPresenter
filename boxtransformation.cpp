@@ -61,18 +61,26 @@ BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
             break;
         }
         case pointPosition::topRightCorner:{
-            auto const localMousePos = boxrect.transformCenter().map(mousePos);
-            rect.setTopRight(localMousePos);
+            auto point = transformation.map(rect.bottomLeft());
+            auto const localMouse = transformation.map(mousePos);
+            rect.setBottomLeft(localMouse);
+            boxrect.setRect(rect);
+            point = boxrect.transform().map(point);
+            rect.moveBottomLeft(point);
             break;
         }
         case pointPosition::bottomLeftCorner:{
-            auto point = transformation.map(rect.topRight());
+//            auto point = transformation.map(rect.topRight());
             auto const width = rect.width() - rotateMouseMovement.x();
             auto const heigth = rect.height() + rotateMouseMovement.y();
             rect.setSize(QSize(width, heigth));
-            boxrect.setRect(rect);
-            point = boxrect.transform().map(point);
-            rect.moveTopRight(point);
+            rect = rect.normalized();
+            auto const widthCenter = rect.center().x() - mouseMovement.x();
+            auto const heigthCenter = rect.center().y() + mouseMovement.y();
+            rect.moveCenter(QPoint(widthCenter, heigthCenter));
+//            boxrect.setRect(rect);
+//            point = boxrect.transform().map(point);
+//            rect.moveTopRight(point);
             break;
         }
         case pointPosition::bottomRightCorner:{
@@ -109,12 +117,12 @@ BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
             break;
         }
         case pointPosition::rightBorder:{
-            auto point = transformation.map(rect.topLeft());
+            auto point = transformation.map(rect.bottomLeft());
             auto const width = rect.width() + rotateMouseMovement.x();
             rect.setWidth(width);
             boxrect.setRect(rect);
             point = boxrect.transform().map(point);
-            rect.moveTopLeft(point);
+            rect.moveBottomLeft(point);
             break;
         }
         case pointPosition::inBox:{

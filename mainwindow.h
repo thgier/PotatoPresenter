@@ -8,6 +8,7 @@
 #include <KTextEditor/Document>
 #include <KTextEditor/Editor>
 #include <QListWidget>
+#include <KXmlGuiWindow>
 #include "frame.h"
 #include "paintdocument.h"
 #include "configboxes.h"
@@ -26,6 +27,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void fileChanged();
+    void setupFileActions();
     void openFile();
     void openDocument();
     void newDocument();
@@ -33,7 +35,10 @@ public:
     void saveAs();
     void writeToFile(QString filename) const;
     void resetPresentation();
+    void exportPDF();
     QString getConfigFilename(QUrl inputUrl);
+    QString getPdfFilename();
+    QAction* importActionFromKDoc(const char* name, std::function<void()> method);
 
 private slots:
 
@@ -42,10 +47,11 @@ private:
     KTextEditor::Document* mDoc;
     KTextEditor::Editor* mEditor;
     PaintDocument* mPaintDocument;
-    QWidget* mViewTextDoc = nullptr;
+    KTextEditor::View* mViewTextDoc = nullptr;
     QListWidget *mListWidget;
     FrameListModel *mFrameModel;
     std::shared_ptr<Presentation> mPresentation;
     QString mFilename;
+    QString mPdfFile;
 };
 #endif // MAINWINDOW_H

@@ -9,21 +9,20 @@ ConfigBoxes::ConfigBoxes()
 }
 
 void ConfigBoxes::loadConfigurationFile(QString filename){
-    mFilename = filename;
-    QFile file(mFilename);
+    QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)){
-        throw ConfigError{"Cannot open file", mFilename};
+        throw ConfigError{"Cannot open file", filename};
         return;
     }
     auto const val = file.readAll();
-    qDebug() << val;
     auto doc = QJsonDocument::fromJson(val);
     loadConfigFromJson(doc);
+    file.close();
 }
 
-void ConfigBoxes::saveJsonConfigurations(QJsonObject &json, const configurations config){
+void ConfigBoxes::saveJsonConfigurations(QJsonObject &json, const JsonConfig config){
     QJsonObject jsonRect;
-    auto const boxrect = config.rect;
+    auto const boxrect = config.geometry;
     jsonRect["xPosition"] = boxrect.rect().left();
     jsonRect["yPosition"] = boxrect.rect().top();
     jsonRect["width"] = boxrect.rect().width();
@@ -33,19 +32,20 @@ void ConfigBoxes::saveJsonConfigurations(QJsonObject &json, const configurations
 
 }
 
-configurations ConfigBoxes::readJsonConfigurations(const QJsonObject &json){
+JsonConfig ConfigBoxes::readJsonConfigurations(const QJsonObject &json){
     auto const rect = json.value("rect").toObject();
     auto const x = rect["xPosition"].toInt();
     auto const y = rect["yPosition"].toInt();
     auto const width = rect["width"].toInt();
     auto const height = rect["height"].toInt();
     auto const angle = rect["angle"].toDouble();
-    configurations newConfig;
-    newConfig.rect = BoxGeometry(QRect(x, y, width, height), angle);
+    JsonConfig newConfig;
+    newConfig.geometry = BoxGeometry(QRect(x, y, width, height), angle);
     return newConfig;
 }
 
 void ConfigBoxes::loadConfigFromJson(QJsonDocument doc){
+    mConfigMap.clear();
     QJsonArray root = doc.array();
     for (int i = 0; i < root.size(); i++) {
         QJsonObject configBox = root.at(i).toObject();
@@ -74,14 +74,14 @@ void ConfigBoxes::saveConfig(QString filename)
 }
 
 void ConfigBoxes::addRect(BoxGeometry rect, QString id) {
-    configurations newConfig;
-    newConfig.rect = rect;
+    JsonConfig newConfig;
+    newConfig.geometry = rect;
     mConfigMap[id] = newConfig;
 }
 
 BoxGeometry ConfigBoxes::getRect(QString id){
     if(auto it = mConfigMap.find(id); it != mConfigMap.end()){
-        return it->second.rect;
+        return it->second.geometry;
     }
     return {};
 }

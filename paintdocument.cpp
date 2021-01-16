@@ -17,6 +17,7 @@ PaintDocument::PaintDocument(QWidget*&)
 
 void PaintDocument::setPresentation(std::shared_ptr<Presentation> pres){
     mPresentation = pres;
+    mActiveBoxId = QString();
 }
 
 void PaintDocument::paintEvent(QPaintEvent*)
@@ -239,8 +240,8 @@ void PaintDocument::cursorApperance(QPoint mousePosition){
     setCursor(cursor);
 }
 
-void PaintDocument::createPDF(){
-    QPdfWriter pdfWriter("/home/theresa/Documents/praes/file.pdf");
+void PaintDocument::createPDF(QString filename){
+    QPdfWriter pdfWriter(filename);
     auto const pdfLayout = QPageLayout(QPageSize(QSize(160, 90)), QPageLayout::Portrait, QMarginsF(0, 0, 0, 0), QPageLayout::Millimeter);
     pdfWriter.setPageLayout(pdfLayout);
 

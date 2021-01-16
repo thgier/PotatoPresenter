@@ -5,6 +5,7 @@
 #include <KTextEditor/View>
 #include <KParts/ReadOnlyPart>
 #include <KTextEditor/MarkInterface>
+#include <KActionCollection>
 #include <QProcess>
 #include <QDebug>
 #include <QObject>
@@ -17,6 +18,7 @@
 #include "imagecachemanager.h"
 #include "framelistmodel.h"
 #include "framelistdelegate.h"
+#include "functional"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -27,15 +29,31 @@ MainWindow::MainWindow(QWidget *parent)
     mEditor = KTextEditor::Editor::instance();
     mFilename = "/home/theresa/Documents/praes/inputFiles/input.txt";
     mDoc = mEditor->createDocument(this);
-    mDoc = mEditor->createDocument(this);
-    openDocument();
-    mViewTextDoc = mDoc->createView(this);
-    ui->editor->addWidget(mViewTextDoc);
 
     mPresentation = std::make_shared<Presentation>();
-    mPresentation->loadInput();
     mPaintDocument = ui->paintDocument;
     mPaintDocument->setPresentation(mPresentation);
+    openDocument();
+
+    auto const configFile = getConfigFilename(mDoc->url());
+    if(!QFile::exists(configFile)){
+        int ret = QMessageBox::information(this, tr("Failed to open File"), tr("Failed to find %1. Do you want to generate a new empty Configuration File?").arg(configFile),
+                                 QMessageBox::Yes | QMessageBox::Cancel);
+        switch (ret) {
+        case QMessageBox::Yes:
+            resetPresentation();
+            fileChanged();
+            mPresentation->saveConfig(configFile);
+            break;
+        case QMessageBox::Cancel:
+            openFile();
+            break;
+        }
+    }
+    mPresentation->loadInput(configFile);
+
+    mViewTextDoc = mDoc->createView(this);
+    ui->editor->addWidget(mViewTextDoc);
 
     mFrameModel = new FrameListModel();
     mFrameModel->setPresentation(mPresentation);
@@ -46,14 +64,8 @@ MainWindow::MainWindow(QWidget *parent)
     QItemSelectionModel *selectionModel = ui->pagePreview->selectionModel();
 
     fileChanged();
-    connect(ui->actionsave, &QAction::triggered,
-            this, &MainWindow::save);
-    connect(ui->actionOpen, &QAction::triggered,
-            this, &MainWindow::openFile);
-    connect(ui->actionSave_as, &QAction::triggered,
-            this, &MainWindow::saveAs);
-    connect(ui->actionNew, &QAction::triggered,
-            this, &MainWindow::newDocument);
+    setupFileActions();
+
     QObject::connect(ui->pageNumber, QOverload<int>::of(&QSpinBox::valueChanged),
                 mPaintDocument, QOverload<int>::of(&PaintDocument::setCurrentPage));
     connect(mPaintDocument, &PaintDocument::pageNumberChanged,
@@ -73,7 +85,7 @@ MainWindow::MainWindow(QWidget *parent)
                      this, &MainWindow::fileChanged);
 
     QObject::connect(ui->actionCreatePDF, &QAction::triggered,
-                     mPaintDocument, &PaintDocument::createPDF);
+                     this, &MainWindow::exportPDF);
 
     QObject::connect(ui->actionLayoutTitle, &QAction::triggered,
                      mPaintDocument, &PaintDocument::layoutTitle);
@@ -135,7 +147,18 @@ void MainWindow::fileChanged() {
         return;
     }
     ui->pageNumber->setMaximum(mPresentation->frames().size()-1);
-    mPaintDocument->updateFrames();
+}
+
+void MainWindow::setupFileActions(){
+    // HACK: Steal actions from the KPart
+    QList<QAction*> actions;
+    actions.append(importActionFromKDoc("file_save", [this](){save();}));
+    actions.append(importActionFromKDoc("file_save_as", [this](){saveAs();}));
+    ui->toolBar->insertActions(ui->actionCreatePDF, actions);
+    connect(ui->actionOpen, &QAction::triggered,
+            this, &MainWindow::openFile);
+    connect(ui->actionNew, &QAction::triggered,
+            this, &MainWindow::newDocument);
 }
 
 void MainWindow::openDocument(){
@@ -144,16 +167,11 @@ void MainWindow::openDocument(){
         qWarning() << "file not found";
     }
     mDoc->setHighlightingMode("LaTeX");
-    connect(mDoc, &KTextEditor::Document::documentSavedOrUploaded,
-            this, [this](){
-            mFilename = mDoc->url().toLocalFile();
-            mPresentation->saveConfig(mFilename.section('.', 0, -2) + ".json");
-            });
 }
 
 void MainWindow::openFile(){
     auto const newFile = QFileDialog::getOpenFileName(this,
-        tr("Open File"), mFilename, tr("Input Files (*.txt *.jpg *.bmp)"));
+        tr("Open File"), mFilename, tr("Input Files (*.txt)"));
     if(newFile.isEmpty()){
         return;
     }
@@ -176,6 +194,9 @@ void MainWindow::openFile(){
             break;
         }
     }
+    mPresentation->loadInput(configFile);
+    mPaintDocument->setPresentation(mPresentation);
+    fileChanged();
 }
 
 void MainWindow::newDocument(){
@@ -211,6 +232,7 @@ void MainWindow::saveAs(){
     }
     mFilename = newFile;
     writeToFile(mFilename);
+    mPdfFile = getPdfFilename();
 }
 
 void MainWindow::writeToFile(QString filename) const{
@@ -219,6 +241,7 @@ void MainWindow::writeToFile(QString filename) const{
     file.write(mDoc->text().toUtf8());
     auto const configName = mFilename.section('.', 0, -2) + ".json";
     mPresentation->saveConfig(configName);
+    file.close();
 }
 
 void MainWindow::resetPresentation(){
@@ -226,15 +249,41 @@ void MainWindow::resetPresentation(){
     mPaintDocument->setPresentation(mPresentation);
     mFrameModel->setPresentation(mPresentation);
     mPaintDocument->update();
-    QObject::connect(mDoc, &KTextEditor::Document::textChanged,
+    connect(mDoc, &KTextEditor::Document::textChanged,
                      this, &MainWindow::fileChanged);
-    connect(mDoc, &KTextEditor::Document::documentSavedOrUploaded,
-            this, [this](){
-            mFilename = mDoc->url().toLocalFile();
-            mPresentation->saveConfig(mFilename.section('.', 0, -2) + ".json");
-            });
+    setupFileActions();
+}
+
+void MainWindow::exportPDF(){
+    QFileDialog dialog;
+    if(mPdfFile.isEmpty()){
+        mPdfFile = getPdfFilename();
+    }
+    dialog.selectFile(mPdfFile);
+    mPdfFile = dialog.getSaveFileName(this, tr("Export PDF"),
+                               mFilename,
+                               tr("pdf (*.pdf)"));
+    mPaintDocument->createPDF(mPdfFile);
+
 }
 
 QString MainWindow::getConfigFilename(QUrl inputUrl){
     return inputUrl.toLocalFile().section('.', 0, -2) + ".json";
 }
+
+QString MainWindow::getPdfFilename(){
+    return mDoc->url().toLocalFile().section('.', 0, -2) + ".pdf";
+}
+
+QAction* MainWindow::importActionFromKDoc(const char* name, std::function<void()> method){
+    QAction *action = mViewTextDoc->action(name);
+    if( action )
+       {
+            action->disconnect();
+            action->setShortcutContext(Qt::WindowShortcut);
+            connect(action, &QAction::triggered,
+                    this, method);
+       }
+    return action;
+}
+

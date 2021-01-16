@@ -7,8 +7,8 @@ Presentation::Presentation() : QObject()
 {
 }
 
-void Presentation::loadInput(){
-    mConfig.loadConfigurationFile("/home/theresa/Documents/praes/inputConfig.json");
+void Presentation::loadInput(QString configFilename){
+    mConfig.loadConfigurationFile(configFilename);
 }
 
 FrameList Presentation::frames(){

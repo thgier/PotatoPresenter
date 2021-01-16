@@ -138,7 +138,7 @@ void Parser::newArrow(int line){
         return;
     }
     auto const frameId = mFrames.back()->id();
-    auto const id = frameId + QString::number(mBoxCounter);
+    auto const id = frameId + "-" + QString::number(mBoxCounter);
     auto rect = mConfigBoxes->getRect(id);
     if(rect.isEmpty()){
         rect = mLayout.mArrowPos;

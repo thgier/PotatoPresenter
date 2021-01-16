@@ -9,8 +9,8 @@
 #include <QJsonObject>
 #include "boxgeometry.h"
 
-struct configurations{
-    BoxGeometry rect;
+struct JsonConfig{
+    BoxGeometry geometry;
 };
 
 struct ConfigError{
@@ -27,13 +27,12 @@ public:
     void loadConfigurationFile(QString filename);
     void loadConfigFromJson(QJsonDocument doc);
     void saveConfig(QString filename);
-    configurations readJsonConfigurations(const QJsonObject &json);
-    void saveJsonConfigurations(QJsonObject &json, const configurations config);
+    JsonConfig readJsonConfigurations(const QJsonObject &json);
+    void saveJsonConfigurations(QJsonObject &json, const JsonConfig config);
     void addRect(BoxGeometry rect, QString id);
     BoxGeometry getRect(QString id);
 private:
-    std::map<QString, configurations> mConfigMap;
-    QString mFilename;
+    std::map<QString, JsonConfig> mConfigMap;
 };
 
 #endif // CONFIGBOXES_H

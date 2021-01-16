@@ -28,7 +28,7 @@ public:
     void setCurrentPage(QString id);
     void resizeEvent(QResizeEvent *) override;
     QSize sizeHint() const override;
-    void createPDF();
+    void createPDF(QString filename);
     void updateFrames();
     void layoutBody();
     void layoutTitle();
@@ -58,7 +58,7 @@ private:
     QString mActiveBoxId;
     void cursorApperance(QPoint mousePosition);
     TransformationType getTransformationType(QPoint mousePosition);
-    int const diffToMouse = 40;
+    int const diffToMouse = 25;
     QPainter painter;
     Layout mLayout;
     double mScale;
