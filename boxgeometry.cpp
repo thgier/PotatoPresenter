@@ -36,13 +36,15 @@ void BoxGeometry::setRect(QRect rect){
 
 void BoxGeometry::setAngle(qreal angle){
     mAngle = angle;
+    mAngle = int(mAngle) % 360;
+    if(mAngle < 0){
+        mAngle += 360;
+    }
 }
 
 void BoxGeometry::addAngle(qreal dAngle){
     mAngle += dAngle;
-    while(mAngle > 360){
-        mAngle -= 360;
-    }
+    mAngle = int(mAngle) % 360;
 }
 
 pointPosition BoxGeometry::classifyPoint(QPoint point, int margin) const{
@@ -91,13 +93,17 @@ bool BoxGeometry::contains(QPoint point) const{
 }
 
 QTransform BoxGeometry::transform() const{
-    QTransform transform;
-    transform.translate(mRect.center().x(), mRect.center().y());
-    transform.rotate(mAngle);
-    transform.translate(-mRect.center().x(), -mRect.center().y());
-    return transform;
+    return transform(mRect.center());
 }
 
+QTransform BoxGeometry::transform(QPoint rotatingPoint) const{
+    QTransform transform;
+    transform.translate(rotatingPoint.x(), rotatingPoint.y());
+    transform.rotate(mAngle);
+    transform.translate(-rotatingPoint.x(), -rotatingPoint.y());
+    return transform;
+
+}
 QTransform BoxGeometry::transformCenter() const{
     QTransform transform;
     transform.translate(-mRect.center().x(), -mRect.center().y());
@@ -135,10 +141,12 @@ qreal BoxGeometry::lengthDiagonal(){
     return std::sqrt(mRect.width() * mRect.width() + mRect.height() * mRect.height());
 }
 
-BoxGeometry BoxGeometry::toBottomLeft(){
-    auto transformation = transform();
-    transformation.translate(mRect.bottomLeft().x(), mRect.bottomLeft().y());
-    transformation.rotate(mAngle);
-    transformation.translate(-mRect.bottomLeft().x(), -mRect.bottomLeft().y());
+void BoxGeometry::moveBottomLeft(QPoint point){
+    point = transform().inverted().map(point);
+    mRect.moveBottomLeft(point);
+}
+
+void BoxGeometry::setTopRight(QPoint point){
+    point = transform().inverted().map(point);
 
 }

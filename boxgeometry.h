@@ -33,13 +33,15 @@ public:
     bool contains(QPoint point, int margin) const;
     bool contains(QPoint point) const;
     QTransform transform() const;
+    QTransform transform(QPoint rotatingPoint) const;
     QTransform transformCenter() const;
     QTransform rotateTransform() const;
     QTransform tranformLeftBottom() const;
     qreal distanceToAngle(qreal x) const;
     bool isEmpty() const;
     qreal lengthDiagonal();
-    BoxGeometry toBottomLeft();
+    void moveBottomLeft(QPoint point);
+    void setTopRight(QPoint point);
 private:
     QRect mRect;
     qreal mAngle = 0;

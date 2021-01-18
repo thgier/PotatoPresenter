@@ -181,32 +181,33 @@ void PaintDocument::cursorApperance(QPoint mousePosition){
     cursor.setShape(Qt::ArrowCursor);
     auto const rect = mPresentation->getBox(mActiveBoxId)->geometry();
     auto const posMouseBox = rect.classifyPoint(mousePosition, diffToMouse);
+    auto angle = rect.angle();
     switch(mTransform){
     case(TransformationType::translate):
         switch(posMouseBox){
         case pointPosition::topBorder:
-            cursor.setShape(Qt::SizeVerCursor);
+            cursor.setShape(angleToCursor(90 + angle));
             break;
         case pointPosition::bottomBorder:
-            cursor.setShape(Qt::SizeVerCursor);
+            cursor.setShape(angleToCursor(270 + angle));
             break;
         case pointPosition::leftBorder:
-            cursor.setShape(Qt::SizeHorCursor);
+            cursor.setShape(angleToCursor(angle));
             break;
         case pointPosition::rightBorder:
-            cursor.setShape(Qt::SizeHorCursor);
+            cursor.setShape(angleToCursor(180 + angle));
             break;
         case pointPosition::topLeftCorner:
-            cursor.setShape(Qt::SizeFDiagCursor);
+            cursor.setShape(angleToCursor(45 + angle));
             break;
         case pointPosition::bottomRightCorner:
-            cursor.setShape(Qt::SizeFDiagCursor);
+            cursor.setShape(angleToCursor(225 + angle));
             break;
         case pointPosition::topRightCorner:
-            cursor.setShape(Qt::SizeBDiagCursor);
+            cursor.setShape(angleToCursor(135 + angle));
             break;
         case pointPosition::bottomLeftCorner:
-            cursor.setShape(Qt::SizeBDiagCursor);
+            cursor.setShape(angleToCursor(315 + angle));
             break;
         case pointPosition::inBox:
             cursor.setShape(Qt::SizeAllCursor);
@@ -316,5 +317,24 @@ void PaintDocument::layoutSubtitle(){
 }
 void PaintDocument::setTransformationType(TransformationType type){
     mTransform = type;
+}
+
+Qt::CursorShape PaintDocument::angleToCursor(qreal angle){
+    angle = int(angle) % 180;
+    if(angle >= 157.5 || angle < 22.5){
+        return Qt::SizeHorCursor;
+    }
+    if(angle >= 22.5 && angle < 67.5){
+        return Qt::SizeFDiagCursor;
+    }
+    if(angle >= 67.5 && angle < 112.5){
+        return Qt::SizeVerCursor;
+    }
+    if(angle >= 110.5 && angle < 157.5){
+        return Qt::SizeBDiagCursor;
+    }
+    else{
+        return Qt::SizeAllCursor;
+    }
 }
 
