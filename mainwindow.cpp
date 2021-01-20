@@ -146,7 +146,11 @@ void MainWindow::fileChanged() {
         iface->addMark(error.line, KTextEditor::MarkInterface::MarkTypes::Error);
         return;
     }
+    mPaintDocument->update();
     ui->pageNumber->setMaximum(mPresentation->frames().size()-1);
+    auto const index = mFrameModel->index(mPaintDocument->getPageNumber());
+    ui->pagePreview->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
+    ui->pagePreview->scrollTo(index);
 }
 
 void MainWindow::setupFileActions(){

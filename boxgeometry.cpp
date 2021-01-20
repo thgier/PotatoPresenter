@@ -36,7 +36,6 @@ void BoxGeometry::setRect(QRect rect){
 
 void BoxGeometry::setAngle(qreal angle){
     mAngle = angle;
-    mAngle = int(mAngle) % 360;
     if(mAngle < 0){
         mAngle += 360;
     }

@@ -39,6 +39,7 @@ public:
     void layoutSubtitle();
     void setTransformationType(TransformationType type);
     Qt::CursorShape angleToCursor(qreal angle);
+    int getPageNumber() const;
 signals:
     void pageNumberChanged(int page);
     void selectionChanged(std::shared_ptr<Frame>);

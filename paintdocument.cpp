@@ -338,3 +338,6 @@ Qt::CursorShape PaintDocument::angleToCursor(qreal angle){
     }
 }
 
+int PaintDocument::getPageNumber() const{
+    return pageNumber;
+}
