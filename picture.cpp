@@ -13,7 +13,6 @@ Picture::Picture(QString imagePath, BoxGeometry rect, QString id)
 }
 
 void Picture::drawContent(QPainter& painter){
-//    Box::drawContent(painter);
     if(!mImage){
         return;
     }
