@@ -84,14 +84,17 @@ void Parser::newTextField(int line){
         throw ParserError{"missing frame: type \\frame id", line};
         return;
     }
+    auto const boxStyle = readArguments();
+
     QString text = "";
     auto const peekNextKind = mTokenizer.peekNext().mKind;
-    auto const peeknext =mTokenizer.peekNext();
+    auto const peeknext = mTokenizer.peekNext();
     if(peekNextKind == Token::Kind::Text || peekNextKind == Token::Kind::MultiLineText) {
         text = QString(mTokenizer.next().mText);
     }
     auto const id = mFrames.back()->id() + "-" + QString::number(mBoxCounter);
     auto const textField = std::make_shared<TextField>(text, getRect(id), id);
+    textField->setBoxStyle(boxStyle);
     mBoxCounter++;
     mFrames.back()->appendBox(textField);
 }
@@ -101,12 +104,14 @@ void Parser::newImage(int line) {
         throw ParserError{"missing frame: type \\frame id", line};
         return;
     }
+    auto const boxStyle = readArguments();
     QString text = "";
     if(mTokenizer.peekNext().mKind == Token::Kind::Text) {
         text = QString(mTokenizer.next().mText);
     }
     auto const id = mFrames.back()->id() + "-" + QString::number(mBoxCounter);
     auto const textField = std::make_shared<Picture>(text, getRect(id), id);
+    textField->setBoxStyle(boxStyle);
     mBoxCounter++;
     mFrames.back()->appendBox(textField);
 }
@@ -116,6 +121,8 @@ void Parser::newTitle(int line){
         throw ParserError{"missing frame: type \\frame id", line};
         return;
     }
+    auto const boxStyle = readArguments();
+
     auto const frameId = mFrames.back()->id();
     QString text = frameId;
     auto const nextToken = mTokenizer.peekNext();
@@ -128,6 +135,7 @@ void Parser::newTitle(int line){
         rect = mLayout.mTitlePos;
     }
     auto const textField = std::make_shared<TextField>(text, rect, id);
+    textField->setBoxStyle(boxStyle);
     mBoxCounter++;
     mFrames.back()->appendBox(textField);
 }
@@ -137,6 +145,8 @@ void Parser::newArrow(int line){
         throw ParserError{"missing frame: type \\frame id", line};
         return;
     }
+    auto const boxStyle = readArguments();
+
     auto const frameId = mFrames.back()->id();
     auto const id = frameId + "-" + QString::number(mBoxCounter);
     auto rect = mConfigBoxes->getRect(id);
@@ -144,6 +154,7 @@ void Parser::newArrow(int line){
         rect = mLayout.mArrowPos;
     }
     auto const arrow = std::make_shared<ArrowBox>(rect, id);
+    arrow->setBoxStyle(boxStyle);
     mFrames.back()->appendBox(arrow);
     mBoxCounter++;
 
@@ -175,4 +186,33 @@ BoxGeometry const Parser::getRect(QString id) {
         }
     }
     return rect;
+}
+
+BoxStyle Parser::readArguments(){
+    BoxStyle boxStyle;
+    auto argument = mTokenizer.peekNext();
+    while(argument.mKind == Token::Kind::Argument){
+        mTokenizer.next();
+        auto argumentValue = mTokenizer.next();
+        if(argumentValue.mKind != Token::Kind::ArgumentValue){
+            throw ParserError{"Missing Value in argument", argument.mLine};
+            return boxStyle;
+        }
+        if(argument.mText == "color"){
+            QColor color;
+            color.setNamedColor(QString(argumentValue.mText));
+            boxStyle.mColor = color;
+        }
+        if(argument.mText == "opacity"){
+            boxStyle.mOpacity = argumentValue.mText.toDouble();
+        }
+        if(argument.mText == "font-size"){
+            boxStyle.mFontSize = argumentValue.mText.toInt();
+        }
+        if(argument.mText == "font"){
+            boxStyle.mFont = QString(argumentValue.mText);
+        }
+        argument = mTokenizer.peekNext();
+    }
+    return boxStyle;
 }

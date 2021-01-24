@@ -26,7 +26,7 @@ void Tokenizer::loadInput(QByteArray input){
 QByteArray Tokenizer::readCmdText(){
     mIsAtStartOfLine = false;
     QByteArray command = "";
-    while(mText[mPos] != ' ' && mText[mPos] != '\n' && mPos < mText.size()){
+    while(mText[mPos] != ' ' && mText[mPos] != '\n' && mPos < mText.size() && mText[mPos] != '['){
         command += mText[mPos];
         mPos++;
     }
@@ -74,6 +74,37 @@ Token Tokenizer::readText(){
     return ret;
 }
 
+Token Tokenizer::readArgument(){
+    Token ret;
+    ret.mKind = Token::Kind::Argument;
+    ret.mLine = mLine;
+    QByteArray text = "";
+    while(mText[mPos] != ':' && mPos < mText.size()){
+        text.append(mText[mPos]);
+        mPos++;
+    }
+    mPos++;
+    ret.mText = removeSpacesNewLines(text);
+    return ret;
+}
+
+Token Tokenizer::readArgumentValue(){
+    Token ret;
+    ret.mKind = Token::Kind::ArgumentValue;
+    ret.mLine = mLine;
+    QByteArray text = "";
+    while(mText[mPos] != ';' && mText[mPos] != ']' && mPos < mText.size()){
+        text.append(mText[mPos]);
+        mPos++;
+    }
+    if(mText[mPos] == ']'){
+        mInArgumentList = false;
+    }
+    mPos++;
+    ret.mText = removeSpacesNewLines(text);
+    return ret;
+}
+
 Token Tokenizer::next(){
     Token ret;
     if (mPos < mText.size())
@@ -83,9 +114,26 @@ Token Tokenizer::next(){
             ret.mKind = Token::Kind::Command;
             ret.mText = readCmdText();
             ret.mLine = mLine;
+            mLastItemCommand = true;
+        }
+        else if (ch == '[' && mLastItemCommand){
+            mPos++;
+            mLastItemCommand = false;
+            mInArgumentList = true;
+            ret = readArgument();
+            mExpectArgumentValue = true;
+        }
+        else if (mExpectArgumentValue){
+            ret = readArgumentValue();
+            mExpectArgumentValue = false;
+        }
+        else if(mInArgumentList){
+            ret = readArgument();
+            mExpectArgumentValue = true;
         }
         else {
             ret = readText();
+            mLastItemCommand = false;
         }
     }
     else{

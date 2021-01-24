@@ -118,6 +118,8 @@ MainWindow::MainWindow(QWidget *parent)
             mPaintDocument, QOverload<>::of(&PaintDocument::update));
     connect(&cacheManagerImages(), &ImageCacheManager::imageChanged,
             this, [this](){MainWindow::fileChanged();});
+    connect(ui->actionReload_Resources, &QAction::triggered,
+            &cacheManagerImages(), &ImageCacheManager::deleteAllResources);
     ui->error->setWordWrap(true);
 
     auto transformGroup = new QActionGroup(this);

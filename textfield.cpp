@@ -17,10 +17,10 @@ QString TextField::Text(){
 
 void TextField::drawContent(QPainter& painter) {
     startDraw(painter);
-    auto font = QFont(mFont);
-    font.setPixelSize(mFontSize);
+    auto font = QFont(mStyle.mFont);
+    font.setPixelSize(mStyle.mFontSize);
     painter.setFont(font);
-    painter.setPen(Qt::black);
+    painter.setPen(mStyle.mColor);
     auto draw = DrawText(mText, painter, geometry().rect(), id());
     draw.drawWord(painter);
     endDraw(painter);

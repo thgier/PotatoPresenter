@@ -44,6 +44,7 @@ QString Box::id() {
 void Box::startDraw(QPainter &painter){
     painter.save();
     painter.setTransform(mRect.transform());
+    painter.setOpacity(mStyle.mOpacity);
 }
 
 void Box::endDraw(QPainter &painter){
@@ -74,4 +75,8 @@ void Box::drawScaleMarker(QPainter &painter, int size){
     painter.fillRect(QRect(mRect.rect().bottomRight() + QPoint(size/2, size/2), QSize(-size, -size)), Qt::black);
 
     endDraw(painter);
+}
+
+void Box::setBoxStyle(BoxStyle style){
+    mStyle = style;
 }

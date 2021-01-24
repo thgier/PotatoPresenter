@@ -5,6 +5,13 @@
 #include <QPainter>
 #include "boxgeometry.h"
 
+struct BoxStyle{
+    int mFontSize = 50;
+    QColor mColor{Qt::black};
+    QString mFont = "sans-serif";
+    qreal mOpacity = 1;
+};
+
 class Box : public QObject
 {
     Q_OBJECT
@@ -21,9 +28,9 @@ public:
     void drawBoundingBox(QPainter& painter);
     void drawScaleMarker(QPainter& painter, int size);
     QString id();
+    void setBoxStyle(BoxStyle style);
 protected:
-    int mFontSize = 50;
-    QString mFont = "DejaVu Sans";
+    BoxStyle mStyle;
 private:
     BoxGeometry mRect;
     QString mId = 0;

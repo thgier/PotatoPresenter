@@ -1,7 +1,6 @@
 #ifndef TESTTOKENIZER_H
 #define TESTTOKENIZER_H
 
-#include <QObject>
 #include <QtTest/QTest>
 #include "tokenizer.h"
 

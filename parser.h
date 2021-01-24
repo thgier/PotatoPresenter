@@ -22,6 +22,8 @@ public:
     void loadInput(QIODevice *input, ConfigBoxes* configuration);
     void loadInput(QByteArray input, ConfigBoxes* configuration);
     FrameList readInput();
+
+private:
     void command(Token token);
     void newFrame(int line);
     void newTextField(int line);
@@ -29,8 +31,8 @@ public:
     void newTitle(int line);
     void newArrow(int line);
     BoxGeometry const getRect(QString id);
+    BoxStyle readArguments();
 
-private:
     Tokenizer mTokenizer;
     ConfigBoxes* mConfigBoxes;
     int mBoxCounter = 0;

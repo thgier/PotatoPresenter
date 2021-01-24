@@ -7,6 +7,8 @@
 struct Token {
     enum class Kind {
         Command,
+        Argument,
+        ArgumentValue,
         Text,
         MultiLineText,
         EndOfFile
@@ -23,15 +25,22 @@ public:
     void loadInput(QIODevice *input);
     void loadInput(QByteArray input);
     Token next();
-    QByteArray readCmdText();
-    Token readText();
     Token peekNext() const;
-    QByteArray removeSpacesNewLines(QByteArray text) const;
 private:
+    Token readText();
+    Token readArgument();
+    Token readArgumentValue();
+    QByteArray readCmdText();
+
+    QByteArray removeSpacesNewLines(QByteArray text) const;
+
     QByteArray mText;
     int mPos = 0;
     bool mIsAtStartOfLine = true;
     int mLine = 0;
+    bool mLastItemCommand = false;
+    bool mInArgumentList = false;
+    bool mExpectArgumentValue = false;
 };
 
 #endif // TOKENIZER_H

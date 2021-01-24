@@ -19,7 +19,7 @@ void ArrowBox::drawContent(QPainter& painter){
     path.lineTo(rect.right() - arrowW, rect.bottom());
     path.moveTo(rect.right(), rect.center().y());
 
-    painter.setBrush(Qt::black);
+    painter.setBrush(mStyle.mColor);
     painter.drawPath(path);
     endDraw(painter);
 }

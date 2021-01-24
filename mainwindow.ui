@@ -98,6 +98,8 @@
     <addaction name="actionLayoutFullscreen"/>
     <addaction name="actionLayoutRight"/>
     <addaction name="actionLayoutLeft"/>
+    <addaction name="separator"/>
+    <addaction name="actionReload_Resources"/>
    </widget>
    <addaction name="menufile"/>
    <addaction name="menuEdit"/>
@@ -290,6 +292,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionReload_Resources">
+   <property name="icon">
+    <iconset theme="download"/>
+   </property>
+   <property name="text">
+    <string>Reload Resources</string>
    </property>
   </action>
  </widget>

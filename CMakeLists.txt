@@ -45,14 +45,15 @@ add_executable(praes
     boxgeometry.cpp
     boxtransformation.cpp
     arrowbox.cpp
+    template.cpp
 )
 
-#add_executable(testtokenizer
-#    testtokenizer.cpp
-#    tokenizer.cpp)
-#add_test(NAME testtokenizer COMMAND testtokenizer)
+add_executable(testtokenizer
+    testtokenizer.cpp
+    tokenizer.cpp)
+add_test(NAME testtokenizer COMMAND testtokenizer)
 
 target_link_libraries(praes PRIVATE Qt5::Widgets KF5::TextEditor)
 target_link_libraries(praes PRIVATE Qt5::PrintSupport)
 target_link_libraries(praes PRIVATE Qt5::Svg)
-#target_link_libraries(testtokenizer PRIVATE Qt5::Test)
+target_link_libraries(testtokenizer PRIVATE Qt5::Test)
