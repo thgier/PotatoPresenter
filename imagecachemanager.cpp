@@ -5,16 +5,18 @@
 
 ImageCacheManager::ImageCacheManager()
 {
-    mTimer->setSingleShot(true);
-    connect(&mWatcher, &QFileSystemWatcher::fileChanged,
-            this, [this](QString path){mTimer->start(200);
+    mWatcher = new QFileSystemWatcher(this);
+    QTimer *fileTimer = new QTimer(this);
+    fileTimer->setSingleShot(true);
+    connect(mWatcher, &QFileSystemWatcher::fileChanged,
+            this, [this, fileTimer](QString path){fileTimer->start(200);
                                        mLastPath = path;});
-    connect(mTimer, &QTimer::timeout,
+    connect(fileTimer, &QTimer::timeout,
             this, [this](){reloadImage(mLastPath);});
 
     QTimer *dirTimer = new QTimer(this);
     dirTimer->setSingleShot(true);
-    connect(&mWatcher, &QFileSystemWatcher::directoryChanged,
+    connect(mWatcher, &QFileSystemWatcher::directoryChanged,
             this, [this, dirTimer](QString path){dirTimer->start(200);
                                        mLastPathDir = path;});
     connect(dirTimer, &QTimer::timeout,
@@ -29,48 +31,34 @@ ImageCacheManager& cacheManagerImages()
 }
 
 std::shared_ptr<QImage> ImageCacheManager::getImage(QString path) {
-    qInfo() << "watched Directories: " << mWatcher.directories();
-    qInfo() << "watched Files: " << mWatcher.files();
     if(mCachedImages.find(path) != mCachedImages.end()) {
         return mCachedImages[path].image;
     }
-    auto dir = QFileInfo(path);
-    Image imageEntry;
     auto image = std::make_shared<QImage>(path);
+    auto dir = QFileInfo(path);
+    ImageEntry imageEntry;
     if(dir.exists()){
-        mWatcher.addPath(path);
-        imageEntry = Image{image, imageStatus::ok};
+        mWatcher->addPath(path);
+        imageEntry = ImageEntry{image, imageStatus::ok};
     }
     else{
-        addFailureToWatcher(dir);
-        imageEntry = Image{image, imageStatus::failed};
+        addFailedToWatcher(dir);
+        imageEntry = ImageEntry{image, imageStatus::failed};
     }
     mCachedImages[path] = imageEntry;
     return image;
 }
 
-void ImageCacheManager::updateImage(const QString &path){
-    if(mCachedImages.find(path) != mCachedImages.end()) {
-//        existing image was loaded sucessfull before
-        reloadImage(path);
-    }
-    else{
-//        path is no file but a directory, that is watched due to a failed loading of a image
-//        remove all images with failed status from cache which contains path
-        removeFailed(path);
-    }
-}
-
 void ImageCacheManager::reloadImage(QString const &path){    
     auto const image = std::make_shared<QImage>(path);
     auto dir = QFileInfo(path);
-    Image imageEntry;
+    ImageEntry imageEntry;
     if(dir.exists()){
-        imageEntry = Image{image, imageStatus::ok};
+        imageEntry = ImageEntry{image, imageStatus::ok};
     }
     else{
-        addFailureToWatcher(dir);
-        imageEntry = Image{image, imageStatus::failed};
+        addFailedToWatcher(dir);
+        imageEntry = ImageEntry{image, imageStatus::failed};
     }
     mCachedImages[path] = imageEntry;
     emit imageChanged();
@@ -82,17 +70,23 @@ void ImageCacheManager::removeFailed(QString path){
             mCachedImages.erase(entry.first);
         }
     }
-    mWatcher.removePath(path);
+    mWatcher->removePath(path);
     emit imageChanged();
 }
 
-void ImageCacheManager::addFailureToWatcher(QFileInfo file){
+void ImageCacheManager::addFailedToWatcher(QFileInfo file){
     auto pathRecursive = file.absoluteDir();
     while(!pathRecursive.exists() && !pathRecursive.isEmpty()){
         pathRecursive.cdUp();
     }
     QString name = pathRecursive.canonicalPath();
-    mWatcher.addPath(name);
-    auto list = mWatcher.directories();
-    auto listfiles = mWatcher.files();
+    mWatcher->addPath(name);
+    auto list = mWatcher->directories();
+    auto listfiles = mWatcher->files();
+}
+
+void ImageCacheManager::deleteAllResources(){
+    mCachedImages.clear();
+    mWatcher = new QFileSystemWatcher(this);
+    emit imageChanged();
 }
