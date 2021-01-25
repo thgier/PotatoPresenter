@@ -5,6 +5,8 @@
 #include <QJsonValue>
 #include <QCryptographicHash>
 #include <charconv>
+#include <QDir>
+#include <QRegularExpression>
 
 #include "parser.h"
 #include "frame.h"
@@ -43,7 +45,10 @@ FrameList Parser::readInput(){
 }
 
 void Parser::command(Token token){
-    if(token.mText == "\\frame"){
+    if(token.mText == "\\useTemplate"){
+        loadTemplate(token.mLine);
+    }
+    else if(token.mText == "\\frame"){
         newFrame(token.mLine);
     }
     else if(token.mText == "\\text"){
@@ -58,9 +63,22 @@ void Parser::command(Token token){
     else if(token.mText == "\\arrow"){
         newArrow(token.mLine);
     }
+    else if(token.mText == "\\setVar"){
+        setVariable(token.mLine);
+    }
     else{
         throw ParserError{"command does not exist", token.mLine};
     }
+}
+
+void Parser::loadTemplate(int line){
+    if(mTokenizer.peekNext().mKind != Token::Kind::Text){
+        throw ParserError{"Missing template", line};
+    }
+    if(!QDir(mTokenizer.peekNext().mText).exists()){
+        throw ParserError{"Cannot find Template directory: " + QString(mTokenizer.peekNext().mText), line};
+    }
+//    mTemplate.readTemplateFile(QString(mTokenizer.next().mText));
 }
 
 void Parser::newFrame(int line){
@@ -84,7 +102,8 @@ void Parser::newTextField(int line){
         throw ParserError{"missing frame: type \\frame id", line};
         return;
     }
-    auto const boxStyle = readArguments();
+    auto id = generateId();
+    auto const boxStyle = readArguments(id);
 
     QString text = "";
     auto const peekNextKind = mTokenizer.peekNext().mKind;
@@ -92,9 +111,9 @@ void Parser::newTextField(int line){
     if(peekNextKind == Token::Kind::Text || peekNextKind == Token::Kind::MultiLineText) {
         text = QString(mTokenizer.next().mText);
     }
-    auto const id = mFrames.back()->id() + "-" + QString::number(mBoxCounter);
     auto const textField = std::make_shared<TextField>(text, getRect(id), id);
     textField->setBoxStyle(boxStyle);
+    textField->setVariables(mVariables);
     mBoxCounter++;
     mFrames.back()->appendBox(textField);
 }
@@ -104,12 +123,13 @@ void Parser::newImage(int line) {
         throw ParserError{"missing frame: type \\frame id", line};
         return;
     }
-    auto const boxStyle = readArguments();
+    auto id = generateId();
+    auto const boxStyle = readArguments(id);
+
     QString text = "";
     if(mTokenizer.peekNext().mKind == Token::Kind::Text) {
         text = QString(mTokenizer.next().mText);
     }
-    auto const id = mFrames.back()->id() + "-" + QString::number(mBoxCounter);
     auto const textField = std::make_shared<Picture>(text, getRect(id), id);
     textField->setBoxStyle(boxStyle);
     mBoxCounter++;
@@ -121,7 +141,8 @@ void Parser::newTitle(int line){
         throw ParserError{"missing frame: type \\frame id", line};
         return;
     }
-    auto const boxStyle = readArguments();
+    auto id = generateId();
+    auto const boxStyle = readArguments(id);
 
     auto const frameId = mFrames.back()->id();
     QString text = frameId;
@@ -129,7 +150,6 @@ void Parser::newTitle(int line){
     if(nextToken.mKind == Token::Kind::Text && !nextToken.mText.isEmpty()) {
         text = QString(mTokenizer.next().mText);
     }
-    auto const id = frameId + "-" + QString::number(mBoxCounter);
     auto rect = mConfigBoxes->getRect(id);
     if(rect.isEmpty()){
         rect = mLayout.mTitlePos;
@@ -145,10 +165,9 @@ void Parser::newArrow(int line){
         throw ParserError{"missing frame: type \\frame id", line};
         return;
     }
-    auto const boxStyle = readArguments();
+    auto id = generateId();
+    auto const boxStyle = readArguments(id);
 
-    auto const frameId = mFrames.back()->id();
-    auto const id = frameId + "-" + QString::number(mBoxCounter);
     auto rect = mConfigBoxes->getRect(id);
     if(rect.isEmpty()){
         rect = mLayout.mArrowPos;
@@ -163,6 +182,22 @@ void Parser::newArrow(int line){
         throw ParserError{"\\arrow command need no text", line};
         return;
     }
+}
+
+void Parser::setVariable(int line){
+    Token nextToken = mTokenizer.next();
+    if(nextToken.mKind != Token::Kind::Text){
+        throw ParserError{"Missing Variable declaration", line};
+        return;
+    }
+    auto text = QString(nextToken.mText);
+    auto list = text.split(QRegularExpression("\\s+"));
+    auto variable = list[0];
+    if(variable.left(2) != "%{" || variable.back() != '}'){
+        throw ParserError{"Variabele has to have the form %{variable}", line};
+        return;
+    }
+    mVariables[variable] = text.right(variable.size() - 1);
 }
 
 BoxGeometry const Parser::getRect(QString id) {
@@ -188,7 +223,7 @@ BoxGeometry const Parser::getRect(QString id) {
     return rect;
 }
 
-BoxStyle Parser::readArguments(){
+BoxStyle Parser::readArguments(QString &id){
     BoxStyle boxStyle;
     auto argument = mTokenizer.peekNext();
     while(argument.mKind == Token::Kind::Argument){
@@ -212,7 +247,22 @@ BoxStyle Parser::readArguments(){
         if(argument.mText == "font"){
             boxStyle.mFont = QString(argumentValue.mText);
         }
+        if(argument.mText == "id"){
+            id = QString(argumentValue.mText);
+            if(std::any_of(mUserIds.begin(), mUserIds.end(), [id](auto a){return a == id;})){
+                throw ParserError{"Id already exists", argumentValue.mLine};
+            }
+            mUserIds.push_back(id);
+        }
         argument = mTokenizer.peekNext();
     }
     return boxStyle;
 }
+
+
+QString Parser::generateId(){
+    auto const frameId = mFrames.back()->id();
+    auto id = frameId + "-intern-" + QString::number(mBoxCounter);
+    return id;
+}
+

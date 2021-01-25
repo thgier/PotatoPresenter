@@ -64,10 +64,15 @@ void TestTokenizer::tokenTest_data(){
                                << QVector<Token>{Token{Token::Kind::Command, "\\frame", 1}, Token{Token::Kind::Argument, "opacity", 1},
                                     Token{Token::Kind::ArgumentValue, "0.5", 1}, Token{Token::Kind::Argument, "color", 1},
                                   Token{Token::Kind::ArgumentValue, "red", 1}, Token{Token::Kind::Text, "Hello", 1}};
-    QTest::newRow("multiple arguments with commanf") << QByteArray("\\frame[opacity:0.5; color: red]\n\\text")
+    QTest::newRow("multiple arguments with command") << QByteArray("\\frame[opacity:0.5; color: red]\n\\text")
                                << QVector<Token>{Token{Token::Kind::Command, "\\frame", 1}, Token{Token::Kind::Argument, "opacity", 1},
                                   Token{Token::Kind::ArgumentValue, "0.5", 1}, Token{Token::Kind::Argument, "color", 1},
                                   Token{Token::Kind::ArgumentValue, "red", 1}, Token{Token::Kind::Command, "\\text", 2}};
-
+    QTest::newRow("missing argument") << QByteArray("\\frame[]")
+                                                     << QVector<Token>{Token{Token::Kind::Command, "\\frame", 1}, Token{Token::Kind::EndOfFile, "", 1}};
+    QTest::newRow("missing value") << QByteArray("\\frame[opacity]")
+                                      << QVector<Token>{Token{Token::Kind::Command, "\\frame", 1}, Token{Token::Kind::Argument, "opacity", 1}};
+    QTest::newRow("missing value with :") << QByteArray("\\frame[opacity:]")
+                                      << QVector<Token>{Token{Token::Kind::Command, "\\frame", 1}, Token{Token::Kind::Argument, "opacity", 1}};
 }
 

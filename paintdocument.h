@@ -47,7 +47,6 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
-    void mouseDoubleClickEvent(QMouseEvent *event) override;
     int mWidth;
     void paintEvent(QPaintEvent *event) override;
     QSize mSize;
@@ -65,6 +64,7 @@ private:
     Layout mLayout;
     double mScale;
     void determineBoxInFocus(QPoint mousePos);
+    std::vector<std::shared_ptr<Box>> determineBoxesUnderMouse(QPoint mousePos);
     QString mCurrentFrameId;
     std::shared_ptr<Presentation> mPresentation;
     TransformationType mTransform = TransformationType::translate;

@@ -19,15 +19,16 @@ class Presentation : public QObject
 public:
     Presentation();
     void loadInput(QString configFilename);
-    FrameList frames();
+    FrameList frames() const;
     void updateFrames(QByteArray doc);
 
-    bool empty();
-    int size();
+    bool empty() const;
+    int size() const;
 
-    std::shared_ptr<Frame> frameAt(int pageNumber);
+    std::shared_ptr<Frame> frameAt(int pageNumber) const;
     void setBox(QString boxId, BoxGeometry rect, int pageNumber);
-    std::shared_ptr<Box> getBox(QString id);
+    std::shared_ptr<Box> getBox(QString id) const;
+    std::shared_ptr<Frame> getFrame(QString id) const;
     void saveConfig(QString file);
     void setPresentationOutput(PresentationOutput output);
 signals:

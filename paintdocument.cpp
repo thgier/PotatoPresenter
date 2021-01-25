@@ -59,7 +59,7 @@ void PaintDocument::setCurrentPage(int page){
     pageNumber = page;
     mCurrentFrameId = mPresentation->frameAt(page)->id();
     mActiveBoxId = QString();
-    selectionChanged(mPresentation->frameAt(pageNumber));
+    emit selectionChanged(mPresentation->frameAt(pageNumber));
     update();
 }
 
@@ -84,13 +84,25 @@ void PaintDocument::resizeEvent(QResizeEvent*) {
 }
 
 void PaintDocument::determineBoxInFocus(QPoint mousePos){
+    auto lastId = mActiveBoxId;
     mActiveBoxId = QString();
     for(auto box: mPresentation->frameAt(pageNumber)->getBoxes()) {
-        if(box->geometry().contains(mousePos, diffToMouse)) {
+        if(box->geometry().contains(mousePos) && lastId != box->id()) {
             mActiveBoxId = box->id();
             break;
         }
     }
+}
+
+std::vector<std::shared_ptr<Box>> PaintDocument::determineBoxesUnderMouse(QPoint mousePos){
+    mActiveBoxId = QString();
+    std::vector<std::shared_ptr<Box>> boxesUnderMouse;
+    for(auto &box: mPresentation->frameAt(pageNumber)->getBoxes()) {
+        if(box->geometry().contains(mousePos, diffToMouse)) {
+            boxesUnderMouse.push_back(box);
+        }
+    }
+    return boxesUnderMouse;
 }
 
 void PaintDocument::mousePressEvent(QMouseEvent *event)
@@ -110,23 +122,6 @@ void PaintDocument::mousePressEvent(QMouseEvent *event)
     }
 }
 
-void PaintDocument::mouseDoubleClickEvent(QMouseEvent *event){
-    if(mPresentation->empty()){
-        return;
-    }
-    auto const mousePos = event->pos() * mScale;
-    if(mActiveBoxId.isEmpty()){
-        determineBoxInFocus(mousePos);
-        return;
-    }
-    for(auto box: mPresentation->frameAt(pageNumber)->getBoxes()) {
-        if(box->geometry().contains(mousePos) && mActiveBoxId != box->id()) {
-            mActiveBoxId = box->id();
-            break;
-        }
-    }
-}
-
 void PaintDocument::mouseMoveEvent(QMouseEvent *event)
 {
     if(mPresentation->empty()){
@@ -143,7 +138,6 @@ void PaintDocument::mouseMoveEvent(QMouseEvent *event)
     }
     if(!momentTrafo){
         cursorApperance(newPosition);
-        determineBoxInFocus(lastPosition);
         if(mActiveBoxId.isEmpty()){
             return;
         }
@@ -164,8 +158,8 @@ void PaintDocument::mouseReleaseEvent(QMouseEvent *event)
     if (event->button() != Qt::LeftButton) {
         return;
     }
-    if(!momentTrafo){
-        determineBoxInFocus(lastPosition);
+    if(mActiveBoxId.isEmpty() || !momentTrafo){
+        determineBoxInFocus(event->pos() * mScale);
     }
     update();
 }

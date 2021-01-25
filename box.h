@@ -12,25 +12,36 @@ struct BoxStyle{
     qreal mOpacity = 1;
 };
 
+struct VariableSubstitution{
+    int begin;
+    int end;
+    QString word;
+};
+
 class Box : public QObject
 {
     Q_OBJECT
 public:
+    using List = std::vector<std::shared_ptr<Box>>;
     Box();
     Box(BoxGeometry rect, QString id);
-    BoxGeometry geometry();
+    BoxGeometry geometry() const;
+    BoxStyle style() const;
     virtual void drawContent(QPainter& painter);
     void setVisibility(bool vis);
     void setMovable(bool move);
     void setRect(BoxGeometry rect);
-    void startDraw(QPainter& painter);
-    void endDraw(QPainter& painter);
     void drawBoundingBox(QPainter& painter);
     void drawScaleMarker(QPainter& painter, int size);
     QString id();
     void setBoxStyle(BoxStyle style);
+    QString substituteVariables(QString text, std::map<QString, QString> variables) const;
+    void setVariables(std::map<QString, QString> variables);
 protected:
+    void startDraw(QPainter& painter);
+    void endDraw(QPainter& painter);
     BoxStyle mStyle;
+    std::map<QString, QString> mVariables;
 private:
     BoxGeometry mRect;
     QString mId = 0;

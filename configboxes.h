@@ -25,13 +25,13 @@ class ConfigBoxes : public QObject
 public:
     ConfigBoxes();
     void loadConfigurationFile(QString filename);
-    void loadConfigFromJson(QJsonDocument doc);
     void saveConfig(QString filename);
-    JsonConfig readJsonConfigurations(const QJsonObject &json);
-    void saveJsonConfigurations(QJsonObject &json, const JsonConfig config);
     void addRect(BoxGeometry rect, QString id);
     BoxGeometry getRect(QString id);
 private:
+    void saveJsonConfigurations(QJsonObject &json, const JsonConfig config);
+    JsonConfig readJsonConfigurations(const QJsonObject &json);
+    void loadConfigFromJson(QJsonDocument doc);
     std::map<QString, JsonConfig> mConfigMap;
 };
 

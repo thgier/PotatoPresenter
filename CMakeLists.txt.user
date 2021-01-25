@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.14.0, 2021-01-22T10:06:01. -->
+<!-- Written by QtCreator 4.14.0, 2021-01-25T09:28:33. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -64,7 +64,27 @@
     <value type="bool" key="AutoTest.Framework.QtQuickTest">true</value>
     <value type="bool" key="AutoTest.Framework.QtTest">true</value>
    </valuemap>
-   <valuemap type="QVariantMap" key="AutoTest.CheckStates"/>
+   <valuemap type="QVariantMap" key="AutoTest.CheckStates">
+    <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:argument">Checked</value>
+    <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:empty input">Checked</value>
+    <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:empty text">Checked</value>
+    <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:first test">Checked</value>
+    <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:initTestCase">Unchecked</value>
+    <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:multiline">Checked</value>
+    <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:multiple arguments">Checked</value>
+    <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:multiple arguments with commanf">Checked</value>
+    <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:next line">Checked</value>
+    <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:next line after command">Checked</value>
+    <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:next line with text after command">Checked</value>
+    <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:one space">Checked</value>
+    <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:one word">Checked</value>
+    <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:space">Checked</value>
+    <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:split command">Checked</value>
+    <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:tokenTest">Checked</value>
+    <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:tokenTest_data">Unchecked</value>
+    <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:two commands">Checked</value>
+    <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.h:TestTokenizer">Checked</value>
+   </valuemap>
    <value type="int" key="AutoTest.RunAfterBuild">0</value>
    <value type="bool" key="AutoTest.UseGlobal">true</value>
    <valuelist type="QVariantList" key="ClangCodeModel.CustomCommandLineKey"/>
@@ -371,6 +391,7 @@
     <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">/home/theresa/Documents/build-praes-Desktop-Debug</value>
    </valuemap>
    <value type="int" key="ProjectExplorer.Target.RunConfigurationCount">2</value>
   </valuemap>

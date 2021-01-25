@@ -32,3 +32,21 @@ bool Frame::empty() {
 QString Frame::id() {
     return mId;
 }
+
+std::shared_ptr<Box> Frame::getBox(QString id) const{
+    for(auto const &box: getBoxes()){
+        if(box->id() == id){
+            return box;
+        }
+    }
+    return {};
+}
+
+bool Frame::IdExists(QString id) const{
+    for(auto const &box: getBoxes()){
+        if(box->id() == id){
+            return true;
+        }
+    }
+    return false;
+}

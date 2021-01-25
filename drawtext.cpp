@@ -12,7 +12,6 @@ std::vector<Property> DrawText::getProberties(QRegularExpression re, fontChange 
     std::vector<Property> properties = {};
     while(i.hasNext()){
         auto word = i.next();
-        auto text = word.captured(0);
         int start = word.capturedStart();
         int end = word.capturedEnd();
         auto propStart = Property(start, changeStart);

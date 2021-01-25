@@ -14,6 +14,9 @@ void Tokenizer::loadInput(QIODevice *input){
     mPos = 0;
     mIsAtStartOfLine = true;
     mLine = 0;
+    mLastItemCommand = false;
+    mInArgumentList = false;
+    mExpectArgumentValue = false;
 }
 
 void Tokenizer::loadInput(QByteArray input){
@@ -79,9 +82,12 @@ Token Tokenizer::readArgument(){
     ret.mKind = Token::Kind::Argument;
     ret.mLine = mLine;
     QByteArray text = "";
-    while(mText[mPos] != ':' && mPos < mText.size()){
+    while(mText[mPos] != ':' && mPos < mText.size() && mText[mPos] != ']'){
         text.append(mText[mPos]);
         mPos++;
+    }
+    if(mText[mPos] == ']'){
+        mInArgumentList = false;
     }
     mPos++;
     ret.mText = removeSpacesNewLines(text);

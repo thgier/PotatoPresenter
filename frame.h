@@ -12,6 +12,8 @@ public:
     Frame();
     Frame(QString id);
     std::vector<std::shared_ptr<Box>> getBoxes() const;
+    std::shared_ptr<Box> getBox(QString id) const;
+    bool IdExists(QString id) const;
     void appendBox(std::shared_ptr<Box> box);
     void setBoxes(std::vector<std::shared_ptr<Box>> boxes);
     bool empty();

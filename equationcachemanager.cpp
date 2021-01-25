@@ -27,7 +27,7 @@ void EquationCacheManager::startConversionProcess(QString mathExpression, QByteA
     auto standardFile = QFile("/home/theresa/Documents/praes/generaterLatex.tex");
     QDir(mFolder).mkpath(hash);
     QString folder = mFolder + hash + "/";
-    qWarning() << "copy" << hash << standardFile.copy(folder+"a.tex");
+    standardFile.copy(folder+"a.tex");
 
     QString program = "/usr/bin/latex";
     QStringList arguments;

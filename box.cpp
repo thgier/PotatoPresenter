@@ -1,4 +1,5 @@
 #include "box.h"
+#include <QRegularExpression>
 
 Box::Box(BoxGeometry rect, QString id)
     : mRect{rect}
@@ -12,8 +13,12 @@ void Box::setRect(BoxGeometry rect){
     }
 }
 
-BoxGeometry Box::geometry(){
+BoxGeometry Box::geometry() const{
     return mRect;
+}
+
+BoxStyle Box::style() const{
+    return mStyle;
 }
 
 void Box::drawContent(QPainter& painter) {
@@ -79,4 +84,40 @@ void Box::drawScaleMarker(QPainter &painter, int size){
 
 void Box::setBoxStyle(BoxStyle style){
     mStyle = style;
+}
+
+QString Box::substituteVariables(QString text, std::map<QString, QString> variables) const {
+    if(variables.empty()){
+        return text;
+    }
+    std::vector<VariableSubstitution> variableSubstituions;
+    for(auto const &variable: variables){
+        QRegularExpression re(variable.first);
+        QRegularExpressionMatchIterator i = re.globalMatch(text);
+        while(i.hasNext()){
+            QRegularExpressionMatch match = i.next();
+            VariableSubstitution sub;
+            sub.begin = match.capturedStart();
+            sub.end = match.capturedEnd();
+            sub.word = variable.second;
+            variableSubstituions.push_back(sub);
+        }
+    }
+    if(variableSubstituions.empty()){
+        return text;
+    }
+    std::sort(variableSubstituions.begin(), variableSubstituions.end(), [](auto a, auto b){return a.begin < b.begin;});
+    QString newText = "";
+    int position = 0;
+    for(auto &sub: variableSubstituions){
+        newText.append(text.midRef(position, sub.begin - position));
+        newText.append(sub.word);
+        position = sub.end;
+    }
+    newText.append(text.midRef(position, text.size() - position));
+    return newText;
+}
+
+void Box::setVariables(std::map<QString, QString> variables){
+    mVariables = variables;
 }
