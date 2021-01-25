@@ -7,6 +7,13 @@ Box::Box(BoxGeometry rect, QString id)
 {
 }
 
+Box::Box(std::map<QString, QString> variables, BoxGeometry rect, QString id)
+    : mVariables{variables}
+    , mRect{rect}
+    , mId{id}
+{
+}
+
 void Box::setRect(BoxGeometry rect){
     if(mMovable){
         mRect = rect;

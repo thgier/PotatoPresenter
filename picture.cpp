@@ -4,11 +4,10 @@
 #include<QDebug>
 #include "imagecachemanager.h"
 
-Picture::Picture(QString imagePath, BoxGeometry rect, QString id)
-    : Box(rect, id)
-    , mImagePath{imagePath}
-//    , mImage{std::make_shared<QImage>()}
+Picture::Picture(QString imagePath, std::map<QString, QString> variables, BoxGeometry rect, QString id)
+    : Box(variables, rect, id)
 {
+    mImagePath = substituteVariables(imagePath, mVariables);
     mImage = cacheManagerImages().getImage(mImagePath);
 }
 

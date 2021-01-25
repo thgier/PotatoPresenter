@@ -25,6 +25,7 @@ public:
     using List = std::vector<std::shared_ptr<Box>>;
     Box();
     Box(BoxGeometry rect, QString id);
+    Box(std::map<QString, QString> variables, BoxGeometry rect, QString id);
     BoxGeometry geometry() const;
     BoxStyle style() const;
     virtual void drawContent(QPainter& painter);

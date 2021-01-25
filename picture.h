@@ -6,7 +6,7 @@
 class Picture: public Box
 {
 public:
-    Picture(QString imagePath, BoxGeometry rect, QString id);
+    Picture(QString imagePath, std::map<QString, QString> variables, BoxGeometry rect, QString id);
     void drawContent(QPainter& painter) override;
     int aspectRatio(QRect rect);
 private:

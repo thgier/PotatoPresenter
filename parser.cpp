@@ -130,7 +130,7 @@ void Parser::newImage(int line) {
     if(mTokenizer.peekNext().mKind == Token::Kind::Text) {
         text = QString(mTokenizer.next().mText);
     }
-    auto const textField = std::make_shared<Picture>(text, getRect(id), id);
+    auto const textField = std::make_shared<Picture>(text, mVariables, getRect(id), id);
     textField->setBoxStyle(boxStyle);
     mBoxCounter++;
     mFrames.back()->appendBox(textField);
@@ -156,6 +156,7 @@ void Parser::newTitle(int line){
     }
     auto const textField = std::make_shared<TextField>(text, rect, id);
     textField->setBoxStyle(boxStyle);
+    textField->setVariables(mVariables);
     mBoxCounter++;
     mFrames.back()->appendBox(textField);
 }
@@ -197,7 +198,7 @@ void Parser::setVariable(int line){
         throw ParserError{"Variabele has to have the form %{variable}", line};
         return;
     }
-    mVariables[variable] = text.right(variable.size() - 1);
+    mVariables[variable] = text.right(text.size() - variable.size() - 1);
 }
 
 BoxGeometry const Parser::getRect(QString id) {
