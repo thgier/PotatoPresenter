@@ -167,13 +167,14 @@ void PaintDocument::mouseReleaseEvent(QMouseEvent *event)
 
 void PaintDocument::cursorApperance(QPoint mousePosition){
     auto cursor = QCursor();
-    if(mActiveBoxId.isEmpty()){
+    auto const activeBox = mPresentation->getBox(mActiveBoxId);
+    if(!activeBox){
         cursor.setShape(Qt::ArrowCursor);
         setCursor(cursor);
         return;
     }
     cursor.setShape(Qt::ArrowCursor);
-    auto const rect = mPresentation->getBox(mActiveBoxId)->geometry();
+    auto const rect = activeBox->geometry();
     auto const posMouseBox = rect.classifyPoint(mousePosition, diffToMouse);
     auto angle = rect.angle();
     switch(mTransform){
@@ -244,7 +245,7 @@ void PaintDocument::createPDF(QString filename){
     painter.setWindow(QRect(QPoint(0, 0), mSize));
 
     painter.begin(&pdfWriter);
-    for(auto frame: mPresentation->frames()){
+    for(auto &frame: mPresentation->frames()){
         auto paint = std::make_shared<Painter>(painter);
         paint->paintFrame(frame);
         if(frame != mPresentation->frames().back()){

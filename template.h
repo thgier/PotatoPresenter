@@ -16,12 +16,15 @@ class Template
 {
 public:
     Template();
-    void readTemplateFile(QString directory);
+    void readTemplateConfig(QString configFile);
     BoxGeometry getGeometry(QString id) const;
     BoxStyle getStyle(QString id) const;
     void declareVariable(QString name, QString value);
     void drawTemplate(QString frameId);
     Box::List getTemplateSlide(QString frameId) const;
+    void setVariables(std::map<QString, QString> variables);
+    ConfigBoxes& Configuration();
+    void setFrames(Frame::List frames);
 private:
     Presentation mPresentation;
     std::map<QString, QString> mVariables;

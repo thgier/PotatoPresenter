@@ -8,19 +8,24 @@
 class Frame
 {
 public:
+    using List = std::vector<std::shared_ptr<Frame>>;
     using ptr = std::shared_ptr<Frame>;
     Frame();
     Frame(QString id);
-    std::vector<std::shared_ptr<Box>> getBoxes() const;
+    Box::List getBoxes() const;
     std::shared_ptr<Box> getBox(QString id) const;
     bool IdExists(QString id) const;
     void appendBox(std::shared_ptr<Box> box);
     void setBoxes(std::vector<std::shared_ptr<Box>> boxes);
     bool empty();
     QString id();
+    void setTemplateBoxes(Box::List boxes);
+    void appendTemplateBoxes(std::shared_ptr<Box> box);
+    Box::List getTemplateBoxes() const;
 
 private:
-    std::vector<std::shared_ptr<Box>> mBoxes;
+    Box::List mBoxes;
+    Box::List mTemplateBoxes;
     QString mId;
 };
 

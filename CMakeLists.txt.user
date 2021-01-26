@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.14.0, 2021-01-25T09:28:33. -->
+<!-- Written by QtCreator 4.14.0, 2021-01-26T09:31:37. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -70,9 +70,12 @@
     <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:empty text">Checked</value>
     <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:first test">Checked</value>
     <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:initTestCase">Unchecked</value>
+    <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:missing argument">Checked</value>
+    <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:missing value">Checked</value>
+    <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:missing value with :">Checked</value>
     <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:multiline">Checked</value>
     <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:multiple arguments">Checked</value>
-    <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:multiple arguments with commanf">Checked</value>
+    <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:multiple arguments with command">Checked</value>
     <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:next line">Checked</value>
     <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:next line after command">Checked</value>
     <value type="Qt::CheckState" key="/home/theresa/Documents/praes/testtokenizer.cpp:next line with text after command">Checked</value>

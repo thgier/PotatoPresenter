@@ -18,10 +18,9 @@ FormateText::FormateText(QFontMetrics metrics, QRect rect, QString id)
 }
 
 std::vector<int> FormateText::getLinePosition() const{
-    auto const fontSize = mMetrics.height();
     auto const lineSpacing = mMetrics.lineSpacing();
     auto const numberOfLines = mRect.height() / lineSpacing;
-    auto const offset = .5 * (mRect.height() - (numberOfLines - 1) * lineSpacing - fontSize);
+    auto const offset = .1 * mMetrics.height();
     auto const ascent = mMetrics.ascent();
     std::vector<int> linePosition = {};
     for(int i=0; i<numberOfLines + 2; i++) {

@@ -8,7 +8,7 @@
 #include "configboxes.h"
 #include "tokenizer.h"
 #include "layout.h"
-//#include "template.h"
+#include "template.h"
 
 struct ParserError{
     QString message;
@@ -19,10 +19,11 @@ using FrameList = std::vector<std::shared_ptr<Frame>>;
 class Parser
 {
 public:
-    Parser();
+    Parser(Template* thisTemplate);
     void loadInput(QIODevice *input, ConfigBoxes* configuration);
     void loadInput(QByteArray input, ConfigBoxes* configuration);
     FrameList readInput();
+    void setTemplate(Template &thisTemplate);
 
 private:
     void loadTemplate(int line);
@@ -34,7 +35,7 @@ private:
     void newArrow(int line);
     void setVariable(int line);
     BoxGeometry const getRect(QString id);
-    BoxStyle readArguments(QString &id);
+    BoxStyle readArguments(QString &id, QString BoxStyleIdentifier);
     QString generateId();
 
     Tokenizer mTokenizer;
@@ -45,6 +46,7 @@ private:
 //    Template mTemplate;
     std::vector<QString> mUserIds;
     std::map<QString, QString> mVariables;
+    Template* mTemplate;
 };
 
 #endif // PARSER_H

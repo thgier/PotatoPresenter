@@ -15,10 +15,8 @@ FrameList Presentation::frames() const{
     return mFrames;
 }
 
-void Presentation::updateFrames(QByteArray doc){
-    mParser = Parser();
-    mParser.loadInput(doc, &mConfig);
-    mFrames = mParser.readInput();
+void Presentation::setFrames(Frame::List frames){
+    mFrames = frames;
     emit presentationChanged();
 }
 
@@ -62,4 +60,8 @@ std::shared_ptr<Frame> Presentation::getFrame(QString id) const{
 
 void Presentation::saveConfig(QString file){
     mConfig.saveConfig(file);
+}
+
+ConfigBoxes& Presentation::Configuration(){
+    return mConfig;
 }

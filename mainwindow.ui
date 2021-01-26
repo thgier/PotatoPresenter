@@ -120,6 +120,7 @@
    </attribute>
    <addaction name="actionNew"/>
    <addaction name="actionOpen"/>
+   <addaction name="actionLoad_Template"/>
    <addaction name="actionCreatePDF"/>
    <addaction name="separator"/>
    <addaction name="actionLayoutTitle"/>
@@ -296,10 +297,19 @@
   </action>
   <action name="actionReload_Resources">
    <property name="icon">
-    <iconset theme="download"/>
+    <iconset theme="download">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Reload Resources</string>
+   </property>
+  </action>
+  <action name="actionLoad_Template">
+   <property name="icon">
+    <iconset theme="template"/>
+   </property>
+   <property name="text">
+    <string>Load Template</string>
    </property>
   </action>
  </widget>

@@ -1,38 +1,57 @@
 #include "template.h"
 #include <QFile>
 #include <configboxes.h>
+#include <algorithm>
 
 Template::Template()
 {
 
 }
 
-void Template::readTemplateFile(QString directory){
-    ConfigBoxes JsonConfig;
-    JsonConfig.loadConfigurationFile(directory + "/" + "template.json");
-    mPresentation.loadInput(directory + "/" + "template.json");
-    auto file = QFile(directory + "/" + "template.txt");
-    if (!file.open(QIODevice::ReadOnly)){
-        return;
-    }
-    mPresentation.updateFrames(file.readAll());
+void Template::readTemplateConfig(QString configFile){
+    mPresentation.loadInput(configFile);
 }
 
 BoxGeometry Template::getGeometry(QString id) const{
-    return mPresentation.getBox(id)->geometry();
+    auto const box = mPresentation.getBox(id);
+    if(box){
+        return box->geometry();
+    }
+    return {};
 }
 
 BoxStyle Template::getStyle(QString id) const{
-    return mPresentation.getBox(id)->style();
+    auto const box = mPresentation.getBox(id);
+    if(box){
+        return box->style();
+    }
+    return {};
 }
 
 void Template::declareVariable(QString name, QString value){
     mVariables[name] = value;
 }
 
-Box::List Template::getTemplateSlide(QString frameId) const{
-//    return mPresentation.getFrame(frameId);
-
+void Template::setVariables(std::map<QString, QString> variables){
+    mVariables = variables;
 }
 
+Box::List Template::getTemplateSlide(QString frameId) const{
+    auto frame = mPresentation.getFrame(frameId);
+    if(!frame){
+        return {};
+    }
+    auto boxes = frame->getBoxes();
+    auto rm = [frameId](std::shared_ptr<Box> box) {return !box->id().contains(frameId + "-intern-");};
+    boxes.erase(std::remove_if(boxes.begin(), boxes.end(), rm), boxes.end());
+    return boxes;
+}
+
+ConfigBoxes& Template::Configuration(){
+    return mPresentation.Configuration();
+}
+
+void Template::setFrames(Frame::List frames){
+    mPresentation.setFrames(frames);
+}
 

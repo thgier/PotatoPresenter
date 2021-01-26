@@ -1,5 +1,6 @@
 #include "framelistdelegate.h"
 #include "frame.h"
+#include "painter.h"
 
 FrameListDelegate::FrameListDelegate(QObject *parent)
 {
@@ -19,9 +20,8 @@ void FrameListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     }
     painter->fillRect(frameRect, Qt::white);
     painter->setClipRect(frameRect);
-    for(auto box: frame->getBoxes()){
-        box->drawContent(*painter);
-    }
+    Painter paint{*painter};
+    paint.paintFrame(frame);
     painter->restore();
 
     QFont font = painter->font();

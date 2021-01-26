@@ -6,6 +6,10 @@ Painter::Painter(QPainter& painter)
 }
 
 void Painter::paintFrame(std::shared_ptr<Frame> frame){
+    auto templateBoxes = frame->getTemplateBoxes();
+    for(auto const& box: templateBoxes){
+        box->drawContent(mPainter);
+    }
     auto boxes = frame->getBoxes();
     for(auto const& box: boxes){
         box->drawContent(mPainter);

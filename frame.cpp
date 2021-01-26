@@ -50,3 +50,15 @@ bool Frame::IdExists(QString id) const{
     }
     return false;
 }
+
+void Frame::setTemplateBoxes(Box::List boxes){
+    mTemplateBoxes = boxes;
+}
+
+void Frame::appendTemplateBoxes(std::shared_ptr<Box> box){
+    mTemplateBoxes.push_back(box);
+}
+
+Box::List Frame::getTemplateBoxes() const{
+    return mTemplateBoxes;
+}

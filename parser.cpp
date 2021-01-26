@@ -15,8 +15,9 @@
 #include "textfield.h"
 #include "arrowbox.h"
 
-Parser::Parser()
+Parser::Parser(Template* thisTemplate)
     : mLayout(aspectRatio::sixteenToNine)
+    , mTemplate(thisTemplate)
 {
 }
 
@@ -45,10 +46,7 @@ FrameList Parser::readInput(){
 }
 
 void Parser::command(Token token){
-    if(token.mText == "\\useTemplate"){
-        loadTemplate(token.mLine);
-    }
-    else if(token.mText == "\\frame"){
+    if(token.mText == "\\frame"){
         newFrame(token.mLine);
     }
     else if(token.mText == "\\text"){
@@ -71,19 +69,31 @@ void Parser::command(Token token){
     }
 }
 
-void Parser::loadTemplate(int line){
-    if(mTokenizer.peekNext().mKind != Token::Kind::Text){
-        throw ParserError{"Missing template", line};
-    }
-    if(!QDir(mTokenizer.peekNext().mText).exists()){
-        throw ParserError{"Cannot find Template directory: " + QString(mTokenizer.peekNext().mText), line};
-    }
-//    mTemplate.readTemplateFile(QString(mTokenizer.next().mText));
-}
-
 void Parser::newFrame(int line){
     mBoxCounter = 0;
-    auto const token = mTokenizer.peekNext();
+    auto token = mTokenizer.peekNext();
+    Box::List templateBoxes;
+    if(token.mKind == Token::Kind::Argument){
+        if(token.mText != "template"){
+            throw ParserError{"Only the Argument \"template\" is allowed after frame Command", token.mLine};
+            return;
+        }
+        mTokenizer.next();
+        auto const tokenArgValue = mTokenizer.next();
+        if(tokenArgValue.mKind != Token::Kind::ArgumentValue){
+            throw ParserError{"Argment Value is missing", token.mLine};
+            return;
+        }
+        if(mTemplate){
+            templateBoxes = mTemplate->getTemplateSlide(tokenArgValue.mText);
+        }
+        token = mTokenizer.peekNext();
+    }
+    else{
+        if(mTemplate){
+            templateBoxes = mTemplate->getTemplateSlide("default");
+        }
+    }
     if(token.mKind != Token::Kind::Text || token.mText.isEmpty()) {
         throw ParserError{"missing frame id", line};
         return;
@@ -95,6 +105,7 @@ void Parser::newFrame(int line){
         }
     }
     mFrames.push_back(std::make_shared<Frame>(id));
+    mFrames.back()->setTemplateBoxes(templateBoxes);
 }
 
 void Parser::newTextField(int line){
@@ -103,7 +114,7 @@ void Parser::newTextField(int line){
         return;
     }
     auto id = generateId();
-    auto const boxStyle = readArguments(id);
+    auto const boxStyle = readArguments(id, "Body");
 
     QString text = "";
     auto const peekNextKind = mTokenizer.peekNext().mKind;
@@ -124,7 +135,7 @@ void Parser::newImage(int line) {
         return;
     }
     auto id = generateId();
-    auto const boxStyle = readArguments(id);
+    auto const boxStyle = readArguments(id, "Body");
 
     QString text = "";
     if(mTokenizer.peekNext().mKind == Token::Kind::Text) {
@@ -142,7 +153,7 @@ void Parser::newTitle(int line){
         return;
     }
     auto id = generateId();
-    auto const boxStyle = readArguments(id);
+    auto const boxStyle = readArguments(id, "Title");
 
     auto const frameId = mFrames.back()->id();
     QString text = frameId;
@@ -167,7 +178,7 @@ void Parser::newArrow(int line){
         return;
     }
     auto id = generateId();
-    auto const boxStyle = readArguments(id);
+    auto const boxStyle = readArguments(id, "Body");
 
     auto rect = mConfigBoxes->getRect(id);
     if(rect.isEmpty()){
@@ -213,9 +224,9 @@ BoxGeometry const Parser::getRect(QString id) {
             rect = mLayout.mBodyPos;
             break;
         case 2:
-            auto const idPrevious = mFrames.back()->id() + "-1";
-            if(mConfigBoxes->getRect(idPrevious).isEmpty()) {
-                mFrames.back()->getBoxes()[1]->setRect(mLayout.mLeftPos);
+            auto const lastBox = mFrames.back()->getBoxes().back();
+            if(mConfigBoxes->getRect(lastBox->id()).isEmpty()) {
+                lastBox->setRect(mLayout.mLeftPos);
                 rect = mLayout.mRightPos;
             }
             break;
@@ -224,8 +235,11 @@ BoxGeometry const Parser::getRect(QString id) {
     return rect;
 }
 
-BoxStyle Parser::readArguments(QString &id){
+BoxStyle Parser::readArguments(QString &id, QString BoxStyleIdentifier){
     BoxStyle boxStyle;
+    if(mTemplate){
+        boxStyle = mTemplate->getStyle(BoxStyleIdentifier);
+    }
     auto argument = mTokenizer.peekNext();
     while(argument.mKind == Token::Kind::Argument){
         mTokenizer.next();

@@ -4,7 +4,6 @@
 #include <QObject>
 #include <vector>
 #include "frame.h"
-#include "parser.h"
 #include "configboxes.h"
 
 enum PresentationOutput{
@@ -20,7 +19,7 @@ public:
     Presentation();
     void loadInput(QString configFilename);
     FrameList frames() const;
-    void updateFrames(QByteArray doc);
+    void setFrames(Frame::List frames);
 
     bool empty() const;
     int size() const;
@@ -31,13 +30,13 @@ public:
     std::shared_ptr<Frame> getFrame(QString id) const;
     void saveConfig(QString file);
     void setPresentationOutput(PresentationOutput output);
+    ConfigBoxes& Configuration();
 signals:
     void presentationChanged();
     void frameChanged(int pageNumber);
 private:
     FrameList mFrames;
     QString mInputDir;
-    Parser mParser;
     ConfigBoxes mConfig;
     PresentationOutput mPresentationOut = PresentationOutput::handout;
 };

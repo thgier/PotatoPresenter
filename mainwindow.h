@@ -33,6 +33,7 @@ public:
     void newDocument();
     void save();
     void saveAs();
+    void loadTemplate();
     void writeToFile(QString filename) const;
     void resetPresentation();
     void exportPDF();
@@ -53,5 +54,6 @@ private:
     std::shared_ptr<Presentation> mPresentation;
     QString mFilename;
     QString mPdfFile;
+    Template* mTemplate;
 };
 #endif // MAINWINDOW_H
