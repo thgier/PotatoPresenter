@@ -23,26 +23,26 @@ void PaintDocument::setPresentation(std::shared_ptr<Presentation> pres){
 
 void PaintDocument::paintEvent(QPaintEvent*)
 {
-    painter.begin(this);
-    painter.setViewport(QRect(0, 0, mWidth, 1.0 * mWidth/mSize.width()*mSize.height()));
-    painter.setWindow(QRect(QPoint(0, 0), mSize));
-    painter.setRenderHint(QPainter::SmoothPixmapTransform);
-    painter.fillRect(QRect(QPoint(0, 0), mSize), Qt::white);
+    mPainter.begin(this);
+    mPainter.setViewport(QRect(0, 0, mWidth, 1.0 * mWidth/mSize.width()*mSize.height()));
+    mPainter.setWindow(QRect(QPoint(0, 0), mSize));
+    mPainter.setRenderHint(QPainter::SmoothPixmapTransform);
+    mPainter.fillRect(QRect(QPoint(0, 0), mSize), Qt::white);
     if(!mPresentation->empty()){
-        auto paint = std::make_shared<Painter>(painter);
+        auto paint = std::make_shared<Painter>(mPainter);
         paint->paintFrame(mPresentation->frameAt(pageNumber));
         mCurrentFrameId = mPresentation->frameAt(pageNumber)->id();
     }
     auto const box = mPresentation->getBox(mActiveBoxId);
     if(box != nullptr){
-        box->drawBoundingBox(painter);
-        box->drawScaleMarker(painter, diffToMouse);
+        box->drawBoundingBox(mPainter);
+        box->drawScaleMarker(mPainter, diffToMouse);
     }
-    auto font = painter.font();
+    auto font = mPainter.font();
     font.setPixelSize(50);
-    painter.setFont(font);
-    painter.drawText(QRect(0, mSize.height(), mSize.width(), 80), Qt::AlignCenter, mCurrentFrameId);
-    painter.end();
+    mPainter.setFont(font);
+    mPainter.drawText(QRect(0, mSize.height(), mSize.width(), 80), Qt::AlignCenter, mCurrentFrameId);
+    mPainter.end();
 }
 
 QSize PaintDocument::sizeHint() const{
@@ -65,10 +65,10 @@ void PaintDocument::setCurrentPage(int page){
     update();
 }
 
-void PaintDocument::setCurrentPage(QString id){
+void PaintDocument::setCurrentPage(QString frameId){
     int counter = 0;
     for(auto const & frame: mPresentation->frames()) {
-        if(frame->id() == id) {
+        if(frame->id() == frameId) {
             if(pageNumber != counter){
                 mActiveBoxId = QString();
             }
@@ -112,12 +112,12 @@ void PaintDocument::mousePressEvent(QMouseEvent *event)
     if(mPresentation->empty()){
         return;
     }
-    momentTrafo.reset();
+    mMomentTrafo.reset();
     if (event->button() != Qt::LeftButton) {
         return;
     }
-    lastPosition = event->pos() * mScale;
-    cursorApperance(lastPosition);
+    mCursorLastPosition = event->pos() * mScale;
+    cursorApperance(mCursorLastPosition);
     update();
     if(mActiveBoxId.isEmpty()) {
         return;
@@ -134,21 +134,21 @@ void PaintDocument::mouseMoveEvent(QMouseEvent *event)
         cursorApperance(newPosition);
         return;
     }
-    auto const mouseMovement = newPosition - lastPosition;
+    auto const mouseMovement = newPosition - mCursorLastPosition;
     if(mouseMovement.manhattanLength() < diffToMouse / 5){
         return;
     }
-    if(!momentTrafo){
+    if(!mMomentTrafo){
         cursorApperance(newPosition);
         if(mActiveBoxId.isEmpty()){
             return;
         }
         auto const activeBox = mPresentation->getBox(mActiveBoxId);
-        auto const posMouseBox = activeBox->geometry().classifyPoint(lastPosition, diffToMouse);
-        momentTrafo = BoxTransformation(activeBox, mTransform, posMouseBox, pageNumber, newPosition);
+        auto const posMouseBox = activeBox->geometry().classifyPoint(mCursorLastPosition, diffToMouse);
+        mMomentTrafo = BoxTransformation(activeBox, mTransform, posMouseBox, pageNumber, newPosition);
     }
-    momentTrafo->doTransformation(newPosition, mPresentation);
-    lastPosition = newPosition;
+    mMomentTrafo->doTransformation(newPosition, mPresentation);
+    mCursorLastPosition = newPosition;
     update();
 }
 
@@ -160,7 +160,7 @@ void PaintDocument::mouseReleaseEvent(QMouseEvent *event)
     if (event->button() != Qt::LeftButton) {
         return;
     }
-    if(mActiveBoxId.isEmpty() || !momentTrafo){
+    if(mActiveBoxId.isEmpty() || !mMomentTrafo){
         determineBoxInFocus(event->pos() * mScale);
     }
     update();
@@ -238,7 +238,7 @@ void PaintDocument::cursorApperance(QPoint mousePosition){
     setCursor(cursor);
 }
 
-void PaintDocument::createPDF(QString filename){
+void PaintDocument::createPDF(QString filename) const{
     QPdfWriter pdfWriter(filename);
     auto const pdfLayout = QPageLayout(QPageSize(QSize(160, 90)), QPageLayout::Portrait, QMarginsF(0, 0, 0, 0), QPageLayout::Millimeter);
     pdfWriter.setPageLayout(pdfLayout);
@@ -316,7 +316,7 @@ void PaintDocument::setTransformationType(TransformationType type){
     mTransform = type;
 }
 
-Qt::CursorShape PaintDocument::angleToCursor(qreal angle){
+Qt::CursorShape PaintDocument::angleToCursor(qreal angle) const{
     angle = int(angle) % 180;
     if(angle >= 157.5 || angle < 22.5){
         return Qt::SizeHorCursor;

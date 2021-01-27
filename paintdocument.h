@@ -21,15 +21,19 @@ class PaintDocument : public QWidget
     Q_OBJECT
 public:
     PaintDocument(QWidget*&);
-    //    QSize minimumSizeHint() const override;
-//    QSize sizeHint() const override;
-    void setPresentation(std::shared_ptr<Presentation> pres);
-    void setCurrentPage(int);
-    void setCurrentPage(QString id);
-    void resizeEvent(QResizeEvent *) override;
     QSize sizeHint() const override;
-    void createPDF(QString filename);
+    void resizeEvent(QResizeEvent *) override;
+    void setPresentation(std::shared_ptr<Presentation> pres);
     void updateFrames();
+    void setCurrentPage(int);
+    void setCurrentPage(QString frameId);
+    int getPageNumber() const;
+
+    void createPDF(QString filename) const;
+
+    void setTransformationType(TransformationType type);
+    Qt::CursorShape angleToCursor(qreal angle) const;
+
     void layoutBody();
     void layoutTitle();
     void layoutFull();
@@ -37,38 +41,39 @@ public:
     void layoutRight();
     void layoutPresTitle();
     void layoutSubtitle();
-    void setTransformationType(TransformationType type);
-    Qt::CursorShape angleToCursor(qreal angle);
-    int getPageNumber() const;
+
 signals:
     void pageNumberChanged(int page);
     void selectionChanged(std::shared_ptr<Frame>);
+
 protected:
+    void paintEvent(QPaintEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
-    int mWidth;
-    void paintEvent(QPaintEvent *event) override;
+
     QSize mSize;
+    int mWidth;
     int pageNumber;
+
 private:
-    bool move = false;
-    bool scale = false;
-    QPoint lastPosition;
-    std::optional<BoxTransformation> momentTrafo;
+    std::shared_ptr<Presentation> mPresentation;
     QString mActiveBoxId;
-    void cursorApperance(QPoint mousePosition);
-    TransformationType getTransformationType(QPoint mousePosition);
+    QString mCurrentFrameId;
+
     int const diffToMouse = 25;
-    QPainter painter;
+    QPainter mPainter;
     Layout mLayout;
     double mScale;
+
+    QPoint mCursorLastPosition;
+    void cursorApperance(QPoint mousePosition);
+    TransformationType getTransformationType(QPoint mousePosition);
+    TransformationType mTransform = TransformationType::translate;
+    std::optional<BoxTransformation> mMomentTrafo;
+
     void determineBoxInFocus(QPoint mousePos);
     std::vector<std::shared_ptr<Box>> determineBoxesUnderMouse(QPoint mousePos);
-    QString mCurrentFrameId;
-    std::shared_ptr<Presentation> mPresentation;
-    TransformationType mTransform = TransformationType::translate;
-
 };
 
 #endif // PAINTDOCUMENT_H
