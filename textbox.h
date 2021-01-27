@@ -4,14 +4,14 @@
 #include "box.h"
 #include <QString>
 #include <QSize>
-#include "property.h"
+#include "textproperty.h"
 #include "drawtext.h"
 #include "formatetext.h"
 
-class TextField: public Box
+class TextBox: public Box
 {
 public:
-    TextField(QString text, BoxGeometry rect, QString id);
+    TextBox(QString text, BoxGeometry rect, QString id);
     QString mText;
     QString Text();
     void drawContent(QPainter& painter) override;

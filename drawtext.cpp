@@ -7,30 +7,30 @@ DrawText::DrawText(QString text, QPainter& painter, QRect rect, QString id)
     makePropertyList();
 }
 
-std::vector<Property> DrawText::getProberties(QRegularExpression re, fontChange changeStart, fontChange changeEnd) {
+std::vector<TextProperty> DrawText::getProberties(QRegularExpression re, fontChange changeStart, fontChange changeEnd) {
     QRegularExpressionMatchIterator i = re.globalMatch(mText);
-    std::vector<Property> properties = {};
+    std::vector<TextProperty> properties = {};
     while(i.hasNext()){
         auto word = i.next();
         int start = word.capturedStart();
         int end = word.capturedEnd();
-        auto propStart = Property(start, changeStart);
-        auto propEnd = Property(end, changeEnd);
+        auto propStart = TextProperty(start, changeStart);
+        auto propEnd = TextProperty(end, changeEnd);
         properties.push_back(propStart);
         properties.push_back(propEnd);
     }
     return properties;
 }
 
-std::vector<Property> DrawText::getProberties(QRegularExpression re, fontChange changeStart) {
+std::vector<TextProperty> DrawText::getProberties(QRegularExpression re, fontChange changeStart) {
     QRegularExpressionMatchIterator i = re.globalMatch(mText);
 //    qWarning() << "text: " << mText;
-    std::vector<Property> properties = {};
+    std::vector<TextProperty> properties = {};
     while(i.hasNext()){
         auto word = i.next();
         auto text = word.captured(0);
         int start = word.capturedStart();
-        auto propStart = Property(start, changeStart);
+        auto propStart = TextProperty(start, changeStart);
         properties.push_back(propStart);
     }
     return properties;
@@ -51,8 +51,8 @@ void DrawText::makePropertyList() {
     mProp.insert(mProp.end(), itemize.begin(), itemize.end());
     std::sort(mProp.begin(), mProp.end(), [](auto a, auto b){return a.getPosition() < b.getPosition();});
 
-    auto const firstProp = Property(0, fontChange::empty);
-    auto const lastProp = Property(mText.size(), fontChange::empty);
+    auto const firstProp = TextProperty(0, fontChange::empty);
+    auto const lastProp = TextProperty(mText.size(), fontChange::empty);
     mProp.insert(mProp.begin(), firstProp);
     mProp.push_back(lastProp);
 
@@ -111,7 +111,7 @@ void DrawText::drawWord(QPainter& painter) {
 //        start = mProp.front().getPosition();
 //    }
 //    mFormateText.drawText(mText.left(start), painter);
-    for(int i=0; i<int(mProp.size()); i++){
+    for(int i=0; i<int(mProp.size())-1; i++){
         drawProperty(mProp[i].getProperty(), mText.mid(mProp[i].getPosition(), mProp[i+1].getPosition()-mProp[i].getPosition()), painter);
     }
 

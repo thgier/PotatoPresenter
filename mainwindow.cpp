@@ -55,7 +55,7 @@ MainWindow::MainWindow(QWidget *parent)
     mViewTextDoc = mDoc->createView(this);
     ui->editor->addWidget(mViewTextDoc);
 
-    mFrameModel = new FrameListModel();
+    mFrameModel = new FrameListModel(this);
     mFrameModel->setPresentation(mPresentation);
     ui->pagePreview->setModel(mFrameModel);
     FrameListDelegate *delegate = new FrameListDelegate(this);
@@ -86,9 +86,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     QObject::connect(ui->actionCreatePDF, &QAction::triggered,
                      this, &MainWindow::exportPDF);
-    QObject::connect(ui->actionLoad_Template, &QAction::triggered,
-                     this, &MainWindow::loadTemplate);
-
     QObject::connect(ui->actionLayoutTitle, &QAction::triggered,
                      mPaintDocument, &PaintDocument::layoutTitle);
     QObject::connect(ui->actionLayoutBody, &QAction::triggered,
@@ -143,7 +140,7 @@ void MainWindow::fileChanged() {
     auto iface = qobject_cast<KTextEditor::MarkInterface*>(mDoc);
     iface->clearMarks();
     try {
-        Parser parser{mTemplate.get()};
+        Parser parser;
         parser.loadInput(mDoc->text().toUtf8(), &mPresentation->Configuration());
         mPresentation->setFrames(parser.readInput());
         ui->error->setText("Conversion succeeded \u2714");
@@ -204,44 +201,8 @@ void MainWindow::openFile(){
             break;
         }
     }
-    mTemplate = nullptr;
     mPresentation->loadInput(configFile);
     mPaintDocument->setPresentation(mPresentation);
-    fileChanged();
-}
-
-void MainWindow::loadTemplate(){
-    auto const newFile = QFileDialog::getOpenFileName(this,
-                                                      tr("Load Template"), mFilename, tr("Input Files (*.txt)"));
-    if(newFile.isEmpty()){
-        return;
-    }
-    auto file = QFile(newFile);
-    if (!file.open(QIODevice::ReadOnly)){
-        QMessageBox::information(this, tr("Failed to open File"), tr("Failed to find %1.").arg(newFile),
-                                           QMessageBox::Cancel);
-        return;
-    }
-
-    auto fileInfo = QFileInfo(newFile);
-    auto configFile = fileInfo.path() + "/" + fileInfo.baseName() + ".json";
-    if(!QFile::exists(configFile)){
-        QMessageBox::information(this, tr("Failed to open File"), tr("Failed to find %1.").arg(configFile),
-                                           QMessageBox::Cancel);
-        return;
-    }
-    mTemplate = std::make_shared<Template>();
-    mTemplate->readTemplateConfig(configFile);
-    try {
-        Parser parser{nullptr};
-        parser.loadInput(file.readAll(), &mTemplate->Configuration());
-        mTemplate->setFrames(parser.readInput());
-        ui->error->setText("Conversion succeeded \u2714");
-    }  catch (ParserError& error) {
-        QMessageBox::information(this, tr("Failed convert Template"), tr("Failed convert Template"),
-                                           QMessageBox::Cancel);
-        return;
-    }
     fileChanged();
 }
 

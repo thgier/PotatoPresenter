@@ -25,15 +25,15 @@ add_executable(praes
     mainwindow.ui
     files.qrc
     frame.cpp
-    textfield.cpp
+    textbox.cpp
     box.cpp
     parser.cpp
     painter.cpp
     paintdocument.cpp
-    property.cpp
+    textproperty.cpp
     drawtext.cpp
     formatetext.cpp
-    picture.cpp
+    imagebox.cpp
     configboxes.cpp
     layout.cpp
     equationcachemanager.cpp

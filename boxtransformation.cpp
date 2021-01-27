@@ -28,6 +28,9 @@ void BoxTransformation::doTransformation(QPoint mousePos, std::shared_ptr<Presen
             box = makeRotateTransformation(mousePos);
             break;
         }
+    if(box.isEmpty()){
+        return;
+    }
     pres->setBox(mBox->id(), box, mPageNumber);
 }
 

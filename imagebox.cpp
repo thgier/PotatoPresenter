@@ -1,17 +1,17 @@
-#include "picture.h"
+#include "imagebox.h"
 #include<filesystem>
 #include <string>
 #include<QDebug>
 #include "imagecachemanager.h"
 
-Picture::Picture(QString imagePath, std::map<QString, QString> variables, BoxGeometry rect, QString id)
+ImageBox::ImageBox(QString imagePath, std::map<QString, QString> variables, BoxGeometry rect, QString id)
     : Box(variables, rect, id)
 {
     mImagePath = substituteVariables(imagePath, mVariables);
     mImage = cacheManagerImages().getImage(mImagePath);
 }
 
-void Picture::drawContent(QPainter& painter){
+void ImageBox::drawContent(QPainter& painter){
     if(!mImage){
         return;
     }

@@ -1,4 +1,4 @@
-#include "textfield.h"
+#include "textbox.h"
 
 #include <QDebug>
 #include<QGraphicsTextItem>
@@ -6,16 +6,16 @@
 #include <vector>
 #include<QMargins>
 
-TextField::TextField(QString text, BoxGeometry rect, QString id)
+TextBox::TextBox(QString text, BoxGeometry rect, QString id)
     : Box(rect, id), mText(text)
 {
 }
 
-QString TextField::Text(){
+QString TextBox::Text(){
     return mText;
 }
 
-void TextField::drawContent(QPainter& painter) {
+void TextBox::drawContent(QPainter& painter) {
     mText = substituteVariables(mText, mVariables);
     startDraw(painter);
     auto font = QFont(mStyle.mFont);

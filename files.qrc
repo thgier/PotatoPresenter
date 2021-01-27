@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>input.json</file>
+        <file>generaterLatex.tex</file>
     </qresource>
 </RCC>

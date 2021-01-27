@@ -19,11 +19,12 @@ using FrameList = std::vector<std::shared_ptr<Frame>>;
 class Parser
 {
 public:
-    Parser(Template* thisTemplate);
+    Parser();
     void loadInput(QIODevice *input, ConfigBoxes* configuration);
     void loadInput(QByteArray input, ConfigBoxes* configuration);
     FrameList readInput();
     void setTemplate(Template &thisTemplate);
+    void setFileIsATemplate(bool fileIsATemplate);
 
 private:
     void loadTemplate(int line);
@@ -43,10 +44,10 @@ private:
     int mBoxCounter = 0;
     FrameList mFrames;
     std::shared_ptr<Layout> mLayout;
-//    Template mTemplate;
     std::vector<QString> mUserIds;
     std::map<QString, QString> mVariables;
-    Template* mTemplate;
+    std::shared_ptr<Template> mTemplate;
+    bool mParsingTemplate = false;
 };
 
 #endif // PARSER_H

@@ -26,6 +26,10 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+private slots:
+
+private:
     void fileChanged();
     void setupFileActions();
     void openFile();
@@ -41,19 +45,18 @@ public:
     QString getPdfFilename();
     QAction* importActionFromKDoc(const char* name, std::function<void()> method);
 
-private slots:
-
-private:
     Ui::MainWindow *ui;
-    KTextEditor::Document* mDoc;
     KTextEditor::Editor* mEditor;
-    PaintDocument* mPaintDocument;
+    KTextEditor::Document* mDoc;
     KTextEditor::View* mViewTextDoc = nullptr;
+
+    PaintDocument* mPaintDocument;
+    std::shared_ptr<Presentation> mPresentation;
+
     QListWidget *mListWidget;
     FrameListModel *mFrameModel;
-    std::shared_ptr<Presentation> mPresentation;
+
     QString mFilename;
     QString mPdfFile;
-    std::shared_ptr<Template> mTemplate;
 };
 #endif // MAINWINDOW_H

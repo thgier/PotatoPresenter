@@ -3,10 +3,10 @@
 #include "box.h"
 
 
-class Picture: public Box
+class ImageBox: public Box
 {
 public:
-    Picture(QString imagePath, std::map<QString, QString> variables, BoxGeometry rect, QString id);
+    ImageBox(QString imagePath, std::map<QString, QString> variables, BoxGeometry rect, QString id);
     void drawContent(QPainter& painter) override;
     int aspectRatio(QRect rect);
 private:

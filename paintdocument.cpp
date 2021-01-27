@@ -144,8 +144,12 @@ void PaintDocument::mouseMoveEvent(QMouseEvent *event)
             return;
         }
         auto const activeBox = mPresentation->getBox(mActiveBoxId);
-        auto const posMouseBox = activeBox->geometry().classifyPoint(mCursorLastPosition, diffToMouse);
-        mMomentTrafo = BoxTransformation(activeBox, mTransform, posMouseBox, pageNumber, newPosition);
+        auto const clasifiedMousePos = activeBox->geometry().classifyPoint(mCursorLastPosition, diffToMouse);
+        if(clasifiedMousePos == pointPosition::notInBox){
+            mActiveBoxId = QString();
+            return;
+        }
+        mMomentTrafo = BoxTransformation(activeBox, mTransform, clasifiedMousePos, pageNumber, newPosition);
     }
     mMomentTrafo->doTransformation(newPosition, mPresentation);
     mCursorLastPosition = newPosition;

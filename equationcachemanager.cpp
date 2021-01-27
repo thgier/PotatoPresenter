@@ -35,7 +35,10 @@ void EquationCacheManager::startConversionProcess(QString mathExpression, QByteA
     arguments << "-halt-on-error" << "-output-directory=" + folder << "-interaction=batchmode" << string;
     QProcess *myProcess = new QProcess();
 
-    auto lambda = [hash, this, myProcess](){return startSvgGeneration(hash, myProcess);};
+    auto lambda = [hash, this, myProcess](){
+        startSvgGeneration(hash, myProcess);
+        myProcess->deleteLater();
+    };
     QObject::connect(myProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
                      this, lambda);
     connect(myProcess, &QProcess::readyReadStandardOutput,
@@ -70,7 +73,10 @@ void EquationCacheManager::startSvgGeneration(QByteArray hash, QProcess* latex){
     argumentsDvisvgm << "-n" << "-o " + folder + "a.svg" << folder + "a.dvi";
     QProcess *dvisvgm = new QProcess();
     dvisvgm->start(programDvisvgm, argumentsDvisvgm);
-    auto lambda = [hash, this](){return writeSvgToMap(hash);};
+    auto lambda = [hash, this, dvisvgm](){
+        dvisvgm->deleteLater();
+        writeSvgToMap(hash);
+    };
     QObject::connect(dvisvgm, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
                      this, lambda);
 }

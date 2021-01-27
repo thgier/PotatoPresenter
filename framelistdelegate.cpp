@@ -3,6 +3,7 @@
 #include "painter.h"
 
 FrameListDelegate::FrameListDelegate(QObject *parent)
+    : QAbstractItemDelegate(parent)
 {
 
 }

@@ -11,19 +11,13 @@
 #include "parser.h"
 #include "frame.h"
 #include "box.h"
-#include "picture.h"
-#include "textfield.h"
+#include "imagebox.h"
+#include "textbox.h"
 #include "arrowbox.h"
 
-Parser::Parser(Template* thisTemplate)
-    : mTemplate(thisTemplate)
+Parser::Parser()
 {
-    if(mTemplate){
-        mLayout = mTemplate->getLayout();
-    }
-    else{
-        mLayout = std::make_shared<Layout>();
-    }
+    mLayout = std::make_shared<Layout>();
 }
 
 void Parser::loadInput(QIODevice *input, ConfigBoxes *configuration){
@@ -68,6 +62,9 @@ void Parser::command(Token token){
     }
     else if(token.mText == "\\setVar"){
         setVariable(token.mLine);
+    }
+    else if(token.mText == "\\useTemplate"){
+        loadTemplate(token.mLine);
     }
     else{
         throw ParserError{"command does not exist", token.mLine};
@@ -127,7 +124,7 @@ void Parser::newTextField(int line){
     if(peekNextKind == Token::Kind::Text || peekNextKind == Token::Kind::MultiLineText) {
         text = QString(mTokenizer.next().mText);
     }
-    auto const textField = std::make_shared<TextField>(text, getRect(id), id);
+    auto const textField = std::make_shared<TextBox>(text, getRect(id), id);
     textField->setBoxStyle(boxStyle);
     textField->setVariables(mVariables);
     mBoxCounter++;
@@ -146,7 +143,7 @@ void Parser::newImage(int line) {
     if(mTokenizer.peekNext().mKind == Token::Kind::Text) {
         text = QString(mTokenizer.next().mText);
     }
-    auto const textField = std::make_shared<Picture>(text, mVariables, getRect(id), id);
+    auto const textField = std::make_shared<ImageBox>(text, mVariables, getRect(id), id);
     textField->setBoxStyle(boxStyle);
     mBoxCounter++;
     mFrames.back()->appendBox(textField);
@@ -170,7 +167,7 @@ void Parser::newTitle(int line){
     if(rect.isEmpty()){
         rect = mLayout->mTitlePos;
     }
-    auto const textField = std::make_shared<TextField>(text, rect, id);
+    auto const textField = std::make_shared<TextBox>(text, rect, id);
     textField->setBoxStyle(boxStyle);
     textField->setVariables(mVariables);
     mBoxCounter++;
@@ -279,10 +276,44 @@ BoxStyle Parser::readArguments(QString &id, QString BoxStyleIdentifier){
     return boxStyle;
 }
 
+void Parser::loadTemplate(int line){
+    if(mParsingTemplate){
+        throw ParserError{"Cannot use a Template in a Template", line};
+        return;
+    }
+    auto token = mTokenizer.next();
+    if(token.mKind != Token::Kind::Text){
+        throw ParserError{"Missing Template File", line};
+    }
+    mTemplate = std::make_shared<Template>();
+
+    try {
+        mTemplate->readTemplateConfig(token.mText + ".json");
+    }  catch (ConfigError& error) {
+        throw ParserError{error.errorMessage, line};
+    }
+
+    auto file = QFile(token.mText + ".txt");
+    if(!file.open(QIODevice::ReadOnly)){
+        throw ParserError{"Can't open file" + file.fileName(), line};
+        return;
+    }
+
+    Parser parser;
+    parser.setFileIsATemplate(true);
+    parser.loadInput(file.readAll(), &mTemplate->Configuration());
+    mTemplate->setFrames(parser.readInput());
+    mLayout = mTemplate->getLayout();
+}
+
 
 QString Parser::generateId(){
     auto const frameId = mFrames.back()->id();
     auto id = frameId + "-intern-" + QString::number(mBoxCounter);
     return id;
+}
+
+void Parser::setFileIsATemplate(bool fileIsATemplate){
+    mParsingTemplate = fileIsATemplate;
 }
 

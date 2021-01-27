@@ -14,11 +14,11 @@ enum fontChange {
 //    underline,
 };
 
-class Property
+class TextProperty
 {
 public:
-    Property();
-    Property(int place, fontChange proberty);
+    TextProperty();
+    TextProperty(int place, fontChange proberty);
     fontChange getProperty();
     int getPosition();
 private:
