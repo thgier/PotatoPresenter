@@ -42,7 +42,7 @@ private:
     ConfigBoxes* mConfigBoxes;
     int mBoxCounter = 0;
     FrameList mFrames;
-    Layout mLayout;
+    std::shared_ptr<Layout> mLayout;
 //    Template mTemplate;
     std::vector<QString> mUserIds;
     std::map<QString, QString> mVariables;

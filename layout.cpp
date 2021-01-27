@@ -1,5 +1,10 @@
 #include "layout.h"
 
+Layout::Layout()
+    : Layout{aspectRatio::sixteenToNine}
+{
+}
+
 Layout::Layout(aspectRatio ratio)
     : mAspectRatio{ratio}
 {
@@ -9,8 +14,8 @@ Layout::Layout(aspectRatio ratio)
             mTitlePos = BoxGeometry(50, 40, 1500, 100);
             mBodyPos = BoxGeometry(50, 150, 1500, 650);
             mFullPos = BoxGeometry(0, 0, 1600, 900);
-            mLeftPos = BoxGeometry(50, 200, 720, 650);
-            mRightPos = BoxGeometry(830, 200, 720, 650);
+            mLeftPos = BoxGeometry(50, 150, 720, 650);
+            mRightPos = BoxGeometry(830, 150, 720, 650);
             mPresTitlePos = BoxGeometry(100, 350, 1400, 100);
             mSubtitlePos = BoxGeometry(100, 500, 1400, 100);
             mArrowPos = BoxGeometry(100, 500, 500, 100);

@@ -12,6 +12,7 @@ enum aspectRatio {
 class Layout
 {
 public:
+    Layout();
     Layout(aspectRatio ratio);
     aspectRatio mAspectRatio;
     QSize mSize;

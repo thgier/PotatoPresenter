@@ -54,6 +54,6 @@ private:
     std::shared_ptr<Presentation> mPresentation;
     QString mFilename;
     QString mPdfFile;
-    Template* mTemplate;
+    std::shared_ptr<Template> mTemplate;
 };
 #endif // MAINWINDOW_H

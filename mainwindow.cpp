@@ -143,7 +143,7 @@ void MainWindow::fileChanged() {
     auto iface = qobject_cast<KTextEditor::MarkInterface*>(mDoc);
     iface->clearMarks();
     try {
-        Parser parser{mTemplate};
+        Parser parser{mTemplate.get()};
         parser.loadInput(mDoc->text().toUtf8(), &mPresentation->Configuration());
         mPresentation->setFrames(parser.readInput());
         ui->error->setText("Conversion succeeded \u2714");
@@ -230,6 +230,7 @@ void MainWindow::loadTemplate(){
                                            QMessageBox::Cancel);
         return;
     }
+    mTemplate = std::make_shared<Template>();
     mTemplate->readTemplateConfig(configFile);
     try {
         Parser parser{nullptr};
@@ -292,6 +293,7 @@ void MainWindow::writeToFile(QString filename) const{
 void MainWindow::resetPresentation(){
     mPresentation = std::make_shared<Presentation>();
     mPaintDocument->setPresentation(mPresentation);
+    ui->pageNumber->setValue(0);
     mFrameModel->setPresentation(mPresentation);
     mPaintDocument->update();
     connect(mDoc, &KTextEditor::Document::textChanged,

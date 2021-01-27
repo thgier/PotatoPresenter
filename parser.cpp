@@ -16,9 +16,14 @@
 #include "arrowbox.h"
 
 Parser::Parser(Template* thisTemplate)
-    : mLayout(aspectRatio::sixteenToNine)
-    , mTemplate(thisTemplate)
+    : mTemplate(thisTemplate)
 {
+    if(mTemplate){
+        mLayout = mTemplate->getLayout();
+    }
+    else{
+        mLayout = std::make_shared<Layout>();
+    }
 }
 
 void Parser::loadInput(QIODevice *input, ConfigBoxes *configuration){
@@ -163,7 +168,7 @@ void Parser::newTitle(int line){
     }
     auto rect = mConfigBoxes->getRect(id);
     if(rect.isEmpty()){
-        rect = mLayout.mTitlePos;
+        rect = mLayout->mTitlePos;
     }
     auto const textField = std::make_shared<TextField>(text, rect, id);
     textField->setBoxStyle(boxStyle);
@@ -182,7 +187,7 @@ void Parser::newArrow(int line){
 
     auto rect = mConfigBoxes->getRect(id);
     if(rect.isEmpty()){
-        rect = mLayout.mArrowPos;
+        rect = mLayout->mArrowPos;
     }
     auto const arrow = std::make_shared<ArrowBox>(rect, id);
     arrow->setBoxStyle(boxStyle);
@@ -215,19 +220,19 @@ void Parser::setVariable(int line){
 BoxGeometry const Parser::getRect(QString id) {
     auto rect = mConfigBoxes->getRect(id);
     if(rect.isEmpty()){
-        rect = mLayout.mBodyPos;
+        rect = mLayout->mBodyPos;
         switch (mBoxCounter) {
         case 0:
-            rect = mLayout.mTitlePos;
+            rect = mLayout->mTitlePos;
             break;
         case 1:
-            rect = mLayout.mBodyPos;
+            rect = mLayout->mBodyPos;
             break;
         case 2:
             auto const lastBox = mFrames.back()->getBoxes().back();
             if(mConfigBoxes->getRect(lastBox->id()).isEmpty()) {
-                lastBox->setRect(mLayout.mLeftPos);
-                rect = mLayout.mRightPos;
+                lastBox->setRect(mLayout->mLeftPos);
+                rect = mLayout->mRightPos;
             }
             break;
         }

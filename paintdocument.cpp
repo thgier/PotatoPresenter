@@ -18,6 +18,7 @@ PaintDocument::PaintDocument(QWidget*&)
 void PaintDocument::setPresentation(std::shared_ptr<Presentation> pres){
     mPresentation = pres;
     mActiveBoxId = QString();
+    mCurrentFrameId = QString();
 }
 
 void PaintDocument::paintEvent(QPaintEvent*)
@@ -30,6 +31,7 @@ void PaintDocument::paintEvent(QPaintEvent*)
     if(!mPresentation->empty()){
         auto paint = std::make_shared<Painter>(painter);
         paint->paintFrame(mPresentation->frameAt(pageNumber));
+        mCurrentFrameId = mPresentation->frameAt(pageNumber)->id();
     }
     auto const box = mPresentation->getBox(mActiveBoxId);
     if(box != nullptr){
