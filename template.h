@@ -4,12 +4,10 @@
 #include <QPainter>
 #include <frame.h>
 #include <presentation.h>
+#include <layout.h>
 
-enum TemplateStyle{
-    defaultPage,
-    titlePage,
-    content,
-    plain
+struct TemplateError{
+    QString message;
 };
 
 class Template
@@ -25,10 +23,12 @@ public:
     void setVariables(std::map<QString, QString> variables);
     ConfigBoxes& Configuration();
     void setFrames(Frame::List frames);
+    std::shared_ptr<Layout> getLayout() const;
 private:
     Presentation mPresentation;
     std::map<QString, QString> mVariables;
     std::map<QString, Frame> mTemplateSlides;
+    std::shared_ptr<Layout> mLayout;
 };
 
 #endif // TEMPLATE_H
