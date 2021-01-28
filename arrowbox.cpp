@@ -13,11 +13,20 @@ void ArrowBox::drawContent(QPainter& painter){
     QPainterPath path;
     int const w = double(rect.height()) / 3;
     int const arrowW = 150;
-    path.addRect(rect.left(), rect.center().y() - w/2, rect.width() - arrowW, w);
-    path.moveTo(rect.right(), rect.center().y());
-    path.lineTo(rect.right() - arrowW, rect.top());
+//    path.addRect(rect.left(), rect.center().y() - w/2, rect.width() - arrowW, w);
+//    path.moveTo(rect.right(), rect.center().y());
+//    path.lineTo(rect.right() - arrowW, rect.top());
+//    path.lineTo(rect.right() - arrowW, rect.bottom());
+//    path.moveTo(rect.right(), rect.center().y());
+
+    path.moveTo(rect.left(), rect.center().y() - w/2);
+    path.lineTo(rect.left(), rect.center().y() + w/2);
+    path.lineTo(rect.right() - arrowW, rect.center().y() + w/2);
     path.lineTo(rect.right() - arrowW, rect.bottom());
-    path.moveTo(rect.right(), rect.center().y());
+    path.lineTo(rect.right(), rect.center().y());
+    path.lineTo(rect.right() - arrowW, rect.top());
+    path.lineTo(rect.right() - arrowW, rect.center().y() - w/2);
+    path.lineTo(rect.left(), rect.center().y() - w/2);
 
     painter.setBrush(mStyle.mColor);
     painter.drawPath(path);
