@@ -33,7 +33,7 @@ void EquationCacheManager::startConversionProcess(QString mathExpression, QByteA
     QStringList arguments;
     QString string = QString("\\def\\myvar{") + mathExpression + QString("} \\input{" + folder + "a.tex}");
     arguments << "-halt-on-error" << "-output-directory=" + folder << "-interaction=batchmode" << string;
-    QProcess *myProcess = new QProcess();
+    QProcess *myProcess = new QProcess(this);
 
     auto lambda = [hash, this, myProcess](){
         startSvgGeneration(hash, myProcess);
