@@ -15,7 +15,7 @@
 #include <QMessageBox>
 #include "parser.h"
 #include "equationcachemanager.h"
-#include "imagecachemanager.h"
+#include "cachemanager.h"
 #include "framelistmodel.h"
 #include "framelistdelegate.h"
 #include "functional"
@@ -115,10 +115,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     QObject::connect(&cacheManager(), &EquationCacheManager::conversionFinished,
             mPaintDocument, QOverload<>::of(&PaintDocument::update));
-    connect(&cacheManagerImages(), &ImageCacheManager::imageChanged,
-            this, [this](){MainWindow::fileChanged();});
-    connect(ui->actionReload_Resources, &QAction::triggered,
-            &cacheManagerImages(), &ImageCacheManager::deleteAllResources);
+
+    CacheManager<QImage>::instance().setCallback([this](QString){fileChanged();});
+    CacheManager<QSvgRenderer>::instance().setCallback([this](QString){fileChanged();});
+
     ui->error->setWordWrap(true);
 
     auto transformGroup = new QActionGroup(this);

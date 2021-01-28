@@ -39,8 +39,8 @@ public:
     QString substituteVariables(QString text, std::map<QString, QString> variables) const;
     void setVariables(std::map<QString, QString> variables);
 protected:
-    void startDraw(QPainter& painter);
-    void endDraw(QPainter& painter);
+    void startDraw(QPainter& painter) const;
+    void endDraw(QPainter& painter) const;
     BoxStyle mStyle;
     std::map<QString, QString> mVariables;
 private:

@@ -53,13 +53,13 @@ QString Box::id() {
     return mId;
 }
 
-void Box::startDraw(QPainter &painter){
+void Box::startDraw(QPainter &painter) const{
     painter.save();
     painter.setTransform(mRect.transform());
     painter.setOpacity(mStyle.mOpacity);
 }
 
-void Box::endDraw(QPainter &painter){
+void Box::endDraw(QPainter &painter) const{
     painter.restore();
 }
 

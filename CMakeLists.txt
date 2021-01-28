@@ -37,7 +37,7 @@ add_executable(praes
     configboxes.cpp
     layout.cpp
     equationcachemanager.cpp
-    imagecachemanager.cpp
+    cachemanager.cpp
     framelistmodel.cpp
     framelistdelegate.cpp
     presentation.cpp

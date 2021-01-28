@@ -143,10 +143,11 @@ void Parser::newImage(int line) {
     if(mTokenizer.peekNext().mKind == Token::Kind::Text) {
         text = QString(mTokenizer.next().mText);
     }
-    auto const textField = std::make_shared<ImageBox>(text, mVariables, getRect(id), id);
-    textField->setBoxStyle(boxStyle);
+    auto const imageBox = std::make_shared<ImageBox>(text, getRect(id), id);
+    imageBox->setVariables(mVariables);
+    imageBox->setBoxStyle(boxStyle);
     mBoxCounter++;
-    mFrames.back()->appendBox(textField);
+    mFrames.back()->appendBox(imageBox);
 }
 
 void Parser::newTitle(int line){
