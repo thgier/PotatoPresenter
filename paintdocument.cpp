@@ -34,9 +34,12 @@ void PaintDocument::paintEvent(QPaintEvent*)
         mCurrentFrameId = mPresentation->frameAt(pageNumber)->id();
     }
     auto const box = mPresentation->getBox(mActiveBoxId);
-    if(box != nullptr){
+    if(box != nullptr && box->id().contains(mCurrentFrameId)){
         box->drawBoundingBox(mPainter);
         box->drawScaleMarker(mPainter, diffToMouse);
+    }
+    else{
+        mActiveBoxId = QString();
     }
     auto font = mPainter.font();
     font.setPixelSize(50);
