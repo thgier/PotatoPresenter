@@ -11,8 +11,8 @@ Template::Template()
 void Template::readTemplateConfig(QString configFile){
     mPresentation.loadInput(configFile);
     mLayout = std::make_shared<Layout>();
-    mLayout->mBodyPos = getGeometry("Body");
-    mLayout->mTitlePos = getGeometry("Title");
+    mLayout->mBodyPos = getGeometry("body");
+    mLayout->mTitlePos = getGeometry("title");
 }
 
 BoxGeometry Template::getGeometry(QString id) const{
@@ -57,8 +57,8 @@ ConfigBoxes& Template::Configuration(){
 void Template::setFrames(Frame::List frames){
     mPresentation.setFrames(frames);
     mLayout = std::make_shared<Layout>();
-    mLayout->mBodyPos = getGeometry("Body");
-    mLayout->mTitlePos = getGeometry("Title");
+    mLayout->mBodyPos = getGeometry("body");
+    mLayout->mTitlePos = getGeometry("title");
 }
 
 std::shared_ptr<Layout> Template::getLayout() const{

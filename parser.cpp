@@ -60,10 +60,10 @@ void Parser::command(Token token){
     else if(token.mText == "\\arrow"){
         newArrow(token.mLine);
     }
-    else if(token.mText == "\\setVar"){
+    else if(token.mText == "\\setvar"){
         setVariable(token.mLine);
     }
-    else if(token.mText == "\\useTemplate"){
+    else if(token.mText == "\\usetemplate"){
         loadTemplate(token.mLine);
     }
     else{
@@ -207,11 +207,11 @@ void Parser::setVariable(int line){
     auto text = QString(nextToken.mText);
     auto list = text.split(QRegularExpression("\\s+"));
     auto variable = list[0];
-    if(variable.left(2) != "%{" || variable.back() != '}'){
-        throw ParserError{"Variabele has to have the form %{variable}", line};
-        return;
-    }
-    mVariables[variable] = text.right(text.size() - variable.size() - 1);
+    mVariables[addBracketsToVariable(variable)] = text.right(text.size() - variable.size() - 1);
+}
+
+QString Parser::addBracketsToVariable(QString variable) const{
+    return "%{" + variable + "}";
 }
 
 BoxGeometry const Parser::getRect(QString id) {
@@ -301,6 +301,7 @@ void Parser::loadTemplate(int line){
 
     Parser parser;
     parser.setFileIsATemplate(true);
+    parser.setVariables(mVariables);
     parser.loadInput(file.readAll(), &mTemplate->Configuration());
     mTemplate->setFrames(parser.readInput());
     mLayout = mTemplate->getLayout();
@@ -317,3 +318,6 @@ void Parser::setFileIsATemplate(bool fileIsATemplate){
     mParsingTemplate = fileIsATemplate;
 }
 
+void Parser::setVariables(std::map<QString, QString> variables){
+    mVariables = variables;
+}

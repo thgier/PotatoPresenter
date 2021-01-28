@@ -25,6 +25,7 @@ public:
     FrameList readInput();
     void setTemplate(Template &thisTemplate);
     void setFileIsATemplate(bool fileIsATemplate);
+    void setVariables(std::map<QString, QString> variables);
 
 private:
     void loadTemplate(int line);
@@ -35,6 +36,7 @@ private:
     void newTitle(int line);
     void newArrow(int line);
     void setVariable(int line);
+    QString addBracketsToVariable(QString variable) const;
     BoxGeometry const getRect(QString id);
     BoxStyle readArguments(QString &id, QString BoxStyleIdentifier);
     QString generateId();

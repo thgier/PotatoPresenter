@@ -1,6 +1,7 @@
 #include "framelistmodel.h"
+#include "presentation.h"
 
-int FrameListModel::rowCount(const QModelIndex &parent) const {
+int FrameListModel::rowCount(const QModelIndex &) const {
     return int(mPresentation->frames().size());
 }
 

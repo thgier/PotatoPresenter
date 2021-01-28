@@ -2,7 +2,10 @@
 #define FRAMELISTMODEL_H
 #include <QAbstractListModel>
 #include <vector>
-#include "presentation.h"
+#include <memory>
+#include "frame.h"
+
+class Presentation;
 
 using FrameList = std::vector<std::shared_ptr<Frame>>;
 class FrameListModel : public QAbstractListModel
