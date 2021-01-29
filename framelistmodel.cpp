@@ -39,3 +39,7 @@ void FrameListModel::setPresentation(std::shared_ptr<Presentation> presentation)
             });
 
 }
+
+std::map<QString, QString> FrameListModel::Variables() const{
+    return mPresentation->Variables();
+}

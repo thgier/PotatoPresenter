@@ -120,7 +120,7 @@ void Parser::newTextField(int line){
         return;
     }
     auto id = generateId();
-    auto const boxStyle = readArguments(id, "Body");
+    auto const boxStyle = readArguments(id, "body");
 
     QString text = "";
     auto const peekNextKind = mTokenizer.peekNext().mKind;
@@ -140,7 +140,7 @@ void Parser::newImage(int line) {
         return;
     }
     auto id = generateId();
-    auto const boxStyle = readArguments(id, "Body");
+    auto const boxStyle = readArguments(id, "body");
 
     QString text = "";
     if(mTokenizer.peekNext().mKind == Token::Kind::Text) {
@@ -158,7 +158,7 @@ void Parser::newTitle(int line){
         return;
     }
     auto id = generateId();
-    auto const boxStyle = readArguments(id, "Title");
+    auto const boxStyle = readArguments(id, "title");
 
     auto const frameId = mFrames.back()->id();
     QString text = frameId;
@@ -182,7 +182,7 @@ void Parser::newArrow(int line){
         return;
     }
     auto id = generateId();
-    auto const boxStyle = readArguments(id, "Body");
+    auto const boxStyle = readArguments(id, "body");
 
     auto rect = mConfigBoxes->getRect(id);
     if(rect.isEmpty()){
