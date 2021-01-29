@@ -13,6 +13,7 @@ struct TemplateError{
 class Template
 {
 public:
+    using variablesMap = std::shared_ptr<std::map<QString, QString>>;
     Template();
     void readTemplateConfig(QString configFile);
     BoxGeometry getGeometry(QString id) const;

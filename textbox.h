@@ -14,7 +14,7 @@ public:
     TextBox(QString text, BoxGeometry rect, QString id);
     QString mText;
     QString Text();
-    void drawContent(QPainter& painter) override;
+    void drawContent(QPainter& painter, std::map<QString, QString> variables) override;
 };
 
 #endif // TEXTFIELD_H

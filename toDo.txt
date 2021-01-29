@@ -1,7 +1,7 @@
 - template
 - undo
 - equation
-- svg support
 - Pause
 - textbox with border
 - repair itemize
+- crop images

@@ -26,6 +26,7 @@ public:
     void setTemplate(Template &thisTemplate);
     void setFileIsATemplate(bool fileIsATemplate);
     void setVariables(std::map<QString, QString> variables);
+    std::map<QString, QString> Variables() const;
 
 private:
     void loadTemplate(int line);

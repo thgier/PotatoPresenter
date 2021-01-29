@@ -139,9 +139,9 @@ MainWindow::~MainWindow()
 void MainWindow::fileChanged() {
     auto iface = qobject_cast<KTextEditor::MarkInterface*>(mDoc);
     iface->clearMarks();
+    Parser parser;
+    parser.loadInput(mDoc->text().toUtf8(), &mPresentation->Configuration());
     try {
-        Parser parser;
-        parser.loadInput(mDoc->text().toUtf8(), &mPresentation->Configuration());
         mPresentation->setFrames(parser.readInput());
         ui->error->setText("Conversion succeeded \u2714");
     }  catch (ParserError& error) {
@@ -149,6 +149,7 @@ void MainWindow::fileChanged() {
         iface->addMark(error.line, KTextEditor::MarkInterface::MarkTypes::Error);
         return;
     }
+    mPresentation->setVariables(parser.Variables());
     mPaintDocument->update();
     ui->pageNumber->setMaximum(mPresentation->frames().size()-1);
     auto const index = mFrameModel->index(mPaintDocument->getPageNumber());

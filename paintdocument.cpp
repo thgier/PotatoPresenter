@@ -29,8 +29,9 @@ void PaintDocument::paintEvent(QPaintEvent*)
     mPainter.setRenderHint(QPainter::SmoothPixmapTransform);
     mPainter.fillRect(QRect(QPoint(0, 0), mSize), Qt::white);
     if(!mPresentation->empty()){
-        auto paint = std::make_shared<Painter>(mPainter);
-        paint->paintFrame(mPresentation->frameAt(pageNumber));
+        Painter paint(mPainter);
+        paint.loadVariables(mPresentation->Variables());
+        paint.paintFrame(mPresentation->frameAt(pageNumber));
         mCurrentFrameId = mPresentation->frameAt(pageNumber)->id();
     }
     auto const box = mPresentation->getBox(mActiveBoxId);

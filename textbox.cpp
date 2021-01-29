@@ -15,14 +15,14 @@ QString TextBox::Text(){
     return mText;
 }
 
-void TextBox::drawContent(QPainter& painter) {
-    mText = substituteVariables(mText, mVariables);
+void TextBox::drawContent(QPainter& painter, std::map<QString, QString> variables) {
+    auto const text = substituteVariables(mText, variables);
     startDraw(painter);
     auto font = QFont(mStyle.mFont);
     font.setPixelSize(mStyle.mFontSize);
     painter.setFont(font);
     painter.setPen(mStyle.mColor);
-    auto draw = DrawText(mText, painter, geometry().rect(), id());
+    auto draw = DrawText(text, painter, geometry().rect(), id());
     draw.drawWord(painter);
     endDraw(painter);
 }

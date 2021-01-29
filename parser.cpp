@@ -41,6 +41,9 @@ FrameList Parser::readInput(){
         }
         token = mTokenizer.next();
     }
+    if(mVariables.find("%{totalpages}") == mVariables.end()){
+        mVariables["%{totalpages}"] = QString::number(mFrames.size());
+    }
     return mFrames;
 }
 
@@ -106,7 +109,8 @@ void Parser::newFrame(int line){
             throw ParserError{"frame id already exist", line};
         }
     }
-    mFrames.push_back(std::make_shared<Frame>(id));
+    auto const pageNumber = int(mFrames.size());
+    mFrames.push_back(std::make_shared<Frame>(id, pageNumber));
     mFrames.back()->setTemplateBoxes(templateBoxes);
 }
 
@@ -126,7 +130,6 @@ void Parser::newTextField(int line){
     }
     auto const textField = std::make_shared<TextBox>(text, getRect(id), id);
     textField->setBoxStyle(boxStyle);
-    textField->setVariables(mVariables);
     mBoxCounter++;
     mFrames.back()->appendBox(textField);
 }
@@ -144,7 +147,6 @@ void Parser::newImage(int line) {
         text = QString(mTokenizer.next().mText);
     }
     auto const imageBox = std::make_shared<ImageBox>(text, getRect(id), id);
-    imageBox->setVariables(mVariables);
     imageBox->setBoxStyle(boxStyle);
     mBoxCounter++;
     mFrames.back()->appendBox(imageBox);
@@ -170,7 +172,6 @@ void Parser::newTitle(int line){
     }
     auto const textField = std::make_shared<TextBox>(text, rect, id);
     textField->setBoxStyle(boxStyle);
-    textField->setVariables(mVariables);
     mBoxCounter++;
     mFrames.back()->appendBox(textField);
 }
@@ -321,4 +322,8 @@ void Parser::setFileIsATemplate(bool fileIsATemplate){
 
 void Parser::setVariables(std::map<QString, QString> variables){
     mVariables = variables;
+}
+
+std::map<QString, QString> Parser::Variables() const{
+    return mVariables;
 }

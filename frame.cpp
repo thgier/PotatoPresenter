@@ -6,8 +6,9 @@ Frame::Frame()
 
 }
 
-Frame::Frame(QString id)
+Frame::Frame(QString id, int pageNumber)
     : mId{id}
+    , mPageNumber{pageNumber}
 {
 }
 
@@ -61,4 +62,12 @@ void Frame::appendTemplateBoxes(std::shared_ptr<Box> box){
 
 Box::List Frame::getTemplateBoxes() const{
     return mTemplateBoxes;
+}
+
+void Frame::setPageNumber(int pagenumber){
+    mPageNumber = pagenumber;
+}
+
+int Frame::PageNumber() const{
+    return mPageNumber;
 }

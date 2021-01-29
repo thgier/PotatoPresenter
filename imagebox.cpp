@@ -12,51 +12,48 @@ ImageBox::ImageBox(QString imagePath, BoxGeometry rect, QString id)
 {
 }
 
-void ImageBox::insertVariables(std::map<QString, QString> variables){
-    mImagePath = substituteVariables(mImagePath, variables);
-}
-
-void ImageBox::drawContent(QPainter& painter){
-    auto const fileInfo = QFileInfo(mImagePath);
+void ImageBox::drawContent(QPainter& painter, std::map<QString, QString> variables){
+    auto const path = substituteVariables(mImagePath, variables);
+    auto const fileInfo = QFileInfo(path);
     if(fileInfo.suffix() == "svg"){
-        drawSvg(loadSvg(), painter);
+        drawSvg(loadSvg(path), painter);
     }
     else if(fileInfo.suffix() == "pdf"){
-        drawSvg(loadPdf(), painter);
+        drawSvg(loadPdf(path), painter);
     }
     else{
-        drawImage(loadImage(), painter);
+        drawImage(loadImage(path), painter);
     }
 }
 
-std::shared_ptr<QImage> ImageBox::loadImage() const{
-    auto const imageEntry = CacheManager<QImage>::instance().getData(mImagePath);
+std::shared_ptr<QImage> ImageBox::loadImage(QString path) const{
+    auto const imageEntry = CacheManager<QImage>::instance().getData(path);
     if(imageEntry.data){
         if(imageEntry.status == FileLoadStatus::failed){
             return {};
         }
         return imageEntry.data;
     }
-    auto const image = std::make_shared<QImage>(mImagePath);
-    CacheManager<QImage>::instance().setData(mImagePath, image);
+    auto const image = std::make_shared<QImage>(path);
+    CacheManager<QImage>::instance().setData(path, image);
     return image;
 }
 
-std::shared_ptr<QSvgRenderer> ImageBox::loadSvg() const{
-    auto const svgEntry = CacheManager<QSvgRenderer>::instance().getData(mImagePath);
+std::shared_ptr<QSvgRenderer> ImageBox::loadSvg(QString path) const{
+    auto const svgEntry = CacheManager<QSvgRenderer>::instance().getData(path);
     if(svgEntry.data && svgEntry.data->isValid()){
         return svgEntry.data;
     }
     if(svgEntry.status == FileLoadStatus::failed){
         return {};
     }
-    auto const svg = std::make_shared<QSvgRenderer>(mImagePath);
-    CacheManager<QSvgRenderer>::instance().setData(mImagePath, svg);
+    auto const svg = std::make_shared<QSvgRenderer>(path);
+    CacheManager<QSvgRenderer>::instance().setData(path, svg);
     return svg;
 }
 
-std::shared_ptr<QSvgRenderer> ImageBox::loadPdf() const{
-    auto const svgEntry = CacheManager<QSvgRenderer>::instance().getData(mImagePath);
+std::shared_ptr<QSvgRenderer> ImageBox::loadPdf(QString path) const{
+    auto const svgEntry = CacheManager<QSvgRenderer>::instance().getData(path);
     if(svgEntry.data && svgEntry.data->isValid()){
         return svgEntry.data;
     }
@@ -67,13 +64,13 @@ std::shared_ptr<QSvgRenderer> ImageBox::loadPdf() const{
     tmpFile.open();
     QString program = "/usr/bin/pdf2svg";
     QStringList arguments;
-    arguments << mImagePath << tmpFile.fileName() << "1";
+    arguments << path << tmpFile.fileName() << "1";
     QProcess *pdf2svgProcess = new QProcess();
     pdf2svgProcess->start(program, arguments);
     pdf2svgProcess->waitForFinished();
     pdf2svgProcess->deleteLater();
     auto const svg = std::make_shared<QSvgRenderer>(tmpFile.fileName());
-    CacheManager<QSvgRenderer>::instance().setData(mImagePath, svg);
+    CacheManager<QSvgRenderer>::instance().setData(path, svg);
     return svg;
 }
 

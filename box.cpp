@@ -7,13 +7,6 @@ Box::Box(BoxGeometry rect, QString id)
 {
 }
 
-Box::Box(std::map<QString, QString> variables, BoxGeometry rect, QString id)
-    : mVariables{variables}
-    , mRect{rect}
-    , mId{id}
-{
-}
-
 void Box::setRect(BoxGeometry rect){
     if(mMovable){
         mRect = rect;
@@ -28,7 +21,7 @@ BoxStyle Box::style() const{
     return mStyle;
 }
 
-void Box::drawContent(QPainter& painter) {
+void Box::drawContent(QPainter& painter, std::map<QString, QString>) {
     startDraw(painter);
     auto pen = painter.pen();
     auto const sizeBrush = 0.1;
@@ -125,6 +118,3 @@ QString Box::substituteVariables(QString text, std::map<QString, QString> variab
     return newText;
 }
 
-void Box::setVariables(std::map<QString, QString> variables){
-    mVariables = variables;
-}

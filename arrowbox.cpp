@@ -6,7 +6,7 @@ ArrowBox::ArrowBox(BoxGeometry rect, QString id)
 {
 }
 
-void ArrowBox::drawContent(QPainter& painter){
+void ArrowBox::drawContent(QPainter& painter, std::map<QString, QString>){
     startDraw(painter);
     painter.setRenderHint(QPainter::Antialiasing);
     auto const rect = geometry().rect();

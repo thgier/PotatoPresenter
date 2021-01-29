@@ -25,10 +25,9 @@ public:
     using List = std::vector<std::shared_ptr<Box>>;
     Box();
     Box(BoxGeometry rect, QString id);
-    Box(std::map<QString, QString> variables, BoxGeometry rect, QString id);
     BoxGeometry geometry() const;
     BoxStyle style() const;
-    virtual void drawContent(QPainter& painter);
+    virtual void drawContent(QPainter& painter, std::map<QString, QString> variables);
     void setVisibility(bool vis);
     void setMovable(bool move);
     void setRect(BoxGeometry rect);
@@ -36,13 +35,11 @@ public:
     void drawScaleMarker(QPainter& painter, int size);
     QString id();
     void setBoxStyle(BoxStyle style);
-    QString substituteVariables(QString text, std::map<QString, QString> variables) const;
-    void setVariables(std::map<QString, QString> variables);
 protected:
+    QString substituteVariables(QString text, std::map<QString, QString> variables) const;
     void startDraw(QPainter& painter) const;
     void endDraw(QPainter& painter) const;
     BoxStyle mStyle;
-    std::map<QString, QString> mVariables;
 private:
     BoxGeometry mRect;
     QString mId = 0;
