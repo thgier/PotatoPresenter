@@ -149,7 +149,6 @@ void MainWindow::fileChanged() {
         iface->addMark(error.line, KTextEditor::MarkInterface::MarkTypes::Error);
         return;
     }
-    mPresentation->setVariables(parser.Variables());
     mPaintDocument->update();
     ui->pageNumber->setMaximum(mPresentation->frames().size()-1);
     auto const index = mFrameModel->index(mPaintDocument->getPageNumber());

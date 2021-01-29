@@ -20,7 +20,6 @@ public:
     void setPresentation(std::shared_ptr<Presentation> presentation);
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role) const override;
-    std::map<QString, QString> Variables() const;
 private:
     std::shared_ptr<Presentation> mPresentation = nullptr;
 };

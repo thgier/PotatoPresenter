@@ -23,7 +23,6 @@ void FrameListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     painter->fillRect(frameRect, Qt::white);
     painter->setClipRect(frameRect);
     Painter paint{*painter};
-    paint.loadVariables(static_cast<const FrameListModel*>(index.model())->Variables());
     paint.paintFrame(frame);
     painter->restore();
 

@@ -41,8 +41,8 @@ FrameList Parser::readInput(){
         }
         token = mTokenizer.next();
     }
-    if(mVariables.find("%{totalpages}") == mVariables.end()){
-        mVariables["%{totalpages}"] = QString::number(mFrames.size());
+    for(auto const& frame: mFrames){
+        frame->setVariable("%{totalpages}", QString::number(mFrames.size()));
     }
     return mFrames;
 }
@@ -109,8 +109,11 @@ void Parser::newFrame(int line){
             throw ParserError{"frame id already exist", line};
         }
     }
-    auto const pageNumber = int(mFrames.size());
-    mFrames.push_back(std::make_shared<Frame>(id, pageNumber));
+    mVariables["%{pagenumber}"] = QString::number(mFrames.size());
+    if(mVariables.find("%{date}") == mVariables.end()){
+        mVariables["%{date}"] = QDate::currentDate().toString();
+    }
+    mFrames.push_back(std::make_shared<Frame>(id, mVariables));
     mFrames.back()->setTemplateBoxes(templateBoxes);
 }
 

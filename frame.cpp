@@ -6,9 +6,9 @@ Frame::Frame()
 
 }
 
-Frame::Frame(QString id, int pageNumber)
+Frame::Frame(QString id, std::map<QString, QString> variables)
     : mId{id}
-    , mPageNumber{pageNumber}
+    , mVariables{variables}
 {
 }
 
@@ -64,10 +64,14 @@ Box::List Frame::getTemplateBoxes() const{
     return mTemplateBoxes;
 }
 
-void Frame::setPageNumber(int pagenumber){
-    mPageNumber = pagenumber;
+void Frame::setVariables(std::map<QString, QString> variables){
+    mVariables = variables;
 }
 
-int Frame::PageNumber() const{
-    return mPageNumber;
+std::map<QString, QString> Frame::Variables() const{
+    return mVariables;
+}
+
+void Frame::setVariable(QString name, QString value){
+    mVariables[name] = value;
 }

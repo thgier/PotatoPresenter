@@ -30,7 +30,6 @@ void PaintDocument::paintEvent(QPaintEvent*)
     mPainter.fillRect(QRect(QPoint(0, 0), mSize), Qt::white);
     if(!mPresentation->empty()){
         Painter paint(mPainter);
-        paint.loadVariables(mPresentation->Variables());
         paint.paintFrame(mPresentation->frameAt(pageNumber));
         mCurrentFrameId = mPresentation->frameAt(pageNumber)->id();
     }

@@ -20,14 +20,6 @@ void Presentation::setFrames(Frame::List frames){
     emit presentationChanged();
 }
 
-void Presentation::setVariables(std::map<QString, QString> variables){
-    mVariables = variables;
-}
-
-std::map<QString, QString> Presentation::Variables() const{
-    return mVariables;
-}
-
 bool Presentation::empty() const{
     return mFrames.empty();
 }

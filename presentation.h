@@ -20,8 +20,6 @@ public:
     void loadInput(QString configFilename);
     FrameList frames() const;
     void setFrames(Frame::List frames);
-    void setVariables(std::map<QString, QString> variables);
-    std::map<QString, QString> Variables() const;
 
     bool empty() const;
     int size() const;
@@ -41,7 +39,6 @@ private:
     QString mInputDir;
     ConfigBoxes mConfig;
     PresentationOutput mPresentationOut = PresentationOutput::handout;
-    std::map<QString, QString> mVariables;
 };
 
 #endif // PRESENTATION_H
