@@ -2,19 +2,19 @@
 #include <QRegularExpression>
 
 Box::Box(BoxGeometry rect, QString id)
-    : mRect{rect}
+    : mGeometry{rect}
     , mId{id}
 {
 }
 
-void Box::setRect(BoxGeometry rect){
+void Box::setGeometry(BoxGeometry rect){
     if(mMovable){
-        mRect = rect;
+        mGeometry = rect;
     }
 }
 
 BoxGeometry Box::geometry() const{
-    return mRect;
+    return mGeometry;
 }
 
 BoxStyle Box::style() const{
@@ -28,8 +28,8 @@ void Box::drawContent(QPainter& painter, std::map<QString, QString>) {
     pen.setWidth(sizeBrush);
     painter.setPen(pen);
     painter.translate(QPoint(0, -sizeBrush));
-    painter.drawRect(mRect.rect());
-    painter.rotate(-mRect.angle());
+    painter.drawRect(mGeometry.rect());
+    painter.rotate(-mGeometry.angle());
     endDraw(painter);
 }
 
@@ -48,7 +48,7 @@ QString Box::id() {
 
 void Box::startDraw(QPainter &painter) const{
     painter.save();
-    painter.setTransform(mRect.transform());
+    painter.setTransform(mGeometry.transform());
     painter.setOpacity(mStyle.mOpacity);
 }
 
@@ -64,7 +64,7 @@ void Box::drawBoundingBox(QPainter &painter){
     pen.setWidth(sizePen);
     painter.setPen(pen);
     painter.translate(QPoint(0, -sizePen));
-    painter.drawRect(mRect.rect());
+    painter.drawRect(mGeometry.rect());
     endDraw(painter);
 }
 
@@ -74,10 +74,10 @@ void Box::drawScaleMarker(QPainter &painter, int size){
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setBrush(Qt::black);
     QPoint(size/2, size/2);
-    painter.fillRect(QRect(mRect.rect().topLeft() + QPoint(-size/2, -size/2), QSize(size, size)), Qt::black);
-    painter.fillRect(QRect(mRect.rect().topRight() + QPoint(size/2, -size/2), QSize(-size, size)), Qt::black);
-    painter.fillRect(QRect(mRect.rect().bottomLeft() + QPoint(-size/2, size/2), QSize(size, -size)), Qt::black);
-    painter.fillRect(QRect(mRect.rect().bottomRight() + QPoint(size/2, size/2), QSize(-size, -size)), Qt::black);
+    painter.fillRect(QRect(mGeometry.rect().topLeft() + QPoint(-size/2, -size/2), QSize(size, size)), Qt::black);
+    painter.fillRect(QRect(mGeometry.rect().topRight() + QPoint(size/2, -size/2), QSize(-size, size)), Qt::black);
+    painter.fillRect(QRect(mGeometry.rect().bottomLeft() + QPoint(-size/2, size/2), QSize(size, -size)), Qt::black);
+    painter.fillRect(QRect(mGeometry.rect().bottomRight() + QPoint(size/2, size/2), QSize(-size, -size)), Qt::black);
 
     endDraw(painter);
 }

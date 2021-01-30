@@ -233,7 +233,7 @@ BoxGeometry const Parser::getRect(QString id) {
         case 2:
             auto const lastBox = mFrames.back()->getBoxes().back();
             if(mConfigBoxes->getRect(lastBox->id()).isEmpty()) {
-                lastBox->setRect(mLayout->mLeftPos);
+                lastBox->setGeometry(mLayout->mLeftPos);
                 rect = mLayout->mRightPos;
             }
             break;

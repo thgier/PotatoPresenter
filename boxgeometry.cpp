@@ -103,33 +103,11 @@ QTransform BoxGeometry::transform(QPoint rotatingPoint) const{
     return transform;
 
 }
-QTransform BoxGeometry::transformCenter() const{
-    QTransform transform;
-    transform.translate(-mRect.center().x(), -mRect.center().y());
-    transform.rotate(mAngle);
-    return transform;
-}
-
-QTransform BoxGeometry::tranformLeftBottom() const{
-    QTransform transform;
-    transform.translate(-mRect.bottomLeft().x(), -mRect.bottomLeft().y());
-    transform.rotate(mAngle);
-    return transform;
-}
 
 QTransform BoxGeometry::rotateTransform() const{
     QTransform transform;
     transform.rotate(mAngle);
     return transform;
-}
-
-qreal BoxGeometry::distanceToAngle(qreal x) const{
-    auto const r = std::sqrt((1.0*mRect.width() * mRect.width() + 1.0*mRect.height() * mRect.height())) / 2;
-    if(r == 0){
-        return 0;
-    }
-    qWarning() << "angle" << x / r * 180 / std::numbers::pi;
-    return x / r * 180.0 / std::numbers::pi;
 }
 
 bool BoxGeometry::isEmpty() const{
@@ -138,14 +116,4 @@ bool BoxGeometry::isEmpty() const{
 
 qreal BoxGeometry::lengthDiagonal(){
     return std::sqrt(mRect.width() * mRect.width() + mRect.height() * mRect.height());
-}
-
-void BoxGeometry::moveBottomLeft(QPoint point){
-    point = transform().inverted().map(point);
-    mRect.moveBottomLeft(point);
-}
-
-void BoxGeometry::setTopRight(QPoint point){
-    point = transform().inverted().map(point);
-
 }

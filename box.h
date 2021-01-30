@@ -24,13 +24,13 @@ class Box : public QObject
 public:
     using List = std::vector<std::shared_ptr<Box>>;
     Box();
-    Box(BoxGeometry rect, QString id);
+    Box(BoxGeometry geometry, QString id);
     BoxGeometry geometry() const;
     BoxStyle style() const;
     virtual void drawContent(QPainter& painter, std::map<QString, QString> variables);
     void setVisibility(bool vis);
     void setMovable(bool move);
-    void setRect(BoxGeometry rect);
+    void setGeometry(BoxGeometry geometry);
     void drawBoundingBox(QPainter& painter);
     void drawScaleMarker(QPainter& painter, int size);
     QString id();
@@ -41,7 +41,7 @@ protected:
     void endDraw(QPainter& painter) const;
     BoxStyle mStyle;
 private:
-    BoxGeometry mRect;
+    BoxGeometry mGeometry;
     QString mId = 0;
     bool mVisible = true;
     bool mMovable = true;

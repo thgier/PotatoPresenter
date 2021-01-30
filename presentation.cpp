@@ -33,7 +33,7 @@ std::shared_ptr<Frame> Presentation::frameAt(int pageNumber) const{
 }
 
 void Presentation::setBox(QString boxId, BoxGeometry rect, int pageNumber){
-    getBox(boxId)->setRect(rect);
+    getBox(boxId)->setGeometry(rect);
     mConfig.addRect(rect, boxId);
     emit frameChanged(pageNumber);
 }
