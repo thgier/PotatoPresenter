@@ -43,7 +43,7 @@ std::shared_ptr<Box> Frame::getBox(QString id) const{
     return {};
 }
 
-bool Frame::IdExists(QString id) const{
+bool Frame::containsBox(QString id) const{
     for(auto const &box: getBoxes()){
         if(box->id() == id){
             return true;

@@ -67,6 +67,7 @@ private:
     double mScale;
 
     QPoint mCursorLastPosition;
+    QPoint ScaledMousePos(QMouseEvent *event) const;
     void cursorApperance(QPoint mousePosition);
     TransformationType getTransformationType(QPoint mousePosition);
     TransformationType mTransform = TransformationType::translate;

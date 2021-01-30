@@ -14,7 +14,7 @@ public:
     Frame(QString id, std::map<QString, QString> variables);
     Box::List getBoxes() const;
     std::shared_ptr<Box> getBox(QString id) const;
-    bool IdExists(QString id) const;
+    bool containsBox(QString id) const;
     void appendBox(std::shared_ptr<Box> box);
     void setBoxes(std::vector<std::shared_ptr<Box>> boxes);
     bool empty();

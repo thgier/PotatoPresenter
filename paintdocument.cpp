@@ -34,7 +34,7 @@ void PaintDocument::paintEvent(QPaintEvent*)
         mCurrentFrameId = mPresentation->frameAt(pageNumber)->id();
     }
     auto const box = mPresentation->getBox(mActiveBoxId);
-    if(box != nullptr && box->id().contains(mCurrentFrameId)){
+    if(box != nullptr && mPresentation->getFrame(mCurrentFrameId)->containsBox(mActiveBoxId)){
         box->drawBoundingBox(mPainter);
         box->drawScaleMarker(mPainter, diffToMouse);
     }
@@ -119,12 +119,9 @@ void PaintDocument::mousePressEvent(QMouseEvent *event)
     if (event->button() != Qt::LeftButton) {
         return;
     }
-    mCursorLastPosition = event->pos() * mScale;
+    mCursorLastPosition = ScaledMousePos(event);
     cursorApperance(mCursorLastPosition);
     update();
-    if(mActiveBoxId.isEmpty()) {
-        return;
-    }
 }
 
 void PaintDocument::mouseMoveEvent(QMouseEvent *event)
@@ -132,7 +129,7 @@ void PaintDocument::mouseMoveEvent(QMouseEvent *event)
     if(mPresentation->empty()){
         return;
     }
-    auto const newPosition = event->pos() * mScale;
+    auto const newPosition = ScaledMousePos(event);
     if(event->buttons() != Qt::LeftButton){
         cursorApperance(newPosition);
         return;
@@ -168,7 +165,7 @@ void PaintDocument::mouseReleaseEvent(QMouseEvent *event)
         return;
     }
     if(mActiveBoxId.isEmpty() || !mMomentTrafo){
-        determineBoxInFocus(event->pos() * mScale);
+        determineBoxInFocus(ScaledMousePos(event));
     }
     update();
 }
@@ -344,4 +341,8 @@ Qt::CursorShape PaintDocument::angleToCursor(qreal angle) const{
 
 int PaintDocument::getPageNumber() const{
     return pageNumber;
+}
+
+QPoint PaintDocument::ScaledMousePos(QMouseEvent *event) const{
+    return event->pos() * mScale;
 }
