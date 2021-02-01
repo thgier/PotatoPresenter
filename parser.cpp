@@ -278,19 +278,19 @@ BoxStyle Parser::readArguments(QString &id, QString BoxStyleIdentifier){
             mUserIds.push_back(id);
         }
         if(argument.mText == "left"){
-            boxStyle.left = argumentValue.mText.toInt();
+            boxStyle.mGeometry.left = argumentValue.mText.toInt();
         }
         if(argument.mText == "top"){
-            boxStyle.top = argumentValue.mText.toInt();
+            boxStyle.mGeometry.top = argumentValue.mText.toInt();
         }
         if(argument.mText == "width"){
-            boxStyle.width = argumentValue.mText.toInt();
+            boxStyle.mGeometry.width = argumentValue.mText.toInt();
         }
         if(argument.mText == "height"){
-            boxStyle.height = argumentValue.mText.toInt();
+            boxStyle.mGeometry.height = argumentValue.mText.toInt();
         }
         if(argument.mText == "angle"){
-            boxStyle.angle = argumentValue.mText.toDouble();
+            boxStyle.mGeometry.angle = argumentValue.mText.toDouble();
         }
         argument = mTokenizer.peekNext();
     }

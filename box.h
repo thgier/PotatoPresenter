@@ -6,15 +6,17 @@
 #include "boxgeometry.h"
 
 struct BoxStyle{
-    int mFontSize = 50;
     QColor mColor{Qt::black};
+    int mFontSize = 50;
     QString mFont = "sans-serif";
     qreal mOpacity = 1;
-    int left = -1;
-    int top = -1;
-    int width = -1;
-    int height = -1;
-    qreal angle = -1;
+    struct {
+        int left = -1;
+        int top = -1;
+        int width = -1;
+        int height = -1;
+        qreal angle = -1;
+    } mGeometry;
 };
 
 struct VariableSubstitution{

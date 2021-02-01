@@ -49,21 +49,21 @@ QString Box::id() {
 void Box::startDraw(QPainter &painter){
     painter.save();
     auto rect = mGeometry.rect();
-    if(mStyle.left != -1){
-        rect.moveLeft(mStyle.left);
+    if(mStyle.mGeometry.left != -1){
+        rect.moveLeft(mStyle.mGeometry.left);
     }
-    if(mStyle.top != -1){
-        rect.moveTop(mStyle.top);
+    if(mStyle.mGeometry.top != -1){
+        rect.moveTop(mStyle.mGeometry.top);
     }
-    if(mStyle.width != -1){
-        rect.setWidth(mStyle.width);
+    if(mStyle.mGeometry.width != -1){
+        rect.setWidth(mStyle.mGeometry.width);
     }
-    if(mStyle.height != -1){
-        rect.setHeight(mStyle.height);
+    if(mStyle.mGeometry.height != -1){
+        rect.setHeight(mStyle.mGeometry.height);
     }
     mGeometry.setRect(rect);
-    if(mStyle.angle != -1){
-        mGeometry.setAngle(mStyle.angle);
+    if(mStyle.mGeometry.angle != -1){
+        mGeometry.setAngle(mStyle.mGeometry.angle);
     }
     painter.setTransform(mGeometry.transform());
     painter.setOpacity(mStyle.mOpacity);
