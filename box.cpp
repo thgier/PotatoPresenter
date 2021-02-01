@@ -46,8 +46,25 @@ QString Box::id() {
     return mId;
 }
 
-void Box::startDraw(QPainter &painter) const{
+void Box::startDraw(QPainter &painter){
     painter.save();
+    auto rect = mGeometry.rect();
+    if(mStyle.left != -1){
+        rect.moveLeft(mStyle.left);
+    }
+    if(mStyle.top != -1){
+        rect.moveTop(mStyle.top);
+    }
+    if(mStyle.width != -1){
+        rect.setWidth(mStyle.width);
+    }
+    if(mStyle.height != -1){
+        rect.setHeight(mStyle.height);
+    }
+    mGeometry.setRect(rect);
+    if(mStyle.angle != -1){
+        mGeometry.setAngle(mStyle.angle);
+    }
     painter.setTransform(mGeometry.transform());
     painter.setOpacity(mStyle.mOpacity);
 }

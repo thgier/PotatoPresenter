@@ -10,6 +10,11 @@ struct BoxStyle{
     QColor mColor{Qt::black};
     QString mFont = "sans-serif";
     qreal mOpacity = 1;
+    int left = -1;
+    int top = -1;
+    int width = -1;
+    int height = -1;
+    qreal angle = -1;
 };
 
 struct VariableSubstitution{
@@ -37,7 +42,7 @@ public:
     void setBoxStyle(BoxStyle style);
 protected:
     QString substituteVariables(QString text, std::map<QString, QString> variables) const;
-    void startDraw(QPainter& painter) const;
+    void startDraw(QPainter& painter);
     void endDraw(QPainter& painter) const;
     BoxStyle mStyle;
 private:

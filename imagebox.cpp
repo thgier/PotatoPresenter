@@ -15,6 +15,7 @@ ImageBox::ImageBox(QString imagePath, BoxGeometry rect, QString id)
 void ImageBox::drawContent(QPainter& painter, std::map<QString, QString> variables){
     auto const path = substituteVariables(mImagePath, variables);
     auto const fileInfo = QFileInfo(path);
+    startDraw(painter);
     if(fileInfo.suffix() == "svg"){
         drawSvg(loadSvg(path), painter);
     }
@@ -24,6 +25,7 @@ void ImageBox::drawContent(QPainter& painter, std::map<QString, QString> variabl
     else{
         drawImage(loadImage(path), painter);
     }
+    endDraw(painter);
 }
 
 std::shared_ptr<QImage> ImageBox::loadImage(QString path) const{
@@ -77,14 +79,12 @@ std::shared_ptr<QSvgRenderer> ImageBox::loadPdf(QString path) const{
 void ImageBox::drawImage(std::shared_ptr<QImage> image, QPainter& painter) const{
     if(!image){
         return;
-    }
-    startDraw(painter);
+    } 
     auto const paintImage = image->scaled(geometry().rect().size(), Qt::KeepAspectRatio, Qt::FastTransformation);
     auto const source = paintImage.size();
     auto const x = geometry().rect().left() + (geometry().rect().width() - source.width()) / 2;
     auto const y = geometry().rect().top() + (geometry().rect().height() - source.height()) / 2;
     painter.drawImage(QRect(QPoint(x, y), source), paintImage);
-    endDraw(painter);
 }
 
 void ImageBox::drawSvg(std::shared_ptr<QSvgRenderer> svg, QPainter& painter) const{

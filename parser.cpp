@@ -185,14 +185,15 @@ void Parser::newArrow(int line){
         return;
     }
     auto id = generateId();
-    auto const boxStyle = readArguments(id, "body");
 
     auto rect = mConfigBoxes->getRect(id);
     if(rect.isEmpty()){
         rect = mLayout->mArrowPos;
     }
+    auto const style = readArguments(id, "body");
+
     auto const arrow = std::make_shared<ArrowBox>(rect, id);
-    arrow->setBoxStyle(boxStyle);
+    arrow->setBoxStyle(style);
     mFrames.back()->appendBox(arrow);
     mBoxCounter++;
 
@@ -251,9 +252,9 @@ BoxStyle Parser::readArguments(QString &id, QString BoxStyleIdentifier){
     while(argument.mKind == Token::Kind::Argument){
         mTokenizer.next();
         auto argumentValue = mTokenizer.next();
-        if(argumentValue.mKind != Token::Kind::ArgumentValue){
+        if(argumentValue.mKind != Token::Kind::ArgumentValue && !argumentValue.mText.isEmpty()){
             throw ParserError{"Missing Value in argument", argument.mLine};
-            return boxStyle;
+            return {};
         }
         if(argument.mText == "color"){
             QColor color;
@@ -275,6 +276,21 @@ BoxStyle Parser::readArguments(QString &id, QString BoxStyleIdentifier){
                 throw ParserError{"Id already exists", argumentValue.mLine};
             }
             mUserIds.push_back(id);
+        }
+        if(argument.mText == "left"){
+            boxStyle.left = argumentValue.mText.toInt();
+        }
+        if(argument.mText == "top"){
+            boxStyle.top = argumentValue.mText.toInt();
+        }
+        if(argument.mText == "width"){
+            boxStyle.width = argumentValue.mText.toInt();
+        }
+        if(argument.mText == "height"){
+            boxStyle.height = argumentValue.mText.toInt();
+        }
+        if(argument.mText == "angle"){
+            boxStyle.angle = argumentValue.mText.toDouble();
         }
         argument = mTokenizer.peekNext();
     }
