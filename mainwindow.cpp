@@ -116,8 +116,8 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(&cacheManager(), &EquationCacheManager::conversionFinished,
             mPaintDocument, QOverload<>::of(&PaintDocument::update));
 
-    CacheManager<QImage>::instance().setCallback([this](QString){fileChanged();});
-    CacheManager<QSvgRenderer>::instance().setCallback([this](QString){fileChanged();});
+    CacheManager<QImage>::instance().setCallback([this](QString){mPaintDocument->update();});
+    CacheManager<QSvgRenderer>::instance().setCallback([this](QString){mPaintDocument->update();});
 
     ui->error->setWordWrap(true);
 
