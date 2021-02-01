@@ -23,6 +23,7 @@ public:
     PaintDocument(QWidget*&);
     QSize sizeHint() const override;
     void resizeEvent(QResizeEvent *) override;
+    void contextMenuEvent(QContextMenuEvent *event) override;
     void setPresentation(std::shared_ptr<Presentation> pres);
     void updateFrames();
     void setCurrentPage(int);
@@ -75,6 +76,12 @@ private:
 
     void determineBoxInFocus(QPoint mousePos);
     std::vector<std::shared_ptr<Box>> determineBoxesUnderMouse(QPoint mousePos);
+
+    void createActions();
+    void createAndOpenSvg();
+    void openInInkscape();
+    QAction* openInkscape;
+    QAction* createAndOpenInkscape;
 };
 
 #endif // PAINTDOCUMENT_H

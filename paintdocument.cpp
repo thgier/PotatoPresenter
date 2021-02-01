@@ -1,8 +1,9 @@
 #include "paintdocument.h"
 #include <KTextEditor/Document>
 #include <QMouseEvent>
-
-
+#include <QMenu>
+#include<QSvgGenerator>
+#include "imagebox.h"
 #include<QPainter>
 #include "painter.h"
 
@@ -13,6 +14,7 @@ PaintDocument::PaintDocument(QWidget*&)
     setMouseTracking(true);
     mSize = mLayout.mSize;
     mScale = 1.0 * mSize.width() / mWidth;
+    createActions();
 }
 
 void PaintDocument::setPresentation(std::shared_ptr<Presentation> pres){
@@ -50,6 +52,21 @@ void PaintDocument::paintEvent(QPaintEvent*)
 
 QSize PaintDocument::sizeHint() const{
     return mLayout.mSize;
+}
+
+void PaintDocument::contextMenuEvent(QContextMenuEvent *event){
+    QMenu menu(this);
+    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->getBox(mActiveBoxId));
+    if(image){
+        auto const imagePath = image->ImagePath();
+        if(QFile::exists(imagePath)){
+            menu.addAction(openInkscape);
+        }
+        else{
+            menu.addAction(createAndOpenInkscape);
+        }
+    }
+    menu.exec(event->globalPos());
 }
 
 void PaintDocument::updateFrames(){
@@ -345,4 +362,39 @@ int PaintDocument::getPageNumber() const{
 
 QPoint PaintDocument::ScaledMousePos(QMouseEvent *event) const{
     return event->pos() * mScale;
+}
+
+void PaintDocument::createActions(){
+    openInkscape = new QAction(tr("&open in Inkscape"), this);
+    createAndOpenInkscape = new QAction(tr("&create Svg and open in Inkscape"), this);
+    connect(openInkscape, &QAction::triggered,
+            this, &PaintDocument::openInInkscape);
+    connect(createAndOpenInkscape, &QAction::triggered,
+            this, &PaintDocument::createAndOpenSvg);
+}
+
+void PaintDocument::openInInkscape(){
+    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->getBox(mActiveBoxId));
+    if(!image){
+        return;
+    }
+    QString program = "/usr/bin/inkscape";
+    QStringList arguments;
+    arguments << image->ImagePath();
+    QProcess *inkscapeProcess = new QProcess(this);
+    inkscapeProcess->start(program, arguments);
+}
+
+void PaintDocument::createAndOpenSvg(){
+    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->getBox(mActiveBoxId));
+    if(!image){
+        return;
+    }
+    QSvgGenerator generator;
+    generator.setFileName(image->ImagePath());
+    generator.setSize(image->geometry().rect().size());
+    QPainter painter;
+    painter.begin(&generator);
+    painter.end();
+    openInInkscape();
 }

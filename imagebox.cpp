@@ -94,3 +94,7 @@ void ImageBox::drawSvg(std::shared_ptr<QSvgRenderer> svg, QPainter& painter) con
     svg->setAspectRatioMode(Qt::KeepAspectRatio);
     svg->render(&painter, geometry().rect());
 }
+
+QString ImageBox::ImagePath() const{
+    return mImagePath;
+}

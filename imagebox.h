@@ -10,6 +10,7 @@ public:
     ImageBox(QString imagePath, BoxGeometry rect, QString id);
     void drawContent(QPainter& painter, std::map<QString, QString> variables) override;
     int aspectRatio(QRect rect);
+    QString ImagePath() const;
 private:
     QString mImagePath;
     std::shared_ptr<QImage> loadImage(QString path) const;
