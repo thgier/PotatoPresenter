@@ -164,22 +164,17 @@ void MainWindow::openFile(){
     if(newFile.isEmpty()){
         return;
     }
-    auto const oldFile = mFilename;
     mFilename = newFile;
     openDocument();
     auto const configFile = getConfigFilename(mDoc->url());
     if(!QFile::exists(configFile)){
-        int ret = QMessageBox::information(this, tr("Failed to open File"), tr("Failed to find %1. Do you want to generate a new empty Configuration File?").arg(configFile),
-                                 QMessageBox::Yes | QMessageBox::Cancel);
+        int ret = QMessageBox::information(this, tr("Failed to open File"), tr("Failed to find %1. Genereate a new empty Configuration File").arg(configFile),
+                                 QMessageBox::Ok);
         switch (ret) {
-        case QMessageBox::Yes:
+        case QMessageBox::Ok:
             resetPresentation();
             fileChanged();
             mPresentation->saveConfig(configFile);
-            break;
-        case QMessageBox::Cancel:
-            mFilename = oldFile;
-            openFile();
             break;
         }
     }
@@ -241,7 +236,6 @@ void MainWindow::resetPresentation(){
     mPaintDocument->update();
     connect(mDoc, &KTextEditor::Document::textChanged,
                      this, &MainWindow::fileChanged);
-    setupFileActions();
 }
 
 void MainWindow::exportPDF(){
