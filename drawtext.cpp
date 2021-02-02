@@ -1,8 +1,9 @@
 #include "drawtext.h"
 #include <QDebug>
 
-DrawText::DrawText(QString text, QPainter& painter, QRect rect, QString id)
-    :mCharNumber{0}, mText{text}, mFormateText(painter.fontMetrics(), rect, id)
+DrawText::DrawText(QString text, QPainter& painter, QRect rect, QString id, double linespacing)
+    :mCharNumber{0}, mText{text}
+    , mFormateText(painter.fontMetrics(), rect, id, linespacing)
 {
     makePropertyList();
 }
@@ -28,7 +29,6 @@ std::vector<TextProperty> DrawText::getProberties(QRegularExpression re, fontCha
     std::vector<TextProperty> properties = {};
     while(i.hasNext()){
         auto word = i.next();
-        auto text = word.captured(0);
         int start = word.capturedStart();
         auto propStart = TextProperty(start, changeStart);
         properties.push_back(propStart);
@@ -37,9 +37,7 @@ std::vector<TextProperty> DrawText::getProberties(QRegularExpression re, fontCha
 }
 
 void DrawText::makePropertyList() {
-//    auto bold = getProberties(QRegularExpression(" \\*\\*(.*?)\\*\\* "), fontChange::boldStart, fontChange::boldEnd);
     auto bold = getProberties(QRegularExpression("\\*\\*\\w(.*?)\\w\\*\\*"), fontChange::boldStart, fontChange::boldEnd);
-//    auto bold = getProberties(QRegularExpression("\\*\\*\\w+\\*\\*"), fontChange::boldStart, fontChange::boldEnd);
     auto italic = getProberties(QRegularExpression("\\_\\w(.*?)\\w\\_"), fontChange::italicStart, fontChange::italicEnd);
     auto newLine = getProberties(QRegularExpression("\\n"), fontChange::newLine);
     auto itemize = getProberties(QRegularExpression("\\n\\s+\\* |\\n\\s+\\- "), fontChange::itemize);
@@ -97,7 +95,6 @@ void DrawText::drawProperty(fontChange change, QString text, QPainter& painter) 
         case fontChange::itemize:
             QRegularExpression re("\\* |\\- ");
             QRegularExpressionMatch match = re.match(text);
-            auto const word = match.captured(0);
             auto const start = match.capturedStart();
             mFormateText.drawItem(painter);
             mFormateText.drawText(text.mid(start + 2), painter);
@@ -106,14 +103,7 @@ void DrawText::drawProperty(fontChange change, QString text, QPainter& painter) 
 }
 
 void DrawText::drawWord(QPainter& painter) {
-//    auto start = 0;
-//    if(!mProp.empty()){
-//        start = mProp.front().getPosition();
-//    }
-//    mFormateText.drawText(mText.left(start), painter);
     for(int i=0; i<int(mProp.size())-1; i++){
         drawProperty(mProp[i].getProperty(), mText.mid(mProp[i].getPosition(), mProp[i+1].getPosition()-mProp[i].getPosition()), painter);
     }
-
-//    }
 }

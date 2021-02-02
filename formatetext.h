@@ -11,9 +11,8 @@
 class FormateText
 {
 public:
-    FormateText(QFontMetrics metrics, QRect rect, QString id);
+    FormateText(QFontMetrics metrics, QRect rect, QString id, double linespacing);
     void drawText(QString text, QPainter& painter);
-    std::vector<int> getLinePosition() const;
     void drawNewLine();
     void drawItem(QPainter& painter);
     void drawTeX(QString mathExpression, QPainter& painter);
@@ -23,9 +22,11 @@ private:
     QRect mRect;
     int mLineStart;
     int mLinewidth;
-    std::vector<int> mLinePositions;
+    double mLinespacing;
+    std::vector<double> mLinePositions;
     int mLineN = 0;
     QString mIdBox;
+    std::vector<double> getLinePosition() const;
 };
 
 #endif // FORMATETEXT_H

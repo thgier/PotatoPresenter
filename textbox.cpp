@@ -19,7 +19,7 @@ void TextBox::drawContent(QPainter& painter, std::map<QString, QString> variable
     auto const text = substituteVariables(mText, variables);
     startDraw(painter);
     painter.setPen(mStyle.mColor);
-    auto draw = DrawText(text, painter, geometry().rect(), id());
+    auto draw = DrawText(text, painter, geometry().rect(), id(), mStyle.mLineSpacing);
     draw.drawWord(painter);
     endDraw(painter);
 }

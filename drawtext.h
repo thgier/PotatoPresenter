@@ -12,7 +12,7 @@
 class DrawText
 {
 public:
-    DrawText(QString text, QPainter& painter, QRect rect, QString id);
+    DrawText(QString text, QPainter& painter, QRect rect, QString id, double linespacing);
     void makePropertyList();
     std::vector<TextProperty> getProberties(QRegularExpression re, fontChange changeStart, fontChange changeEnd);
     std::vector<TextProperty> getProberties(QRegularExpression re, fontChange changeStart);

@@ -6,25 +6,25 @@
 #include <QCryptographicHash>
 
 
-FormateText::FormateText(QFontMetrics metrics, QRect rect, QString id)
+FormateText::FormateText(QFontMetrics metrics, QRect rect, QString id, double linespacing)
     : mMetrics{metrics}
     , mRect(rect)
     , mLineStart{metrics.xHeight()}
     , mLinewidth{mLineStart}
+    , mLinespacing{linespacing}
     , mLinePositions{getLinePosition()}
     , mIdBox{id}
 {
 
 }
 
-std::vector<int> FormateText::getLinePosition() const{
-    auto const lineSpacing = mMetrics.lineSpacing();
-    auto const numberOfLines = mRect.height() / lineSpacing;
-    auto const offset = .1 * mMetrics.height();
+std::vector<double> FormateText::getLinePosition() const{
+    double const lineSpacing = mMetrics.lineSpacing() * mLinespacing;
+    auto const numberOfLines = 1. * mRect.height() / lineSpacing;
     auto const ascent = mMetrics.ascent();
-    std::vector<int> linePosition = {};
-    for(int i=0; i<numberOfLines + 2; i++) {
-        linePosition.push_back(mRect.top() + ascent + offset + i * lineSpacing);
+    std::vector<double> linePosition = {};
+    for(int i = 0; i < numberOfLines + 2; i++) {
+        linePosition.push_back(double(mRect.top() + ascent) + i * lineSpacing);
     }
     return linePosition;
 }
@@ -106,7 +106,7 @@ void FormateText::drawSvg(std::shared_ptr<QSvgRenderer> image, QPainter& painter
     auto const height = 1.0 * defaultSize.height() / 8.5 * fontSize;
     auto const width = 1.0 * defaultSize.width() / defaultSize.height() * height;
     image->setAspectRatioMode(Qt::KeepAspectRatio);
-    auto const point = QPoint{mRect.left() + mLinewidth, mLinePositions[mLineN] - int(height) + descent};
+    auto const point = QPointF{1.0 * mRect.left() + mLinewidth, mLinePositions[mLineN] - height + descent};
     auto const paintRect = QRectF(point, QSize(width, height));
     image->render(&painter, paintRect);
     mLinewidth += width;

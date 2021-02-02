@@ -267,6 +267,11 @@ BoxStyle Parser::readArguments(QString &id, QString BoxStyleIdentifier){
         if(argument.mText == "font-size"){
             boxStyle.mFontSize = argumentValue.mText.toInt();
         }
+        if(argument.mText == "line-height"){
+            if(argumentValue.mText.toDouble() != 0){
+                boxStyle.mLineSpacing = argumentValue.mText.toDouble();
+            }
+        }
         if(argument.mText == "font-weight"){
             if(QString(argumentValue.mText) == "bold"){
                 boxStyle.mFontWeight = FontWeight::bold;

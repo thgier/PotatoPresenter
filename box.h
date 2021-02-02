@@ -13,6 +13,7 @@ enum FontWeight{
 struct BoxStyle{
     QColor mColor{Qt::black};
     int mFontSize = 50;
+    double mLineSpacing = 1.15;
     FontWeight mFontWeight = FontWeight::normal;
     QString mFont = "sans-serif";
     qreal mOpacity = 1;
