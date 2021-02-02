@@ -397,6 +397,7 @@ void PaintDocument::createAndOpenSvg(){
     QSvgGenerator generator;
     generator.setFileName(image->ImagePath());
     generator.setSize(image->geometry().rect().size());
+    generator.setViewBox(QRect(QPoint(0, 0), image->geometry().rect().size()));
     QPainter painter;
     painter.begin(&generator);
     painter.end();
