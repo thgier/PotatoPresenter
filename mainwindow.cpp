@@ -27,30 +27,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->splitter->setSizes(QList<int>{10000, 10000});
     mEditor = KTextEditor::Editor::instance();
-    mFilename = "/home/theresa/Documents/praes/inputFiles/input.txt";
     mDoc = mEditor->createDocument(this);
 
     mPresentation = std::make_shared<Presentation>();
     mPaintDocument = ui->paintDocument;
     mPaintDocument->setPresentation(mPresentation);
-    openDocument();
-
-    auto const configFile = getConfigFilename(mDoc->url());
-    if(!QFile::exists(configFile)){
-        int ret = QMessageBox::information(this, tr("Failed to open File"), tr("Failed to find %1. Do you want to generate a new empty Configuration File?").arg(configFile),
-                                 QMessageBox::Yes | QMessageBox::Cancel);
-        switch (ret) {
-        case QMessageBox::Yes:
-            resetPresentation();
-            fileChanged();
-            mPresentation->saveConfig(configFile);
-            break;
-        case QMessageBox::Cancel:
-            openFile();
-            break;
-        }
-    }
-    mPresentation->loadInput(configFile);
 
     mViewTextDoc = mDoc->createView(this);
     ui->editor->addWidget(mViewTextDoc);
@@ -63,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->pagePreview->setViewMode(QListView::IconMode);
     QItemSelectionModel *selectionModel = ui->pagePreview->selectionModel();
 
+    newDocument();
     fileChanged();
     setupFileActions();
 
@@ -203,7 +185,6 @@ void MainWindow::openFile(){
     }
     mPresentation->loadInput(configFile);
     mPaintDocument->setPresentation(mPresentation);
-    fileChanged();
 }
 
 void MainWindow::newDocument(){
