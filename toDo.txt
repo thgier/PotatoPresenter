@@ -5,3 +5,4 @@
 - textbox with border
 - repair itemize
 - crop images
+- path to font
