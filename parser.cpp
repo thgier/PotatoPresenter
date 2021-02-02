@@ -267,6 +267,17 @@ BoxStyle Parser::readArguments(QString &id, QString BoxStyleIdentifier){
         if(argument.mText == "font-size"){
             boxStyle.mFontSize = argumentValue.mText.toInt();
         }
+        if(argument.mText == "font-weight"){
+            if(QString(argumentValue.mText) == "bold"){
+                boxStyle.mFontWeight = FontWeight::bold;
+            }
+            else if(QString(argumentValue.mText) == "normal"){
+                boxStyle.mFontWeight = FontWeight::normal;
+            }
+            else{
+                throw ParserError{"font-weight can only be bold or normal", argumentValue.mLine};
+            }
+        }
         if(argument.mText == "font"){
             boxStyle.mFont = QString(argumentValue.mText);
         }

@@ -5,9 +5,15 @@
 #include <QPainter>
 #include "boxgeometry.h"
 
+enum FontWeight{
+    normal,
+    bold
+};
+
 struct BoxStyle{
     QColor mColor{Qt::black};
     int mFontSize = 50;
+    FontWeight mFontWeight = FontWeight::normal;
     QString mFont = "sans-serif";
     qreal mOpacity = 1;
     struct {

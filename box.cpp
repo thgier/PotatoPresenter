@@ -65,6 +65,14 @@ void Box::startDraw(QPainter &painter){
     if(mStyle.mGeometry.angle != -1){
         mGeometry.setAngle(mStyle.mGeometry.angle);
     }
+    auto font = painter.font();
+    if(mStyle.mFontWeight == FontWeight::bold){
+        font.setBold(true);
+        painter.setFont(font);
+    }
+    font.setFamily(mStyle.mFont);
+    font.setPixelSize(mStyle.mFontSize);
+    painter.setFont(font);
     painter.setTransform(mGeometry.transform());
     painter.setOpacity(mStyle.mOpacity);
 }
