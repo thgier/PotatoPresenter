@@ -3,9 +3,11 @@
 #include <QMouseEvent>
 #include <QMenu>
 #include<QSvgGenerator>
-#include "imagebox.h"
-#include<QPainter>
+#include <QPainter>
+#include <QDir>
 #include "painter.h"
+#include "imagebox.h"
+#include "cachemanager.h"
 
 PaintDocument::PaintDocument(QWidget*&)
     : QWidget(), mWidth{frameSize().width()}, pageNumber{0}
@@ -390,11 +392,14 @@ void PaintDocument::createAndOpenSvg(){
     if(!image){
         return;
     }
+    QDir().mkpath(QFileInfo(image->ImagePath()).absolutePath());
+    CacheManager<QSvgRenderer>::instance().deleteFile(image->ImagePath());
     QSvgGenerator generator;
     generator.setFileName(image->ImagePath());
     generator.setSize(image->geometry().rect().size());
     QPainter painter;
     painter.begin(&generator);
     painter.end();
+    update();
     openInInkscape();
 }
