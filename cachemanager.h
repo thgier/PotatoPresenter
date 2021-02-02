@@ -29,12 +29,12 @@ public:
     void setData(QString path, std::shared_ptr<T> data);
     void setCallback(std::function<void(QString)> dataChangedCallback);
     static CacheManager<T>& instance ();
+    void deleteFile(QString const &path);
 
 private:
     CacheManager();
     CacheManager(CacheManager const&) = delete;
     void updateFile(QString const &path);
-    void deleteFile(QString const &path);
     void removeFailed(QString path);
     void addFailedToWatcher(QFileInfo file);
     void deleteAllResources();
