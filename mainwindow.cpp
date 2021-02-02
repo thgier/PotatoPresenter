@@ -185,6 +185,7 @@ void MainWindow::openFile(){
     }
     mPresentation->loadInput(configFile);
     mPaintDocument->setPresentation(mPresentation);
+    fileChanged();
 }
 
 void MainWindow::newDocument(){
