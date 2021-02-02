@@ -11,8 +11,11 @@ void ArrowBox::drawContent(QPainter& painter, std::map<QString, QString>){
     painter.setRenderHint(QPainter::Antialiasing);
     auto const rect = geometry().rect();
     QPainterPath path;
-    int const w = double(rect.height()) / 3;
-    int const arrowW = 150;
+    int const w = double(rect.height()) / 4;
+    int arrowW = 100;
+    if(rect.width() < 300){
+        arrowW = rect.width() / 3;
+    }
 
     path.moveTo(rect.left(), rect.center().y() - w/2);
     path.lineTo(rect.left(), rect.center().y() + w/2);
