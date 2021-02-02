@@ -62,7 +62,7 @@ private:
     QString mActiveBoxId;
     QString mCurrentFrameId;
 
-    int const diffToMouse = 25;
+    int const diffToMouse = 15;
     QPainter mPainter;
     Layout mLayout;
     double mScale;
