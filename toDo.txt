@@ -1,8 +1,13 @@
-- template
+- markdown off
+- repair itemize
 - undo
 - equation
 - Pause
-- textbox with border
-- repair itemize
+- textbox with border, ellipse, rect
 - crop images
 - path to font
+- relative paths
+- right, center aligned text
+- latex
+- arrow buttons to move boxes
+- switch to last frame when created
