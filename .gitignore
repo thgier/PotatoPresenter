@@ -4,6 +4,7 @@ inputFiles/*
 firstTemplate/*
 latex/*
 stuff/*
+CMakeLists.txt.user
 ssh_*
 *~
 *.autosave

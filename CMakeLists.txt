@@ -20,32 +20,32 @@ find_package(Qt5Test REQUIRED)
 enable_testing(true)
 
 add_executable(praes
-    main.cpp
-    mainwindow.cpp
-    mainwindow.ui
-    files.qrc
-    frame.cpp
-    textbox.cpp
-    box.cpp
-    parser.cpp
-    painter.cpp
-    paintdocument.cpp
-    textproperty.cpp
-    drawtext.cpp
-    formatetext.cpp
-    imagebox.cpp
-    configboxes.cpp
-    layout.cpp
-    equationcachemanager.cpp
-    cachemanager.cpp
-    framelistmodel.cpp
-    framelistdelegate.cpp
-    presentation.cpp
-    tokenizer.cpp
-    boxgeometry.cpp
-    boxtransformation.cpp
-    arrowbox.cpp
-    template.cpp
+    src/core/boxes/arrowbox.cpp
+    src/core/boxes/box.cpp
+    src/core/boxes/boxgeometry.cpp
+    src/core/boxes/cachemanager.cpp
+    src/core/boxes/drawtext.cpp
+    src/core/boxes/equationcachemanager.cpp
+    src/core/boxes/formatetext.cpp
+    src/core/boxes/imagebox.cpp
+    src/core/boxes/textbox.cpp
+    src/core/boxes/textproperty.cpp
+    src/core/configboxes.cpp
+    src/core/frame.cpp
+    src/core/layout.cpp
+    src/core/main.cpp
+    src/core/mainwindow.cpp
+    src/core/mainwindow.ui
+    src/core/painter.cpp
+    src/core/parser.cpp
+    src/core/presentation.cpp
+    src/core/template.cpp
+    src/core/tokenizer.cpp
+    src/files.qrc
+    src/ui/boxtransformation.cpp
+    src/ui/framelistdelegate.cpp
+    src/ui/framelistmodel.cpp
+    src/ui/paintdocument.cpp
 )
 
 add_executable(testtokenizer
@@ -57,3 +57,7 @@ target_link_libraries(praes PRIVATE Qt5::Widgets KF5::TextEditor)
 target_link_libraries(praes PRIVATE Qt5::PrintSupport)
 target_link_libraries(praes PRIVATE Qt5::Svg)
 target_link_libraries(testtokenizer PRIVATE Qt5::Test)
+
+
+target_include_directories(praes src/ui/ src/core/ src/core/boxes/)
+target_include_directories(testtokenizer src/ui/ src/core/ src/core/boxes/)

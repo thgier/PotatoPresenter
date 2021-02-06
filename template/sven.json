@@ -1,0 +1,92 @@
+[
+    {
+        "id": "Hallo-intern-0",
+        "rect": {
+            "angle": 0,
+            "height": 903,
+            "width": 129,
+            "xPosition": 1471,
+            "yPosition": 0
+        }
+    },
+    {
+        "id": "YO BOIIIIIIIIIIIS-intern-0",
+        "rect": {
+            "angle": 0,
+            "height": 842,
+            "width": 1519,
+            "xPosition": -13,
+            "yPosition": -1
+        }
+    },
+    {
+        "id": "YO BOIIIIIIIIIIIS-intern-1",
+        "rect": {
+            "angle": 0,
+            "height": 110,
+            "width": 767,
+            "xPosition": 61,
+            "yPosition": 322
+        }
+    },
+    {
+        "id": "YO BOIIIIIIIIIIIS-intern-2",
+        "rect": {
+            "angle": 0,
+            "height": 155,
+            "width": 585,
+            "xPosition": 81,
+            "yPosition": 432
+        }
+    },
+    {
+        "id": "default-intern-0",
+        "rect": {
+            "angle": 0,
+            "height": 840,
+            "width": 1554,
+            "xPosition": -25,
+            "yPosition": 1
+        }
+    },
+    {
+        "id": "default-intern-1",
+        "rect": {
+            "angle": 0,
+            "height": 100,
+            "width": 1500,
+            "xPosition": 10,
+            "yPosition": 129
+        }
+    },
+    {
+        "id": "default-intern-2",
+        "rect": {
+            "angle": 0,
+            "height": 81,
+            "width": 103,
+            "xPosition": 1494,
+            "yPosition": 847
+        }
+    },
+    {
+        "id": "default-intern-3",
+        "rect": {
+            "angle": 0,
+            "height": 598,
+            "width": 1350,
+            "xPosition": 21,
+            "yPosition": 252
+        }
+    },
+    {
+        "id": "default-intern-4",
+        "rect": {
+            "angle": 0,
+            "height": 72,
+            "width": 1362,
+            "xPosition": 41,
+            "yPosition": 29
+        }
+    }
+]
