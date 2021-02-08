@@ -43,7 +43,7 @@ public:
     void layoutPresTitle();
     void layoutSubtitle();
 
-signals:
+Q_SIGNALS:
     void pageNumberChanged(int page);
     void selectionChanged(std::shared_ptr<Frame>);
 

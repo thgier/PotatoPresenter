@@ -83,7 +83,7 @@ void PaintDocument::setCurrentPage(int page){
     pageNumber = page;
     mCurrentFrameId = mPresentation->frameAt(page)->id();
     mActiveBoxId = QString();
-    emit selectionChanged(mPresentation->frameAt(pageNumber));
+    Q_EMIT selectionChanged(mPresentation->frameAt(pageNumber));
     update();
 }
 
@@ -95,7 +95,7 @@ void PaintDocument::setCurrentPage(QString frameId){
                 mActiveBoxId = QString();
             }
             pageNumber = counter;
-            emit pageNumberChanged(pageNumber);
+            Q_EMIT pageNumberChanged(pageNumber);
             break;
         }
         counter++;

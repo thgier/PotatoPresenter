@@ -27,7 +27,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-private slots:
+private Q_SLOTS:
 
 private:
     void fileChanged();

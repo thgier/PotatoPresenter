@@ -31,7 +31,7 @@ void FrameListModel::setPresentation(std::shared_ptr<Presentation> presentation)
     mPresentation = presentation;
     endResetModel();
     connect(mPresentation.get(), &Presentation::frameChanged,
-            this, [this](int pageNumber){emit dataChanged(index(pageNumber), index(pageNumber));});
+            this, [this](int pageNumber){Q_EMIT dataChanged(index(pageNumber), index(pageNumber));});
     connect(mPresentation.get(), &Presentation::presentationChanged,
             this, [this](){
             beginResetModel();

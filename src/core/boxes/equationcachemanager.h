@@ -27,7 +27,7 @@ public:
     void startSvgGeneration(QByteArray hash, QProcess* latex);
     void writeSvgToMap(QByteArray hash);
     void errorOccured(QByteArray hash, QProcess::ProcessError error);
-signals:
+Q_SIGNALS:
     void conversionFinished();
 private:
     std::map<QByteArray, SvgEntry> mCachedImages;

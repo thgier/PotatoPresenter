@@ -10,26 +10,19 @@ FormateText::FormateText(QFontMetrics metrics, QRect rect, QString id, double li
     : mMetrics{metrics}
     , mRect(rect)
     , mLineStart{metrics.xHeight()}
+    , mLineY{double(rect.top() + metrics.ascent())}
     , mLinewidth{mLineStart}
-    , mLinespacing{linespacing}
-    , mLinePositions{getLinePosition()}
+    , mLinespacing{linespacing * metrics.lineSpacing()}
     , mIdBox{id}
 {
 
 }
 
-std::vector<double> FormateText::getLinePosition() const{
-    double const lineSpacing = mMetrics.lineSpacing() * mLinespacing;
-    auto const numberOfLines = 1. * mRect.height() / lineSpacing;
-    auto const ascent = mMetrics.ascent();
-    std::vector<double> linePosition = {};
-    for(int i = 0; i < numberOfLines + 2; i++) {
-        linePosition.push_back(double(mRect.top() + ascent) + i * lineSpacing);
-    }
-    return linePosition;
-}
-
 void FormateText::drawText(QString text, QPainter& painter){
+    if(mLatexNext) {
+        drawTeX(text, painter);
+        return;
+    }
     mMetrics = painter.fontMetrics();
     QRegularExpression re("(\\S+)");
     QRegularExpressionMatchIterator i = re.globalMatch(text);
@@ -38,32 +31,38 @@ void FormateText::drawText(QString text, QPainter& painter){
         auto match = i.next();
         word = match.captured(1);
         if (mLinewidth + mMetrics.horizontalAdvance(word) > mRect.width() - mMetrics.xHeight()) {
-            mLineN++;
             mLinewidth = mLineStart;
+            mLineY += mLinespacing;
         }
-        if (mLineN < int(mLinePositions.size())) {
-            painter.drawText(mRect.left() + mLinewidth, mLinePositions[mLineN], word);
-            mLinewidth += mMetrics.horizontalAdvance(word);
-            painter.drawText(mRect.left() + mLinewidth, mLinePositions[mLineN], " ");
-            mLinewidth += mMetrics.horizontalAdvance(" ");
-        }
+        painter.drawText(mRect.left() + mLinewidth, mLineY, word);
+        mLinewidth += mMetrics.horizontalAdvance(word);
+        painter.drawText(mRect.left() + mLinewidth, mLineY, " ");
+        mLinewidth += mMetrics.horizontalAdvance(" ");
     }
 }
 
 void FormateText::drawNewLine() {
     mLineStart = mMetrics.xHeight();
-    mLineN++;
     mLinewidth = mLineStart;
+    mLineY += mLinespacing;
+}
+
+void FormateText::drawNewHalfLine() {
+    mLineStart = mMetrics.xHeight();
+    mLinewidth = mLineStart;
+    mLineY += 0.25 * mLinespacing;
 }
 
 void FormateText::drawItem(QPainter& painter) {
     auto const xHeight = painter.fontMetrics().xHeight();
-    auto y = xHeight * 0.7;
+    mLinewidth += 2 * xHeight;
+    auto y = xHeight * 0.77;
     auto x = mLinewidth + xHeight / 2;
     painter.setBrush(Qt::black);
-    painter.drawEllipse(mRect.left()+x, mLinePositions[mLineN] - y, xHeight*0.45, xHeight*0.45);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.drawEllipse(mRect.left() + x, mLineY - y, xHeight*0.55, xHeight*0.55);
     painter.setBrush(Qt::NoBrush);
-    mLinewidth += 1.5 * xHeight;
+    mLinewidth += 2 * xHeight;
     mLineStart = mLinewidth;
 }
 
@@ -106,9 +105,13 @@ void FormateText::drawSvg(std::shared_ptr<QSvgRenderer> image, QPainter& painter
     auto const height = 1.0 * defaultSize.height() / 8.5 * fontSize;
     auto const width = 1.0 * defaultSize.width() / defaultSize.height() * height;
     image->setAspectRatioMode(Qt::KeepAspectRatio);
-    auto const point = QPointF{1.0 * mRect.left() + mLinewidth, mLinePositions[mLineN] - height + descent};
+    auto const point = QPointF{1.0 * mRect.left() + mLinewidth, mLineY - height + descent};
     auto const paintRect = QRectF(point, QSize(width, height));
     image->render(&painter, paintRect);
     mLinewidth += width;
+}
+
+void FormateText::setLatexNext(bool latexNext) {
+    mLatexNext = latexNext;
 }
 

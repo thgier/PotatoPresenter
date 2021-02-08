@@ -1,5 +1,6 @@
 #include "equationcachemanager.h"
 #include <QDir>
+#include <QThread>
 
 EquationCacheManager::EquationCacheManager()
 {
@@ -16,7 +17,7 @@ EquationCacheManager& cacheManager()
 }
 
 void EquationCacheManager::startConversionProcess(QString mathExpression, QByteArray hash) {
-    if(mProcessCounter > 5){
+    if(mProcessCounter > QThread::idealThreadCount()){
         mCachedImages[hash] = SvgEntry{SvgStatus::notStarted, nullptr};
         return;
     }
@@ -24,7 +25,7 @@ void EquationCacheManager::startConversionProcess(QString mathExpression, QByteA
     qWarning() << "process counter" << mProcessCounter;
     mProcessCounter++;
 
-    auto standardFile = QFile("/home/theresa/Documents/praes/generaterLatex.tex");
+    auto standardFile = QFile(":/core/boxes/generaterLatex.tex");
     QDir(mFolder).mkpath(hash);
     QString folder = mFolder + hash + "/";
     standardFile.copy(folder+"a.tex");
@@ -64,7 +65,7 @@ void EquationCacheManager::startSvgGeneration(QByteArray hash, QProcess* latex){
     if(latex->exitCode() != 0){
         mCachedImages[hash].status = SvgStatus::error;
         mProcessCounter--;
-        emit conversionFinished();
+        Q_EMIT conversionFinished();
         removeFiles(hash);
         return;
     }
@@ -87,13 +88,13 @@ void EquationCacheManager::writeSvgToMap(QByteArray hash){
     qWarning() << "status when finished" << mCachedImages[hash].status;
     removeFiles(hash);
     mProcessCounter--;
-    emit conversionFinished();
+    Q_EMIT conversionFinished();
 }
 
 void EquationCacheManager::removeFiles(QByteArray hash) {
     QString folder = mFolder + hash + "/";
     qWarning() << folder;
-    for(auto file : mRemoveFiles)  {
+    for(auto &file : mRemoveFiles)  {
         QFile().remove(folder + file);
     }
     QDir().rmdir(folder);

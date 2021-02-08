@@ -5,6 +5,16 @@
 #include<QRegularExpression>
 #include <vector>
 #include<QMargins>
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <memory>
+
+#include "markdownListenerClass.h"
+#include "antlr4-runtime.h"
+#include "markdownLexer.h"
+#include "markdownParser.h"
+#include "markdownListenerClass.h"
 
 TextBox::TextBox(QString text, BoxGeometry rect, QString id)
     : Box(rect, id), mText(text)
@@ -19,8 +29,20 @@ void TextBox::drawContent(QPainter& painter, std::map<QString, QString> variable
     auto const text = substituteVariables(mText, variables);
     startDraw(painter);
     painter.setPen(mStyle.mColor);
-    auto draw = DrawText(text, painter, geometry().rect(), id(), mStyle.mLineSpacing);
-    draw.drawWord(painter);
+
+    std::istringstream str(text.toStdString());
+    antlr4::ANTLRInputStream input(str);
+    markdownLexer lexer(&input);
+    antlr4::CommonTokenStream tokens(&lexer);
+
+    tokens.fill();
+    markdownParser parser(&tokens);
+    antlr4::tree::ParseTree *tree = parser.markdown();
+
+    auto listener = MarkdownListenerClass(painter, geometry().rect(), id(), mStyle.mLineSpacing);
+    auto walker = antlr4::tree::ParseTreeWalker();
+    walker.walk(&listener, tree);
+
     endDraw(painter);
 }
 

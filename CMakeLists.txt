@@ -34,13 +34,18 @@ add_executable(praes
     src/core/frame.cpp
     src/core/layout.cpp
     src/core/main.cpp
-    src/core/mainwindow.cpp
-    src/core/mainwindow.ui
+    src/ui/mainwindow.cpp
+    src/ui/mainwindow.ui
     src/core/painter.cpp
     src/core/parser.cpp
     src/core/presentation.cpp
     src/core/template.cpp
     src/core/tokenizer.cpp
+    src/core/markdownListenerClass.cpp
+    src/antlr/generated/markdownParser.cpp
+    src/antlr/generated/markdownListener.cpp
+    src/antlr/generated/markdownLexer.cpp
+    src/antlr/generated/markdownBaseListener.cpp
     src/files.qrc
     src/ui/boxtransformation.cpp
     src/ui/framelistdelegate.cpp
@@ -49,15 +54,17 @@ add_executable(praes
 )
 
 add_executable(testtokenizer
-    testtokenizer.cpp
-    tokenizer.cpp)
+    src/core/testtokenizer.cpp
+    src/core/tokenizer.cpp)
 add_test(NAME testtokenizer COMMAND testtokenizer)
 
 target_link_libraries(praes PRIVATE Qt5::Widgets KF5::TextEditor)
 target_link_libraries(praes PRIVATE Qt5::PrintSupport)
 target_link_libraries(praes PRIVATE Qt5::Svg)
 target_link_libraries(testtokenizer PRIVATE Qt5::Test)
+target_link_libraries(praes PRIVATE antlr4-runtime)
 
+target_include_directories(praes PRIVATE src/ui/ src/core/ src/core/boxes/ src/core/antlr src/antlr/generated /usr/include/antlr4-runtime)
+target_include_directories(testtokenizer PRIVATE src/ui/ src/core/ src/core/boxes/)
 
-target_include_directories(praes src/ui/ src/core/ src/core/boxes/)
-target_include_directories(testtokenizer src/ui/ src/core/ src/core/boxes/)
+target_compile_definitions(praes PRIVATE -DQT_NO_KEYWORDS)

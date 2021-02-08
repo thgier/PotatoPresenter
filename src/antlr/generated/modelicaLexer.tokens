@@ -1,0 +1,16 @@
+T__0=1
+T__1=2
+T__2=3
+T__3=4
+T__4=5
+STRING=6
+UNSIGNED_NUMBER=7
+WS=8
+COMMENT=9
+LINE_COMMENT=10
+TEXT=11
+'**'=1
+'__'=2
+'*'=3
+'_'=4
+'$'=5

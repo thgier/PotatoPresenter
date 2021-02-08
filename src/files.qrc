@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>generaterLatex.tex</file>
+        <file>core/boxes/generaterLatex.tex</file>
     </qresource>
 </RCC>

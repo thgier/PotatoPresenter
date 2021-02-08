@@ -31,7 +31,7 @@ public:
     void saveConfig(QString file);
     void setPresentationOutput(PresentationOutput output);
     ConfigBoxes& Configuration();
-signals:
+Q_SIGNALS:
     void presentationChanged();
     void frameChanged(int pageNumber);
 private:

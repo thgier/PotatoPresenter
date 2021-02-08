@@ -17,7 +17,7 @@ FrameList Presentation::frames() const{
 
 void Presentation::setFrames(Frame::List frames){
     mFrames = frames;
-    emit presentationChanged();
+    Q_EMIT presentationChanged();
 }
 
 bool Presentation::empty() const{
@@ -35,7 +35,7 @@ std::shared_ptr<Frame> Presentation::frameAt(int pageNumber) const{
 void Presentation::setBox(QString boxId, BoxGeometry rect, int pageNumber){
     getBox(boxId)->setGeometry(rect);
     mConfig.addRect(rect, boxId);
-    emit frameChanged(pageNumber);
+    Q_EMIT frameChanged(pageNumber);
 }
 
 std::shared_ptr<Box> Presentation::getBox(QString id) const {
