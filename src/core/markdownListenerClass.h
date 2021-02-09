@@ -31,6 +31,7 @@ public:
     void enterItem(markdownParser::ItemContext * /*ctx*/) override;
     void enterItemize(markdownParser::ItemizeContext * /*ctx*/) override;
     void exitItemize(markdownParser::ItemizeContext * /*ctx*/) override;
+    void enterItem_second(markdownParser::Item_secondContext * /*ctx*/) override;
 
     void setPainter(QPainter& painter);
 

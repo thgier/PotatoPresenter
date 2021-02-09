@@ -16,6 +16,7 @@ public:
     void drawNewLine();
     void drawNewHalfLine();
     void drawItem(QPainter& painter);
+    void drawItemSecond(QPainter& painter);
     void drawTeX(QString mathExpression, QPainter& painter);
     void drawSvg(std::shared_ptr<QSvgRenderer> image, QPainter& painter);
     void setLatexNext(bool latexNext);

@@ -13,8 +13,7 @@ class  markdownLexer : public antlr4::Lexer {
 public:
   enum {
     T__0 = 1, T__1 = 2, T__2 = 3, T__3 = 4, T__4 = 5, T__5 = 6, T__6 = 7, 
-    STRING = 8, UNSIGNED_NUMBER = 9, WS = 10, COMMENT = 11, LINE_COMMENT = 12, 
-    TEXT = 13
+    T__7 = 8, STRING = 9, UNSIGNED_NUMBER = 10, TEXT = 11
   };
 
   explicit markdownLexer(antlr4::CharStream *input);

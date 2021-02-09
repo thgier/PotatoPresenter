@@ -31,7 +31,7 @@ markdown
     ;
     
 paragraph
-    : (text_plain | text_decorated | latex)+ (new_line | EOF)
+    : (text_plain | text_decorated | latex)+ new_line
     ;
     
 text_decorated
@@ -47,7 +47,7 @@ text_italic
     ;
 
 text_plain
-    : (TEXT | '*' | '_')+
+    : (TEXT | '_' | ' ')+
     ;
 
 latex
@@ -58,8 +58,12 @@ new_line
     : '\n'
     ;
     
+item_second
+    : ('    *' paragraph?)
+    ;
+    
 item 
-    : ('* ' paragraph?)
+    : ('*' paragraph?) item_second* 
     ;
 
 itemize
@@ -95,7 +99,6 @@ fragment DIGIT
    : '0' .. '9'
    ;
 
-
 fragment UNSIGNED_INTEGER
    : DIGIT (DIGIT)*
    ;
@@ -104,19 +107,6 @@ fragment UNSIGNED_INTEGER
 UNSIGNED_NUMBER
    : UNSIGNED_INTEGER ('.' (UNSIGNED_INTEGER)?)? (('e' | 'E') ('+' | '-')? UNSIGNED_INTEGER)?
    ;
-
-
-WS
-   : [ \r\n\t] + -> channel (HIDDEN)
-   ;
-
-COMMENT
-    :   '/*' .*? '*/' -> channel (HIDDEN)
-    ;
-
-LINE_COMMENT
-    :   '//' ~[\r\n]* -> channel (HIDDEN)
-    ;
     
 TEXT
     : ~[*_$\n]+

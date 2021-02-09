@@ -56,9 +56,21 @@ void FormateText::drawNewHalfLine() {
 void FormateText::drawItem(QPainter& painter) {
     auto const xHeight = painter.fontMetrics().xHeight();
     mLinewidth += 2 * xHeight;
-    auto y = xHeight * 0.77;
+    auto y = xHeight * 0.75;
     auto x = mLinewidth + xHeight / 2;
     painter.setBrush(Qt::black);
+    painter.setRenderHint(QPainter::Antialiasing);
+    painter.drawEllipse(mRect.left() + x, mLineY - y, xHeight*0.55, xHeight*0.55);
+    painter.setBrush(Qt::NoBrush);
+    mLinewidth += 2 * xHeight;
+    mLineStart = mLinewidth;
+}
+
+void FormateText::drawItemSecond(QPainter& painter) {
+    auto const xHeight = painter.fontMetrics().xHeight();
+    mLinewidth += 4 * xHeight;
+    auto y = xHeight * 0.77;
+    auto x = mLinewidth + xHeight / 2;
     painter.setRenderHint(QPainter::Antialiasing);
     painter.drawEllipse(mRect.left() + x, mLineY - y, xHeight*0.55, xHeight*0.55);
     painter.setBrush(Qt::NoBrush);

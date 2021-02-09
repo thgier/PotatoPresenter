@@ -38,6 +38,9 @@ public:
   virtual void enterNew_line(markdownParser::New_lineContext *ctx) = 0;
   virtual void exitNew_line(markdownParser::New_lineContext *ctx) = 0;
 
+  virtual void enterItem_second(markdownParser::Item_secondContext *ctx) = 0;
+  virtual void exitItem_second(markdownParser::Item_secondContext *ctx) = 0;
+
   virtual void enterItem(markdownParser::ItemContext *ctx) = 0;
   virtual void exitItem(markdownParser::ItemContext *ctx) = 0;
 

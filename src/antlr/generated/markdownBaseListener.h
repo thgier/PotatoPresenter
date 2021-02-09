@@ -40,6 +40,9 @@ public:
   virtual void enterNew_line(markdownParser::New_lineContext * /*ctx*/) override { }
   virtual void exitNew_line(markdownParser::New_lineContext * /*ctx*/) override { }
 
+  virtual void enterItem_second(markdownParser::Item_secondContext * /*ctx*/) override { }
+  virtual void exitItem_second(markdownParser::Item_secondContext * /*ctx*/) override { }
+
   virtual void enterItem(markdownParser::ItemContext * /*ctx*/) override { }
   virtual void exitItem(markdownParser::ItemContext * /*ctx*/) override { }
 

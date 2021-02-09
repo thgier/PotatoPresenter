@@ -65,3 +65,7 @@ void MarkdownListenerClass::enterItemize(markdownParser::ItemizeContext *) {
 void MarkdownListenerClass::exitItemize(markdownParser::ItemizeContext *) {
     mFormateText.drawNewHalfLine();
 }
+
+void MarkdownListenerClass::enterItem_second(markdownParser::Item_secondContext * /*ctx*/) {
+    mFormateText.drawItemSecond(mPainter);
+}
