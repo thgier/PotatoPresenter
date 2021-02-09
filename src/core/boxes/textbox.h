@@ -6,7 +6,7 @@
 #include <QSize>
 #include "textproperty.h"
 #include "drawtext.h"
-#include "formatetext.h"
+#include "formattedTextRenderer.h"
 
 class TextBox: public Box
 {

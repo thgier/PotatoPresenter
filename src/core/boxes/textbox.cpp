@@ -10,11 +10,11 @@
 #include <string>
 #include <memory>
 
-#include "markdownListenerClass.h"
+#include "markdownFormatVisitor.h"
 #include "antlr4-runtime.h"
 #include "markdownLexer.h"
 #include "markdownParser.h"
-#include "markdownListenerClass.h"
+#include "markdownFormatVisitor.h"
 
 TextBox::TextBox(QString text, BoxGeometry rect, QString id)
     : Box(rect, id), mText(text)
@@ -39,7 +39,7 @@ void TextBox::drawContent(QPainter& painter, std::map<QString, QString> variable
     markdownParser parser(&tokens);
     antlr4::tree::ParseTree *tree = parser.markdown();
 
-    auto listener = MarkdownListenerClass(painter, geometry().rect(), id(), mStyle.mLineSpacing);
+    auto listener = MarkdownFormatVisitor(painter, geometry().rect(), id(), mStyle.mLineSpacing);
     auto walker = antlr4::tree::ParseTreeWalker();
     walker.walk(&listener, tree);
 

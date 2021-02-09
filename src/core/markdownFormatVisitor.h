@@ -1,0 +1,37 @@
+#pragma once
+
+#include "markdownBaseListener.h"
+#include "formattedTextRenderer.h"
+
+#include <QPainter>
+
+class MarkdownFormatVisitor: public markdownBaseListener {
+public:
+    MarkdownFormatVisitor(QPainter& painter, QRect rect, QString id, double linespacing);
+
+    void enterText_plain(markdownParser::Text_plainContext *ctx);
+
+    void enterText_bold(markdownParser::Text_boldContext * /*ctx*/) override;
+    void exitText_bold(markdownParser::Text_boldContext * /*ctx*/) override;
+
+    void enterText_italic(markdownParser::Text_italicContext * /*ctx*/) override;
+    void exitText_italic(markdownParser::Text_italicContext * /*ctx*/) override;
+
+    void enterLatex(markdownParser::LatexContext * /*ctx*/) override;
+    void exitLatex(markdownParser::LatexContext * /*ctx*/) override;
+
+    void enterNew_line(markdownParser::New_lineContext * /*ctx*/) override;
+
+    void enterItem(markdownParser::ItemContext * /*ctx*/) override;
+    void enterItemize(markdownParser::ItemizeContext * /*ctx*/) override;
+    void exitItemize(markdownParser::ItemizeContext * /*ctx*/) override;
+    void enterItem_second(markdownParser::Item_secondContext * /*ctx*/) override;
+
+    void setPainter(QPainter& painter);
+
+private:
+    QPainter& mPainter;
+    QRect mRect;
+    FormattedTextRenderer mFormateText;
+    
+};

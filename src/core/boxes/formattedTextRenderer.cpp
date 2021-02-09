@@ -1,4 +1,4 @@
-#include "formatetext.h"
+#include "formattedTextRenderer.h"
 #include <QPainterPath>
 #include <QDebug>
 #include <QProcess>
@@ -6,7 +6,7 @@
 #include <QCryptographicHash>
 
 
-FormateText::FormateText(QFontMetrics metrics, QRect rect, QString id, double linespacing)
+FormattedTextRenderer::FormattedTextRenderer(QFontMetrics metrics, QRect rect, QString id, double linespacing)
     : mMetrics{metrics}
     , mRect(rect)
     , mLineStart{metrics.xHeight()}
@@ -18,7 +18,7 @@ FormateText::FormateText(QFontMetrics metrics, QRect rect, QString id, double li
 
 }
 
-void FormateText::drawText(QString text, QPainter& painter){
+void FormattedTextRenderer::drawText(QString text, QPainter& painter){
     if(mLatexNext) {
         drawTeX(text, painter);
         return;
@@ -41,19 +41,19 @@ void FormateText::drawText(QString text, QPainter& painter){
     }
 }
 
-void FormateText::drawNewLine() {
+void FormattedTextRenderer::drawNewLine() {
     mLineStart = mMetrics.xHeight();
     mLinewidth = mLineStart;
     mLineY += mLinespacing;
 }
 
-void FormateText::drawNewHalfLine() {
+void FormattedTextRenderer::drawNewHalfLine() {
     mLineStart = mMetrics.xHeight();
     mLinewidth = mLineStart;
     mLineY += 0.25 * mLinespacing;
 }
 
-void FormateText::drawItem(QPainter& painter) {
+void FormattedTextRenderer::drawItem(QPainter& painter) {
     auto const xHeight = painter.fontMetrics().xHeight();
     mLinewidth += 2 * xHeight;
     auto y = xHeight * 0.75;
@@ -66,7 +66,7 @@ void FormateText::drawItem(QPainter& painter) {
     mLineStart = mLinewidth;
 }
 
-void FormateText::drawItemSecond(QPainter& painter) {
+void FormattedTextRenderer::drawItemSecond(QPainter& painter) {
     auto const xHeight = painter.fontMetrics().xHeight();
     mLinewidth += 4 * xHeight;
     auto y = xHeight * 0.77;
@@ -78,7 +78,7 @@ void FormateText::drawItemSecond(QPainter& painter) {
     mLineStart = mLinewidth;
 }
 
-void FormateText::drawTeX(QString mathExpression, QPainter &painter){
+void FormattedTextRenderer::drawTeX(QString mathExpression, QPainter &painter){
     auto const hash = QCryptographicHash::hash(mathExpression.toUtf8(), QCryptographicHash::Sha1).toHex().left(8);
     auto const equation = cacheManager().getCachedImage(hash);
     switch(equation.status){
@@ -99,7 +99,7 @@ void FormateText::drawTeX(QString mathExpression, QPainter &painter){
     }
 }
 
-void FormateText::drawSvg(std::shared_ptr<QSvgRenderer> image, QPainter& painter){
+void FormattedTextRenderer::drawSvg(std::shared_ptr<QSvgRenderer> image, QPainter& painter){
     if(!image){
         return;
     }
@@ -123,7 +123,7 @@ void FormateText::drawSvg(std::shared_ptr<QSvgRenderer> image, QPainter& painter
     mLinewidth += width;
 }
 
-void FormateText::setLatexNext(bool latexNext) {
+void FormattedTextRenderer::setLatexNext(bool latexNext) {
     mLatexNext = latexNext;
 }
 

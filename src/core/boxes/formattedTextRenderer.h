@@ -8,19 +8,20 @@
 #include <QRegularExpressionMatchIterator>
 #include <QSvgRenderer>
 
-class FormateText
+class FormattedTextRenderer
 {
 public:
-    FormateText(QFontMetrics metrics, QRect rect, QString id, double linespacing);
+    FormattedTextRenderer(QFontMetrics metrics, QRect rect, QString id, double linespacing);
     void drawText(QString text, QPainter& painter);
     void drawNewLine();
     void drawNewHalfLine();
     void drawItem(QPainter& painter);
     void drawItemSecond(QPainter& painter);
     void drawTeX(QString mathExpression, QPainter& painter);
-    void drawSvg(std::shared_ptr<QSvgRenderer> image, QPainter& painter);
     void setLatexNext(bool latexNext);
 private:
+    void drawSvg(std::shared_ptr<QSvgRenderer> image, QPainter& painter);
+
     QFontMetrics mMetrics;
     QRect mRect;
     int mLineStart;

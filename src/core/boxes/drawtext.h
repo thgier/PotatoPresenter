@@ -6,7 +6,7 @@
 #include <QRegularExpression>
 #include <QRegularExpressionMatchIterator>
 #include <QPainter>
-#include "formatetext.h"
+#include "formattedTextRenderer.h"
 
 
 class DrawText
@@ -22,7 +22,7 @@ private:
     std::vector<TextProperty> mProp;
     int mCharNumber;
     QString mText;
-    FormateText mFormateText;
+    FormattedTextRenderer mFormateText;
 };
 
 #endif // DRAWTEXT_H

@@ -26,7 +26,7 @@ add_executable(praes
     src/core/boxes/cachemanager.cpp
     src/core/boxes/drawtext.cpp
     src/core/boxes/equationcachemanager.cpp
-    src/core/boxes/formatetext.cpp
+    src/core/boxes/formattedTextRenderer.cpp
     src/core/boxes/imagebox.cpp
     src/core/boxes/textbox.cpp
     src/core/boxes/textproperty.cpp
@@ -41,7 +41,7 @@ add_executable(praes
     src/core/presentation.cpp
     src/core/template.cpp
     src/core/tokenizer.cpp
-    src/core/markdownListenerClass.cpp
+    src/core/markdownFormatVisitor.cpp
     src/antlr/generated/markdownParser.cpp
     src/antlr/generated/markdownListener.cpp
     src/antlr/generated/markdownLexer.cpp
