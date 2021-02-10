@@ -14,6 +14,7 @@
 #include "imagebox.h"
 #include "textbox.h"
 #include "arrowbox.h"
+#include "plaintextbox.h"
 
 Parser::Parser()
 {
@@ -62,6 +63,9 @@ void Parser::command(Token token){
     }
     else if(token.mText == "\\arrow"){
         newArrow(token.mLine);
+    }
+    else if(token.mText == "\\plaintext"){
+        newPlainText(token.mLine);
     }
     else if(token.mText == "\\setvar"){
         setVariable(token.mLine);
@@ -205,6 +209,26 @@ void Parser::newArrow(int line){
         throw ParserError{"\\arrow command need no text", line};
         return;
     }
+}
+
+void Parser::newPlainText(int line) {
+    if(mFrames.empty()){
+        throw ParserError{"missing frame: type \\frame id", line};
+        return;
+    }
+    auto id = generateId();
+    auto const boxStyle = readArguments(id, "body");
+
+    QString text = "";
+    auto const peekNextKind = mTokenizer.peekNext().mKind;
+    auto const peeknext = mTokenizer.peekNext();
+    if(peekNextKind == Token::Kind::Text || peekNextKind == Token::Kind::MultiLineText) {
+        text = QString(mTokenizer.next().mText);
+    }
+    auto const textField = std::make_shared<PlainTextBox>(text, getRect(id), id);
+    textField->setBoxStyle(boxStyle);
+    mBoxCounter++;
+    mFrames.back()->appendBox(textField);
 }
 
 void Parser::setVariable(int line){
