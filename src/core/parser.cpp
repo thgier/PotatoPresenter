@@ -113,6 +113,9 @@ void Parser::newFrame(int line){
     if(mVariables.find("%{date}") == mVariables.end()){
         mVariables["%{date}"] = QDate::currentDate().toString();
     }
+    if(mConfigBoxes && mVariables.find("%{resourcepath}") == mVariables.end()){
+        mVariables["%{resourcepath}"] = mConfigBoxes->getBasePath();
+    }
     mFrames.push_back(std::make_shared<Frame>(id, mVariables));
     mFrames.back()->setTemplateBoxes(templateBoxes);
 }
@@ -306,6 +309,9 @@ BoxStyle Parser::readArguments(QString &id, QString BoxStyleIdentifier){
             boxStyle.mGeometry.height = argumentValue.mText.toInt();
         }
         if(argument.mText == "angle"){
+            boxStyle.mGeometry.angle = argumentValue.mText.toDouble();
+        }
+        if(argument.mText == "resourcepath"){
             boxStyle.mGeometry.angle = argumentValue.mText.toDouble();
         }
         argument = mTokenizer.peekNext();

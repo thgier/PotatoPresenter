@@ -28,11 +28,13 @@ public:
     void saveConfig(QString filename);
     void addRect(BoxGeometry rect, QString id);
     BoxGeometry getRect(QString id);
+    QString getBasePath() const;
 private:
     void saveJsonConfigurations(QJsonObject &json, const JsonConfig config);
     JsonConfig readJsonConfigurations(const QJsonObject &json);
     void loadConfigFromJson(QJsonDocument doc);
     std::map<QString, JsonConfig> mConfigMap;
+    QString mPath;
 };
 
 #endif // CONFIGBOXES_H

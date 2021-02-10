@@ -18,6 +18,7 @@ void ConfigBoxes::loadConfigurationFile(QString filename){
     auto doc = QJsonDocument::fromJson(val);
     loadConfigFromJson(doc);
     file.close();
+    mPath = filename;
 }
 
 void ConfigBoxes::saveJsonConfigurations(QJsonObject &json, const JsonConfig config){
@@ -84,4 +85,8 @@ BoxGeometry ConfigBoxes::getRect(QString id){
         return it->second.geometry;
     }
     return {};
+}
+
+QString ConfigBoxes::getBasePath() const {
+    return QFileInfo(mPath).absolutePath();
 }
