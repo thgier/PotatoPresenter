@@ -19,10 +19,6 @@ FormattedTextRenderer::FormattedTextRenderer(QFontMetrics metrics, QRect rect, Q
 }
 
 void FormattedTextRenderer::drawText(QString text, QPainter& painter){
-    if(mLatexNext) {
-        drawTeX(text, painter);
-        return;
-    }
     mMetrics = painter.fontMetrics();
     QRegularExpression re("(\\S+)");
     QRegularExpressionMatchIterator i = re.globalMatch(text);
@@ -90,7 +86,7 @@ void FormattedTextRenderer::drawEnumItemSecond(QString number, QPainter &painter
     drawText(number + ".", painter);
 }
 
-void FormattedTextRenderer::drawTeX(QString mathExpression, QPainter &painter){
+void FormattedTextRenderer::drawTeX(QString mathExpression, FormattedTextRenderer::LatexMode mode, QPainter &painter){
     auto const hash = QCryptographicHash::hash(mathExpression.toUtf8(), QCryptographicHash::Sha1).toHex().left(8);
     auto const equation = cacheManager().getCachedImage(hash);
     switch(equation.status){
@@ -106,12 +102,12 @@ void FormattedTextRenderer::drawTeX(QString mathExpression, QPainter &painter){
     case SvgStatus::pending:
         break;
     case SvgStatus::success:
-        drawSvg(equation.svg, painter);
+        drawSvg(equation.svg, mode, painter);
         break;
     }
 }
 
-void FormattedTextRenderer::drawSvg(std::shared_ptr<QSvgRenderer> image, QPainter& painter){
+void FormattedTextRenderer::drawSvg(std::shared_ptr<QSvgRenderer> image, LatexMode mode, QPainter& painter){
     if(!image){
         return;
     }
@@ -120,6 +116,9 @@ void FormattedTextRenderer::drawSvg(std::shared_ptr<QSvgRenderer> image, QPainte
     }
     if(image->defaultSize().width() == 0){
         return;
+    }
+    if(mode == FormattedTextRenderer::LatexMode::displayMode) {
+        mLinewidth += mMetrics.xHeight() * 2;
     }
     qWarning() << "view box" << image->viewBox();
     auto const fontSize = painter.font().pixelSize();
@@ -134,8 +133,3 @@ void FormattedTextRenderer::drawSvg(std::shared_ptr<QSvgRenderer> image, QPainte
     image->render(&painter, paintRect);
     mLinewidth += width;
 }
-
-void FormattedTextRenderer::setLatexNext(bool latexNext) {
-    mLatexNext = latexNext;
-}
-

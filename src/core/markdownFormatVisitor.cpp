@@ -32,15 +32,27 @@ void MarkdownFormatVisitor::exitText_italic(markdownParser::Text_italicContext *
 }
 
 void MarkdownFormatVisitor::enterText_plain(markdownParser::Text_plainContext *ctx) {
-    mFormateText.drawText(QString::fromStdString(ctx->getText()), mPainter);
+    if(mDrawTextPlain) {
+        mFormateText.drawText(QString::fromStdString(ctx->getText()), mPainter);
+    }
 }
 
-void MarkdownFormatVisitor::enterLatex(markdownParser::LatexContext * /*ctx*/) {
-    mFormateText.setLatexNext(true);
+void MarkdownFormatVisitor::enterLatex(markdownParser::LatexContext *ctx) {
+    mFormateText.drawTeX(QString::fromStdString(ctx->text_plain()->getText()), FormattedTextRenderer::LatexMode::inlineMode, mPainter);
+    mDrawTextPlain = false;
 }
 
-void MarkdownFormatVisitor::exitLatex(markdownParser::LatexContext * /*ctx*/) {
-    mFormateText.setLatexNext(false);
+void MarkdownFormatVisitor::exitLatex(markdownParser::LatexContext *) {
+    mDrawTextPlain = true;
+}
+
+void MarkdownFormatVisitor::enterLatex_next_line(markdownParser::Latex_next_lineContext *ctx) {
+    mFormateText.drawTeX(QString::fromStdString(ctx->text_plain()->getText()), FormattedTextRenderer::LatexMode::displayMode, mPainter);
+    mDrawTextPlain = false;
+}
+
+void MarkdownFormatVisitor::exitLatex_next_line(markdownParser::Latex_next_lineContext *) {
+    mDrawTextPlain = true;
 }
 
 void MarkdownFormatVisitor::enterNew_line(markdownParser::New_lineContext * /*ctx*/) {

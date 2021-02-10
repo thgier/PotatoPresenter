@@ -5,7 +5,6 @@
 #include <QString>
 #include <QSize>
 #include "textproperty.h"
-#include "drawtext.h"
 #include "formattedTextRenderer.h"
 
 class TextBox: public Box

@@ -59,7 +59,7 @@ enum_item_second
     ;
     
 paragraph
-    : (text_plain | text_decorated | latex)+ (new_line | EOF)
+    : (text_plain | text_decorated | latex | latex_next_line)+ (new_line | EOF)
     ;
     
 text_decorated
@@ -80,6 +80,10 @@ text_plain
 
 latex
     : '$' text_plain '$'
+    ;
+    
+latex_next_line
+    : '$$' new_line text_plain new_line '$$'
     ;
     
 new_line

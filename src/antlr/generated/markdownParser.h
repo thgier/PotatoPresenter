@@ -13,14 +13,14 @@ class  markdownParser : public antlr4::Parser {
 public:
   enum {
     T__0 = 1, T__1 = 2, T__2 = 3, T__3 = 4, T__4 = 5, T__5 = 6, T__6 = 7, 
-    T__7 = 8, T__8 = 9, T__9 = 10, INT = 11, TEXT = 12
+    T__7 = 8, T__8 = 9, T__9 = 10, T__10 = 11, INT = 12, TEXT = 13
   };
 
   enum {
     RuleMarkdown = 0, RuleList = 1, RuleItem_second = 2, RuleItem = 3, RuleItemize = 4, 
     RuleEnumeration = 5, RuleEnum_item = 6, RuleEnum_item_second = 7, RuleParagraph = 8, 
     RuleText_decorated = 9, RuleText_bold = 10, RuleText_italic = 11, RuleText_plain = 12, 
-    RuleLatex = 13, RuleNew_line = 14
+    RuleLatex = 13, RuleLatex_next_line = 14, RuleNew_line = 15
   };
 
   explicit markdownParser(antlr4::TokenStream *input);
@@ -47,6 +47,7 @@ public:
   class Text_italicContext;
   class Text_plainContext;
   class LatexContext;
+  class Latex_next_lineContext;
   class New_lineContext; 
 
   class  MarkdownContext : public antlr4::ParserRuleContext {
@@ -177,6 +178,8 @@ public:
     Text_decoratedContext* text_decorated(size_t i);
     std::vector<LatexContext *> latex();
     LatexContext* latex(size_t i);
+    std::vector<Latex_next_lineContext *> latex_next_line();
+    Latex_next_lineContext* latex_next_line(size_t i);
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -259,6 +262,21 @@ public:
   };
 
   LatexContext* latex();
+
+  class  Latex_next_lineContext : public antlr4::ParserRuleContext {
+  public:
+    Latex_next_lineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    std::vector<New_lineContext *> new_line();
+    New_lineContext* new_line(size_t i);
+    Text_plainContext *text_plain();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+   
+  };
+
+  Latex_next_lineContext* latex_next_line();
 
   class  New_lineContext : public antlr4::ParserRuleContext {
   public:

@@ -11,6 +11,10 @@
 class FormattedTextRenderer
 {
 public:
+    enum LatexMode {
+        inlineMode,
+        displayMode
+    };
     FormattedTextRenderer(QFontMetrics metrics, QRect rect, QString id, double linespacing);
     void drawText(QString text, QPainter& painter);
     void drawNewLine();
@@ -19,10 +23,10 @@ public:
     void drawItemSecond(QPainter& painter);
     void drawEnumItem(QString number, QPainter& painter);
     void drawEnumItemSecond(QString number, QPainter& painter);
-    void drawTeX(QString mathExpression, QPainter& painter);
-    void setLatexNext(bool latexNext);
+    void drawTeX(QString mathExpression, FormattedTextRenderer::LatexMode mode, QPainter& painter);
+
 private:
-    void drawSvg(std::shared_ptr<QSvgRenderer> image, QPainter& painter);
+    void drawSvg(std::shared_ptr<QSvgRenderer> image, FormattedTextRenderer::LatexMode mode, QPainter& painter);
 
     QFontMetrics mMetrics;
     QRect mRect;
@@ -32,7 +36,6 @@ private:
     double mLinespacing;
     QString mIdBox;
     std::vector<double> getLinePosition() const;
-    bool mLatexNext = false;
 };
 
 #endif // FORMATETEXT_H

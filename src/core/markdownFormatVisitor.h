@@ -17,8 +17,10 @@ public:
     void enterText_italic(markdownParser::Text_italicContext * /*ctx*/) override;
     void exitText_italic(markdownParser::Text_italicContext * /*ctx*/) override;
 
-    void enterLatex(markdownParser::LatexContext * /*ctx*/) override;
-    void exitLatex(markdownParser::LatexContext * /*ctx*/) override;
+    void enterLatex(markdownParser::LatexContext *ctx) override;
+    void exitLatex(markdownParser::LatexContext *ctx) override;
+    void enterLatex_next_line(markdownParser::Latex_next_lineContext *ctx) override;
+    void exitLatex_next_line(markdownParser::Latex_next_lineContext *ctx) override;
 
     void enterNew_line(markdownParser::New_lineContext * /*ctx*/) override;
 
@@ -35,5 +37,6 @@ private:
     QPainter& mPainter;
     QRect mRect;
     FormattedTextRenderer mFormateText;
+    bool mDrawTextPlain = true;
     
 };

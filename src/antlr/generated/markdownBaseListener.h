@@ -58,6 +58,9 @@ public:
   virtual void enterLatex(markdownParser::LatexContext * /*ctx*/) override { }
   virtual void exitLatex(markdownParser::LatexContext * /*ctx*/) override { }
 
+  virtual void enterLatex_next_line(markdownParser::Latex_next_lineContext * /*ctx*/) override { }
+  virtual void exitLatex_next_line(markdownParser::Latex_next_lineContext * /*ctx*/) override { }
+
   virtual void enterNew_line(markdownParser::New_lineContext * /*ctx*/) override { }
   virtual void exitNew_line(markdownParser::New_lineContext * /*ctx*/) override { }
 

@@ -24,7 +24,6 @@ add_executable(praes
     src/core/boxes/box.cpp
     src/core/boxes/boxgeometry.cpp
     src/core/boxes/cachemanager.cpp
-    src/core/boxes/drawtext.cpp
     src/core/boxes/equationcachemanager.cpp
     src/core/boxes/formattedTextRenderer.cpp
     src/core/boxes/imagebox.cpp
