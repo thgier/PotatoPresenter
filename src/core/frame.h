@@ -30,7 +30,7 @@ public:
 
 private:
     Box::List mBoxes;
-    Box::List mTemplateBoxes;
+    Box::List mTemplateBoxes = {};
     QString mId;
     int mPageNumber = -1;
     std::map<QString, QString> mVariables;
