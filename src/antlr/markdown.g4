@@ -27,11 +27,39 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 grammar markdown;
 
 markdown
-    : (paragraph | itemize)+
+    : (list | paragraph)+
+    ;
+    
+list
+    : itemize | enumeration
+    ;
+    
+item_second
+    : ('    *' paragraph?)
+    ;
+    
+item 
+    : ('*' paragraph?) item_second* 
+    ;
+
+itemize
+    : item+
+    ;
+    
+enumeration
+    : enum_item+ 
+    ;
+    
+enum_item
+    : (INT '.') paragraph? enum_item_second*
+    ;
+
+enum_item_second
+    : ('    ' INT '.') paragraph?
     ;
     
 paragraph
-    : (text_plain | text_decorated | latex)+ new_line
+    : (text_plain | text_decorated | latex)+ (new_line | EOF)
     ;
     
 text_decorated
@@ -47,7 +75,7 @@ text_italic
     ;
 
 text_plain
-    : (TEXT | '_' | ' ')+
+    : (TEXT | '_' | ' ' | INT | '.')+
     ;
 
 latex
@@ -58,57 +86,12 @@ new_line
     : '\n'
     ;
     
-item_second
-    : ('    *' paragraph?)
+INT   
+    : ('0'..'9')+ 
     ;
-    
-item 
-    : ('*' paragraph?) item_second* 
-    ;
-
-itemize
-    : item+
-    ;
-
-fragment S_CHAR
-   : ~ ["\\]
-   ;
-
-
-fragment NONDIGIT
-   : '_' | 'a' .. 'z' | 'A' .. 'Z'
-   ;
-
-
-STRING
-   : '"' ( S_CHAR | S_ESCAPE )* '"'
-   ;
-
-
-fragment Q_CHAR
-   : NONDIGIT | DIGIT | '!' | '#' | '$' | '%' | '&' | '(' | ')' | '*' | '+' | ',' | '-' | '.' | '/' | ':' | ';' | '<' | '>' | '=' | '?' | '@' | '[' | ']' | '^' | '{' | '}' | '|' | '~'
-   ;
-
-
-fragment S_ESCAPE
-   : '\\' ('’' | '\'' | '"' | '?' | '\\' | 'a' | 'b' | 'f' | 'n' | 'r' | 't' | 'v')
-   ;
-
-
-fragment DIGIT
-   : '0' .. '9'
-   ;
-
-fragment UNSIGNED_INTEGER
-   : DIGIT (DIGIT)*
-   ;
-
-
-UNSIGNED_NUMBER
-   : UNSIGNED_INTEGER ('.' (UNSIGNED_INTEGER)?)? (('e' | 'E') ('+' | '-')? UNSIGNED_INTEGER)?
-   ;
-    
+   
 TEXT
-    : ~[*_$\n]+
+    : ~[*_$\n.0123456789]+
     ;
+
 

@@ -22,10 +22,12 @@ public:
 
     void enterNew_line(markdownParser::New_lineContext * /*ctx*/) override;
 
+    void enterList(markdownParser::ListContext * /*ctx*/) override;
     void enterItem(markdownParser::ItemContext * /*ctx*/) override;
-    void enterItemize(markdownParser::ItemizeContext * /*ctx*/) override;
     void exitItemize(markdownParser::ItemizeContext * /*ctx*/) override;
     void enterItem_second(markdownParser::Item_secondContext * /*ctx*/) override;
+    void enterEnum_item(markdownParser::Enum_itemContext *ctx) override;
+    void enterEnum_item_second(markdownParser::Enum_item_secondContext *ctx) override;
 
     void setPainter(QPainter& painter);
 

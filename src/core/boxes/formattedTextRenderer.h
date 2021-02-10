@@ -17,6 +17,8 @@ public:
     void drawNewHalfLine();
     void drawItem(QPainter& painter);
     void drawItemSecond(QPainter& painter);
+    void drawEnumItem(QString number, QPainter& painter);
+    void drawEnumItemSecond(QString number, QPainter& painter);
     void drawTeX(QString mathExpression, QPainter& painter);
     void setLatexNext(bool latexNext);
 private:

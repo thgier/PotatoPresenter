@@ -19,6 +19,27 @@ public:
   virtual void enterMarkdown(markdownParser::MarkdownContext * /*ctx*/) override { }
   virtual void exitMarkdown(markdownParser::MarkdownContext * /*ctx*/) override { }
 
+  virtual void enterList(markdownParser::ListContext * /*ctx*/) override { }
+  virtual void exitList(markdownParser::ListContext * /*ctx*/) override { }
+
+  virtual void enterItem_second(markdownParser::Item_secondContext * /*ctx*/) override { }
+  virtual void exitItem_second(markdownParser::Item_secondContext * /*ctx*/) override { }
+
+  virtual void enterItem(markdownParser::ItemContext * /*ctx*/) override { }
+  virtual void exitItem(markdownParser::ItemContext * /*ctx*/) override { }
+
+  virtual void enterItemize(markdownParser::ItemizeContext * /*ctx*/) override { }
+  virtual void exitItemize(markdownParser::ItemizeContext * /*ctx*/) override { }
+
+  virtual void enterEnumeration(markdownParser::EnumerationContext * /*ctx*/) override { }
+  virtual void exitEnumeration(markdownParser::EnumerationContext * /*ctx*/) override { }
+
+  virtual void enterEnum_item(markdownParser::Enum_itemContext * /*ctx*/) override { }
+  virtual void exitEnum_item(markdownParser::Enum_itemContext * /*ctx*/) override { }
+
+  virtual void enterEnum_item_second(markdownParser::Enum_item_secondContext * /*ctx*/) override { }
+  virtual void exitEnum_item_second(markdownParser::Enum_item_secondContext * /*ctx*/) override { }
+
   virtual void enterParagraph(markdownParser::ParagraphContext * /*ctx*/) override { }
   virtual void exitParagraph(markdownParser::ParagraphContext * /*ctx*/) override { }
 
@@ -39,15 +60,6 @@ public:
 
   virtual void enterNew_line(markdownParser::New_lineContext * /*ctx*/) override { }
   virtual void exitNew_line(markdownParser::New_lineContext * /*ctx*/) override { }
-
-  virtual void enterItem_second(markdownParser::Item_secondContext * /*ctx*/) override { }
-  virtual void exitItem_second(markdownParser::Item_secondContext * /*ctx*/) override { }
-
-  virtual void enterItem(markdownParser::ItemContext * /*ctx*/) override { }
-  virtual void exitItem(markdownParser::ItemContext * /*ctx*/) override { }
-
-  virtual void enterItemize(markdownParser::ItemizeContext * /*ctx*/) override { }
-  virtual void exitItemize(markdownParser::ItemizeContext * /*ctx*/) override { }
 
 
   virtual void enterEveryRule(antlr4::ParserRuleContext * /*ctx*/) override { }

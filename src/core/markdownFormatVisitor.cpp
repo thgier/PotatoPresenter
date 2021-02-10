@@ -51,7 +51,7 @@ void MarkdownFormatVisitor::enterItem(markdownParser::ItemContext *) {
     mFormateText.drawItem(mPainter);
 }
 
-void MarkdownFormatVisitor::enterItemize(markdownParser::ItemizeContext *) {
+void MarkdownFormatVisitor::enterList(markdownParser::ListContext * /*ctx*/) {
     mFormateText.drawNewHalfLine();
 }
 
@@ -61,4 +61,12 @@ void MarkdownFormatVisitor::exitItemize(markdownParser::ItemizeContext *) {
 
 void MarkdownFormatVisitor::enterItem_second(markdownParser::Item_secondContext * /*ctx*/) {
     mFormateText.drawItemSecond(mPainter);
+}
+
+void MarkdownFormatVisitor::enterEnum_item(markdownParser::Enum_itemContext *ctx) {
+    mFormateText.drawEnumItem(QString::fromStdString(ctx->INT()->getText()), mPainter);
+}
+
+void MarkdownFormatVisitor::enterEnum_item_second(markdownParser::Enum_item_secondContext *ctx) {
+    mFormateText.drawEnumItemSecond(QString::fromStdString(ctx->INT()->getText()), mPainter);
 }

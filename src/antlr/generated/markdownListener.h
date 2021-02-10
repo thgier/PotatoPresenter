@@ -17,6 +17,27 @@ public:
   virtual void enterMarkdown(markdownParser::MarkdownContext *ctx) = 0;
   virtual void exitMarkdown(markdownParser::MarkdownContext *ctx) = 0;
 
+  virtual void enterList(markdownParser::ListContext *ctx) = 0;
+  virtual void exitList(markdownParser::ListContext *ctx) = 0;
+
+  virtual void enterItem_second(markdownParser::Item_secondContext *ctx) = 0;
+  virtual void exitItem_second(markdownParser::Item_secondContext *ctx) = 0;
+
+  virtual void enterItem(markdownParser::ItemContext *ctx) = 0;
+  virtual void exitItem(markdownParser::ItemContext *ctx) = 0;
+
+  virtual void enterItemize(markdownParser::ItemizeContext *ctx) = 0;
+  virtual void exitItemize(markdownParser::ItemizeContext *ctx) = 0;
+
+  virtual void enterEnumeration(markdownParser::EnumerationContext *ctx) = 0;
+  virtual void exitEnumeration(markdownParser::EnumerationContext *ctx) = 0;
+
+  virtual void enterEnum_item(markdownParser::Enum_itemContext *ctx) = 0;
+  virtual void exitEnum_item(markdownParser::Enum_itemContext *ctx) = 0;
+
+  virtual void enterEnum_item_second(markdownParser::Enum_item_secondContext *ctx) = 0;
+  virtual void exitEnum_item_second(markdownParser::Enum_item_secondContext *ctx) = 0;
+
   virtual void enterParagraph(markdownParser::ParagraphContext *ctx) = 0;
   virtual void exitParagraph(markdownParser::ParagraphContext *ctx) = 0;
 
@@ -37,15 +58,6 @@ public:
 
   virtual void enterNew_line(markdownParser::New_lineContext *ctx) = 0;
   virtual void exitNew_line(markdownParser::New_lineContext *ctx) = 0;
-
-  virtual void enterItem_second(markdownParser::Item_secondContext *ctx) = 0;
-  virtual void exitItem_second(markdownParser::Item_secondContext *ctx) = 0;
-
-  virtual void enterItem(markdownParser::ItemContext *ctx) = 0;
-  virtual void exitItem(markdownParser::ItemContext *ctx) = 0;
-
-  virtual void enterItemize(markdownParser::ItemizeContext *ctx) = 0;
-  virtual void exitItemize(markdownParser::ItemizeContext *ctx) = 0;
 
 
 };

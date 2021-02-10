@@ -78,6 +78,18 @@ void FormattedTextRenderer::drawItemSecond(QPainter& painter) {
     mLineStart = mLinewidth;
 }
 
+void FormattedTextRenderer::drawEnumItem(QString number, QPainter &painter){
+    auto const xHeight = painter.fontMetrics().xHeight();
+    mLinewidth += 2 * xHeight;
+    drawText(number + ".", painter);
+}
+
+void FormattedTextRenderer::drawEnumItemSecond(QString number, QPainter &painter){
+    auto const xHeight = painter.fontMetrics().xHeight();
+    mLinewidth += 4 * xHeight;
+    drawText(number + ".", painter);
+}
+
 void FormattedTextRenderer::drawTeX(QString mathExpression, QPainter &painter){
     auto const hash = QCryptographicHash::hash(mathExpression.toUtf8(), QCryptographicHash::Sha1).toHex().left(8);
     auto const equation = cacheManager().getCachedImage(hash);
