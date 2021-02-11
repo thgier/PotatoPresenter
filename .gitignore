@@ -5,6 +5,7 @@ firstTemplate/*
 latex/*
 stuff/*
 CMakeLists.txt.user
+templates/*
 ssh_*
 *~
 *.autosave
