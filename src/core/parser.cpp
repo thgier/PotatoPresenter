@@ -43,7 +43,7 @@ FrameList Parser::readInput(){
         token = mTokenizer.next();
     }
     for(auto const& frame: mFrames){
-        frame->setVariable("%{totalpages}", QString::number(mFrames.size()));
+        frame->setVariable("%{totalpages}", QString::number(mFrames.size() - 1));
     }
     return mFrames;
 }
