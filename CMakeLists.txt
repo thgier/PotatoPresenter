@@ -64,7 +64,8 @@ target_link_libraries(praes PRIVATE Qt5::Svg)
 target_link_libraries(testtokenizer PRIVATE Qt5::Test)
 target_link_libraries(praes PRIVATE antlr4-runtime)
 
-target_include_directories(praes PRIVATE src/ui/ src/core/ src/core/boxes/ src/core/antlr src/antlr/generated /usr/include/antlr4-runtime)
+target_include_directories(praes PRIVATE src/ui/ src/core/ src/core/boxes/ src/core/antlr src/antlr/generated)
+target_include_directories(praes SYSTEM PRIVATE /usr/include/antlr4-runtime)
 target_include_directories(testtokenizer PRIVATE src/ui/ src/core/ src/core/boxes/)
 
 target_compile_definitions(praes PRIVATE -DQT_NO_KEYWORDS)
