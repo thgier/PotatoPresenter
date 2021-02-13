@@ -50,9 +50,6 @@ public:
   virtual void enterText_italic(markdownParser::Text_italicContext *ctx) = 0;
   virtual void exitText_italic(markdownParser::Text_italicContext *ctx) = 0;
 
-  virtual void enterText_plain(markdownParser::Text_plainContext *ctx) = 0;
-  virtual void exitText_plain(markdownParser::Text_plainContext *ctx) = 0;
-
   virtual void enterLatex(markdownParser::LatexContext *ctx) = 0;
   virtual void exitLatex(markdownParser::LatexContext *ctx) = 0;
 
@@ -61,6 +58,9 @@ public:
 
   virtual void enterNew_line(markdownParser::New_lineContext *ctx) = 0;
   virtual void exitNew_line(markdownParser::New_lineContext *ctx) = 0;
+
+  virtual void enterText_plain(markdownParser::Text_plainContext *ctx) = 0;
+  virtual void exitText_plain(markdownParser::Text_plainContext *ctx) = 0;
 
 
 };

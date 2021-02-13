@@ -52,9 +52,6 @@ public:
   virtual void enterText_italic(markdownParser::Text_italicContext * /*ctx*/) override { }
   virtual void exitText_italic(markdownParser::Text_italicContext * /*ctx*/) override { }
 
-  virtual void enterText_plain(markdownParser::Text_plainContext * /*ctx*/) override { }
-  virtual void exitText_plain(markdownParser::Text_plainContext * /*ctx*/) override { }
-
   virtual void enterLatex(markdownParser::LatexContext * /*ctx*/) override { }
   virtual void exitLatex(markdownParser::LatexContext * /*ctx*/) override { }
 
@@ -63,6 +60,9 @@ public:
 
   virtual void enterNew_line(markdownParser::New_lineContext * /*ctx*/) override { }
   virtual void exitNew_line(markdownParser::New_lineContext * /*ctx*/) override { }
+
+  virtual void enterText_plain(markdownParser::Text_plainContext * /*ctx*/) override { }
+  virtual void exitText_plain(markdownParser::Text_plainContext * /*ctx*/) override { }
 
 
   virtual void enterEveryRule(antlr4::ParserRuleContext * /*ctx*/) override { }
