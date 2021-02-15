@@ -67,6 +67,9 @@ void Parser::command(Token token){
     else if(token.mText == "\\plaintext"){
         newPlainText(token.mLine);
     }
+    else if(token.mText == "\\blindtext"){
+        newBlindText(token.mLine);
+    }
     else if(token.mText == "\\setvar"){
         setVariable(token.mLine);
     }
@@ -226,6 +229,21 @@ void Parser::newPlainText(int line) {
         text = QString(mTokenizer.next().mText);
     }
     auto const textField = std::make_shared<PlainTextBox>(text, getRect(id), id);
+    textField->setBoxStyle(boxStyle);
+    mBoxCounter++;
+    mFrames.back()->appendBox(textField);
+}
+
+void Parser::newBlindText(int line) {
+    if(mFrames.empty()){
+        throw ParserError{"missing frame: type \\frame id", line};
+        return;
+    }
+    auto id = generateId();
+    auto const boxStyle = readArguments(id, "body");
+
+    QString text = "Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+    auto const textField = std::make_shared<TextBox>(text, getRect(id), id);
     textField->setBoxStyle(boxStyle);
     mBoxCounter++;
     mFrames.back()->appendBox(textField);

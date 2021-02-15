@@ -39,6 +39,7 @@ private:
     void newTitle(int line);
     void newArrow(int line);
     void newPlainText(int line);
+    void newBlindText(int line);
     void setVariable(int line);
     QString addBracketsToVariable(QString variable) const;
     BoxGeometry const getRect(QString id);
