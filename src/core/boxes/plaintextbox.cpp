@@ -1,5 +1,4 @@
 #include "plaintextbox.h"
-#include "formattedTextRenderer.h"
 #include <QFontMetrics>
 #include <QTextLayout>
 #include <QTextDocument>
@@ -17,7 +16,23 @@ void PlainTextBox::drawContent(QPainter& painter, std::map<QString, QString> var
     auto const text = substituteVariables(mText, variables);
     startDraw(painter);
     painter.setPen(mStyle.mColor);
-    auto textRenderer = FormattedTextRenderer(painter.fontMetrics(), geometry().rect(), id(), mStyle.mLineSpacing);
-    textRenderer.drawText(text, painter);
+    auto const linespacing = painter.fontMetrics().leading() + mStyle.mLineSpacing * painter.fontMetrics().lineSpacing();
+    QTextLayout textLayout(text);
+    textLayout.setTextOption(QTextOption(mStyle.mAlignment));
+    textLayout.setFont(painter.font());
+    textLayout.setCacheEnabled(true);
+    textLayout.beginLayout();
+    double y = 0;
+    while (1) {
+        QTextLine line = textLayout.createLine();
+        if (!line.isValid()){
+            break;
+        }
+        line.setLineWidth(geometry().rect().width());
+        line.setPosition(QPointF(0, y));
+        y += linespacing;
+    }
+    textLayout.endLayout();
+    textLayout.draw(&painter, geometry().rect().topLeft());
     endDraw(painter);
 }
