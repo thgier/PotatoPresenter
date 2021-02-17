@@ -132,11 +132,6 @@ void MarkdownFormatVisitor::enterNew_line(markdownParser::New_lineContext * /*ct
 }
 
 void MarkdownFormatVisitor::exitParagraph(markdownParser::ParagraphContext * /*ctx*/) {
-//    for (auto const &svg: mMapSvgs) {
-//        if(mCurrentParagraph.mText[svg.mTextPosition] != ' ') {
-//            mCurrentParagraph.mText.insert(svg.mTextPosition, ' ');
-//        }
-//    }
     QTextLayout textLayout(mCurrentParagraph.mText);
     textLayout.setTextOption(QTextOption(mBoxStyle.mAlignment));
     textLayout.setFont(mPainter.font());

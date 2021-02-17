@@ -1,11 +1,11 @@
 #pragma once
 
 #include "markdownBaseListener.h"
-#include "formattedTextRenderer.h"
 #include "box.h"
 
 #include <QPainter>
 #include <QTextLayout>
+#include <QSvgRenderer>
 
 struct FormatStack {
     QVector<QTextLayout::FormatRange> mVector;
