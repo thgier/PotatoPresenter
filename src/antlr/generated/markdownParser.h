@@ -97,9 +97,11 @@ public:
   public:
     ItemContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
+    ParagraphContext *paragraph();
+    std::vector<Enum_item_secondContext *> enum_item_second();
+    Enum_item_secondContext* enum_item_second(size_t i);
     std::vector<Item_secondContext *> item_second();
     Item_secondContext* item_second(size_t i);
-    ParagraphContext *paragraph();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -144,6 +146,8 @@ public:
     ParagraphContext *paragraph();
     std::vector<Enum_item_secondContext *> enum_item_second();
     Enum_item_secondContext* enum_item_second(size_t i);
+    std::vector<Item_secondContext *> item_second();
+    Item_secondContext* item_second(size_t i);
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -170,6 +174,7 @@ public:
   public:
     ParagraphContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
+    Latex_next_lineContext *latex_next_line();
     New_lineContext *new_line();
     antlr4::tree::TerminalNode *EOF();
     std::vector<Text_plainContext *> text_plain();
@@ -178,8 +183,6 @@ public:
     Text_decoratedContext* text_decorated(size_t i);
     std::vector<LatexContext *> latex();
     LatexContext* latex(size_t i);
-    std::vector<Latex_next_lineContext *> latex_next_line();
-    Latex_next_lineContext* latex_next_line(size_t i);
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -251,8 +254,6 @@ public:
   public:
     Latex_next_lineContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    std::vector<New_lineContext *> new_line();
-    New_lineContext* new_line(size_t i);
     Text_plainContext *text_plain();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;

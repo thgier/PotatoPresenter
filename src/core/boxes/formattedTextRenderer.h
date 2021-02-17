@@ -18,7 +18,7 @@ public:
     FormattedTextRenderer(QFontMetrics metrics, QRect rect, QString id, double linespacing);
     void drawText(QString text, QPainter& painter);
     void drawNewLine();
-    void drawNewHalfLine();
+    void drawPartOfLine(double partOfLine);
     void drawItem(QPainter& painter);
     void drawItemSecond(QPainter& painter);
     void drawEnumItem(QString number, QPainter& painter);

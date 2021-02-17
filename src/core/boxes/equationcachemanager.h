@@ -6,10 +6,10 @@
 #include <QFile>
 
 enum SvgStatus{
-    success,
-    error,
-    pending,
-    notStarted,
+    Success,
+    Error,
+    Pending,
+    NotStarted,
 };
 
 struct SvgEntry{

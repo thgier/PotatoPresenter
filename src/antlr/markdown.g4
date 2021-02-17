@@ -39,7 +39,7 @@ item_second
     ;
     
 item 
-    : ('*' paragraph?) item_second* 
+    : ('*' paragraph?) (enum_item_second* | item_second*)
     ;
 
 itemize
@@ -51,7 +51,7 @@ enumeration
     ;
     
 enum_item
-    : (INT '.') paragraph? enum_item_second*
+    : (INT '.') paragraph? (enum_item_second* | item_second*)
     ;
 
 enum_item_second
@@ -59,7 +59,7 @@ enum_item_second
     ;
     
 paragraph
-    : (text_plain | text_decorated | latex | latex_next_line)+ (new_line | EOF)
+    : ((text_plain | text_decorated | latex)+ | latex_next_line) (new_line | EOF)
     ;
     
 text_decorated
@@ -79,7 +79,7 @@ latex
     ;
     
 latex_next_line
-    : '$$' new_line text_plain new_line '$$'
+    : '$$' text_plain '$$'
     ;
     
 new_line

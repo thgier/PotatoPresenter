@@ -39,7 +39,7 @@ void TextBox::drawContent(QPainter& painter, std::map<QString, QString> variable
     markdownParser parser(&tokens);
     antlr4::tree::ParseTree *tree = parser.markdown();
 
-    auto listener = MarkdownFormatVisitor(painter, geometry().rect(), id(), mStyle.mLineSpacing);
+    auto listener = MarkdownFormatVisitor(painter, geometry().rect(), mStyle);
     auto walker = antlr4::tree::ParseTreeWalker();
     walker.walk(&listener, tree);
 

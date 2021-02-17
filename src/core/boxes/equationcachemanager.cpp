@@ -18,10 +18,10 @@ EquationCacheManager& cacheManager()
 
 void EquationCacheManager::startConversionProcess(QString mathExpression, QByteArray hash) {
     if(mProcessCounter > QThread::idealThreadCount()){
-        mCachedImages[hash] = SvgEntry{SvgStatus::notStarted, nullptr};
+        mCachedImages[hash] = SvgEntry{SvgStatus::NotStarted, nullptr};
         return;
     }
-    mCachedImages[hash] = SvgEntry{SvgStatus::pending, nullptr};
+    mCachedImages[hash] = SvgEntry{SvgStatus::Pending, nullptr};
     qWarning() << "process counter" << mProcessCounter;
     mProcessCounter++;
 
@@ -52,7 +52,7 @@ void EquationCacheManager::startConversionProcess(QString mathExpression, QByteA
 SvgEntry EquationCacheManager::getCachedImage(QByteArray hash) const{
     const auto it = mCachedImages.find(hash);
     if(it == mCachedImages.end()){
-        return SvgEntry{SvgStatus::notStarted, nullptr};
+        return SvgEntry{SvgStatus::NotStarted, nullptr};
     }
     else{
         return it->second;
@@ -63,7 +63,7 @@ void EquationCacheManager::startSvgGeneration(QByteArray hash, QProcess* latex){
     QString folder = mFolder + hash + "/";
     qWarning() << "latex exit code " << latex->exitCode();
     if(latex->exitCode() != 0){
-        mCachedImages[hash].status = SvgStatus::error;
+        mCachedImages[hash].status = SvgStatus::Error;
         mProcessCounter--;
         Q_EMIT conversionFinished();
         removeFiles(hash);
@@ -84,7 +84,7 @@ void EquationCacheManager::startSvgGeneration(QByteArray hash, QProcess* latex){
 
 void EquationCacheManager::writeSvgToMap(QByteArray hash){
     QString folder = mFolder + hash + "/";
-    mCachedImages[hash] = SvgEntry{SvgStatus::success, std::make_shared<QSvgRenderer>(folder + "a.svg")};
+    mCachedImages[hash] = SvgEntry{SvgStatus::Success, std::make_shared<QSvgRenderer>(folder + "a.svg")};
     qWarning() << "status when finished" << mCachedImages[hash].status;
     removeFiles(hash);
     mProcessCounter--;

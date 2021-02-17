@@ -1,9 +1,13 @@
 \documentclass{standalone}
 \usepackage{DejaVuSans}
 \usepackage[T1]{fontenc}
-\usepackage{color}
+\usepackage{xcolor}
+\usepackage{tikz}
 \definecolor{mygray}{gray}{1}
 \providecommand{\comment}[1]{#1}
 \begin{document}
-$\myvar$\textcolor{mygray}{p}
+\begin{tikzpicture}
+\node[anchor=base] at (0, 0) {\textcolor{mygray}{$\int$}};
+\node[anchor=base] at (0, 0) {$\myvar$};
+\end{tikzpicture}
 \end{document}

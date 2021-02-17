@@ -353,6 +353,23 @@ BoxStyle Parser::readArguments(QString &id, QString BoxStyleIdentifier){
         if(argument.mText == "angle"){
             boxStyle.mGeometry.angle = argumentValue.mText.toDouble();
         }
+        if(argument.mText == "text-align"){
+            if(argumentValue.mText == "left") {
+                boxStyle.mAlignment = Qt::AlignLeft;
+            }
+            else if(argumentValue.mText == "right") {
+                boxStyle.mAlignment = Qt::AlignRight;
+            }
+            else if(argumentValue.mText == "center") {
+                boxStyle.mAlignment = Qt::AlignCenter;
+            }
+            else if(argumentValue.mText == "justify") {
+                boxStyle.mAlignment = Qt::AlignJustify;
+            }
+            else {
+                throw ParserError{"possible alignment: left, right, center, justify", argumentValue.mLine};
+            }
+        }
         if(argument.mText == "resourcepath"){
             boxStyle.mGeometry.angle = argumentValue.mText.toDouble();
         }

@@ -16,6 +16,7 @@ struct BoxStyle{
     double mLineSpacing = 1.15;
     FontWeight mFontWeight = FontWeight::normal;
     QString mFont = "sans-serif";
+    Qt::Alignment mAlignment;
     qreal mOpacity = 1;
     struct {
         int left = -1;

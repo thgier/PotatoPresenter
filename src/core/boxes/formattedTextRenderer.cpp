@@ -43,10 +43,8 @@ void FormattedTextRenderer::drawNewLine() {
     mLineY += mLinespacing;
 }
 
-void FormattedTextRenderer::drawNewHalfLine() {
-    mLineStart = mMetrics.xHeight();
-    mLinewidth = mLineStart;
-    mLineY += 0.25 * mLinespacing;
+void FormattedTextRenderer::drawPartOfLine(double partOfLine) {
+    mLineY += partOfLine * mLinespacing;
 }
 
 void FormattedTextRenderer::drawItem(QPainter& painter) {
@@ -90,18 +88,18 @@ void FormattedTextRenderer::drawTeX(QString mathExpression, FormattedTextRendere
     auto const hash = QCryptographicHash::hash(mathExpression.toUtf8(), QCryptographicHash::Sha1).toHex().left(8);
     auto const equation = cacheManager().getCachedImage(hash);
     switch(equation.status){
-    case SvgStatus::error:
+    case SvgStatus::Error:
         painter.save();
         painter.setPen(Qt::red);
         drawText("LaTeX error", painter);
         painter.restore();
         break;
-    case SvgStatus::notStarted:
+    case SvgStatus::NotStarted:
         cacheManager().startConversionProcess(mathExpression, hash);
         break;
-    case SvgStatus::pending:
+    case SvgStatus::Pending:
         break;
-    case SvgStatus::success:
+    case SvgStatus::Success:
         drawSvg(equation.svg, mode, painter);
         break;
     }

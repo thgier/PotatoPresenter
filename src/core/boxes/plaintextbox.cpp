@@ -1,5 +1,8 @@
 #include "plaintextbox.h"
 #include "formattedTextRenderer.h"
+#include <QFontMetrics>
+#include <QTextLayout>
+#include <QTextDocument>
 
 PlainTextBox::PlainTextBox(QString text, BoxGeometry rect, QString id)
     : Box(rect, id), mText(text)
