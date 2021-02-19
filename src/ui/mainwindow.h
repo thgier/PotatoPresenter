@@ -42,6 +42,7 @@ private:
     void resetPresentation();
     void exportPDF();
     void exportPDFAs();
+    void writePDF() const;
     QString getConfigFilename(QUrl inputUrl);
     QString getPdfFilename();
     QAction* importActionFromKDoc(const char* name, std::function<void()> method);

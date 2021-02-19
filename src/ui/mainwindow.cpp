@@ -217,7 +217,6 @@ void MainWindow::saveAs(){
     }
     mFilename = newFile;
     writeToFile(mFilename);
-    mPdfFile = getPdfFilename();    
 }
 
 void MainWindow::writeToFile(QString filename) const{
@@ -227,6 +226,7 @@ void MainWindow::writeToFile(QString filename) const{
     auto const configName = mFilename.section('.', 0, -2) + ".json";
     mPresentation->saveConfig(configName);
     file.close();
+    ui->statusbar->showMessage(tr("Saved File to  \"%1\".").arg(mFilename), 10000);
 }
 
 void MainWindow::resetPresentation(){
@@ -244,9 +244,7 @@ void MainWindow::exportPDF(){
         exportPDFAs();
         return;
     }
-    PDFCreator creator;
-    creator.createPdf(mPdfFile, mPresentation);
-    ui->statusbar->showMessage(tr("Saved PDF to  \"%1\".").arg(mPdfFile), 2000);
+    writePDF();
 }
 
 void MainWindow::exportPDFAs(){
@@ -258,9 +256,13 @@ void MainWindow::exportPDFAs(){
     mPdfFile = dialog.getSaveFileName(this, tr("Export PDF"),
                                mFilename,
                                tr("pdf (*.pdf)"));
+    writePDF();
+}
+
+void MainWindow::writePDF() const {
     PDFCreator creator;
     creator.createPdf(mPdfFile, mPresentation);
-    ui->statusbar->showMessage(tr("Saved PDF to \"%1\".").arg(mPdfFile), 2000);
+    ui->statusbar->showMessage(tr("Saved PDF to \"%1\".").arg(mPdfFile), 10000);
 }
 
 QString MainWindow::getConfigFilename(QUrl inputUrl){
