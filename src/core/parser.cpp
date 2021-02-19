@@ -15,6 +15,7 @@
 #include "textbox.h"
 #include "arrowbox.h"
 #include "plaintextbox.h"
+#include "linebox.h"
 
 Parser::Parser()
 {
@@ -63,6 +64,9 @@ void Parser::command(Token token){
     }
     else if(token.mText == "\\arrow"){
         newArrow(token.mLine);
+    }
+    else if(token.mText == "\\line"){
+        newLine(token.mLine);
     }
     else if(token.mText == "\\plaintext"){
         newPlainText(token.mLine);
@@ -210,6 +214,31 @@ void Parser::newArrow(int line){
     auto const nextToken = mTokenizer.peekNext();
     if(nextToken.mKind != Token::Kind::Command && nextToken.mKind != Token::Kind::EndOfFile){
         throw ParserError{"\\arrow command need no text", line};
+        return;
+    }
+}
+
+void Parser::newLine(int line){
+    if(mFrames.empty()){
+        throw ParserError{"missing frame: type \\frame id", line};
+        return;
+    }
+    auto id = generateId();
+
+    auto rect = mConfigBoxes->getRect(id);
+    if(rect.isEmpty()){
+        rect = mLayout->mArrowPos;
+    }
+    auto const style = readArguments(id, "body");
+
+    auto const arrow = std::make_shared<LineBox>(rect, id);
+    arrow->setBoxStyle(style);
+    mFrames.back()->appendBox(arrow);
+    mBoxCounter++;
+
+    auto const nextToken = mTokenizer.peekNext();
+    if(nextToken.mKind != Token::Kind::Command && nextToken.mKind != Token::Kind::EndOfFile){
+        throw ParserError{"\\line command need no text", line};
         return;
     }
 }

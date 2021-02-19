@@ -38,6 +38,7 @@ private:
     void newImage(int line);
     void newTitle(int line);
     void newArrow(int line);
+    void newLine(int line);
     void newPlainText(int line);
     void newBlindText(int line);
     void setVariable(int line);
