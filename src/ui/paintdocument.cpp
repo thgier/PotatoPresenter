@@ -11,7 +11,6 @@
 
 PaintDocument::PaintDocument(QWidget*&)
     : QWidget(), mWidth{frameSize().width()}, pageNumber{0}
-    , mLayout{Layout(aspectRatio::sixteenToNine)}
 {
     setMouseTracking(true);
     mSize = mLayout.mSize;
@@ -23,6 +22,9 @@ void PaintDocument::setPresentation(std::shared_ptr<Presentation> pres){
     mPresentation = pres;
     mActiveBoxId = QString();
     mCurrentFrameId = QString();
+    mLayout = mPresentation->layout();
+    mSize = mLayout.mSize;
+    mScale = 1.0 * mSize.width() / mWidth;
 }
 
 void PaintDocument::paintEvent(QPaintEvent*)
@@ -77,7 +79,7 @@ void PaintDocument::updateFrames(){
 }
 
 void PaintDocument::setCurrentPage(int page){
-    if(page >= int(mPresentation->size()) || page < 0) {
+    if(page >= int(mPresentation->numberFrames()) || page < 0) {
         return;
     }
     pageNumber = page;
@@ -259,27 +261,6 @@ void PaintDocument::cursorApperance(QPoint mousePosition){
         }
     }
     setCursor(cursor);
-}
-
-void PaintDocument::createPDF(QString filename) const{
-    QPdfWriter pdfWriter(filename);
-    auto const pdfLayout = QPageLayout(QPageSize(QSize(160, 90)), QPageLayout::Portrait, QMarginsF(0, 0, 0, 0), QPageLayout::Millimeter);
-    pdfWriter.setPageLayout(pdfLayout);
-
-    QPainter painter(&pdfWriter);
-    painter.setWindow(QRect(QPoint(0, 0), mSize));
-
-    painter.begin(&pdfWriter);
-    auto paint = std::make_shared<Painter>(painter);
-    for(auto &frame: mPresentation->frames()){
-        for( int i = 0; i < frame->NumberPause(); i++) {
-            paint->paintFrame(frame, i);
-            if(!(frame == mPresentation->frames().back() && i == frame->NumberPause() - 1)){
-                pdfWriter.newPage();
-            }
-        }
-    }
-    painter.end();
 }
 
 void PaintDocument::layoutTitle(){

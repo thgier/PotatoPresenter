@@ -18,7 +18,8 @@
 #include "cachemanager.h"
 #include "framelistmodel.h"
 #include "framelistdelegate.h"
-#include "functional"
+#include <functional>
+#include "pdfcreator.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -216,7 +217,7 @@ void MainWindow::saveAs(){
     }
     mFilename = newFile;
     writeToFile(mFilename);
-    mPdfFile = getPdfFilename();
+    mPdfFile = getPdfFilename();    
 }
 
 void MainWindow::writeToFile(QString filename) const{
@@ -243,7 +244,9 @@ void MainWindow::exportPDF(){
         exportPDFAs();
         return;
     }
-    mPaintDocument->createPDF(mPdfFile);
+    PDFCreator creator;
+    creator.createPdf(mPdfFile, mPresentation);
+    ui->statusbar->showMessage(tr("Saved PDF to  \"%1\".").arg(mPdfFile), 2000);
 }
 
 void MainWindow::exportPDFAs(){
@@ -255,8 +258,9 @@ void MainWindow::exportPDFAs(){
     mPdfFile = dialog.getSaveFileName(this, tr("Export PDF"),
                                mFilename,
                                tr("pdf (*.pdf)"));
-    mPaintDocument->createPDF(mPdfFile);
-
+    PDFCreator creator;
+    creator.createPdf(mPdfFile, mPresentation);
+    ui->statusbar->showMessage(tr("Saved PDF to \"%1\".").arg(mPdfFile), 2000);
 }
 
 QString MainWindow::getConfigFilename(QUrl inputUrl){

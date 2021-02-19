@@ -30,8 +30,6 @@ public:
     void setCurrentPage(QString frameId);
     int getPageNumber() const;
 
-    void createPDF(QString filename) const;
-
     void setTransformationType(TransformationType type);
     Qt::CursorShape angleToCursor(qreal angle) const;
 

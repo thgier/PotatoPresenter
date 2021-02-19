@@ -24,7 +24,7 @@ bool Presentation::empty() const{
     return mFrames.empty();
 }
 
-int Presentation::size() const{
+int Presentation::numberFrames() const{
     return int(mFrames.size());
 }
 
@@ -64,4 +64,12 @@ void Presentation::saveConfig(QString file){
 
 ConfigBoxes& Presentation::Configuration(){
     return mConfig;
+}
+
+void Presentation::setLayout(Layout layout) {
+    mLayout = layout;
+}
+
+Layout Presentation::layout() const {
+    return mLayout;
 }
