@@ -270,11 +270,13 @@ void PaintDocument::createPDF(QString filename) const{
     painter.setWindow(QRect(QPoint(0, 0), mSize));
 
     painter.begin(&pdfWriter);
+    auto paint = std::make_shared<Painter>(painter);
     for(auto &frame: mPresentation->frames()){
-        auto paint = std::make_shared<Painter>(painter);
-        paint->paintFrame(frame);
-        if(frame != mPresentation->frames().back()){
-            pdfWriter.newPage();
+        for( int i = 0; i < frame->NumberPause(); i++) {
+            paint->paintFrame(frame, i);
+            if(!(frame == mPresentation->frames().back() && i == frame->NumberPause() - 1)){
+                pdfWriter.newPage();
+            }
         }
     }
     painter.end();

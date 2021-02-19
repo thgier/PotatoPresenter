@@ -56,6 +56,7 @@ private:
     std::map<QString, QString> mVariables;
     std::shared_ptr<Template> mTemplate;
     bool mParsingTemplate = false;
+    int mPauseCount = 0;
 };
 
 #endif // PARSER_H

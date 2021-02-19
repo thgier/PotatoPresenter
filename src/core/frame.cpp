@@ -75,3 +75,11 @@ std::map<QString, QString> Frame::Variables() const{
 void Frame::setVariable(QString name, QString value){
     mVariables[name] = value;
 }
+
+int Frame::NumberPause() const {
+    return mNumberPause;
+}
+
+void Frame::setNumberPause(int number) {
+    mNumberPause = number;
+}

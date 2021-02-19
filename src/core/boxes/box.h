@@ -50,6 +50,8 @@ public:
     void drawScaleMarker(QPainter& painter, int size);
     QString id();
     void setBoxStyle(BoxStyle style);
+    void setPauseCounter(int counter);
+    bool pauseCounterSmaller(int counter) const;
 protected:
     QString substituteVariables(QString text, std::map<QString, QString> variables) const;
     void startDraw(QPainter& painter);
@@ -60,6 +62,7 @@ private:
     QString mId = 0;
     bool mVisible = true;
     bool mMovable = true;
+    int mPauseCounter = 0;
 };
 
 #endif // BOX_H

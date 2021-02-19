@@ -11,6 +11,7 @@ public:
     Painter();
     Painter(QPainter& painter);
     void paintFrame(std::shared_ptr<Frame> frame);
+    void paintFrame(std::shared_ptr<Frame> frame, int pauseCount);
     QPainter& getPainter();
 private:
     QPainter& mPainter;

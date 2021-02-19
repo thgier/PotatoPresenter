@@ -143,3 +143,10 @@ QString Box::substituteVariables(QString text, std::map<QString, QString> variab
     return newText;
 }
 
+void Box::setPauseCounter(int counter) {
+    mPauseCounter = counter;
+}
+
+bool Box::pauseCounterSmaller(int counter) const {
+    return mPauseCounter <= counter;
+}

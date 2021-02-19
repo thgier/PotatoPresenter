@@ -46,6 +46,9 @@ FrameList Parser::readInput(){
     for(auto const& frame: mFrames){
         frame->setVariable("%{totalpages}", QString::number(mFrames.size() - 1));
     }
+    if(!mFrames.empty()) {
+        mFrames.back()->setNumberPause(mPauseCount + 1);
+    }
     return mFrames;
 }
 
@@ -68,6 +71,9 @@ void Parser::command(Token token){
     else if(token.mText == "\\line"){
         newLine(token.mLine);
     }
+    else if(token.mText == "\\pause"){
+        mPauseCount++;
+    }
     else if(token.mText == "\\plaintext"){
         newPlainText(token.mLine);
     }
@@ -87,6 +93,10 @@ void Parser::command(Token token){
 
 void Parser::newFrame(int line){
     mBoxCounter = 0;
+    mPauseCount = 0;
+    if(!mFrames.empty()) {
+        mFrames.back()->setNumberPause(mPauseCount + 1);
+    }
     auto token = mTokenizer.peekNext();
     Box::List templateBoxes;
     if(token.mKind == Token::Kind::Argument){
@@ -147,6 +157,7 @@ void Parser::newTextField(int line){
     }
     auto const textField = std::make_shared<TextBox>(text, getRect(id), id);
     textField->setBoxStyle(boxStyle);
+    textField->setPauseCounter(mPauseCount);
     mBoxCounter++;
     mFrames.back()->appendBox(textField);
 }
@@ -165,6 +176,7 @@ void Parser::newImage(int line) {
     }
     auto const imageBox = std::make_shared<ImageBox>(text, getRect(id), id);
     imageBox->setBoxStyle(boxStyle);
+    imageBox->setPauseCounter(mPauseCount);
     mBoxCounter++;
     mFrames.back()->appendBox(imageBox);
 }
@@ -189,6 +201,7 @@ void Parser::newTitle(int line){
     }
     auto const textField = std::make_shared<TextBox>(text, rect, id);
     textField->setBoxStyle(boxStyle);
+    textField->setPauseCounter(mPauseCount);
     mBoxCounter++;
     mFrames.back()->appendBox(textField);
 }
@@ -208,6 +221,7 @@ void Parser::newArrow(int line){
 
     auto const arrow = std::make_shared<ArrowBox>(rect, id);
     arrow->setBoxStyle(style);
+    arrow->setPauseCounter(mPauseCount);
     mFrames.back()->appendBox(arrow);
     mBoxCounter++;
 
@@ -233,6 +247,7 @@ void Parser::newLine(int line){
 
     auto const arrow = std::make_shared<LineBox>(rect, id);
     arrow->setBoxStyle(style);
+    arrow->setPauseCounter(mPauseCount);
     mFrames.back()->appendBox(arrow);
     mBoxCounter++;
 
@@ -259,6 +274,7 @@ void Parser::newPlainText(int line) {
     }
     auto const textField = std::make_shared<PlainTextBox>(text, getRect(id), id);
     textField->setBoxStyle(boxStyle);
+    textField->setPauseCounter(mPauseCount);
     mBoxCounter++;
     mFrames.back()->appendBox(textField);
 }
@@ -274,6 +290,7 @@ void Parser::newBlindText(int line) {
     QString text = "Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
     auto const textField = std::make_shared<TextBox>(text, getRect(id), id);
     textField->setBoxStyle(boxStyle);
+    textField->setPauseCounter(mPauseCount);
     mBoxCounter++;
     mFrames.back()->appendBox(textField);
 }

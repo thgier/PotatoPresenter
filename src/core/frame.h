@@ -27,6 +27,8 @@ public:
     void setVariables(std::map<QString, QString> variables);
     void setVariable(QString name, QString value);
     std::map<QString, QString> Variables() const;
+    int NumberPause() const;
+    void setNumberPause(int number);
 
 private:
     Box::List mBoxes;
@@ -34,6 +36,7 @@ private:
     QString mId;
     int mPageNumber = -1;
     std::map<QString, QString> mVariables;
+    int mNumberPause = 1;
 };
 
 Q_DECLARE_METATYPE(std::shared_ptr<Frame>)

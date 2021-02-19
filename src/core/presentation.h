@@ -6,11 +6,6 @@
 #include "frame.h"
 #include "configboxes.h"
 
-enum PresentationOutput{
-    handout,
-    pause
-};
-
 using FrameList = std::vector<std::shared_ptr<Frame>>;
 class Presentation : public QObject
 {
@@ -29,7 +24,6 @@ public:
     std::shared_ptr<Box> getBox(QString id) const;
     std::shared_ptr<Frame> getFrame(QString id) const;
     void saveConfig(QString file);
-    void setPresentationOutput(PresentationOutput output);
     ConfigBoxes& Configuration();
 Q_SIGNALS:
     void presentationChanged();
@@ -38,7 +32,6 @@ private:
     FrameList mFrames;
     QString mInputDir;
     ConfigBoxes mConfig;
-    PresentationOutput mPresentationOut = PresentationOutput::handout;
 };
 
 #endif // PRESENTATION_H
