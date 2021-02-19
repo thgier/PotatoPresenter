@@ -239,6 +239,14 @@ void MainWindow::resetPresentation(){
 }
 
 void MainWindow::exportPDF(){
+    if(mPdfFile.isEmpty()) {
+        exportPDFAs();
+        return;
+    }
+    mPaintDocument->createPDF(mPdfFile);
+}
+
+void MainWindow::exportPDFAs(){
     QFileDialog dialog;
     if(mPdfFile.isEmpty()){
         mPdfFile = getPdfFilename();
