@@ -34,6 +34,7 @@ add_executable(praes
     src/core/frame.cpp
     src/core/layout.cpp
     src/core/main.cpp
+    src/core/pdfcreator.cpp
     src/ui/mainwindow.cpp
     src/ui/mainwindow.ui
     src/core/painter.cpp
