@@ -1,9 +1,10 @@
-#ifndef BOX_H
-#define BOX_H
+#pragma once
 
 #include <QRect>
 #include <QPainter>
 #include "boxgeometry.h"
+
+using Variables = std::map<QString, QString>;
 
 enum FontWeight{
     normal,
@@ -11,19 +12,19 @@ enum FontWeight{
 };
 
 struct BoxStyle{
-    QColor mColor{Qt::black};
+    QColor mColor = Qt::black;
     int mFontSize = 50;
     double mLineSpacing = 1.15;
     FontWeight mFontWeight = FontWeight::normal;
     QString mFont = "sans-serif";
-    Qt::Alignment mAlignment;
+    Qt::Alignment mAlignment = Qt::AlignLeft;
     qreal mOpacity = 1;
     struct {
-        int left = -1;
-        int top = -1;
-        int width = -1;
-        int height = -1;
-        qreal angle = -1;
+        std::optional<int> left;
+        std::optional<int> top ;
+        std::optional<int> width;
+        std::optional<int> height;
+        std::optional<qreal> angle;
     } mGeometry;
 };
 
@@ -33,36 +34,62 @@ struct VariableSubstitution{
     QString word;
 };
 
-class Box : public QObject
+class Box
 {
-    Q_OBJECT
 public:
-    using List = std::vector<std::shared_ptr<Box>>;
+    using Ptr = std::shared_ptr<Box>;
+    using List = std::vector<Ptr>;
+
     Box();
-    Box(BoxGeometry geometry, QString id);
+    Box(BoxGeometry const& geometry, QString id);
+
+    // Implement this in child classes to draw the box's contents given the passed @p variables
+    virtual void drawContent(QPainter& painter, std::map<QString, QString> variables) = 0;
+    void drawSelectionFrame(QPainter& painter);
+    void drawScaleHandle(QPainter& painter, int size);
+
     BoxGeometry geometry() const;
     BoxStyle style() const;
-    virtual void drawContent(QPainter& painter, std::map<QString, QString> variables);
+
+    void setGeometry(BoxGeometry const& geometry);
     void setVisibility(bool vis);
     void setMovable(bool move);
-    void setGeometry(BoxGeometry geometry);
-    void drawBoundingBox(QPainter& painter);
-    void drawScaleMarker(QPainter& painter, int size);
-    QString id();
     void setBoxStyle(BoxStyle style);
     void setPauseCounter(int counter);
+
+    QString id();
     bool pauseCounterSmaller(int counter) const;
+
 protected:
+    // Call this in child classes when implemting drawContent to substitute variables (e.g. page number)
+    // in text.
     QString substituteVariables(QString text, std::map<QString, QString> variables) const;
+
+    struct PainterTransformScope {
+        PainterTransformScope(Box* self, QPainter& painter)
+            : mSelf(self)
+            , mPainter(painter)
+        {
+            self->startDraw(painter);
+        }
+        ~PainterTransformScope() {
+            mSelf->endDraw(mPainter);
+        }
+    private:
+        Box* mSelf;
+        QPainter& mPainter;
+    };
+
+    BoxStyle mStyle;
+
+private:
     void startDraw(QPainter& painter);
     void endDraw(QPainter& painter) const;
-    BoxStyle mStyle;
+
 private:
     BoxGeometry mGeometry;
-    QString mId = 0;
+    QString mId;
     bool mVisible = true;
     bool mMovable = true;
     int mPauseCounter = 0;
 };
-
-#endif // BOX_H

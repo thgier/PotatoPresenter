@@ -1,13 +1,13 @@
 #include "box.h"
 #include <QRegularExpression>
 
-Box::Box(BoxGeometry rect, QString id)
+Box::Box(const BoxGeometry &rect, QString id)
     : mGeometry{rect}
     , mId{id}
 {
 }
 
-void Box::setGeometry(BoxGeometry rect){
+void Box::setGeometry(const BoxGeometry &rect){
     if(mMovable){
         mGeometry = rect;
     }
@@ -20,19 +20,6 @@ BoxGeometry Box::geometry() const{
 BoxStyle Box::style() const{
     return mStyle;
 }
-
-void Box::drawContent(QPainter& painter, std::map<QString, QString>) {
-    startDraw(painter);
-    auto pen = painter.pen();
-    auto const sizeBrush = 0.1;
-    pen.setWidth(sizeBrush);
-    painter.setPen(pen);
-    painter.translate(QPoint(0, -sizeBrush));
-    painter.drawRect(mGeometry.rect());
-    painter.rotate(-mGeometry.angle());
-    endDraw(painter);
-}
-
 
 void Box::setVisibility(bool vis){
     mVisible = vis;
@@ -49,22 +36,11 @@ QString Box::id() {
 void Box::startDraw(QPainter &painter){
     painter.save();
     auto rect = mGeometry.rect();
-    if(mStyle.mGeometry.left != -1){
-        rect.moveLeft(mStyle.mGeometry.left);
-    }
-    if(mStyle.mGeometry.top != -1){
-        rect.moveTop(mStyle.mGeometry.top);
-    }
-    if(mStyle.mGeometry.width != -1){
-        rect.setWidth(mStyle.mGeometry.width);
-    }
-    if(mStyle.mGeometry.height != -1){
-        rect.setHeight(mStyle.mGeometry.height);
-    }
-    mGeometry.setRect(rect);
-    if(mStyle.mGeometry.angle != -1){
-        mGeometry.setAngle(mStyle.mGeometry.angle);
-    }
+    rect.moveLeft(mStyle.mGeometry.left.value_or(geometry().rect().left()));
+    rect.moveTop(mStyle.mGeometry.top.value_or(geometry().rect().top()));
+    rect.setWidth(mStyle.mGeometry.width.value_or(geometry().rect().width()));
+    rect.setHeight(mStyle.mGeometry.height.value_or(geometry().rect().height()));
+    mGeometry.setAngle(mStyle.mGeometry.angle.value_or(geometry().angle()));
     auto font = painter.font();
     if(mStyle.mFontWeight == FontWeight::bold){
         font.setBold(true);
@@ -81,8 +57,8 @@ void Box::endDraw(QPainter &painter) const{
     painter.restore();
 }
 
-void Box::drawBoundingBox(QPainter &painter){
-    startDraw(painter);
+void Box::drawSelectionFrame(QPainter &painter){
+    PainterTransformScope scope(this, painter);
     painter.setRenderHint(QPainter::Antialiasing);
     auto pen = painter.pen();
     auto const sizePen = 0.1;
@@ -90,12 +66,11 @@ void Box::drawBoundingBox(QPainter &painter){
     painter.setPen(pen);
     painter.translate(QPoint(0, -sizePen));
     painter.drawRect(mGeometry.rect());
-    endDraw(painter);
 }
 
-void Box::drawScaleMarker(QPainter &painter, int size){
+void Box::drawScaleHandle(QPainter &painter, int size){
+    PainterTransformScope scope(this, painter);
     size /= 2;
-    startDraw(painter);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setBrush(Qt::black);
     QPoint(size/2, size/2);
@@ -103,8 +78,6 @@ void Box::drawScaleMarker(QPainter &painter, int size){
     painter.fillRect(QRect(mGeometry.rect().topRight() + QPoint(size/2, -size/2), QSize(-size, size)), Qt::black);
     painter.fillRect(QRect(mGeometry.rect().bottomLeft() + QPoint(-size/2, size/2), QSize(size, -size)), Qt::black);
     painter.fillRect(QRect(mGeometry.rect().bottomRight() + QPoint(size/2, size/2), QSize(-size, -size)), Qt::black);
-
-    endDraw(painter);
 }
 
 void Box::setBoxStyle(BoxStyle style){

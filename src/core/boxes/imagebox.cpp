@@ -18,7 +18,7 @@ void ImageBox::drawContent(QPainter& painter, std::map<QString, QString> variabl
         path = variables["%{resourcepath}"] + "/" + path;
     }
     auto const fileInfo = QFileInfo(path);
-    startDraw(painter);
+    PainterTransformScope scope(this, painter);
     if(fileInfo.suffix() == "svg"){
         drawSvg(loadSvg(path), painter);
     }
@@ -28,7 +28,6 @@ void ImageBox::drawContent(QPainter& painter, std::map<QString, QString> variabl
     else{
         drawImage(loadImage(path), painter);
     }
-    endDraw(painter);
 }
 
 std::shared_ptr<QImage> ImageBox::loadImage(QString path) const{

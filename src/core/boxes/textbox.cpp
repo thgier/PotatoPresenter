@@ -27,7 +27,7 @@ QString TextBox::Text(){
 
 void TextBox::drawContent(QPainter& painter, std::map<QString, QString> variables) {
     auto const text = substituteVariables(mText, variables);
-    startDraw(painter);
+    PainterTransformScope scope(this, painter);
     painter.setPen(mStyle.mColor);
 
     std::istringstream str(text.toStdString());
@@ -42,8 +42,6 @@ void TextBox::drawContent(QPainter& painter, std::map<QString, QString> variable
     auto listener = MarkdownFormatVisitor(painter, geometry().rect(), mStyle);
     auto walker = antlr4::tree::ParseTreeWalker();
     walker.walk(&listener, tree);
-
-    endDraw(painter);
 }
 
 

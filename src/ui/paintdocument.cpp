@@ -41,8 +41,8 @@ void PaintDocument::paintEvent(QPaintEvent*)
     }
     auto const box = mPresentation->getBox(mActiveBoxId);
     if(box != nullptr && mPresentation->getFrame(mCurrentFrameId)->containsBox(mActiveBoxId)){
-        box->drawBoundingBox(mPainter);
-        box->drawScaleMarker(mPainter, diffToMouse);
+        box->drawSelectionFrame(mPainter);
+        box->drawScaleHandle(mPainter, diffToMouse);
     }
     else{
         mActiveBoxId = QString();

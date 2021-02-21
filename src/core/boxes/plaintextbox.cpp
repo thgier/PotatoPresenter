@@ -14,7 +14,7 @@ QString PlainTextBox::Text(){
 
 void PlainTextBox::drawContent(QPainter& painter, std::map<QString, QString> variables) {
     auto const text = substituteVariables(mText, variables);
-    startDraw(painter);
+    PainterTransformScope scope(this, painter);
     painter.setPen(mStyle.mColor);
     auto const linespacing = painter.fontMetrics().leading() + mStyle.mLineSpacing * painter.fontMetrics().lineSpacing();
     QTextLayout textLayout(text);
@@ -34,5 +34,4 @@ void PlainTextBox::drawContent(QPainter& painter, std::map<QString, QString> var
     }
     textLayout.endLayout();
     textLayout.draw(&painter, geometry().rect().topLeft());
-    endDraw(painter);
 }
