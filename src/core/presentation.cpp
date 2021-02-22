@@ -7,62 +7,64 @@ Presentation::Presentation() : QObject()
 {
 }
 
-void Presentation::loadInput(QString configFilename){
+void Presentation::loadInput(QString configFilename) {
     mConfig.loadConfigurationFile(configFilename);
 }
 
-FrameList Presentation::frames() const{
+Frame::List Presentation::frames() const {
     return mFrames;
 }
 
-void Presentation::setFrames(Frame::List frames){
+void Presentation::setFrames(Frame::List const& frames) {
     mFrames = frames;
     Q_EMIT presentationChanged();
 }
 
-bool Presentation::empty() const{
+bool Presentation::empty() const {
     return mFrames.empty();
 }
 
-int Presentation::numberFrames() const{
+int Presentation::numberFrames() const {
     return int(mFrames.size());
 }
 
-std::shared_ptr<Frame> Presentation::frameAt(int pageNumber) const{
+Frame::Ptr Presentation::frameAt(int pageNumber) const {
     return mFrames[pageNumber];
 }
 
-void Presentation::setBox(QString boxId, BoxGeometry rect, int pageNumber){
-    getBox(boxId)->setGeometry(rect);
+void Presentation::setBoxGeometry(const QString &boxId, const BoxGeometry &rect, int pageNumber) {
+    auto const& box = findBox(boxId);
+    if(!box) {
+        return;
+    }
+    box->setGeometry(rect);
     mConfig.addRect(rect, boxId);
     Q_EMIT frameChanged(pageNumber);
 }
 
-std::shared_ptr<Box> Presentation::getBox(QString id) const {
-    for(auto const& frame: frames()){
-        for(auto const& box: frame->boxes()){
-            if(box->id() == id) {
-                return box;
-            }
+Box::Ptr Presentation::findBox(QString const& id) const {
+    for(auto const& frame: frames()) {
+        if(frame->findBox(id)) {
+            return frame->findBox(id);
         }
     }
     return {};
 }
 
-std::shared_ptr<Frame> Presentation::getFrame(QString id) const{
-    for(auto const &frame: frames()){
-        if(id == frame->id()){
+Frame::Ptr Presentation::findFrame(const QString &id) const {
+    for(auto const &frame: frames()) {
+        if(id == frame->id()) {
             return frame;
         }
     }
     return {};
 }
 
-void Presentation::saveConfig(QString file){
+void Presentation::saveConfig(QString const& file) {
     mConfig.saveConfig(file);
 }
 
-ConfigBoxes& Presentation::Configuration(){
+ConfigBoxes& Presentation::configuration() {
     return mConfig;
 }
 

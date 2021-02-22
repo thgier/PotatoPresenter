@@ -31,7 +31,7 @@ void BoxTransformation::doTransformation(QPoint mousePos, std::shared_ptr<Presen
     if(box.isEmpty()){
         return;
     }
-    pres->setBox(mBox->id(), box, mPageNumber);
+    pres->setBoxGeometry(mBox->id(), box, mPageNumber);
 }
 
 QRect BoxTransformation::scale(QPoint mouse, QPointF v, BoxGeometry* boxrect) const{

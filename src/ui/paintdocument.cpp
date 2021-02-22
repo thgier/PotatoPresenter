@@ -39,8 +39,8 @@ void PaintDocument::paintEvent(QPaintEvent*)
         paint.paintFrame(mPresentation->frameAt(pageNumber));
         mCurrentFrameId = mPresentation->frameAt(pageNumber)->id();
     }
-    auto const box = mPresentation->getBox(mActiveBoxId);
-    if(box != nullptr && mPresentation->getFrame(mCurrentFrameId)->containsBox(mActiveBoxId)){
+    auto const box = mPresentation->findBox(mActiveBoxId);
+    if(box != nullptr && mPresentation->findFrame(mCurrentFrameId)->containsBox(mActiveBoxId)){
         box->drawSelectionFrame(mPainter);
         box->drawScaleHandle(mPainter, diffToMouse);
     }
@@ -60,7 +60,7 @@ QSize PaintDocument::sizeHint() const{
 
 void PaintDocument::contextMenuEvent(QContextMenuEvent *event){
     QMenu menu(this);
-    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->getBox(mActiveBoxId));
+    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->findBox(mActiveBoxId));
     if(image){
         auto const imagePath = image->ImagePath();
         if(QFile::exists(imagePath)){
@@ -164,7 +164,7 @@ void PaintDocument::mouseMoveEvent(QMouseEvent *event)
         if(mActiveBoxId.isEmpty()){
             return;
         }
-        auto const activeBox = mPresentation->getBox(mActiveBoxId);
+        auto const activeBox = mPresentation->findBox(mActiveBoxId);
         auto const clasifiedMousePos = activeBox->geometry().classifyPoint(mCursorLastPosition, diffToMouse);
         if(clasifiedMousePos == pointPosition::notInBox){
             mActiveBoxId = QString();
@@ -194,7 +194,7 @@ void PaintDocument::mouseReleaseEvent(QMouseEvent *event)
 
 void PaintDocument::cursorApperance(QPoint mousePosition){
     auto cursor = QCursor();
-    auto const activeBox = mPresentation->getBox(mActiveBoxId);
+    auto const activeBox = mPresentation->findBox(mActiveBoxId);
     if(!activeBox){
         cursor.setShape(Qt::ArrowCursor);
         setCursor(cursor);
@@ -267,7 +267,7 @@ void PaintDocument::layoutTitle(){
     if(mActiveBoxId.isEmpty()) {
         return;
     }
-    mPresentation->setBox(mActiveBoxId, mLayout.mTitlePos, pageNumber);
+    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mTitlePos, pageNumber);
     update();
 }
 
@@ -275,7 +275,7 @@ void PaintDocument::layoutBody(){
     if(mActiveBoxId.isEmpty()) {
         return;
     }
-    mPresentation->setBox(mActiveBoxId, mLayout.mBodyPos, pageNumber);
+    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mBodyPos, pageNumber);
     update();
 }
 
@@ -283,7 +283,7 @@ void PaintDocument::layoutFull(){
     if(mActiveBoxId.isEmpty()) {
         return;
     }
-    mPresentation->setBox(mActiveBoxId, mLayout.mFullPos, pageNumber);
+    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mFullPos, pageNumber);
     update();
 }
 
@@ -291,7 +291,7 @@ void PaintDocument::layoutLeft(){
     if(mActiveBoxId.isEmpty()) {
         return;
     }
-    mPresentation->setBox(mActiveBoxId, mLayout.mLeftPos, pageNumber);
+    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mLeftPos, pageNumber);
     update();
 }
 
@@ -299,7 +299,7 @@ void PaintDocument::layoutRight(){
     if(mActiveBoxId.isEmpty()) {
         return;
     }
-    mPresentation->setBox(mActiveBoxId, mLayout.mRightPos, pageNumber);
+    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mRightPos, pageNumber);
     update();
 }
 
@@ -307,7 +307,7 @@ void PaintDocument::layoutPresTitle(){
     if(mActiveBoxId.isEmpty()) {
         return;
     }
-    mPresentation->setBox(mActiveBoxId, mLayout.mPresTitlePos, pageNumber);
+    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mPresTitlePos, pageNumber);
     update();
 }
 
@@ -315,7 +315,7 @@ void PaintDocument::layoutSubtitle(){
     if(mActiveBoxId.isEmpty()) {
         return;
     }
-    mPresentation->setBox(mActiveBoxId, mLayout.mSubtitlePos, pageNumber);
+    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mSubtitlePos, pageNumber);
     update();
 }
 void PaintDocument::setTransformationType(TransformationType type){
@@ -359,7 +359,7 @@ void PaintDocument::createActions(){
 }
 
 void PaintDocument::openInInkscape(){
-    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->getBox(mActiveBoxId));
+    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->findBox(mActiveBoxId));
     if(!image){
         return;
     }
@@ -371,7 +371,7 @@ void PaintDocument::openInInkscape(){
 }
 
 void PaintDocument::createAndOpenSvg(){
-    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->getBox(mActiveBoxId));
+    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->findBox(mActiveBoxId));
     if(!image){
         return;
     }

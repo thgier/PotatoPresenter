@@ -123,7 +123,7 @@ void MainWindow::fileChanged() {
     auto iface = qobject_cast<KTextEditor::MarkInterface*>(mDoc);
     iface->clearMarks();
     Parser parser;
-    parser.loadInput(mDoc->text().toUtf8(), &mPresentation->Configuration());
+    parser.loadInput(mDoc->text().toUtf8(), &mPresentation->configuration());
     try {
         mPresentation->setFrames(parser.readInput());
         ui->error->setText("Conversion succeeded \u2714");
