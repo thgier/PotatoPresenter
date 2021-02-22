@@ -112,7 +112,7 @@ void PaintDocument::resizeEvent(QResizeEvent*) {
 void PaintDocument::determineBoxInFocus(QPoint mousePos){
     auto lastId = mActiveBoxId;
     mActiveBoxId = QString();
-    for(auto box: mPresentation->frameAt(pageNumber)->getBoxes()) {
+    for(auto box: mPresentation->frameAt(pageNumber)->boxes()) {
         if(box->geometry().contains(mousePos) && lastId != box->id()) {
             mActiveBoxId = box->id();
             break;
@@ -120,10 +120,10 @@ void PaintDocument::determineBoxInFocus(QPoint mousePos){
     }
 }
 
-std::vector<std::shared_ptr<Box>> PaintDocument::determineBoxesUnderMouse(QPoint mousePos){
+Box::List PaintDocument::determineBoxesUnderMouse(QPoint mousePos){
     mActiveBoxId = QString();
-    std::vector<std::shared_ptr<Box>> boxesUnderMouse;
-    for(auto &box: mPresentation->frameAt(pageNumber)->getBoxes()) {
+    Box::List boxesUnderMouse;
+    for(auto &box: mPresentation->frameAt(pageNumber)->boxes()) {
         if(box->geometry().contains(mousePos, diffToMouse)) {
             boxesUnderMouse.push_back(box);
         }

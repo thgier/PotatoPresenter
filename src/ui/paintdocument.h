@@ -73,7 +73,7 @@ private:
     std::optional<BoxTransformation> mMomentTrafo;
 
     void determineBoxInFocus(QPoint mousePos);
-    std::vector<std::shared_ptr<Box>> determineBoxesUnderMouse(QPoint mousePos);
+    Box::List determineBoxesUnderMouse(QPoint mousePos);
 
     void createActions();
     void createAndOpenSvg();

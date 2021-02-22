@@ -123,3 +123,7 @@ void Box::setPauseCounter(int counter) {
 bool Box::pauseCounterSmaller(int counter) const {
     return mPauseCounter <= counter;
 }
+
+int Box::pauseCounter() const {
+    return mPauseCounter;
+}

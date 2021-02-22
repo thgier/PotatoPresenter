@@ -6,13 +6,13 @@ Frame::Frame()
 
 }
 
-Frame::Frame(QString id, std::map<QString, QString> variables)
+Frame::Frame(const QString &id, const std::map<QString, QString> &variables)
     : mId{id}
     , mVariables{variables}
 {
 }
 
-std::vector<std::shared_ptr<Box>> Frame::getBoxes() const
+Box::List Frame::boxes() const
 {
     return mBoxes;
 }
@@ -30,12 +30,12 @@ bool Frame::empty() {
     return mBoxes.empty();
 }
 
-QString Frame::id() {
+QString Frame::id() const {
     return mId;
 }
 
-std::shared_ptr<Box> Frame::getBox(QString id) const{
-    for(auto const &box: getBoxes()){
+Box::Ptr Frame::findBox(QString const& id) const{
+    for(auto const &box: boxes()){
         if(box->id() == id){
             return box;
         }
@@ -43,8 +43,8 @@ std::shared_ptr<Box> Frame::getBox(QString id) const{
     return {};
 }
 
-bool Frame::containsBox(QString id) const{
-    for(auto const &box: getBoxes()){
+bool Frame::containsBox(const QString &id) const{
+    for(auto const &box: boxes()){
         if(box->id() == id){
             return true;
         }
@@ -56,30 +56,27 @@ void Frame::setTemplateBoxes(Box::List boxes){
     mTemplateBoxes = boxes;
 }
 
-void Frame::appendTemplateBoxes(std::shared_ptr<Box> box){
+void Frame::appendTemplateBoxes(Box::Ptr box){
     mTemplateBoxes.push_back(box);
 }
 
-Box::List Frame::getTemplateBoxes() const{
+Box::List Frame::templateBoxes() const{
     return mTemplateBoxes;
 }
 
-void Frame::setVariables(std::map<QString, QString> variables){
+void Frame::setVariables(Variables const& variables){
     mVariables = variables;
 }
 
-std::map<QString, QString> Frame::Variables() const{
+Variables const& Frame::variables() const{
     return mVariables;
 }
 
-void Frame::setVariable(QString name, QString value){
+void Frame::setVariable(QString const& name, QString const& value){
     mVariables[name] = value;
 }
 
-int Frame::NumberPause() const {
-    return mNumberPause;
-}
-
-void Frame::setNumberPause(int number) {
-    mNumberPause = number;
+int Frame::numberPauses() const {
+    auto const& maxBox = std::max_element(mBoxes.begin(), mBoxes.end(), [](auto const& a, auto const& b){return a->pauseCounter() < b->pauseCounter();});
+    return maxBox->get()->pauseCounter();
 }

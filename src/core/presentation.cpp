@@ -40,7 +40,7 @@ void Presentation::setBox(QString boxId, BoxGeometry rect, int pageNumber){
 
 std::shared_ptr<Box> Presentation::getBox(QString id) const {
     for(auto const& frame: frames()){
-        for(auto const& box: frame->getBoxes()){
+        for(auto const& box: frame->boxes()){
             if(box->id() == id) {
                 return box;
             }

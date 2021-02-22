@@ -19,9 +19,9 @@ void PDFCreator::createPdf(QString filename, std::shared_ptr<Presentation> prese
     painter.begin(&pdfWriter);
     auto paint = std::make_shared<Painter>(painter);
     for(auto &frame: presentation->frames()){
-        for( int i = 0; i < frame->NumberPause(); i++) {
+        for( int i = 0; i < frame->numberPauses(); i++) {
             paint->paintFrame(frame, i);
-            if(!(frame == presentation->frames().back() && i == frame->NumberPause() - 1)){
+            if(!(frame == presentation->frames().back() && i == frame->numberPauses() - 1)){
                 pdfWriter.newPage();
             }
         }

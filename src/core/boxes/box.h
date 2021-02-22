@@ -59,6 +59,7 @@ public:
 
     QString id();
     bool pauseCounterSmaller(int counter) const;
+    int pauseCounter() const;
 
 protected:
     // Call this in child classes when implemting drawContent to substitute variables (e.g. page number)

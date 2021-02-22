@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include <vector>
 #include <QVariant>
 #include "box.h"
@@ -8,35 +7,43 @@
 class Frame
 {
 public:
-    using List = std::vector<std::shared_ptr<Frame>>;
-    using ptr = std::shared_ptr<Frame>;
+    using Ptr = std::shared_ptr<Frame>;
+    using List = std::vector<Ptr>;
+
     Frame();
-    Frame(QString id, std::map<QString, QString> variables);
-    Box::List getBoxes() const;
-    std::shared_ptr<Box> getBox(QString id) const;
-    bool containsBox(QString id) const;
-    void appendBox(std::shared_ptr<Box> box);
+    Frame(QString const& id, std::map<QString, QString> const& variables);
+
+//    Access contained boxes
     void setBoxes(std::vector<std::shared_ptr<Box>> boxes);
+    void appendBox(std::shared_ptr<Box> box);
+    Box::List boxes() const;
     bool empty();
-    QString id();
+    Box::Ptr findBox(QString const& id) const;
+    bool containsBox(QString const& id) const;
+
+//    Returns the max PauseCounter of the boxes
+    int numberPauses() const;
+
+//    Template boxes are rendered in the background of the frame.
     void setTemplateBoxes(Box::List boxes);
-    void appendTemplateBoxes(std::shared_ptr<Box> box);
-    Box::List getTemplateBoxes() const;
-    void setPageNumber(int pagenumber);
-    int PageNumber() const;
-    void setVariables(std::map<QString, QString> variables);
-    void setVariable(QString name, QString value);
-    std::map<QString, QString> Variables() const;
-    int NumberPause() const;
-    void setNumberPause(int number);
+    void appendTemplateBoxes(Box::Ptr box);
+    Box::List templateBoxes() const;
+
+//    The frame ID is the string after the "\frame" command, and is used to track
+//    the frame when the document changes.
+    QString id() const;
+
+//    Access to this frame's variables
+    void setVariables(Variables const& variables);
+    void setVariable(QString const& name, QString const& value);
+    Variables const& variables() const;
+
 
 private:
     Box::List mBoxes;
-    Box::List mTemplateBoxes = {};
+    Box::List mTemplateBoxes;
     QString mId;
-    int mPageNumber = -1;
-    std::map<QString, QString> mVariables;
-    int mNumberPause = 1;
+    Variables mVariables;
 };
 
-Q_DECLARE_METATYPE(std::shared_ptr<Frame>)
+Q_DECLARE_METATYPE(Frame::Ptr)

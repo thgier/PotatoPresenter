@@ -44,7 +44,7 @@ Box::List Template::getTemplateSlide(QString frameId) const{
     if(!frame){
         return {};
     }
-    auto boxes = frame->getBoxes();
+    auto boxes = frame->boxes();
     auto rm = [frameId](std::shared_ptr<Box> box) {return !box->id().contains(frameId + "-intern-");};
     boxes.erase(std::remove_if(boxes.begin(), boxes.end(), rm), boxes.end());
     return boxes;

@@ -46,9 +46,6 @@ FrameList Parser::readInput(){
     for(auto const& frame: mFrames){
         frame->setVariable("%{totalpages}", QString::number(mFrames.size() - 1));
     }
-    if(!mFrames.empty()) {
-        mFrames.back()->setNumberPause(mPauseCount + 1);
-    }
     return mFrames;
 }
 
@@ -94,9 +91,6 @@ void Parser::command(Token token){
 void Parser::newFrame(int line){
     mBoxCounter = 0;
     mPauseCount = 0;
-    if(!mFrames.empty()) {
-        mFrames.back()->setNumberPause(mPauseCount + 1);
-    }
     auto token = mTokenizer.peekNext();
     Box::List templateBoxes;
     if(token.mKind == Token::Kind::Argument){
@@ -323,7 +317,7 @@ BoxGeometry const Parser::getRect(QString id) {
             rect = mLayout->mBodyPos;
             break;
         case 2:
-            auto const lastBox = mFrames.back()->getBoxes().back();
+            auto const lastBox = mFrames.back()->boxes().back();
             if(mConfigBoxes->getRect(lastBox->id()).isEmpty()) {
                 lastBox->setGeometry(mLayout->mLeftPos);
                 rect = mLayout->mRightPos;
