@@ -10,7 +10,7 @@
 #include <QListWidget>
 #include <KXmlGuiWindow>
 #include "frame.h"
-#include "paintdocument.h"
+#include "framewidget.h"
 #include "configboxes.h"
 #include "layout.h"
 #include "framelistmodel.h"
@@ -52,7 +52,7 @@ private:
     KTextEditor::Document* mDoc;
     KTextEditor::View* mViewTextDoc = nullptr;
 
-    PaintDocument* mPaintDocument;
+    FrameWidget* mFrameWidget;
     std::shared_ptr<Presentation> mPresentation;
 
     QListWidget *mListWidget;

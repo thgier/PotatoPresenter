@@ -51,7 +51,7 @@ add_executable(praes
     src/ui/boxtransformation.cpp
     src/ui/framelistdelegate.cpp
     src/ui/framelistmodel.cpp
-    src/ui/paintdocument.cpp
+    src/ui/framewidget.cpp
 )
 
 add_executable(testtokenizer

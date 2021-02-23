@@ -31,8 +31,8 @@ MainWindow::MainWindow(QWidget *parent)
     mDoc = mEditor->createDocument(this);
 
     mPresentation = std::make_shared<Presentation>();
-    mPaintDocument = ui->paintDocument;
-    mPaintDocument->setPresentation(mPresentation);
+    mFrameWidget = ui->framewidget;
+    mFrameWidget->setPresentation(mPresentation);
 
     mViewTextDoc = mDoc->createView(this);
     ui->editor->addWidget(mViewTextDoc);
@@ -50,8 +50,8 @@ MainWindow::MainWindow(QWidget *parent)
     setupFileActions();
 
     QObject::connect(ui->pageNumber, QOverload<int>::of(&QSpinBox::valueChanged),
-                mPaintDocument, QOverload<int>::of(&PaintDocument::setCurrentPage));
-    connect(mPaintDocument, &PaintDocument::pageNumberChanged,
+                mFrameWidget, QOverload<int>::of(&FrameWidget::setCurrentPage));
+    connect(mFrameWidget, &FrameWidget::pageNumberChanged,
             ui->pageNumber, &QSpinBox::setValue);
     connect(selectionModel, &QItemSelectionModel::currentChanged, this,
         [this](const QModelIndex &current){
@@ -70,15 +70,15 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(ui->actionCreatePDF, &QAction::triggered,
                      this, &MainWindow::exportPDF);
     QObject::connect(ui->actionLayoutTitle, &QAction::triggered,
-                     mPaintDocument, &PaintDocument::layoutTitle);
+                     mFrameWidget, &FrameWidget::layoutTitle);
     QObject::connect(ui->actionLayoutBody, &QAction::triggered,
-                     mPaintDocument, &PaintDocument::layoutBody);
+                     mFrameWidget, &FrameWidget::layoutBody);
     QObject::connect(ui->actionLayoutFullscreen, &QAction::triggered,
-                     mPaintDocument, &PaintDocument::layoutFull);
+                     mFrameWidget, &FrameWidget::layoutFull);
     QObject::connect(ui->actionLayoutLeft, &QAction::triggered,
-                     mPaintDocument, &PaintDocument::layoutLeft);
+                     mFrameWidget, &FrameWidget::layoutLeft);
     QObject::connect(ui->actionLayoutRight, &QAction::triggered,
-                     mPaintDocument, &PaintDocument::layoutRight);
+                     mFrameWidget, &FrameWidget::layoutRight);
 
     QToolButton *moreButton = new QToolButton(this);
     moreButton->setIcon(QIcon::fromTheme("view-more-horizontal-symbolic"));
@@ -92,15 +92,15 @@ MainWindow::MainWindow(QWidget *parent)
     ui->toolBar->insertSeparator(ui->actionTranslate);
 
     QObject::connect(ui->actionPresentationTitle, &QAction::triggered,
-                     mPaintDocument, &PaintDocument::layoutPresTitle);
+                     mFrameWidget, &FrameWidget::layoutPresTitle);
     QObject::connect(ui->actionSubtitle, &QAction::triggered,
-                     mPaintDocument, &PaintDocument::layoutSubtitle);
+                     mFrameWidget, &FrameWidget::layoutSubtitle);
 
     QObject::connect(&cacheManager(), &EquationCacheManager::conversionFinished,
-            mPaintDocument, QOverload<>::of(&PaintDocument::update));
+            mFrameWidget, QOverload<>::of(&FrameWidget::update));
 
-    CacheManager<QImage>::instance().setCallback([this](QString){mPaintDocument->update();});
-    CacheManager<QSvgRenderer>::instance().setCallback([this](QString){mPaintDocument->update();});
+    CacheManager<QImage>::instance().setCallback([this](QString){mFrameWidget->update();});
+    CacheManager<QSvgRenderer>::instance().setCallback([this](QString){mFrameWidget->update();});
 
     ui->error->setWordWrap(true);
 
@@ -109,9 +109,9 @@ MainWindow::MainWindow(QWidget *parent)
     transformGroup->addAction(ui->actionTranslate);
     ui->actionTranslate->setChecked(true);
     connect(ui->actionRotate, &QAction::triggered,
-           this, [this](){mPaintDocument->setTransformationType(TransformationType::rotate);});
+           this, [this](){mFrameWidget->setTransformationType(TransformationType::rotate);});
     connect(ui->actionTranslate, &QAction::triggered,
-            this, [this](){mPaintDocument->setTransformationType(TransformationType::translate);});
+            this, [this](){mFrameWidget->setTransformationType(TransformationType::translate);});
 }
 
 MainWindow::~MainWindow()
@@ -132,9 +132,9 @@ void MainWindow::fileChanged() {
         iface->addMark(error.line, KTextEditor::MarkInterface::MarkTypes::Error);
         return;
     }
-    mPaintDocument->update();
+    mFrameWidget->update();
     ui->pageNumber->setMaximum(mPresentation->frames().size()-1);
-    auto const index = mFrameModel->index(mPaintDocument->pageNumber());
+    auto const index = mFrameModel->index(mFrameWidget->pageNumber());
     ui->pagePreview->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     ui->pagePreview->scrollTo(index);
 }
@@ -180,7 +180,7 @@ void MainWindow::openFile(){
         }
     }
     mPresentation->loadInput(configFile);
-    mPaintDocument->setPresentation(mPresentation);
+    mFrameWidget->setPresentation(mPresentation);
     fileChanged();
 }
 
@@ -231,10 +231,10 @@ void MainWindow::writeToFile(QString filename) const{
 
 void MainWindow::resetPresentation(){
     mPresentation = std::make_shared<Presentation>();
-    mPaintDocument->setPresentation(mPresentation);
+    mFrameWidget->setPresentation(mPresentation);
     ui->pageNumber->setValue(0);
     mFrameModel->setPresentation(mPresentation);
-    mPaintDocument->update();
+    mFrameWidget->update();
     connect(mDoc, &KTextEditor::Document::textChanged,
                      this, &MainWindow::fileChanged);
 }

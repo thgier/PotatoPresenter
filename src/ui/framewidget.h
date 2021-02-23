@@ -16,11 +16,11 @@
 #include "boxgeometry.h"
 #include "boxtransformation.h"
 
-class PaintDocument : public QWidget
+class FrameWidget : public QWidget
 {
     Q_OBJECT
 public:
-    PaintDocument(QWidget*&);
+    FrameWidget(QWidget*&);
 
     QSize sizeHint() const override;
     void resizeEvent(QResizeEvent *) override;

@@ -1,4 +1,4 @@
-#include "paintdocument.h"
+#include "framewidget.h"
 #include <KTextEditor/Document>
 #include <QMouseEvent>
 #include <QMenu>
@@ -9,7 +9,7 @@
 #include "imagebox.h"
 #include "cachemanager.h"
 
-PaintDocument::PaintDocument(QWidget*&)
+FrameWidget::FrameWidget(QWidget*&)
     : QWidget(), mPageNumber{0}, mWidth{frameSize().width()}
 {
     setMouseTracking(true);
@@ -18,7 +18,7 @@ PaintDocument::PaintDocument(QWidget*&)
     createActions();
 }
 
-void PaintDocument::setPresentation(std::shared_ptr<Presentation> pres){
+void FrameWidget::setPresentation(std::shared_ptr<Presentation> pres){
     mPresentation = pres;
     mActiveBoxId = QString();
     mCurrentFrameId = QString();
@@ -27,7 +27,7 @@ void PaintDocument::setPresentation(std::shared_ptr<Presentation> pres){
     mScale = 1.0 * mSize.width() / mWidth;
 }
 
-void PaintDocument::paintEvent(QPaintEvent*)
+void FrameWidget::paintEvent(QPaintEvent*)
 {
     mPainter.begin(this);
     mPainter.setViewport(QRect(0, 0, mWidth, 1.0 * mWidth/mSize.width()*mSize.height()));
@@ -54,11 +54,11 @@ void PaintDocument::paintEvent(QPaintEvent*)
     mPainter.end();
 }
 
-QSize PaintDocument::sizeHint() const{
+QSize FrameWidget::sizeHint() const{
     return mLayout.mSize;
 }
 
-void PaintDocument::contextMenuEvent(QContextMenuEvent *event){
+void FrameWidget::contextMenuEvent(QContextMenuEvent *event){
     QMenu menu(this);
     auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->findBox(mActiveBoxId));
     if(image){
@@ -73,12 +73,12 @@ void PaintDocument::contextMenuEvent(QContextMenuEvent *event){
     menu.exec(event->globalPos());
 }
 
-void PaintDocument::updateFrames(){
+void FrameWidget::updateFrames(){
     setCurrentPage(mCurrentFrameId);
     update();
 }
 
-void PaintDocument::setCurrentPage(int page){
+void FrameWidget::setCurrentPage(int page){
     if(page >= int(mPresentation->numberFrames()) || page < 0) {
         return;
     }
@@ -89,7 +89,7 @@ void PaintDocument::setCurrentPage(int page){
     update();
 }
 
-void PaintDocument::setCurrentPage(QString frameId){
+void FrameWidget::setCurrentPage(QString frameId){
     int counter = 0;
     for(auto const & frame: mPresentation->frames()) {
         if(frame->id() == frameId) {
@@ -104,12 +104,12 @@ void PaintDocument::setCurrentPage(QString frameId){
     }
 }
 
-void PaintDocument::resizeEvent(QResizeEvent*) {
+void FrameWidget::resizeEvent(QResizeEvent*) {
     mWidth = frameSize().width();
     mScale = 1.0 * mSize.width() / mWidth;
 }
 
-void PaintDocument::determineBoxInFocus(QPoint mousePos){
+void FrameWidget::determineBoxInFocus(QPoint mousePos){
     auto lastId = mActiveBoxId;
     mActiveBoxId = QString();
     for(auto box: mPresentation->frameAt(mPageNumber)->boxes()) {
@@ -120,7 +120,7 @@ void PaintDocument::determineBoxInFocus(QPoint mousePos){
     }
 }
 
-Box::List PaintDocument::determineBoxesUnderMouse(QPoint mousePos){
+Box::List FrameWidget::determineBoxesUnderMouse(QPoint mousePos){
     mActiveBoxId = QString();
     Box::List boxesUnderMouse;
     for(auto &box: mPresentation->frameAt(mPageNumber)->boxes()) {
@@ -131,7 +131,7 @@ Box::List PaintDocument::determineBoxesUnderMouse(QPoint mousePos){
     return boxesUnderMouse;
 }
 
-void PaintDocument::mousePressEvent(QMouseEvent *event)
+void FrameWidget::mousePressEvent(QMouseEvent *event)
 {
     if(mPresentation->empty()){
         return;
@@ -145,7 +145,7 @@ void PaintDocument::mousePressEvent(QMouseEvent *event)
     update();
 }
 
-void PaintDocument::mouseMoveEvent(QMouseEvent *event)
+void FrameWidget::mouseMoveEvent(QMouseEvent *event)
 {
     if(mPresentation->empty()){
         return;
@@ -177,7 +177,7 @@ void PaintDocument::mouseMoveEvent(QMouseEvent *event)
     update();
 }
 
-void PaintDocument::mouseReleaseEvent(QMouseEvent *event)
+void FrameWidget::mouseReleaseEvent(QMouseEvent *event)
 {
     if(mPresentation->empty()){
         return;
@@ -192,7 +192,7 @@ void PaintDocument::mouseReleaseEvent(QMouseEvent *event)
 }
 
 
-void PaintDocument::cursorApperance(QPoint mousePosition){
+void FrameWidget::cursorApperance(QPoint mousePosition){
     auto cursor = QCursor();
     auto const activeBox = mPresentation->findBox(mActiveBoxId);
     if(!activeBox){
@@ -263,7 +263,7 @@ void PaintDocument::cursorApperance(QPoint mousePosition){
     setCursor(cursor);
 }
 
-void PaintDocument::layoutTitle(){
+void FrameWidget::layoutTitle(){
     if(mActiveBoxId.isEmpty()) {
         return;
     }
@@ -271,7 +271,7 @@ void PaintDocument::layoutTitle(){
     update();
 }
 
-void PaintDocument::layoutBody(){
+void FrameWidget::layoutBody(){
     if(mActiveBoxId.isEmpty()) {
         return;
     }
@@ -279,7 +279,7 @@ void PaintDocument::layoutBody(){
     update();
 }
 
-void PaintDocument::layoutFull(){
+void FrameWidget::layoutFull(){
     if(mActiveBoxId.isEmpty()) {
         return;
     }
@@ -287,7 +287,7 @@ void PaintDocument::layoutFull(){
     update();
 }
 
-void PaintDocument::layoutLeft(){
+void FrameWidget::layoutLeft(){
     if(mActiveBoxId.isEmpty()) {
         return;
     }
@@ -295,7 +295,7 @@ void PaintDocument::layoutLeft(){
     update();
 }
 
-void PaintDocument::layoutRight(){
+void FrameWidget::layoutRight(){
     if(mActiveBoxId.isEmpty()) {
         return;
     }
@@ -303,7 +303,7 @@ void PaintDocument::layoutRight(){
     update();
 }
 
-void PaintDocument::layoutPresTitle(){
+void FrameWidget::layoutPresTitle(){
     if(mActiveBoxId.isEmpty()) {
         return;
     }
@@ -311,18 +311,18 @@ void PaintDocument::layoutPresTitle(){
     update();
 }
 
-void PaintDocument::layoutSubtitle(){
+void FrameWidget::layoutSubtitle(){
     if(mActiveBoxId.isEmpty()) {
         return;
     }
     mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mSubtitlePos, mPageNumber);
     update();
 }
-void PaintDocument::setTransformationType(TransformationType type){
+void FrameWidget::setTransformationType(TransformationType type){
     mTransform = type;
 }
 
-Qt::CursorShape PaintDocument::angleToCursor(qreal angle) const{
+Qt::CursorShape FrameWidget::angleToCursor(qreal angle) const{
     angle = int(angle) % 180;
     if(angle >= 157.5 || angle < 22.5){
         return Qt::SizeHorCursor;
@@ -341,24 +341,24 @@ Qt::CursorShape PaintDocument::angleToCursor(qreal angle) const{
     }
 }
 
-int PaintDocument::pageNumber() const{
+int FrameWidget::pageNumber() const{
     return mPageNumber;
 }
 
-QPoint PaintDocument::ScaledMousePos(QMouseEvent *event) const{
+QPoint FrameWidget::ScaledMousePos(QMouseEvent *event) const{
     return event->pos() * mScale;
 }
 
-void PaintDocument::createActions(){
+void FrameWidget::createActions(){
     openInkscape = new QAction(tr("&open in Inkscape"), this);
     createAndOpenInkscape = new QAction(tr("&create Svg and open in Inkscape"), this);
     connect(openInkscape, &QAction::triggered,
-            this, &PaintDocument::openInInkscape);
+            this, &FrameWidget::openInInkscape);
     connect(createAndOpenInkscape, &QAction::triggered,
-            this, &PaintDocument::createAndOpenSvg);
+            this, &FrameWidget::createAndOpenSvg);
 }
 
-void PaintDocument::openInInkscape(){
+void FrameWidget::openInInkscape(){
     auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->findBox(mActiveBoxId));
     if(!image){
         return;
@@ -370,7 +370,7 @@ void PaintDocument::openInInkscape(){
     inkscapeProcess->start(program, arguments);
 }
 
-void PaintDocument::createAndOpenSvg(){
+void FrameWidget::createAndOpenSvg(){
     auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->findBox(mActiveBoxId));
     if(!image){
         return;

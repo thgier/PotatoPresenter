@@ -39,7 +39,7 @@
          <widget class="QSpinBox" name="pageNumber"/>
         </item>
         <item>
-         <widget class="PaintDocument" name="paintDocument" native="true"/>
+         <widget class="FrameWidget" name="framewidget" native="true"/>
         </item>
         <item>
          <widget class="QListView" name="pagePreview">
@@ -309,7 +309,8 @@
   </action>
   <action name="actionExport_PDF_as">
    <property name="icon">
-    <iconset theme="document-export"/>
+    <iconset theme="document-export">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Export PDF as</string>
@@ -321,9 +322,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>PaintDocument</class>
+   <class>FrameWidget</class>
    <extends>QWidget</extends>
-   <header>paintdocument.h</header>
+   <header location="global">framewidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
