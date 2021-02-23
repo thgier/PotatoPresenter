@@ -16,7 +16,7 @@ void Template::readTemplateConfig(QString configFile){
 }
 
 BoxGeometry Template::getGeometry(QString id) const{
-    auto const box = mPresentation.findBox(id);
+    auto const box = mPresentation.frameList().findBox(id);
     if(box){
         return box->geometry();
     }
@@ -24,7 +24,7 @@ BoxGeometry Template::getGeometry(QString id) const{
 }
 
 BoxStyle Template::getStyle(QString id) const{
-    auto const box = mPresentation.findBox(id);
+    auto const box = mPresentation.frameList().findBox(id);
     if(box){
         return box->style();
     }
@@ -40,7 +40,7 @@ void Template::setVariables(std::map<QString, QString> variables){
 }
 
 Box::List Template::getTemplateSlide(QString frameId) const{
-    auto frame = mPresentation.findFrame(frameId);
+    auto frame = mPresentation.frameList().findFrame(frameId);
     if(!frame){
         return {};
     }
@@ -54,7 +54,7 @@ ConfigBoxes& Template::Configuration(){
     return mPresentation.configuration();
 }
 
-void Template::setFrames(Frame::List frames){
+void Template::setFrames(FrameList frames){
     mPresentation.setFrames(frames);
     mLayout = std::make_shared<Layout>();
     mLayout->mBodyPos = getGeometry("body");

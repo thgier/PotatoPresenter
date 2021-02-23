@@ -23,7 +23,7 @@ public:
     Box::List getTemplateSlide(QString frameId) const;
     void setVariables(std::map<QString, QString> variables);
     ConfigBoxes& Configuration();
-    void setFrames(Frame::List frames);
+    void setFrames(FrameList frames);
     std::shared_ptr<Layout> getLayout() const;
 private:
     Presentation mPresentation;

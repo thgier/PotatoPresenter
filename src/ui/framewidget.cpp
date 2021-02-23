@@ -34,13 +34,13 @@ void FrameWidget::paintEvent(QPaintEvent*)
     mPainter.setWindow(QRect(QPoint(0, 0), mSize));
     mPainter.setRenderHint(QPainter::SmoothPixmapTransform);
     mPainter.fillRect(QRect(QPoint(0, 0), mSize), Qt::white);
-    if(!mPresentation->empty()){
+    if(!mPresentation->frameList().empty()){
         FramePainter paint(mPainter);
-        paint.paintFrame(mPresentation->frameAt(mPageNumber));
-        mCurrentFrameId = mPresentation->frameAt(mPageNumber)->id();
+        paint.paintFrame(mPresentation->frameList().vector[mPageNumber]);
+        mCurrentFrameId = mPresentation->frameList().vector[mPageNumber]->id();
     }
-    auto const box = mPresentation->findBox(mActiveBoxId);
-    if(box != nullptr && mPresentation->findFrame(mCurrentFrameId)->containsBox(mActiveBoxId)){
+    auto const box = mPresentation->frameList().findBox(mActiveBoxId);
+    if(box != nullptr && mPresentation->frameList().findFrame(mCurrentFrameId)->containsBox(mActiveBoxId)){
         box->drawSelectionFrame(mPainter);
         box->drawScaleHandle(mPainter, mDiffToMouse);
     }
@@ -60,7 +60,7 @@ QSize FrameWidget::sizeHint() const{
 
 void FrameWidget::contextMenuEvent(QContextMenuEvent *event){
     QMenu menu(this);
-    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->findBox(mActiveBoxId));
+    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->frameList().findBox(mActiveBoxId));
     if(image){
         auto const imagePath = image->ImagePath();
         if(QFile::exists(imagePath)){
@@ -79,19 +79,19 @@ void FrameWidget::updateFrames(){
 }
 
 void FrameWidget::setCurrentPage(int page){
-    if(page >= int(mPresentation->numberFrames()) || page < 0) {
+    if(page >= int(mPresentation->frameList().numberFrames()) || page < 0) {
         return;
     }
     mPageNumber = page;
-    mCurrentFrameId = mPresentation->frameAt(page)->id();
+    mCurrentFrameId = mPresentation->frameList().frameAt(page)->id();
     mActiveBoxId = QString();
-    Q_EMIT selectionChanged(mPresentation->frameAt(mPageNumber));
+    Q_EMIT selectionChanged(mPresentation->frameList().frameAt(mPageNumber));
     update();
 }
 
 void FrameWidget::setCurrentPage(QString frameId){
     int counter = 0;
-    for(auto const & frame: mPresentation->frames()) {
+    for(auto const & frame: mPresentation->frameList().vector) {
         if(frame->id() == frameId) {
             if(mPageNumber != counter){
                 mActiveBoxId = QString();
@@ -112,7 +112,7 @@ void FrameWidget::resizeEvent(QResizeEvent*) {
 void FrameWidget::determineBoxInFocus(QPoint mousePos){
     auto lastId = mActiveBoxId;
     mActiveBoxId = QString();
-    for(auto box: mPresentation->frameAt(mPageNumber)->boxes()) {
+    for(auto box: mPresentation->frameList().frameAt(mPageNumber)->boxes()) {
         if(box->geometry().contains(mousePos) && lastId != box->id()) {
             mActiveBoxId = box->id();
             break;
@@ -123,7 +123,7 @@ void FrameWidget::determineBoxInFocus(QPoint mousePos){
 Box::List FrameWidget::determineBoxesUnderMouse(QPoint mousePos){
     mActiveBoxId = QString();
     Box::List boxesUnderMouse;
-    for(auto &box: mPresentation->frameAt(mPageNumber)->boxes()) {
+    for(auto &box: mPresentation->frameList().frameAt(mPageNumber)->boxes()) {
         if(box->geometry().contains(mousePos, mDiffToMouse)) {
             boxesUnderMouse.push_back(box);
         }
@@ -133,7 +133,7 @@ Box::List FrameWidget::determineBoxesUnderMouse(QPoint mousePos){
 
 void FrameWidget::mousePressEvent(QMouseEvent *event)
 {
-    if(mPresentation->empty()){
+    if(mPresentation->frameList().empty()){
         return;
     }
     mMomentTrafo.reset();
@@ -147,7 +147,7 @@ void FrameWidget::mousePressEvent(QMouseEvent *event)
 
 void FrameWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    if(mPresentation->empty()){
+    if(mPresentation->frameList().empty()){
         return;
     }
     auto const newPosition = ScaledMousePos(event);
@@ -164,7 +164,7 @@ void FrameWidget::mouseMoveEvent(QMouseEvent *event)
         if(mActiveBoxId.isEmpty()){
             return;
         }
-        auto const activeBox = mPresentation->findBox(mActiveBoxId);
+        auto const activeBox = mPresentation->frameList().findBox(mActiveBoxId);
         auto const clasifiedMousePos = activeBox->geometry().classifyPoint(mCursorLastPosition, mDiffToMouse);
         if(clasifiedMousePos == pointPosition::notInBox){
             mActiveBoxId = QString();
@@ -179,7 +179,7 @@ void FrameWidget::mouseMoveEvent(QMouseEvent *event)
 
 void FrameWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-    if(mPresentation->empty()){
+    if(mPresentation->frameList().empty()){
         return;
     }
     if (event->button() != Qt::LeftButton) {
@@ -194,7 +194,7 @@ void FrameWidget::mouseReleaseEvent(QMouseEvent *event)
 
 void FrameWidget::cursorApperance(QPoint mousePosition){
     auto cursor = QCursor();
-    auto const activeBox = mPresentation->findBox(mActiveBoxId);
+    auto const activeBox = mPresentation->frameList().findBox(mActiveBoxId);
     if(!activeBox){
         cursor.setShape(Qt::ArrowCursor);
         setCursor(cursor);
@@ -368,7 +368,7 @@ void FrameWidget::createActions(){
 }
 
 void FrameWidget::openInInkscape(){
-    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->findBox(mActiveBoxId));
+    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->frameList().findBox(mActiveBoxId));
     if(!image){
         return;
     }
@@ -380,7 +380,7 @@ void FrameWidget::openInInkscape(){
 }
 
 void FrameWidget::createAndOpenSvg(){
-    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->findBox(mActiveBoxId));
+    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->frameList().findBox(mActiveBoxId));
     if(!image){
         return;
     }

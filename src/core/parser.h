@@ -16,8 +16,6 @@ struct ParserError{
 };
 
 
-
-using FrameList = std::vector<std::shared_ptr<Frame>>;
 class Parser
 {
 public:
@@ -50,7 +48,7 @@ private:
     Tokenizer mTokenizer;
     ConfigBoxes* mConfigBoxes;
     int mBoxCounter = 0;
-    FrameList mFrames;
+    FrameList mFrameList;
     std::shared_ptr<Layout> mLayout;
     std::vector<QString> mUserIds;
     std::map<QString, QString> mVariables;

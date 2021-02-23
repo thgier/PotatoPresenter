@@ -7,6 +7,40 @@
 #include "configboxes.h"
 #include "layout.h"
 
+struct FrameList {
+    std::vector<Frame::Ptr> vector;
+
+    Frame::Ptr frameAt(int pageNumber) const {
+        return vector[pageNumber];
+    };
+
+    Box::Ptr findBox(QString const& id) {
+        for(auto const& frame: vector) {
+            if(frame->findBox(id)) {
+                return frame->findBox(id);
+            }
+        }
+        return {};
+    };
+
+    Frame::Ptr findFrame(QString const& id) const {
+        for(auto const &frame: vector) {
+            if(id == frame->id()) {
+                return frame;
+            }
+        }
+        return {};
+    };
+
+    int numberFrames() const {
+        return int(vector.size());
+    };
+
+    bool empty() const {
+        return vector.empty();
+    }
+};
+
 class Presentation : public QObject
 {
     Q_OBJECT
@@ -15,11 +49,9 @@ public:
     void loadInput(QString configFilename);
 
     // Access contained Frames
-    Frame::List frames() const;
-    void setFrames(Frame::List const& frames);
-    Frame::Ptr frameAt(int pageNumber) const;
-    Frame::Ptr findFrame(QString const& id) const;
-    int numberFrames() const;
+    FrameList frameList() const;
+    void setFrames(FrameList const& frames);
+
     bool empty() const;
 
     Box::Ptr findBox(QString const& id) const;
@@ -43,7 +75,7 @@ Q_SIGNALS:
     void frameChanged(int pageNumber);
 
 private:
-    Frame::List mFrames;
+    FrameList mFrames;
     QString mInputDir;
     ConfigBoxes mConfig;
     Layout mLayout;

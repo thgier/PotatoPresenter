@@ -8,7 +8,6 @@ class Frame
 {
 public:
     using Ptr = std::shared_ptr<Frame>;
-    using List = std::vector<Ptr>;
 
     Frame();
     Frame(QString const& id, std::map<QString, QString> const& variables);

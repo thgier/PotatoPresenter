@@ -7,7 +7,6 @@
 
 class Presentation;
 
-using FrameList = std::vector<std::shared_ptr<Frame>>;
 class FrameListModel : public QAbstractListModel
 {
     Q_OBJECT

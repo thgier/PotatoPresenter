@@ -2,7 +2,7 @@
 #include "presentation.h"
 
 int FrameListModel::rowCount(const QModelIndex &) const {
-    return int(mPresentation->frames().size());
+    return int(mPresentation->frameList().vector.size());
 }
 
 QVariant FrameListModel::data(const QModelIndex &index, int role) const
@@ -10,12 +10,12 @@ QVariant FrameListModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    if (index.row() >= int(mPresentation->frames().size()))
+    if (index.row() >= int(mPresentation->frameList().vector.size()))
         return QVariant();
 
     if (role == Qt::DisplayRole){
         QVariant var;
-        auto frame = mPresentation->frames().at(index.row());
+        auto frame = mPresentation->frameList().vector[index.row()];
         var.setValue(frame);
         return var;
     }
