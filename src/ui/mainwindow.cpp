@@ -134,7 +134,7 @@ void MainWindow::fileChanged() {
     }
     mPaintDocument->update();
     ui->pageNumber->setMaximum(mPresentation->frames().size()-1);
-    auto const index = mFrameModel->index(mPaintDocument->getPageNumber());
+    auto const index = mFrameModel->index(mPaintDocument->pageNumber());
     ui->pagePreview->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     ui->pagePreview->scrollTo(index);
 }

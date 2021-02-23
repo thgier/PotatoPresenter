@@ -10,7 +10,7 @@
 #include "cachemanager.h"
 
 PaintDocument::PaintDocument(QWidget*&)
-    : QWidget(), mWidth{frameSize().width()}, pageNumber{0}
+    : QWidget(), mPageNumber{0}, mWidth{frameSize().width()}
 {
     setMouseTracking(true);
     mSize = mLayout.mSize;
@@ -36,13 +36,13 @@ void PaintDocument::paintEvent(QPaintEvent*)
     mPainter.fillRect(QRect(QPoint(0, 0), mSize), Qt::white);
     if(!mPresentation->empty()){
         Painter paint(mPainter);
-        paint.paintFrame(mPresentation->frameAt(pageNumber));
-        mCurrentFrameId = mPresentation->frameAt(pageNumber)->id();
+        paint.paintFrame(mPresentation->frameAt(mPageNumber));
+        mCurrentFrameId = mPresentation->frameAt(mPageNumber)->id();
     }
     auto const box = mPresentation->findBox(mActiveBoxId);
     if(box != nullptr && mPresentation->findFrame(mCurrentFrameId)->containsBox(mActiveBoxId)){
         box->drawSelectionFrame(mPainter);
-        box->drawScaleHandle(mPainter, diffToMouse);
+        box->drawScaleHandle(mPainter, mDiffToMouse);
     }
     else{
         mActiveBoxId = QString();
@@ -82,10 +82,10 @@ void PaintDocument::setCurrentPage(int page){
     if(page >= int(mPresentation->numberFrames()) || page < 0) {
         return;
     }
-    pageNumber = page;
+    mPageNumber = page;
     mCurrentFrameId = mPresentation->frameAt(page)->id();
     mActiveBoxId = QString();
-    Q_EMIT selectionChanged(mPresentation->frameAt(pageNumber));
+    Q_EMIT selectionChanged(mPresentation->frameAt(mPageNumber));
     update();
 }
 
@@ -93,11 +93,11 @@ void PaintDocument::setCurrentPage(QString frameId){
     int counter = 0;
     for(auto const & frame: mPresentation->frames()) {
         if(frame->id() == frameId) {
-            if(pageNumber != counter){
+            if(mPageNumber != counter){
                 mActiveBoxId = QString();
             }
-            pageNumber = counter;
-            Q_EMIT pageNumberChanged(pageNumber);
+            mPageNumber = counter;
+            Q_EMIT pageNumberChanged(mPageNumber);
             break;
         }
         counter++;
@@ -112,7 +112,7 @@ void PaintDocument::resizeEvent(QResizeEvent*) {
 void PaintDocument::determineBoxInFocus(QPoint mousePos){
     auto lastId = mActiveBoxId;
     mActiveBoxId = QString();
-    for(auto box: mPresentation->frameAt(pageNumber)->boxes()) {
+    for(auto box: mPresentation->frameAt(mPageNumber)->boxes()) {
         if(box->geometry().contains(mousePos) && lastId != box->id()) {
             mActiveBoxId = box->id();
             break;
@@ -123,8 +123,8 @@ void PaintDocument::determineBoxInFocus(QPoint mousePos){
 Box::List PaintDocument::determineBoxesUnderMouse(QPoint mousePos){
     mActiveBoxId = QString();
     Box::List boxesUnderMouse;
-    for(auto &box: mPresentation->frameAt(pageNumber)->boxes()) {
-        if(box->geometry().contains(mousePos, diffToMouse)) {
+    for(auto &box: mPresentation->frameAt(mPageNumber)->boxes()) {
+        if(box->geometry().contains(mousePos, mDiffToMouse)) {
             boxesUnderMouse.push_back(box);
         }
     }
@@ -156,7 +156,7 @@ void PaintDocument::mouseMoveEvent(QMouseEvent *event)
         return;
     }
     auto const mouseMovement = newPosition - mCursorLastPosition;
-    if(mouseMovement.manhattanLength() < diffToMouse / 5){
+    if(mouseMovement.manhattanLength() < mDiffToMouse / 5){
         return;
     }
     if(!mMomentTrafo){
@@ -165,12 +165,12 @@ void PaintDocument::mouseMoveEvent(QMouseEvent *event)
             return;
         }
         auto const activeBox = mPresentation->findBox(mActiveBoxId);
-        auto const clasifiedMousePos = activeBox->geometry().classifyPoint(mCursorLastPosition, diffToMouse);
+        auto const clasifiedMousePos = activeBox->geometry().classifyPoint(mCursorLastPosition, mDiffToMouse);
         if(clasifiedMousePos == pointPosition::notInBox){
             mActiveBoxId = QString();
             return;
         }
-        mMomentTrafo = BoxTransformation(activeBox, mTransform, clasifiedMousePos, pageNumber, newPosition);
+        mMomentTrafo = BoxTransformation(activeBox, mTransform, clasifiedMousePos, mPageNumber, newPosition);
     }
     mMomentTrafo->doTransformation(newPosition, mPresentation);
     mCursorLastPosition = newPosition;
@@ -202,7 +202,7 @@ void PaintDocument::cursorApperance(QPoint mousePosition){
     }
     cursor.setShape(Qt::ArrowCursor);
     auto const rect = activeBox->geometry();
-    auto const posMouseBox = rect.classifyPoint(mousePosition, diffToMouse);
+    auto const posMouseBox = rect.classifyPoint(mousePosition, mDiffToMouse);
     auto angle = rect.angle();
     switch(mTransform){
     case(TransformationType::translate):
@@ -267,7 +267,7 @@ void PaintDocument::layoutTitle(){
     if(mActiveBoxId.isEmpty()) {
         return;
     }
-    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mTitlePos, pageNumber);
+    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mTitlePos, mPageNumber);
     update();
 }
 
@@ -275,7 +275,7 @@ void PaintDocument::layoutBody(){
     if(mActiveBoxId.isEmpty()) {
         return;
     }
-    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mBodyPos, pageNumber);
+    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mBodyPos, mPageNumber);
     update();
 }
 
@@ -283,7 +283,7 @@ void PaintDocument::layoutFull(){
     if(mActiveBoxId.isEmpty()) {
         return;
     }
-    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mFullPos, pageNumber);
+    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mFullPos, mPageNumber);
     update();
 }
 
@@ -291,7 +291,7 @@ void PaintDocument::layoutLeft(){
     if(mActiveBoxId.isEmpty()) {
         return;
     }
-    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mLeftPos, pageNumber);
+    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mLeftPos, mPageNumber);
     update();
 }
 
@@ -299,7 +299,7 @@ void PaintDocument::layoutRight(){
     if(mActiveBoxId.isEmpty()) {
         return;
     }
-    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mRightPos, pageNumber);
+    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mRightPos, mPageNumber);
     update();
 }
 
@@ -307,7 +307,7 @@ void PaintDocument::layoutPresTitle(){
     if(mActiveBoxId.isEmpty()) {
         return;
     }
-    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mPresTitlePos, pageNumber);
+    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mPresTitlePos, mPageNumber);
     update();
 }
 
@@ -315,7 +315,7 @@ void PaintDocument::layoutSubtitle(){
     if(mActiveBoxId.isEmpty()) {
         return;
     }
-    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mSubtitlePos, pageNumber);
+    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mSubtitlePos, mPageNumber);
     update();
 }
 void PaintDocument::setTransformationType(TransformationType type){
@@ -341,8 +341,8 @@ Qt::CursorShape PaintDocument::angleToCursor(qreal angle) const{
     }
 }
 
-int PaintDocument::getPageNumber() const{
-    return pageNumber;
+int PaintDocument::pageNumber() const{
+    return mPageNumber;
 }
 
 QPoint PaintDocument::ScaledMousePos(QMouseEvent *event) const{

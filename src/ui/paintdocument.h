@@ -21,18 +21,22 @@ class PaintDocument : public QWidget
     Q_OBJECT
 public:
     PaintDocument(QWidget*&);
+
     QSize sizeHint() const override;
     void resizeEvent(QResizeEvent *) override;
     void contextMenuEvent(QContextMenuEvent *event) override;
+
+//    Presentation that is shown
     void setPresentation(std::shared_ptr<Presentation> pres);
     void updateFrames();
     void setCurrentPage(int);
     void setCurrentPage(QString frameId);
-    int getPageNumber() const;
+    int pageNumber() const;
 
+//    change cursor mode: scale or rotate
     void setTransformationType(TransformationType type);
-    Qt::CursorShape angleToCursor(qreal angle) const;
 
+//    set the active Box on the position of a tool bar button
     void layoutBody();
     void layoutTitle();
     void layoutFull();
@@ -43,41 +47,49 @@ public:
 
 Q_SIGNALS:
     void pageNumberChanged(int page);
-    void selectionChanged(std::shared_ptr<Frame>);
+    void selectionChanged(Frame::Ptr);
 
-protected:
+private:
     void paintEvent(QPaintEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
 
-    QSize mSize;
-    int mWidth;
-    int pageNumber;
+//    Mouse interaction / apperance
+//    scale mouse position to viewport of widget
+    QPoint ScaledMousePos(QMouseEvent *event) const;
+    void cursorApperance(QPoint mousePosition);
+//    returns scale cursor in dependence of the angle of the rotation of the box
+    Qt::CursorShape angleToCursor(qreal angle) const;
+
+//    transform boxes
+    TransformationType getTransformationType(QPoint mousePosition);
+    Box::List determineBoxesUnderMouse(QPoint mousePos);
+    void determineBoxInFocus(QPoint mousePos);
+
+//    actions in Context Menu
+    void createActions();
+    void createAndOpenSvg();
+    void openInInkscape();
 
 private:
     std::shared_ptr<Presentation> mPresentation;
     QString mActiveBoxId;
     QString mCurrentFrameId;
+    int mPageNumber;
 
-    int const diffToMouse = 15;
+    int const mDiffToMouse = 15;
     QPainter mPainter;
     Layout mLayout;
+
     double mScale;
+    QSize mSize;
+    int mWidth;
 
-    QPoint mCursorLastPosition;
-    QPoint ScaledMousePos(QMouseEvent *event) const;
-    void cursorApperance(QPoint mousePosition);
-    TransformationType getTransformationType(QPoint mousePosition);
-    TransformationType mTransform = TransformationType::translate;
     std::optional<BoxTransformation> mMomentTrafo;
+    TransformationType mTransform = TransformationType::translate;
+    QPoint mCursorLastPosition;
 
-    void determineBoxInFocus(QPoint mousePos);
-    Box::List determineBoxesUnderMouse(QPoint mousePos);
-
-    void createActions();
-    void createAndOpenSvg();
-    void openInInkscape();
     QAction* openInkscape;
     QAction* createAndOpenInkscape;
 };
