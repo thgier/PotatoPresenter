@@ -174,7 +174,6 @@ void MainWindow::openFile(){
         switch (ret) {
         case QMessageBox::Ok:
             resetPresentation();
-            fileChanged();
             mPresentation->saveConfig(configFile);
             break;
         }
@@ -217,6 +216,8 @@ void MainWindow::saveAs(){
     }
     mFilename = newFile;
     writeToFile(mFilename);
+    openDocument();
+    fileChanged();
 }
 
 void MainWindow::writeToFile(QString filename) const{

@@ -32,21 +32,24 @@ private Q_SLOTS:
 private:
     void fileChanged();
     void setupFileActions();
-    void openFile();
     void openDocument();
     void newDocument();
+    void resetPresentation();
+
+    // functions connected to actions
     void save();
     void saveAs();
-    void loadTemplate();
-    void writeToFile(QString filename) const;
-    void resetPresentation();
+    void openFile();
     void exportPDF();
     void exportPDFAs();
+
+    void writeToFile(QString filename) const;
     void writePDF() const;
     QString getConfigFilename(QUrl inputUrl);
     QString getPdfFilename();
     QAction* importActionFromKDoc(const char* name, std::function<void()> method);
 
+private:
     Ui::MainWindow *ui;
     KTextEditor::Editor* mEditor;
     KTextEditor::Document* mDoc;
