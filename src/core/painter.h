@@ -10,12 +10,15 @@ class Painter
 public:
     Painter();
     Painter(QPainter& painter);
-    void paintFrame(std::shared_ptr<Frame> frame);
-    void paintFrame(std::shared_ptr<Frame> frame, int pauseCount);
-    QPainter& getPainter();
+
+//    Painting Frame, if paintFrame(Frame::Ptr frame) is used every Box is painted
+    void paintFrame(Frame::Ptr frame) const;
+    void paintFrame(Frame::Ptr frame, int pauseCount) const;
+
+    QPainter& painter() const;
+
 private:
     QPainter& mPainter;
-    int mPageNumber = 0;
 };
 
 #endif // PAINTER_H

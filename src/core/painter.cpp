@@ -5,8 +5,8 @@ Painter::Painter(QPainter& painter)
 {
 }
 
-void Painter::paintFrame(std::shared_ptr<Frame> frame){
-    auto templateBoxes = frame->templateBoxes();
+void Painter::paintFrame(Frame::Ptr frame) const {
+    auto const templateBoxes = frame->templateBoxes();
     auto const variables = frame->variables();
     for(auto const& box: templateBoxes){
         box->drawContent(mPainter, variables);
@@ -17,8 +17,8 @@ void Painter::paintFrame(std::shared_ptr<Frame> frame){
     }
 }
 
-void Painter::paintFrame(std::shared_ptr<Frame> frame, int pauseCount){
-    auto templateBoxes = frame->templateBoxes();
+void Painter::paintFrame(Frame::Ptr frame, int pauseCount) const {
+    auto const templateBoxes = frame->templateBoxes();
     auto const variables = frame->variables();
     for(auto const& box: templateBoxes){
         box->drawContent(mPainter, variables);
@@ -31,6 +31,6 @@ void Painter::paintFrame(std::shared_ptr<Frame> frame, int pauseCount){
     }
 }
 
-QPainter& Painter::getPainter(){
+QPainter& Painter::painter() const {
     return mPainter;
 }
