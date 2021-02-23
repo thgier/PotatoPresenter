@@ -1,11 +1,11 @@
-#include "painter.h"
+#include "framepainter.h"
 
-Painter::Painter(QPainter& painter)
+FramePainter::FramePainter(QPainter& painter)
     : mPainter(painter)
 {
 }
 
-void Painter::paintFrame(Frame::Ptr frame) const {
+void FramePainter::paintFrame(Frame::Ptr frame) const {
     auto const templateBoxes = frame->templateBoxes();
     auto const variables = frame->variables();
     for(auto const& box: templateBoxes){
@@ -17,7 +17,7 @@ void Painter::paintFrame(Frame::Ptr frame) const {
     }
 }
 
-void Painter::paintFrame(Frame::Ptr frame, int pauseCount) const {
+void FramePainter::paintFrame(Frame::Ptr frame, int pauseCount) const {
     auto const templateBoxes = frame->templateBoxes();
     auto const variables = frame->variables();
     for(auto const& box: templateBoxes){
@@ -31,6 +31,6 @@ void Painter::paintFrame(Frame::Ptr frame, int pauseCount) const {
     }
 }
 
-QPainter& Painter::painter() const {
+QPainter& FramePainter::painter() const {
     return mPainter;
 }

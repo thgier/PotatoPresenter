@@ -1,6 +1,6 @@
 #include "framelistdelegate.h"
 #include "frame.h"
-#include "painter.h"
+#include "framepainter.h"
 #include "framelistmodel.h"
 
 FrameListDelegate::FrameListDelegate(QObject *parent)
@@ -22,7 +22,7 @@ void FrameListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     }
     painter->fillRect(frameRect, Qt::white);
     painter->setClipRect(frameRect);
-    Painter paint{*painter};
+    FramePainter paint{*painter};
     paint.paintFrame(frame);
     painter->restore();
 

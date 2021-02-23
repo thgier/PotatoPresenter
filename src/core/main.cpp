@@ -7,7 +7,7 @@
 #include "box.h"
 #include "parser.h"
 #include "frame.h"
-#include "painter.h"
+#include "framepainter.h"
 
 enum keywords{
     tile,

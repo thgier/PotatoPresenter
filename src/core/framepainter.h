@@ -5,11 +5,11 @@
 
 #include<QPainter>
 
-class Painter
+class FramePainter
 {
 public:
-    Painter();
-    Painter(QPainter& painter);
+    FramePainter();
+    FramePainter(QPainter& painter);
 
 //    Painting Frame, if paintFrame(Frame::Ptr frame) is used every Box is painted
     void paintFrame(Frame::Ptr frame) const;

@@ -5,7 +5,7 @@
 #include<QSvgGenerator>
 #include <QPainter>
 #include <QDir>
-#include "painter.h"
+#include "framepainter.h"
 #include "imagebox.h"
 #include "cachemanager.h"
 
@@ -35,7 +35,7 @@ void PaintDocument::paintEvent(QPaintEvent*)
     mPainter.setRenderHint(QPainter::SmoothPixmapTransform);
     mPainter.fillRect(QRect(QPoint(0, 0), mSize), Qt::white);
     if(!mPresentation->empty()){
-        Painter paint(mPainter);
+        FramePainter paint(mPainter);
         paint.paintFrame(mPresentation->frameAt(mPageNumber));
         mCurrentFrameId = mPresentation->frameAt(mPageNumber)->id();
     }

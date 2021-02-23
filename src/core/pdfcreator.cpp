@@ -1,5 +1,5 @@
 #include "pdfcreator.h"
-#include "painter.h"
+#include "framepainter.h"
 
 #include <QPdfWriter>
 
@@ -17,7 +17,7 @@ void PDFCreator::createPdf(QString filename, std::shared_ptr<Presentation> prese
     painter.setWindow(QRect(QPoint(0, 0), presentation->layout().mSize));
 
     painter.begin(&pdfWriter);
-    auto paint = std::make_shared<Painter>(painter);
+    auto paint = std::make_shared<FramePainter>(painter);
     for(auto &frame: presentation->frames()){
         for( int i = 0; i < frame->numberPauses(); i++) {
             paint->paintFrame(frame, i);
