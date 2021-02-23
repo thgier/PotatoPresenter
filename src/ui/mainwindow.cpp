@@ -1,4 +1,4 @@
-    #include "mainwindow.h"
+#include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include <QFile>
 #include <QTextStream>
@@ -49,20 +49,8 @@ MainWindow::MainWindow(QWidget *parent)
     fileChanged();
     setupFileActions();
 
-    QObject::connect(ui->pageNumber, QOverload<int>::of(&QSpinBox::valueChanged),
-                mFrameWidget, QOverload<int>::of(&FrameWidget::setCurrentPage));
-    connect(mFrameWidget, &FrameWidget::pageNumberChanged,
-            ui->pageNumber, &QSpinBox::setValue);
-    connect(selectionModel, &QItemSelectionModel::currentChanged, this,
-        [this](const QModelIndex &current){
-            ui->pageNumber->setValue(current.row());
-        });
-    connect(ui->pageNumber, QOverload<int>::of(&QSpinBox::valueChanged), this,
-        [selectionModel, this](int page) {
-            auto const index = mFrameModel->index(page);
-            selectionModel->select(index, QItemSelectionModel::ClearAndSelect);
-            ui->pagePreview->scrollTo(index);
-        });
+    connect(selectionModel, &QItemSelectionModel::currentChanged,
+            this, [this](const QModelIndex &current){mFrameWidget->setCurrentPage(current.row());});
 
     QObject::connect(mDoc, &KTextEditor::Document::textChanged,
                      this, &MainWindow::fileChanged);
@@ -71,32 +59,6 @@ MainWindow::MainWindow(QWidget *parent)
                            fileChanged();});
     QObject::connect(ui->actionCreatePDF, &QAction::triggered,
                      this, &MainWindow::exportPDF);
-    QObject::connect(ui->actionLayoutTitle, &QAction::triggered,
-                     mFrameWidget, &FrameWidget::layoutTitle);
-    QObject::connect(ui->actionLayoutBody, &QAction::triggered,
-                     mFrameWidget, &FrameWidget::layoutBody);
-    QObject::connect(ui->actionLayoutFullscreen, &QAction::triggered,
-                     mFrameWidget, &FrameWidget::layoutFull);
-    QObject::connect(ui->actionLayoutLeft, &QAction::triggered,
-                     mFrameWidget, &FrameWidget::layoutLeft);
-    QObject::connect(ui->actionLayoutRight, &QAction::triggered,
-                     mFrameWidget, &FrameWidget::layoutRight);
-
-    QToolButton *moreButton = new QToolButton(this);
-    moreButton->setIcon(QIcon::fromTheme("view-more-horizontal-symbolic"));
-    moreButton->setText("More");
-    moreButton->setPopupMode(QToolButton::InstantPopup);
-    QMenu *moreMenu = new QMenu(moreButton);
-    moreMenu->addAction(ui->actionPresentationTitle);
-    moreMenu->addAction(ui->actionSubtitle);
-    moreButton->setMenu(moreMenu);
-    ui->toolBar->insertWidget(ui->actionTranslate, moreButton);
-    ui->toolBar->insertSeparator(ui->actionTranslate);
-
-    QObject::connect(ui->actionPresentationTitle, &QAction::triggered,
-                     mFrameWidget, &FrameWidget::layoutPresTitle);
-    QObject::connect(ui->actionSubtitle, &QAction::triggered,
-                     mFrameWidget, &FrameWidget::layoutSubtitle);
 
     QObject::connect(&cacheManager(), &EquationCacheManager::conversionFinished,
             mFrameWidget, QOverload<>::of(&FrameWidget::update));
@@ -135,7 +97,6 @@ void MainWindow::fileChanged() {
         return;
     }
     mFrameWidget->update();
-    ui->pageNumber->setMaximum(mPresentation->frames().size()-1);
     auto const index = mFrameModel->index(mFrameWidget->pageNumber());
     ui->pagePreview->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     ui->pagePreview->scrollTo(index);
@@ -235,7 +196,6 @@ void MainWindow::writeToFile(QString filename) const{
 void MainWindow::resetPresentation(){
     mPresentation = std::make_shared<Presentation>();
     mFrameWidget->setPresentation(mPresentation);
-    ui->pageNumber->setValue(0);
     mFrameModel->setPresentation(mPresentation);
     mFrameWidget->update();
     connect(mDoc, &KTextEditor::Document::textChanged,

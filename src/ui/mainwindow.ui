@@ -36,9 +36,6 @@
          </widget>
         </item>
         <item>
-         <widget class="QSpinBox" name="pageNumber"/>
-        </item>
-        <item>
          <widget class="FrameWidget" name="framewidget" native="true"/>
         </item>
         <item>
@@ -94,11 +91,6 @@
     <property name="title">
      <string>Edit</string>
     </property>
-    <addaction name="actionLayoutTitle"/>
-    <addaction name="actionLayoutBody"/>
-    <addaction name="actionLayoutFullscreen"/>
-    <addaction name="actionLayoutRight"/>
-    <addaction name="actionLayoutLeft"/>
     <addaction name="separator"/>
     <addaction name="actionReload_Resources"/>
    </widget>
@@ -124,94 +116,10 @@
    <addaction name="actionCreatePDF"/>
    <addaction name="separator"/>
    <addaction name="actionReset_Position"/>
-   <addaction name="actionLayoutTitle"/>
-   <addaction name="actionLayoutBody"/>
-   <addaction name="actionLayoutFullscreen"/>
-   <addaction name="actionLayoutLeft"/>
-   <addaction name="actionLayoutRight"/>
+   <addaction name="separator"/>
    <addaction name="actionTranslate"/>
    <addaction name="actionRotate"/>
   </widget>
-  <action name="actiontest">
-   <property name="text">
-    <string>test</string>
-   </property>
-  </action>
-  <action name="actionLayoutTitle">
-   <property name="icon">
-    <iconset theme="format-align-vertical-top">
-     <normaloff>.</normaloff>.</iconset>
-   </property>
-   <property name="text">
-    <string>Title</string>
-   </property>
-   <property name="toolTip">
-    <string>Title (Ctrl+T)</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+T</string>
-   </property>
-  </action>
-  <action name="actionLayoutBody">
-   <property name="icon">
-    <iconset theme="menu_new">
-     <normaloff>.</normaloff>.</iconset>
-   </property>
-   <property name="text">
-    <string>Body</string>
-   </property>
-   <property name="toolTip">
-    <string>Body (Ctrl+B)</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+B</string>
-   </property>
-  </action>
-  <action name="actionLayoutFullscreen">
-   <property name="icon">
-    <iconset theme="statetool">
-     <normaloff>.</normaloff>.</iconset>
-   </property>
-   <property name="text">
-    <string>Fullscreen</string>
-   </property>
-   <property name="toolTip">
-    <string>Fullscreen (Ctrl+U)</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+U</string>
-   </property>
-  </action>
-  <action name="actionLayoutRight">
-   <property name="icon">
-    <iconset theme="bboxnext">
-     <normaloff>.</normaloff>.</iconset>
-   </property>
-   <property name="text">
-    <string>Right Column</string>
-   </property>
-   <property name="toolTip">
-    <string>Right Column (Ctrl+R)</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+R</string>
-   </property>
-  </action>
-  <action name="actionLayoutLeft">
-   <property name="icon">
-    <iconset theme="bboxprev">
-     <normaloff>.</normaloff>.</iconset>
-   </property>
-   <property name="text">
-    <string>Left Column</string>
-   </property>
-   <property name="toolTip">
-    <string>Left Column (Ctrl+L)</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+L</string>
-   </property>
-  </action>
   <action name="actionCreatePDF">
    <property name="icon">
     <iconset theme="pdflatex">
@@ -225,24 +133,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
-   </property>
-  </action>
-  <action name="actionPresentationTitle">
-   <property name="icon">
-    <iconset theme="menu_new_sep">
-     <normaloff>.</normaloff>.</iconset>
-   </property>
-   <property name="text">
-    <string>Presentation Title</string>
-   </property>
-  </action>
-  <action name="actionSubtitle">
-   <property name="icon">
-    <iconset theme="newline">
-     <normaloff>.</normaloff>.</iconset>
-   </property>
-   <property name="text">
-    <string>Subtitle</string>
    </property>
   </action>
   <action name="actionTranslate">
