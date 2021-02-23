@@ -44,6 +44,7 @@ public:
     void layoutRight();
     void layoutPresTitle();
     void layoutSubtitle();
+    void deleteBoxPosition();
 
 Q_SIGNALS:
     void pageNumberChanged(int page);

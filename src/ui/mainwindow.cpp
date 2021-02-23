@@ -66,7 +66,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     QObject::connect(mDoc, &KTextEditor::Document::textChanged,
                      this, &MainWindow::fileChanged);
-
+    connect(ui->actionReset_Position, &QAction::triggered,
+            this, [this](){mFrameWidget->deleteBoxPosition();
+                           fileChanged();});
     QObject::connect(ui->actionCreatePDF, &QAction::triggered,
                      this, &MainWindow::exportPDF);
     QObject::connect(ui->actionLayoutTitle, &QAction::triggered,

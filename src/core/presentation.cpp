@@ -42,6 +42,11 @@ void Presentation::setBoxGeometry(const QString &boxId, const BoxGeometry &rect,
     Q_EMIT frameChanged(pageNumber);
 }
 
+void Presentation::deleteBoxGeometry(const QString &boxId, int pageNumber) {
+    mConfig.deleteRect(boxId);
+    Q_EMIT frameChanged(pageNumber);
+}
+
 Box::Ptr Presentation::findBox(QString const& id) const {
     for(auto const& frame: frames()) {
         if(frame->findBox(id)) {

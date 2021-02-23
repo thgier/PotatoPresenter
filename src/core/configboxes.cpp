@@ -10,7 +10,7 @@ ConfigBoxes::ConfigBoxes()
 
 void ConfigBoxes::loadConfigurationFile(QString filename){
     QFile file(filename);
-    if (!file.open(QIODevice::ReadOnly)){
+    if (!file.open(QIODevice::ReadOnly)) {
         throw ConfigError{"Cannot open file", filename};
         return;
     }
@@ -60,11 +60,11 @@ void ConfigBoxes::saveConfig(QString filename)
 {
     QFile file(filename);
     if (!file.open(QIODevice::WriteOnly)) {
-        throw ConfigError{tr("Cannot open file %1").arg(filename), filename};
+        throw ConfigError{QObject::tr("Cannot open file %1").arg(filename), filename};
         return;
     }
     QJsonArray array;
-    for(auto it = mConfigMap.begin(); it != mConfigMap.end(); it++){
+    for(auto it = mConfigMap.begin(); it != mConfigMap.end(); it++) {
         QJsonObject item;
         item["id"] = it->first;
         saveJsonConfigurations(item, it->second);
@@ -80,8 +80,14 @@ void ConfigBoxes::addRect(BoxGeometry rect, QString id) {
     mConfigMap[id] = newConfig;
 }
 
-BoxGeometry ConfigBoxes::getRect(QString id){
-    if(auto it = mConfigMap.find(id); it != mConfigMap.end()){
+void ConfigBoxes::deleteRect(QString id) {
+    if (auto it = mConfigMap.find(id); it != mConfigMap.end()) {
+        mConfigMap.erase(it);
+    }
+}
+
+BoxGeometry ConfigBoxes::getRect(QString id) const{
+    if(auto it = mConfigMap.find(id); it != mConfigMap.end()) {
         return it->second.geometry;
     }
     return {};

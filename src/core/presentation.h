@@ -27,6 +27,7 @@ public:
     // Change Geometry of Box only through the presentation in order to
     // save it in the Configuration
     void setBoxGeometry(QString const& boxId, BoxGeometry const& rect, int pageNumber);
+    void deleteBoxGeometry(QString const& boxId, int pageNumber);
 
     // Configuration Class to follow and save the Geometry of the boxes
     void saveConfig(QString const& file);

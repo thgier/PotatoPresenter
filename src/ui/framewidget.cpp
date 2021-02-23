@@ -318,6 +318,15 @@ void FrameWidget::layoutSubtitle(){
     mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mSubtitlePos, mPageNumber);
     update();
 }
+
+void FrameWidget::deleteBoxPosition() {
+    if(mActiveBoxId.isEmpty()) {
+        return;
+    }
+    mPresentation->deleteBoxGeometry(mActiveBoxId, mPageNumber);
+    update();
+}
+
 void FrameWidget::setTransformationType(TransformationType type){
     mTransform = type;
 }
