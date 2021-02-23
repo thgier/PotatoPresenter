@@ -10,11 +10,11 @@
 #include <string>
 #include <memory>
 
-#include "markdownFormatVisitor.h"
+#include "markdownformatvisitor.h"
 #include "antlr4-runtime.h"
 #include "markdownLexer.h"
 #include "markdownParser.h"
-#include "markdownFormatVisitor.h"
+#include "markdownformatvisitor.h"
 
 TextBox::TextBox(QString text, BoxGeometry rect, QString id)
     : Box(rect, id), mText(text)

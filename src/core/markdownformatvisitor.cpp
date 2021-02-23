@@ -1,4 +1,4 @@
-#include "markdownFormatVisitor.h"
+#include "markdownformatvisitor.h"
 #include <algorithm>
 #include <QCryptographicHash>
 #include "equationcachemanager.h"
