@@ -6,6 +6,7 @@ latex/*
 stuff/*
 CMakeLists.txt.user
 templates/*
+presentation_seminar/*
 ssh_*
 *~
 *.autosave
