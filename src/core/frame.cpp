@@ -78,5 +78,5 @@ void Frame::setVariable(QString const& name, QString const& value){
 
 int Frame::numberPauses() const {
     auto const& maxBox = std::max_element(mBoxes.begin(), mBoxes.end(), [](auto const& a, auto const& b){return a->pauseCounter() < b->pauseCounter();});
-    return maxBox->get()->pauseCounter();
+    return maxBox->get()->pauseCounter() + 1;
 }
