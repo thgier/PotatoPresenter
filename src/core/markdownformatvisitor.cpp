@@ -182,13 +182,15 @@ void MarkdownFormatVisitor::enterItem_second(markdownParser::Item_secondContext 
 }
 
 void MarkdownFormatVisitor::enterEnum_item(markdownParser::Enum_itemContext *ctx) {
+    if(!ctx->INT()) {return;}
     mCurrentParagraph.mText += QString::fromStdString(ctx->INT()->getText()).append('.');
     addYToPosition(mPainter.fontMetrics().lineSpacing() * 0.3);
     mStartOfLine.setX(mPainter.fontMetrics().xHeight() * 3);
 }
 
 void MarkdownFormatVisitor::enterEnum_item_second(markdownParser::Enum_item_secondContext *ctx) {
-    mCurrentParagraph.mText += QString::fromStdString(ctx->INT()->getText()).append('.');
+    if(!ctx->INT()) {return;}
+    mCurrentParagraph.mText += QString::fromStdString(ctx->INT()->getText()) + '.';
     addYToPosition(mPainter.fontMetrics().lineSpacing() * 0.15);
     mStartOfLine.setX(mPainter.fontMetrics().xHeight() * 5);
 }
