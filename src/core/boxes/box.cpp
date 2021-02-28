@@ -1,8 +1,8 @@
 #include "box.h"
 #include <QRegularExpression>
 
-Box::Box(const BoxGeometry &rect, QString id)
-    : mGeometry{rect}
+Box::Box(BoxStyle boxStyle, QString id)
+    : mStyle{boxStyle}
     , mId{id}
 {
 }
@@ -46,11 +46,11 @@ void Box::startDraw(QPainter &painter){
         font.setBold(true);
         painter.setFont(font);
     }
-    font.setFamily(mStyle.mFont);
-    font.setPixelSize(mStyle.mFontSize);
+    font.setFamily(mStyle.font());
+    font.setPixelSize(mStyle.fontSize());
     painter.setFont(font);
     painter.setTransform(mGeometry.transform());
-    painter.setOpacity(mStyle.mOpacity);
+    painter.setOpacity(mStyle.opacity());
 }
 
 void Box::endDraw(QPainter &painter) const{

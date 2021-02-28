@@ -3,8 +3,8 @@
 #include <QTextLayout>
 #include <QTextDocument>
 
-PlainTextBox::PlainTextBox(QString text, BoxGeometry rect, QString id)
-    : Box(rect, id), mText(text)
+PlainTextBox::PlainTextBox(QString text, BoxStyle style, QString id)
+    : Box(style, id), mText(text)
 {
 }
 
@@ -15,10 +15,10 @@ QString PlainTextBox::Text(){
 void PlainTextBox::drawContent(QPainter& painter, std::map<QString, QString> variables) {
     auto const text = substituteVariables(mText, variables);
     PainterTransformScope scope(this, painter);
-    painter.setPen(mStyle.mColor);
-    auto const linespacing = painter.fontMetrics().leading() + mStyle.mLineSpacing * painter.fontMetrics().lineSpacing();
+    painter.setPen(mStyle.color());
+    auto const linespacing = painter.fontMetrics().leading() + mStyle.linespacing() * painter.fontMetrics().lineSpacing();
     QTextLayout textLayout(text);
-    textLayout.setTextOption(QTextOption(mStyle.mAlignment));
+    textLayout.setTextOption(QTextOption(mStyle.alignment()));
     textLayout.setFont(painter.font());
     textLayout.setCacheEnabled(true);
     textLayout.beginLayout();

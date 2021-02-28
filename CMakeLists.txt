@@ -29,7 +29,6 @@ add_executable(praes
     src/core/boxes/imagebox.cpp
     src/core/boxes/textbox.cpp
     src/core/boxes/plaintextbox.cpp
-    src/core/boxes/textproperty.cpp
     src/core/configboxes.cpp
     src/core/frame.cpp
     src/core/layout.cpp

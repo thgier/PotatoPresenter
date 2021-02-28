@@ -7,7 +7,7 @@
 class LineBox : public Box
 {
 public:
-    LineBox(BoxGeometry rect, QString id);
+    LineBox(BoxStyle style, QString id);
     void drawContent(QPainter& painter, std::map<QString, QString> variables) override;
 };
 

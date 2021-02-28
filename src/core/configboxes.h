@@ -30,7 +30,6 @@ public:
     void deleteRect(QString id);
 
     BoxGeometry getRect(QString id) const;
-    QString getBasePath() const;
 
 private:
     void saveJsonConfigurations(QJsonObject &json, const JsonConfig config);

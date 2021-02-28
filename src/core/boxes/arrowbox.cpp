@@ -1,8 +1,8 @@
 #include "arrowbox.h"
 #include <QPainterPath>
 
-ArrowBox::ArrowBox(BoxGeometry rect, QString id)
-    : Box(rect, id)
+ArrowBox::ArrowBox(BoxStyle style, QString id)
+    : Box(style, id)
 {
 }
 
@@ -26,6 +26,6 @@ void ArrowBox::drawContent(QPainter& painter, std::map<QString, QString>){
     path.lineTo(rect.right() - arrowW, rect.center().y() - w/2);
     path.lineTo(rect.left(), rect.center().y() - w/2);
 
-    painter.setBrush(mStyle.mColor);
+    painter.setBrush(mStyle.color());
     painter.drawPath(path);
 }

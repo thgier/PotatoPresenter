@@ -10,7 +10,6 @@
 #include <vector>
 #include "frame.h"
 #include "parser.h"
-#include "layout.h"
 #include "equationcachemanager.h"
 #include "presentation.h"
 #include "boxgeometry.h"
@@ -37,13 +36,6 @@ public:
     void setTransformationType(TransformationType type);
 
 //    set the active Box on the position of a tool bar button
-    void layoutBody();
-    void layoutTitle();
-    void layoutFull();
-    void layoutLeft();
-    void layoutRight();
-    void layoutPresTitle();
-    void layoutSubtitle();
     void deleteBoxPosition();
 
 Q_SIGNALS:
@@ -81,7 +73,6 @@ private:
 
     int const mDiffToMouse = 15;
     QPainter mPainter;
-    Layout mLayout;
 
     double mScale;
     QSize mSize;

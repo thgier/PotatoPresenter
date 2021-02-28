@@ -17,6 +17,7 @@ FrameList Presentation::frameList() const {
 
 void Presentation::setFrames(const FrameList &frames) {
     mFrames = frames;
+    applyConfiguration();
     Q_EMIT presentationChanged();
 }
 
@@ -43,10 +44,17 @@ ConfigBoxes& Presentation::configuration() {
     return mConfig;
 }
 
-void Presentation::setLayout(Layout layout) {
-    mLayout = layout;
+void Presentation::applyConfiguration() {
+    for(auto const& frame: mFrames.vector) {
+        for(auto const& box: frame->boxes()) {
+            auto const config = mConfig.getRect(box->id());
+            if(!config.isEmpty()) {
+                box->setGeometry(mConfig.getRect(box->id()));
+            }
+        }
+    }
 }
 
-Layout Presentation::layout() const {
-    return mLayout;
+QSize Presentation::dimensions() const {
+    return mDimensions;
 }

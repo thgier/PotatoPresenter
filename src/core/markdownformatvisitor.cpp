@@ -44,7 +44,7 @@ MarkdownFormatVisitor::MarkdownFormatVisitor(QPainter &painter, QRect rect, BoxS
     : markdownBaseListener()
     , mPainter(painter)
     , mRect(rect)
-    , mLineSpacing(painter.fontMetrics().leading() + style.mLineSpacing * painter.fontMetrics().lineSpacing())
+    , mLineSpacing(painter.fontMetrics().leading() + style.linespacing() * painter.fontMetrics().lineSpacing())
     , mBoxStyle(style)
 {
 
@@ -133,7 +133,7 @@ void MarkdownFormatVisitor::enterNew_line(markdownParser::New_lineContext * /*ct
 
 void MarkdownFormatVisitor::exitParagraph(markdownParser::ParagraphContext * /*ctx*/) {
     QTextLayout textLayout(mCurrentParagraph.mText);
-    textLayout.setTextOption(QTextOption(mBoxStyle.mAlignment));
+    textLayout.setTextOption(QTextOption(mBoxStyle.alignment()));
     textLayout.setFont(mPainter.font());
     textLayout.setCacheEnabled(true);
     textLayout.setFormats(mCurrentParagraph.mStack.mVector);

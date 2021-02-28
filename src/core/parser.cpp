@@ -17,19 +17,44 @@
 #include "plaintextbox.h"
 #include "linebox.h"
 
-Parser::Parser()
+Parser::Parser(QString resourcepath)
+    : mResourcepath(resourcepath)
 {
-    mLayout = std::make_shared<Layout>();
 }
 
-void Parser::loadInput(QIODevice *input, ConfigBoxes *configuration){
+void Parser::loadInput(QIODevice *input){
     mTokenizer.loadInput(input);
-    mConfigBoxes = configuration;
 }
 
-void Parser::loadInput(QByteArray input, ConfigBoxes *configuration){
+void Parser::loadInput(QByteArray input){
     mTokenizer.loadInput(input);
-    mConfigBoxes = configuration;
+}
+
+Preamble Parser::readPreamble() {
+    while(!(mTokenizer.peekNext().mKind == Token::Kind::Command && mTokenizer.peekNext().mText == "\\frame")) {
+        auto token = mTokenizer.next();
+        if (token.mKind == Token::Kind::Command) {
+            preambleCommand(token);
+        }
+        else{
+            throw ParserError{"missing command", token.mLine};
+        }
+    }
+    return mPreamble;
+}
+
+void Parser::preambleCommand(Token token) {
+    if(token.mText == "\\usetemplate"){
+        auto const nextToken = mTokenizer.next();
+        if(nextToken.mKind != Token::Kind::Text) {
+            throw ParserError{"Missing Template name", token.mLine};
+            return;
+        }
+        mPreamble.templateName = nextToken.mText;
+    }
+    else if(token.mText == "\\setvar"){
+        setVariable(token.mLine);
+    }
 }
 
 FrameList Parser::readInput(){
@@ -80,9 +105,6 @@ void Parser::command(Token token){
     else if(token.mText == "\\setvar"){
         setVariable(token.mLine);
     }
-    else if(token.mText == "\\usetemplate"){
-        loadTemplate(token.mLine);
-    }
     else{
         throw ParserError{"command does not exist", token.mLine};
     }
@@ -91,34 +113,27 @@ void Parser::command(Token token){
 void Parser::newFrame(int line){
     mBoxCounter = 0;
     mPauseCount = 0;
-    auto token = mTokenizer.peekNext();
+    auto token = mTokenizer.next();
     Box::List templateBoxes;
+    QString frameClass;
     if(token.mKind == Token::Kind::Argument){
-        if(token.mText != "template"){
-            throw ParserError{"Only the Argument \"template\" is allowed after frame Command", token.mLine};
+        if(token.mText != "class"){
+            throw ParserError{"Only the Argument \"class\" is allowed after frame Command", token.mLine};
             return;
         }
-        mTokenizer.next();
         auto const tokenArgValue = mTokenizer.next();
         if(tokenArgValue.mKind != Token::Kind::ArgumentValue){
             throw ParserError{"Argment Value is missing", token.mLine};
             return;
         }
-        if(mTemplate){
-            templateBoxes = mTemplate->getTemplateSlide(tokenArgValue.mText);
-        }
-        token = mTokenizer.peekNext();
-    }
-    else{
-        if(mTemplate){
-            templateBoxes = mTemplate->getTemplateSlide("default");
-        }
+        frameClass = tokenArgValue.mText;
+        token = mTokenizer.next();
     }
     if(token.mKind != Token::Kind::Text || token.mText.isEmpty()) {
         throw ParserError{"missing frame id", line};
         return;
     }
-    auto const id = QString(mTokenizer.next().mText);
+    auto const id = QString(token.mText);
     for(auto const& frame: mFrameList.vector) {
         if(frame->id() == id){
             throw ParserError{"frame id already exist", line};
@@ -128,11 +143,12 @@ void Parser::newFrame(int line){
     if(mVariables.find("%{date}") == mVariables.end()){
         mVariables["%{date}"] = QDate::currentDate().toString();
     }
-    if(mConfigBoxes && mVariables.find("%{resourcepath}") == mVariables.end()){
-        mVariables["%{resourcepath}"] = mConfigBoxes->getBasePath();
+    if(mVariables.find("%{resourcepath}") == mVariables.end()){
+        mVariables["%{resourcepath}"] = mResourcepath;
     }
     mFrameList.vector.push_back(std::make_shared<Frame>(id, mVariables));
     mFrameList.vector.back()->setTemplateBoxes(templateBoxes);
+    mFrameList.vector.back()->setFrameClass(frameClass);
 }
 
 void Parser::newTextField(int line){
@@ -141,7 +157,7 @@ void Parser::newTextField(int line){
         return;
     }
     auto id = generateId();
-    auto const boxStyle = readArguments(id, "body");
+    auto const boxStyle = readArguments(id);
 
     QString text = "";
     auto const peekNextKind = mTokenizer.peekNext().mKind;
@@ -149,7 +165,7 @@ void Parser::newTextField(int line){
     if(peekNextKind == Token::Kind::Text || peekNextKind == Token::Kind::MultiLineText) {
         text = QString(mTokenizer.next().mText);
     }
-    auto const textField = std::make_shared<TextBox>(text, getRect(id), id);
+    auto const textField = std::make_shared<TextBox>(text, boxStyle, id);
     textField->setBoxStyle(boxStyle);
     textField->setPauseCounter(mPauseCount);
     mBoxCounter++;
@@ -162,14 +178,13 @@ void Parser::newImage(int line) {
         return;
     }
     auto id = generateId();
-    auto const boxStyle = readArguments(id, "body");
+    auto const boxStyle = readArguments(id);
 
     QString text = "";
     if(mTokenizer.peekNext().mKind == Token::Kind::Text) {
         text = QString(mTokenizer.next().mText);
     }
-    auto const imageBox = std::make_shared<ImageBox>(text, getRect(id), id);
-    imageBox->setBoxStyle(boxStyle);
+    auto const imageBox = std::make_shared<ImageBox>(text, boxStyle, id);
     imageBox->setPauseCounter(mPauseCount);
     mBoxCounter++;
     mFrameList.vector.back()->appendBox(imageBox);
@@ -181,7 +196,7 @@ void Parser::newTitle(int line){
         return;
     }
     auto id = generateId();
-    auto const boxStyle = readArguments(id, "title");
+    auto boxStyle = readArguments(id);
 
     auto const frameId = mFrameList.vector.back()->id();
     QString text = frameId;
@@ -189,12 +204,29 @@ void Parser::newTitle(int line){
     if(nextToken.mKind == Token::Kind::Text && !nextToken.mText.isEmpty()) {
         text = QString(mTokenizer.next().mText);
     }
-    auto rect = mConfigBoxes->getRect(id);
-    if(rect.isEmpty()){
-        rect = mLayout->mTitlePos;
+    boxStyle.boxClass = "title";
+    auto const textField = std::make_shared<TextBox>(text, boxStyle, id);
+    textField->setPauseCounter(mPauseCount);
+    mBoxCounter++;
+    mFrameList.vector.back()->appendBox(textField);
+}
+
+void Parser::newBody(int line){
+    if(mFrameList.empty()){
+        throw ParserError{"missing frame: type \\frame id", line};
+        return;
     }
-    auto const textField = std::make_shared<TextBox>(text, rect, id);
-    textField->setBoxStyle(boxStyle);
+    auto id = generateId();
+    auto boxStyle = readArguments(id);
+
+    auto const frameId = mFrameList.vector.back()->id();
+    QString text = frameId;
+    auto const nextToken = mTokenizer.peekNext();
+    if(nextToken.mKind == Token::Kind::Text && !nextToken.mText.isEmpty()) {
+        text = QString(mTokenizer.next().mText);
+    }
+    boxStyle.boxClass = "body";
+    auto const textField = std::make_shared<TextBox>(text, boxStyle, id);
     textField->setPauseCounter(mPauseCount);
     mBoxCounter++;
     mFrameList.vector.back()->appendBox(textField);
@@ -207,14 +239,9 @@ void Parser::newArrow(int line){
     }
     auto id = generateId();
 
-    auto rect = mConfigBoxes->getRect(id);
-    if(rect.isEmpty()){
-        rect = mLayout->mArrowPos;
-    }
-    auto const style = readArguments(id, "body");
+    auto const style = readArguments(id);
 
-    auto const arrow = std::make_shared<ArrowBox>(rect, id);
-    arrow->setBoxStyle(style);
+    auto const arrow = std::make_shared<ArrowBox>(style, id);
     arrow->setPauseCounter(mPauseCount);
     mFrameList.vector.back()->appendBox(arrow);
     mBoxCounter++;
@@ -233,14 +260,9 @@ void Parser::newLine(int line){
     }
     auto id = generateId();
 
-    auto rect = mConfigBoxes->getRect(id);
-    if(rect.isEmpty()){
-        rect = mLayout->mArrowPos;
-    }
-    auto const style = readArguments(id, "body");
+    auto const style = readArguments(id);
 
-    auto const arrow = std::make_shared<LineBox>(rect, id);
-    arrow->setBoxStyle(style);
+    auto const arrow = std::make_shared<LineBox>(style, id);
     arrow->setPauseCounter(mPauseCount);
     mFrameList.vector.back()->appendBox(arrow);
     mBoxCounter++;
@@ -258,7 +280,7 @@ void Parser::newPlainText(int line) {
         return;
     }
     auto id = generateId();
-    auto const boxStyle = readArguments(id, "body");
+    auto const boxStyle = readArguments(id);
 
     QString text = "";
     auto const peekNextKind = mTokenizer.peekNext().mKind;
@@ -266,8 +288,7 @@ void Parser::newPlainText(int line) {
     if(peekNextKind == Token::Kind::Text || peekNextKind == Token::Kind::MultiLineText) {
         text = QString(mTokenizer.next().mText);
     }
-    auto const textField = std::make_shared<PlainTextBox>(text, getRect(id), id);
-    textField->setBoxStyle(boxStyle);
+    auto const textField = std::make_shared<PlainTextBox>(text, boxStyle, id);
     textField->setPauseCounter(mPauseCount);
     mBoxCounter++;
     mFrameList.vector.back()->appendBox(textField);
@@ -279,17 +300,22 @@ void Parser::newBlindText(int line) {
         return;
     }
     auto id = generateId();
-    auto const boxStyle = readArguments(id, "body");
+    auto const boxStyle = readArguments(id);
 
     QString text = "Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
-    auto const textField = std::make_shared<TextBox>(text, getRect(id), id);
-    textField->setBoxStyle(boxStyle);
+    auto const peekNext = mTokenizer.peekNext();
+    if(peekNext.mKind == Token::Kind::Text) {
+        auto lenght = peekNext.mText.toInt();
+        text = text.left(lenght);
+        mTokenizer.next();
+    }
+    auto const textField = std::make_shared<TextBox>(text, boxStyle, id);
     textField->setPauseCounter(mPauseCount);
     mBoxCounter++;
     mFrameList.vector.back()->appendBox(textField);
 }
 
-void Parser::setVariable(int line){
+void Parser::setVariable(int line) {
     Token nextToken = mTokenizer.next();
     if(nextToken.mKind != Token::Kind::Text){
         throw ParserError{"Missing Variable declaration", line};
@@ -301,38 +327,12 @@ void Parser::setVariable(int line){
     mVariables[addBracketsToVariable(variable)] = text.right(text.size() - variable.size() - 1);
 }
 
-QString Parser::addBracketsToVariable(QString variable) const{
+QString Parser::addBracketsToVariable(QString variable) const {
     return "%{" + variable + "}";
 }
 
-BoxGeometry const Parser::getRect(QString id) {
-    auto rect = mConfigBoxes->getRect(id);
-    if(rect.isEmpty()){
-        rect = mLayout->mBodyPos;
-        switch (mBoxCounter) {
-        case 0:
-            rect = mLayout->mTitlePos;
-            break;
-        case 1:
-            rect = mLayout->mBodyPos;
-            break;
-        case 2:
-            auto const lastBox = mFrameList.vector.back()->boxes().back();
-            if(mConfigBoxes->getRect(lastBox->id()).isEmpty()) {
-                lastBox->setGeometry(mLayout->mLeftPos);
-                rect = mLayout->mRightPos;
-            }
-            break;
-        }
-    }
-    return rect;
-}
-
-BoxStyle Parser::readArguments(QString &id, QString BoxStyleIdentifier){
+BoxStyle Parser::readArguments(QString &id) {
     BoxStyle boxStyle;
-    if(mTemplate){
-        boxStyle = mTemplate->getStyle(BoxStyleIdentifier);
-    }
     auto argument = mTokenizer.peekNext();
     while(argument.mKind == Token::Kind::Argument){
         mTokenizer.next();
@@ -410,60 +410,24 @@ BoxStyle Parser::readArguments(QString &id, QString BoxStyleIdentifier){
                 throw ParserError{"possible alignment: left, right, center, justify", argumentValue.mLine};
             }
         }
-        if(argument.mText == "resourcepath"){
-            boxStyle.mGeometry.angle = argumentValue.mText.toDouble();
+        if(argument.mText == "class"){
+            boxStyle.boxClass = argumentValue.mText;
         }
         argument = mTokenizer.peekNext();
     }
     return boxStyle;
 }
 
-void Parser::loadTemplate(int line){
-    if(mParsingTemplate){
-        throw ParserError{"Cannot use a Template in a Template", line};
-        return;
-    }
-    auto token = mTokenizer.next();
-    if(token.mKind != Token::Kind::Text){
-        throw ParserError{"Missing Template File", line};
-    }
-    mTemplate = std::make_shared<Template>();
-
-    try {
-        mTemplate->readTemplateConfig(token.mText + ".json");
-    }  catch (ConfigError& error) {
-        throw ParserError{error.errorMessage, line};
-    }
-
-    auto file = QFile(token.mText + ".txt");
-    if(!file.open(QIODevice::ReadOnly)){
-        throw ParserError{"Can't open file" + file.fileName(), line};
-        return;
-    }
-
-    Parser parser;
-    parser.setFileIsATemplate(true);
-    parser.setVariables(mVariables);
-    parser.loadInput(file.readAll(), &mTemplate->Configuration());
-    mTemplate->setFrames(parser.readInput());
-    mLayout = mTemplate->getLayout();
-}
-
-
-QString Parser::generateId(){
+QString Parser::generateId() {
     auto const frameId = mFrameList.vector.back()->id();
     auto id = frameId + "-intern-" + QString::number(mBoxCounter);
     return id;
 }
 
-void Parser::setFileIsATemplate(bool fileIsATemplate){
-    mParsingTemplate = fileIsATemplate;
-}
-
-void Parser::setVariables(std::map<QString, QString> variables){
+void Parser::setVariables(std::map<QString, QString> variables) {
     mVariables = variables;
 }
 
-std::map<QString, QString> Parser::Variables() const{
+std::map<QString, QString> Parser::Variables() const {
     return mVariables;
 }

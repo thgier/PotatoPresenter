@@ -13,7 +13,7 @@ FrameWidget::FrameWidget(QWidget*&)
     : QWidget(), mPageNumber{0}, mWidth{frameSize().width()}
 {
     setMouseTracking(true);
-    mSize = mLayout.mSize;
+    mSize = QSize{1600, 900};
     mScale = 1.0 * mSize.width() / mWidth;
     createActions();
 }
@@ -22,8 +22,7 @@ void FrameWidget::setPresentation(std::shared_ptr<Presentation> pres){
     mPresentation = pres;
     mActiveBoxId = QString();
     mCurrentFrameId = QString();
-    mLayout = mPresentation->layout();
-    mSize = mLayout.mSize;
+    mPresentation->dimensions();
     mScale = 1.0 * mSize.width() / mWidth;
 }
 
@@ -36,8 +35,8 @@ void FrameWidget::paintEvent(QPaintEvent*)
     mPainter.fillRect(QRect(QPoint(0, 0), mSize), Qt::white);
     if(!mPresentation->frameList().empty()){
         FramePainter paint(mPainter);
-        paint.paintFrame(mPresentation->frameList().vector[mPageNumber]);
-        mCurrentFrameId = mPresentation->frameList().vector[mPageNumber]->id();
+        paint.paintFrame(mPresentation->frameList().frameAt(mPageNumber));
+        mCurrentFrameId = mPresentation->frameList().frameAt(mPageNumber)->id();
     }
     auto const box = mPresentation->frameList().findBox(mActiveBoxId);
     if(box != nullptr && mPresentation->frameList().findFrame(mCurrentFrameId)->containsBox(mActiveBoxId)){
@@ -55,7 +54,7 @@ void FrameWidget::paintEvent(QPaintEvent*)
 }
 
 QSize FrameWidget::sizeHint() const{
-    return mLayout.mSize;
+    return mSize;
 }
 
 void FrameWidget::contextMenuEvent(QContextMenuEvent *event){
@@ -261,62 +260,6 @@ void FrameWidget::cursorApperance(QPoint mousePosition){
         }
     }
     setCursor(cursor);
-}
-
-void FrameWidget::layoutTitle(){
-    if(mActiveBoxId.isEmpty()) {
-        return;
-    }
-    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mTitlePos, mPageNumber);
-    update();
-}
-
-void FrameWidget::layoutBody(){
-    if(mActiveBoxId.isEmpty()) {
-        return;
-    }
-    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mBodyPos, mPageNumber);
-    update();
-}
-
-void FrameWidget::layoutFull(){
-    if(mActiveBoxId.isEmpty()) {
-        return;
-    }
-    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mFullPos, mPageNumber);
-    update();
-}
-
-void FrameWidget::layoutLeft(){
-    if(mActiveBoxId.isEmpty()) {
-        return;
-    }
-    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mLeftPos, mPageNumber);
-    update();
-}
-
-void FrameWidget::layoutRight(){
-    if(mActiveBoxId.isEmpty()) {
-        return;
-    }
-    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mRightPos, mPageNumber);
-    update();
-}
-
-void FrameWidget::layoutPresTitle(){
-    if(mActiveBoxId.isEmpty()) {
-        return;
-    }
-    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mPresTitlePos, mPageNumber);
-    update();
-}
-
-void FrameWidget::layoutSubtitle(){
-    if(mActiveBoxId.isEmpty()) {
-        return;
-    }
-    mPresentation->setBoxGeometry(mActiveBoxId, mLayout.mSubtitlePos, mPageNumber);
-    update();
 }
 
 void FrameWidget::deleteBoxPosition() {

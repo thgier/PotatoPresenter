@@ -7,7 +7,7 @@
 class ImageBox: public Box
 {
 public:
-    ImageBox(QString imagePath, BoxGeometry rect, QString id);
+    ImageBox(QString imagePath, BoxStyle boxstyle, QString id);
     void drawContent(QPainter& painter, std::map<QString, QString> variables) override;
     int aspectRatio(QRect rect);
     QString ImagePath() const;

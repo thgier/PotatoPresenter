@@ -37,12 +37,15 @@ public:
     void setVariable(QString const& name, QString const& value);
     Variables const& variables() const;
 
+    void setFrameClass(QString const& frameClass);
+    QString frameClass() const;
 
 private:
     Box::List mBoxes;
     Box::List mTemplateBoxes;
     QString mId;
     Variables mVariables;
+    QString mClass = "body";
 };
 
 Q_DECLARE_METATYPE(Frame::Ptr)

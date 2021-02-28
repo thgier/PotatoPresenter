@@ -10,6 +10,10 @@
 struct FrameList {
     std::vector<Frame::Ptr> vector;
 
+    void appendFrame(Frame::Ptr frame) {
+        vector.push_back(frame);
+    }
+
     Frame::Ptr frameAt(int pageNumber) const {
         return vector[pageNumber];
     };
@@ -53,6 +57,7 @@ public:
     void setFrames(FrameList const& frames);
 
     bool empty() const;
+    QSize dimensions() const;
 
     Box::Ptr findBox(QString const& id) const;
 
@@ -65,20 +70,19 @@ public:
     void saveConfig(QString const& file);
     ConfigBoxes& configuration();
 
-    // Layout class has the information about the positions of the predefined boxes
-    // avaible throught the tool bar e.g. the position of the title and the body
-    void setLayout(Layout layout);
-    Layout layout() const;
-
 Q_SIGNALS:
     void presentationChanged();
     void frameChanged(int pageNumber);
 
 private:
+    // apply Configuration in json file to mFrames
+    void applyConfiguration();
+
+private:
     FrameList mFrames;
     QString mInputDir;
     ConfigBoxes mConfig;
-    Layout mLayout;
+    QSize mDimensions{1600, 900};
 };
 
 #endif // PRESENTATION_H

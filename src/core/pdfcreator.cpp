@@ -14,7 +14,7 @@ void PDFCreator::createPdf(QString filename, std::shared_ptr<Presentation> prese
     pdfWriter.setPageLayout(pdfLayout);
 
     QPainter painter(&pdfWriter);
-    painter.setWindow(QRect(QPoint(0, 0), presentation->layout().mSize));
+    painter.setWindow(QRect(QPoint(0, 0), presentation->dimensions()));
 
     painter.begin(&pdfWriter);
     auto paint = std::make_shared<FramePainter>(painter);

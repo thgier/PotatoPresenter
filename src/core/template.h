@@ -1,10 +1,9 @@
-#ifndef TEMPLATE_H
-#define TEMPLATE_H
+# pragma once
 
 #include <QPainter>
-#include <frame.h>
-#include <presentation.h>
-#include <layout.h>
+#include "frame.h"
+#include "configboxes.h"
+#include "presentation.h"
 
 struct TemplateError{
     QString message;
@@ -15,7 +14,9 @@ class Template
 public:
     using variablesMap = std::shared_ptr<std::map<QString, QString>>;
     Template();
+    void setFrames(FrameList frames);
     void readTemplateConfig(QString configFile);
+    FrameList applyTemplate(FrameList frameList) const;
     BoxGeometry getGeometry(QString id) const;
     BoxStyle getStyle(QString id) const;
     void declareVariable(QString name, QString value);
@@ -23,13 +24,12 @@ public:
     Box::List getTemplateSlide(QString frameId) const;
     void setVariables(std::map<QString, QString> variables);
     ConfigBoxes& Configuration();
-    void setFrames(FrameList frames);
-    std::shared_ptr<Layout> getLayout() const;
+
+private:
+    void applyTemplateToBox(Box::Ptr box) const;
+
 private:
     Presentation mPresentation;
     std::map<QString, QString> mVariables;
     std::map<QString, Frame> mTemplateSlides;
-    std::shared_ptr<Layout> mLayout;
 };
-
-#endif // TEMPLATE_H

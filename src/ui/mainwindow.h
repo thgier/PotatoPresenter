@@ -14,6 +14,7 @@
 #include "configboxes.h"
 #include "layout.h"
 #include "framelistmodel.h"
+#include "template.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

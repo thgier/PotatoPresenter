@@ -86,10 +86,32 @@ MainWindow::~MainWindow()
 void MainWindow::fileChanged() {
     auto iface = qobject_cast<KTextEditor::MarkInterface*>(mDoc);
     iface->clearMarks();
-    Parser parser;
-    parser.loadInput(mDoc->text().toUtf8(), &mPresentation->configuration());
+    Parser parser{QFileInfo(mFilename).absolutePath()};
+    parser.loadInput(mDoc->text().toUtf8());
     try {
-        mPresentation->setFrames(parser.readInput());
+        auto const preamble = parser.readPreamble();
+        auto frames = parser.readInput();
+
+        if(!preamble.templateName.isEmpty()) {
+            Template templateObject;
+            Parser templateParser{QFileInfo(preamble.templateName).absolutePath()};
+            try {
+                templateObject.readTemplateConfig(preamble.templateName + ".json");
+            }  catch (ConfigError& error) {
+                throw ParserError{error.errorMessage, 0};
+            }
+
+            auto file = QFile(preamble.templateName + ".txt");
+            if(!file.open(QIODevice::ReadOnly)){
+                throw ParserError{"Can't open file" + file.fileName(), 0};
+            }
+            templateParser.loadInput(file.readAll());
+            auto const templateFrames = templateParser.readInput();
+            templateObject.setFrames(templateFrames);
+
+            frames = templateObject.applyTemplate(frames);
+        }
+        mPresentation->setFrames(frames);
         ui->error->setText("Conversion succeeded \u2714");
     }  catch (ParserError& error) {
         ui->error->setText("Line " + QString::number(error.line + 1) + ": " + error.message + " \u26A0");

@@ -16,8 +16,8 @@
 #include "markdownParser.h"
 #include "markdownformatvisitor.h"
 
-TextBox::TextBox(QString text, BoxGeometry rect, QString id)
-    : Box(rect, id), mText(text)
+TextBox::TextBox(QString text, BoxStyle style, QString id)
+    : Box(style, id), mText(text)
 {
 }
 
@@ -28,7 +28,7 @@ QString TextBox::Text(){
 void TextBox::drawContent(QPainter& painter, std::map<QString, QString> variables) {
     auto const text = substituteVariables(mText, variables);
     PainterTransformScope scope(this, painter);
-    painter.setPen(mStyle.mColor);
+    painter.setPen(mStyle.color());
 
     std::istringstream str(text.toStdString());
     antlr4::ANTLRInputStream input(str);

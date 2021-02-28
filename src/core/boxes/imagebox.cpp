@@ -6,8 +6,8 @@
 #include <QTemporaryFile>
 #include "cachemanager.h"
 
-ImageBox::ImageBox(QString imagePath, BoxGeometry rect, QString id)
-    : Box(rect, id)
+ImageBox::ImageBox(QString imagePath, BoxStyle boxstyle, QString id)
+    : Box(boxstyle, id)
     , mImagePath(imagePath)
 {
 }

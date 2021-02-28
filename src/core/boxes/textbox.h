@@ -4,12 +4,11 @@
 #include "box.h"
 #include <QString>
 #include <QSize>
-#include "textproperty.h"
 
 class TextBox: public Box
 {
 public:
-    TextBox(QString text, BoxGeometry rect, QString id);
+    TextBox(QString text, BoxStyle style, QString id);
     QString mText;
     QString Text();
     void drawContent(QPainter& painter, std::map<QString, QString> variables) override;

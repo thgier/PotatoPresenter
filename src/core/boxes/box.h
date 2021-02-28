@@ -12,20 +12,40 @@ enum FontWeight{
 };
 
 struct BoxStyle{
-    QColor mColor = Qt::black;
-    int mFontSize = 50;
-    double mLineSpacing = 1.15;
-    FontWeight mFontWeight = FontWeight::normal;
-    QString mFont = "sans-serif";
-    Qt::Alignment mAlignment = Qt::AlignLeft;
-    qreal mOpacity = 1;
-    struct {
-        std::optional<int> left;
-        std::optional<int> top ;
-        std::optional<int> width;
-        std::optional<int> height;
-        std::optional<qreal> angle;
-    } mGeometry;
+    QString boxClass;
+    std::optional<QColor> mColor;
+    std::optional<int> mFontSize;
+    std::optional<double> mLineSpacing;
+    std::optional<FontWeight> mFontWeight;
+    std::optional<QString> mFont;
+    std::optional<Qt::Alignment> mAlignment;
+    std::optional<double> mOpacity;
+    BoxGeometry mGeometry;
+
+    QColor color() const {
+        return mColor.value_or(Qt::black);
+    }
+    int fontSize() const {
+        return mFontSize.value_or(50);
+    }
+    double linespacing() const {
+        return mLineSpacing.value_or(1.15);
+    }
+    FontWeight fontWeight() const {
+        return mFontWeight.value_or(FontWeight::normal);
+    }
+    QString font() const {
+        return mFont.value_or("sans-serif");
+    }
+    Qt::Alignment alignment() const {
+        return mAlignment.value_or(Qt::AlignLeft);
+    }
+    double opacity() const {
+        return mOpacity.value_or(1);
+    }
+    bool empty() const {
+        return false;
+    }
 };
 
 struct VariableSubstitution{
@@ -41,7 +61,7 @@ public:
     using List = std::vector<Ptr>;
 
     Box();
-    Box(BoxGeometry const& geometry, QString id);
+    Box(BoxStyle boxStyle, QString id);
 
     // Implement this in child classes to draw the box's contents given the passed @p variables
     virtual void drawContent(QPainter& painter, std::map<QString, QString> variables) = 0;
@@ -88,7 +108,6 @@ private:
     void endDraw(QPainter& painter) const;
 
 private:
-    BoxGeometry mGeometry;
     QString mId;
     bool mVisible = true;
     bool mMovable = true;

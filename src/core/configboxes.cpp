@@ -92,7 +92,3 @@ BoxGeometry ConfigBoxes::getRect(QString id) const{
     }
     return {};
 }
-
-QString ConfigBoxes::getBasePath() const {
-    return QFileInfo(mPath).absolutePath();
-}
