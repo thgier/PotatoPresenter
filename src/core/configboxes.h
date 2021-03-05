@@ -9,14 +9,13 @@
 #include "boxgeometry.h"
 
 struct JsonConfig{
-    BoxGeometry geometry;
+    MemberBoxGeometry geometry;
 };
 
 struct ConfigError{
     QString errorMessage;
     QString filename;
 };
-
 
 class ConfigBoxes
 {
@@ -26,10 +25,10 @@ public:
     void loadConfigurationFile(QString filename);
     void saveConfig(QString filename);
 
-    void addRect(BoxGeometry rect, QString id);
+    void addRect(const MemberBoxGeometry &rect, QString const& id);
     void deleteRect(QString id);
 
-    BoxGeometry getRect(QString id) const;
+    MemberBoxGeometry getRect(QString id) const;
 
 private:
     void saveJsonConfigurations(QJsonObject &json, const JsonConfig config);

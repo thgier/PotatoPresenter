@@ -13,12 +13,12 @@
 #include <QFileDialog>
 #include <QToolButton>
 #include <QMessageBox>
+#include <functional>
 #include "parser.h"
 #include "equationcachemanager.h"
 #include "cachemanager.h"
 #include "framelistmodel.h"
 #include "framelistdelegate.h"
-#include <functional>
 #include "pdfcreator.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -91,25 +91,9 @@ void MainWindow::fileChanged() {
     try {
         auto const preamble = parser.readPreamble();
         auto frames = parser.readInput();
-
         if(!preamble.templateName.isEmpty()) {
-            Template templateObject;
-            Parser templateParser{QFileInfo(preamble.templateName).absolutePath()};
-            try {
-                templateObject.readTemplateConfig(preamble.templateName + ".json");
-            }  catch (ConfigError& error) {
-                throw ParserError{error.errorMessage, 0};
-            }
-
-            auto file = QFile(preamble.templateName + ".txt");
-            if(!file.open(QIODevice::ReadOnly)){
-                throw ParserError{"Can't open file" + file.fileName(), 0};
-            }
-            templateParser.loadInput(file.readAll());
-            auto const templateFrames = templateParser.readInput();
-            templateObject.setFrames(templateFrames);
-
-            frames = templateObject.applyTemplate(frames);
+            readTemplate(preamble.templateName);
+            mPresentation->setTemplate(&mTemplate);
         }
         mPresentation->setFrames(frames);
         ui->error->setText("Conversion succeeded \u2714");
@@ -118,13 +102,30 @@ void MainWindow::fileChanged() {
         iface->addMark(error.line, KTextEditor::MarkInterface::MarkTypes::Error);
         return;
     }
-    mFrameWidget->update();
+    mFrameWidget->updateFrames();
     auto const index = mFrameModel->index(mFrameWidget->pageNumber());
     ui->pagePreview->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     ui->pagePreview->scrollTo(index);
 }
 
-void MainWindow::setupFileActions(){
+void MainWindow::readTemplate(QString filename) {
+    Parser templateParser{QFileInfo(filename).absolutePath()};
+    try {
+        mTemplate.readTemplateConfig(filename + ".json");
+    }  catch (ConfigError& error) {
+        throw ParserError{error.errorMessage, 0};
+    }
+
+    auto file = QFile(filename + ".txt");
+    if(!file.open(QIODevice::ReadOnly)){
+        throw ParserError{"Can't open file" + file.fileName(), 0};
+    }
+    templateParser.loadInput(file.readAll());
+    auto const templateFrames = templateParser.readInput();
+    mTemplate.setFrames(templateFrames);
+}
+
+void MainWindow::setupFileActions() {
     // HACK: Steal actions from the KPart
     QList<QAction*> actions;
     actions.append(importActionFromKDoc("file_save", [this](){save();}));
@@ -136,7 +137,7 @@ void MainWindow::setupFileActions(){
             this, &MainWindow::newDocument);
 }
 
-void MainWindow::openDocument(){
+void MainWindow::openDocument() {
     auto url = QUrl::fromLocalFile(mFilename);
     if (!mDoc->openUrl(url)){
         qWarning() << "file not found";
@@ -144,7 +145,7 @@ void MainWindow::openDocument(){
     mDoc->setHighlightingMode("LaTeX");
 }
 
-void MainWindow::openFile(){
+void MainWindow::openFile() {
     auto const newFile = QFileDialog::getOpenFileName(this,
         tr("Open File"), mFilename, tr("Input Files (*.txt)"));
     if(newFile.isEmpty()){
@@ -168,7 +169,7 @@ void MainWindow::openFile(){
     fileChanged();
 }
 
-void MainWindow::newDocument(){
+void MainWindow::newDocument() {
     mFilename = QString();
     mDoc = mEditor->createDocument(this);
     mViewTextDoc->deleteLater();
@@ -177,7 +178,7 @@ void MainWindow::newDocument(){
     resetPresentation();
 }
 
-void MainWindow::save(){
+void MainWindow::save() {
     if(mFilename.isEmpty()){
         auto const newFile = QFileDialog::getSaveFileName(this, tr("Save File"),
                                    QDir::homePath(),
@@ -205,7 +206,7 @@ void MainWindow::saveAs(){
     fileChanged();
 }
 
-void MainWindow::writeToFile(QString filename) const{
+void MainWindow::writeToFile(QString filename) const {
     QFile file(filename);
     file.open(QIODevice::WriteOnly);
     file.write(mDoc->text().toUtf8());
@@ -215,7 +216,7 @@ void MainWindow::writeToFile(QString filename) const{
     ui->statusbar->showMessage(tr("Saved File to  \"%1\".").arg(mFilename), 10000);
 }
 
-void MainWindow::resetPresentation(){
+void MainWindow::resetPresentation() {
     mPresentation = std::make_shared<Presentation>();
     mFrameWidget->setPresentation(mPresentation);
     mFrameModel->setPresentation(mPresentation);
@@ -224,7 +225,7 @@ void MainWindow::resetPresentation(){
                      this, &MainWindow::fileChanged);
 }
 
-void MainWindow::exportPDF(){
+void MainWindow::exportPDF() {
     if(mPdfFile.isEmpty()) {
         exportPDFAs();
         return;
@@ -232,9 +233,9 @@ void MainWindow::exportPDF(){
     writePDF();
 }
 
-void MainWindow::exportPDFAs(){
+void MainWindow::exportPDFAs() {
     QFileDialog dialog;
-    if(mPdfFile.isEmpty()){
+    if(mPdfFile.isEmpty()) {
         mPdfFile = getPdfFilename();
     }
     dialog.selectFile(mPdfFile);
@@ -250,11 +251,11 @@ void MainWindow::writePDF() const {
     ui->statusbar->showMessage(tr("Saved PDF to \"%1\".").arg(mPdfFile), 10000);
 }
 
-QString MainWindow::getConfigFilename(QUrl inputUrl){
+QString MainWindow::getConfigFilename(QUrl inputUrl) {
     return inputUrl.toLocalFile().section('.', 0, -2) + ".json";
 }
 
-QString MainWindow::getPdfFilename(){
+QString MainWindow::getPdfFilename() {
     return mDoc->url().toLocalFile().section('.', 0, -2) + ".pdf";
 }
 

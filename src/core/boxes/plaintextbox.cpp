@@ -28,10 +28,10 @@ void PlainTextBox::drawContent(QPainter& painter, std::map<QString, QString> var
         if (!line.isValid()){
             break;
         }
-        line.setLineWidth(geometry().rect().width());
+        line.setLineWidth(geometry().width());
         line.setPosition(QPointF(0, y));
         y += linespacing;
     }
     textLayout.endLayout();
-    textLayout.draw(&painter, geometry().rect().topLeft());
+    textLayout.draw(&painter, geometry().topLeft());
 }

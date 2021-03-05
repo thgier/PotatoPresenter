@@ -44,7 +44,8 @@ struct BoxStyle{
         return mOpacity.value_or(1);
     }
     bool empty() const {
-        return false;
+        return !(mColor.has_value() || mFontSize.has_value() || mLineSpacing.has_value() || mFontWeight.has_value()
+                || mFont.has_value() || mAlignment.has_value() || mOpacity.has_value()) && mGeometry.empty();
     }
 };
 
@@ -68,14 +69,17 @@ public:
     void drawSelectionFrame(QPainter& painter);
     void drawScaleHandle(QPainter& painter, int size);
 
-    BoxGeometry geometry() const;
-    BoxStyle style() const;
+    BoxStyle const& style() const;
+    BoxGeometry const& geometry() const;
+    BoxStyle& style();
+    BoxGeometry& geometry();
 
-    void setGeometry(BoxGeometry const& geometry);
     void setVisibility(bool vis);
     void setMovable(bool move);
     void setBoxStyle(BoxStyle style);
     void setPauseCounter(int counter);
+    void setGeometry(BoxGeometry const& geometry);
+    void setGeometry(MemberBoxGeometry const& geometry);
 
     QString id();
     bool pauseCounterSmaller(int counter) const;

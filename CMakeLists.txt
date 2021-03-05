@@ -31,7 +31,6 @@ add_executable(praes
     src/core/boxes/plaintextbox.cpp
     src/core/configboxes.cpp
     src/core/frame.cpp
-    src/core/layout.cpp
     src/core/main.cpp
     src/core/pdfcreator.cpp
     src/ui/mainwindow.cpp

@@ -3,7 +3,7 @@
 
 #include <QFile>
 #include <vector>
-#include<QString>
+#include <QString>
 #include "frame.h"
 #include "configboxes.h"
 #include "tokenizer.h"

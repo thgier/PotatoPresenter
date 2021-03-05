@@ -6,6 +6,9 @@ FramePainter::FramePainter(QPainter& painter)
 }
 
 void FramePainter::paintFrame(Frame::Ptr frame) const {
+    if(frame->empty()) {
+        return;
+    }
     auto const templateBoxes = frame->templateBoxes();
     auto const variables = frame->variables();
     for(auto const& box: templateBoxes){

@@ -16,7 +16,7 @@ public:
     Template();
     void setFrames(FrameList frames);
     void readTemplateConfig(QString configFile);
-    FrameList applyTemplate(FrameList frameList) const;
+    void applyTemplate(FrameList& frameList);
     BoxGeometry getGeometry(QString id) const;
     BoxStyle getStyle(QString id) const;
     void declareVariable(QString name, QString value);

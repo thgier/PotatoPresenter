@@ -12,7 +12,6 @@
 #include "frame.h"
 #include "framewidget.h"
 #include "configboxes.h"
-#include "layout.h"
 #include "framelistmodel.h"
 #include "template.h"
 
@@ -36,6 +35,7 @@ private:
     void openDocument();
     void newDocument();
     void resetPresentation();
+    void readTemplate(QString filename);
 
     // functions connected to actions
     void save();
@@ -64,5 +64,7 @@ private:
 
     QString mFilename;
     QString mPdfFile;
+
+    Template mTemplate;
 };
 #endif // MAINWINDOW_H

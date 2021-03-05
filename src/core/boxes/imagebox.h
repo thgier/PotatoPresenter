@@ -16,8 +16,8 @@ private:
     std::shared_ptr<QImage> loadImage(QString path) const;
     std::shared_ptr<QSvgRenderer> loadSvg(QString path) const;
     std::shared_ptr<QSvgRenderer> loadPdf(QString path) const;
-    void drawImage(std::shared_ptr<QImage> image, QPainter& painter) const;
-    void drawSvg(std::shared_ptr<QSvgRenderer> svg, QPainter& painter) const;
+    void drawImage(std::shared_ptr<QImage> image, QPainter& painter);
+    void drawSvg(std::shared_ptr<QSvgRenderer> svg, QPainter& painter);
 };
 
 #endif // PICTURE_H

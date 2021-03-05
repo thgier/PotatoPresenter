@@ -74,6 +74,10 @@ void FrameWidget::contextMenuEvent(QContextMenuEvent *event){
 
 void FrameWidget::updateFrames(){
     setCurrentPage(mCurrentFrameId);
+    if(mPageNumber >= int(mPresentation->frameList().vector.size())) {
+        mPageNumber = int(mPresentation->frameList().vector.size()) - 1;
+        mCurrentFrameId = mPresentation->frameList().vector.back()->id();
+    }
     update();
 }
 

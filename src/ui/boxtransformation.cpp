@@ -1,5 +1,5 @@
 #include "boxtransformation.h"
-#include "vector"
+#include <vector>
 #include <math.h>
 #include <numbers>
 
@@ -28,9 +28,6 @@ void BoxTransformation::doTransformation(QPoint mousePos, std::shared_ptr<Presen
             box = makeRotateTransformation(mousePos);
             break;
         }
-    if(box.isEmpty()){
-        return;
-    }
     pres->setBoxGeometry(mBox->id(), box, mPageNumber);
 }
 
@@ -48,87 +45,85 @@ QRect BoxTransformation::scale(QPoint mouse, QPointF v, BoxGeometry* boxrect) co
 BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
     auto mouseMovement = mousePos - mLastMousePosition;
     mLastMousePosition = mousePos;
-    auto boxrect = mBox->geometry();
-    auto rect = boxrect.rect();
-    auto const rotateMouseMovement = boxrect.rotateTransform().inverted().map(mouseMovement);
-    auto const transformation = boxrect.transform().inverted();
+    auto geometry = mBox->geometry();
+    auto rect = geometry.rect();
     switch (mPosMouseBox) {
         case pointPosition::topLeftCorner:{
-            auto const bottomRight = boxrect.transform().map(rect.bottomRight());
+            auto const bottomRight = geometry.transform().map(rect.bottomRight());
             rect.moveBottomRight(bottomRight);
-            auto const localMouse = boxrect.transform(bottomRight).inverted().map(mousePos);
+            auto const localMouse = geometry.transform(bottomRight).inverted().map(mousePos);
             rect.setTopLeft(localMouse);
-            auto const center = boxrect.transform(bottomRight).map(rect.center());
+            auto const center = geometry.transform(bottomRight).map(rect.center());
             rect.moveCenter(center);
             break;
         }
         case pointPosition::topRightCorner:{
-            auto const bottomLeft = boxrect.transform().map(rect.bottomLeft());
+            auto const bottomLeft = geometry.transform().map(rect.bottomLeft());
             rect.moveBottomLeft(bottomLeft);
-            auto const localMouse = boxrect.transform(bottomLeft).inverted().map(mousePos);
+            auto const localMouse = geometry.transform(bottomLeft).inverted().map(mousePos);
             rect.setTopRight(localMouse);
-            auto const center = boxrect.transform(bottomLeft).map(rect.center());
+            auto const center = geometry.transform(bottomLeft).map(rect.center());
             rect.moveCenter(center);
             break;
         }
         case pointPosition::bottomLeftCorner:{
-            auto const topRight = boxrect.transform().map(rect.topRight());
+            auto const topRight = geometry.transform().map(rect.topRight());
             rect.moveTopRight(topRight);
-            auto const localMouse = boxrect.transform(topRight).inverted().map(mousePos);
+            auto const localMouse = geometry.transform(topRight).inverted().map(mousePos);
             rect.setBottomLeft(localMouse);
-            auto const center = boxrect.transform(topRight).map(rect.center());
+            auto const center = geometry.transform(topRight).map(rect.center());
             rect.moveCenter(center);
             break;
         }
         case pointPosition::bottomRightCorner:{
-            auto const topLeft = boxrect.transform().map(rect.topLeft());
+            auto const topLeft = geometry.transform().map(rect.topLeft());
             rect.moveTopLeft(topLeft);
-            auto const localMouse = boxrect.transform(topLeft).inverted().map(mousePos);
+            auto const localMouse = geometry.transform(topLeft).inverted().map(mousePos);
             rect.setBottomRight(localMouse);
-            auto const center = boxrect.transform(topLeft).map(rect.center());
+            auto const center = geometry.transform(topLeft).map(rect.center());
             rect.moveCenter(center);
             break;
         }
         case pointPosition::topBorder:{
-            auto const bottomLeft = boxrect.transform().map(rect.bottomLeft());
+            auto const bottomLeft = geometry.transform().map(rect.bottomLeft());
             rect.moveBottomLeft(bottomLeft);
-            auto const localMouse = boxrect.transform(bottomLeft).inverted().map(mousePos);
+            auto const localMouse = geometry.transform(bottomLeft).inverted().map(mousePos);
             rect.setTop(localMouse.y());
-            auto const center = boxrect.transform(bottomLeft).map(rect.center());
+            auto const center = geometry.transform(bottomLeft).map(rect.center());
             rect.moveCenter(center);
             break;
         }
         case pointPosition::bottomBorder:{
-            auto const topLeft = boxrect.transform().map(rect.topLeft());
+            auto const topLeft = geometry.transform().map(rect.topLeft());
             rect.moveTopLeft(topLeft);
-            auto const localMouse = boxrect.transform(topLeft).inverted().map(mousePos);
+            auto const localMouse = geometry.transform(topLeft).inverted().map(mousePos);
             rect.setBottom(localMouse.y());
-            auto const center = boxrect.transform(topLeft).map(rect.center());
+            auto const center = geometry.transform(topLeft).map(rect.center());
             rect.moveCenter(center);
             break;
         }
         case pointPosition::leftBorder:{
-            auto const topRight = boxrect.transform().map(rect.topRight());
+            auto const topRight = geometry.transform().map(rect.topRight());
             rect.moveTopRight(topRight);
-            auto const localMouse = boxrect.transform(topRight).inverted().map(mousePos);
+            auto const localMouse = geometry.transform(topRight).inverted().map(mousePos);
             rect.setLeft(localMouse.x());
-            auto const center = boxrect.transform(topRight).map(rect.center());
+            auto const center = geometry.transform(topRight).map(rect.center());
             rect.moveCenter(center);
             break;
         }
         case pointPosition::rightBorder:{
-            auto const topLeft = boxrect.transform().map(rect.topLeft());
+            auto const topLeft = geometry.transform().map(rect.topLeft());
             rect.moveTopLeft(topLeft);
-            auto const localMouse = boxrect.transform(topLeft).inverted().map(mousePos);
+            auto const localMouse = geometry.transform(topLeft).inverted().map(mousePos);
             rect.setRight(localMouse.x());
-            auto const center = boxrect.transform(topLeft).map(rect.center());
+            auto const center = geometry.transform(topLeft).map(rect.center());
             rect.moveCenter(center);
             break;
         }
         case pointPosition::inBox:{
             rect.translate(mouseMovement);
-            boxrect.setRect(rect);
-            return boxrect;
+            geometry.setRect(rect);
+            return geometry;
             break;
         }
         case pointPosition::notInBox:{
@@ -136,8 +131,8 @@ BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
         }
     }
     rect = rect.normalized();
-    boxrect.setRect(rect);
-    return boxrect;
+    geometry.setRect(rect);
+    return geometry;
 }
 
 BoxGeometry BoxTransformation::makeRotateTransformation(QPoint mousePos){

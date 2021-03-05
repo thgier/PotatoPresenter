@@ -54,8 +54,7 @@ void Template::setFrames(FrameList frames) {
     mPresentation.setFrames(frames);
 }
 
-FrameList Template::applyTemplate(FrameList frameList) const {
-    FrameList newFrameList;
+void Template::applyTemplate(FrameList& frameList) {
     for(auto const& frame: frameList.vector) {
         auto const frameclass = frame->frameClass();
         if(!frameclass.isEmpty()) {
@@ -65,9 +64,7 @@ FrameList Template::applyTemplate(FrameList frameList) const {
         for(auto const& box: frame->boxes()) {
             applyTemplateToBox(box);
         }
-        newFrameList.appendFrame(frame);
     }
-    return newFrameList;
 }
 
 void Template::applyTemplateToBox(Box::Ptr box) const {
@@ -75,8 +72,9 @@ void Template::applyTemplateToBox(Box::Ptr box) const {
     if(boxStyle.boxClass.isEmpty()) {
         return;
     }
-    auto const boxStyleTemplate = getStyle(boxStyle.boxClass);
+    auto boxStyleTemplate = getStyle(boxStyle.boxClass);
     if(boxStyleTemplate.empty()) {
+        mPresentation.applyStandardTemplateToBox(box);
         return;
     }
     if(!boxStyle.mAlignment) {
@@ -100,21 +98,12 @@ void Template::applyTemplateToBox(Box::Ptr box) const {
     if(!boxStyle.mOpacity) {
         boxStyle.mOpacity = boxStyleTemplate.mOpacity;
     }
-    if(!boxStyle.mGeometry.angle) {
-        boxStyle.mGeometry.angle = boxStyleTemplate.mGeometry.angle;
-    }
-    if(!boxStyle.mGeometry.height) {
-        boxStyle.mGeometry.height = boxStyleTemplate.mGeometry.height;
-    }
-    if(!boxStyle.mGeometry.left) {
-        boxStyle.mGeometry.left = boxStyleTemplate.mGeometry.left;
-    }
-    if(!boxStyle.mGeometry.top) {
-        boxStyle.mGeometry.top = boxStyleTemplate.mGeometry.top;
-    }
-    if(!boxStyle.mGeometry.width) {
-        boxStyle.mGeometry.width = boxStyleTemplate.mGeometry.width;
-    }
+
+    boxStyle.mGeometry.setAngleIfNotSet(boxStyleTemplate.mGeometry.angle());
+    boxStyle.mGeometry.setLeftIfNotSet(boxStyleTemplate.mGeometry.left());
+    boxStyle.mGeometry.setTopIfNotSet(boxStyleTemplate.mGeometry.top());
+    boxStyle.mGeometry.setWidthIfNotSet(boxStyleTemplate.mGeometry.width());
+    boxStyle.mGeometry.setHeightIfNotSet(boxStyleTemplate.mGeometry.height());
 
     box->setBoxStyle(boxStyle);
 }

@@ -31,7 +31,8 @@ void Parser::loadInput(QByteArray input){
 }
 
 Preamble Parser::readPreamble() {
-    while(!(mTokenizer.peekNext().mKind == Token::Kind::Command && mTokenizer.peekNext().mText == "\\frame")) {
+    while(!(mTokenizer.peekNext().mKind == Token::Kind::Command && mTokenizer.peekNext().mText == "\\frame")
+          || mTokenizer.peekNext().mKind == Token::Kind::EndOfFile) {
         auto token = mTokenizer.next();
         if (token.mKind == Token::Kind::Command) {
             preambleCommand(token);
@@ -83,6 +84,9 @@ void Parser::command(Token token){
     }
     else if(token.mText == "\\image"){
         newImage(token.mLine);
+    }
+    else if(token.mText == "\\body"){
+        newBody(token.mLine);
     }
     else if(token.mText == "\\title"){
         newTitle(token.mLine);
@@ -219,10 +223,9 @@ void Parser::newBody(int line){
     auto id = generateId();
     auto boxStyle = readArguments(id);
 
-    auto const frameId = mFrameList.vector.back()->id();
-    QString text = frameId;
+    QString text;
     auto const nextToken = mTokenizer.peekNext();
-    if(nextToken.mKind == Token::Kind::Text && !nextToken.mText.isEmpty()) {
+    if(nextToken.mKind == Token::Kind::Text || nextToken.mKind == Token::Kind::MultiLineText) {
         text = QString(mTokenizer.next().mText);
     }
     boxStyle.boxClass = "body";
@@ -280,7 +283,8 @@ void Parser::newPlainText(int line) {
         return;
     }
     auto id = generateId();
-    auto const boxStyle = readArguments(id);
+    auto boxStyle = readArguments(id);
+    boxStyle.boxClass = "body";
 
     QString text = "";
     auto const peekNextKind = mTokenizer.peekNext().mKind;
@@ -300,7 +304,8 @@ void Parser::newBlindText(int line) {
         return;
     }
     auto id = generateId();
-    auto const boxStyle = readArguments(id);
+    auto boxStyle = readArguments(id);
+    boxStyle.boxClass = "body";
 
     QString text = "Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
     auto const peekNext = mTokenizer.peekNext();
@@ -379,19 +384,19 @@ BoxStyle Parser::readArguments(QString &id) {
             mUserIds.push_back(id);
         }
         if(argument.mText == "left"){
-            boxStyle.mGeometry.left = argumentValue.mText.toInt();
+            boxStyle.mGeometry.setLeft(argumentValue.mText.toInt());
         }
         if(argument.mText == "top"){
-            boxStyle.mGeometry.top = argumentValue.mText.toInt();
+            boxStyle.mGeometry.setTop(argumentValue.mText.toInt());
         }
         if(argument.mText == "width"){
-            boxStyle.mGeometry.width = argumentValue.mText.toInt();
+            boxStyle.mGeometry.setWidth(argumentValue.mText.toInt());
         }
         if(argument.mText == "height"){
-            boxStyle.mGeometry.height = argumentValue.mText.toInt();
+            boxStyle.mGeometry.setHeight(argumentValue.mText.toInt());
         }
         if(argument.mText == "angle"){
-            boxStyle.mGeometry.angle = argumentValue.mText.toDouble();
+            boxStyle.mGeometry.setAngle(argumentValue.mText.toDouble());
         }
         if(argument.mText == "text-align"){
             if(argumentValue.mText == "left") {

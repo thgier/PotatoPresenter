@@ -15,12 +15,75 @@ BoxGeometry::BoxGeometry(int x, int y, int width, int height, double angle)
     , mAngle(angle)
 {}
 
+BoxGeometry::BoxGeometry(MemberBoxGeometry memberboxgeometry)
+    : mLeft(memberboxgeometry.rect.left())
+    , mTop(memberboxgeometry.rect.top())
+    , mWidth(memberboxgeometry.rect.width())
+    , mHeight(memberboxgeometry.rect.height())
+    , mAngle(memberboxgeometry.angle)
+{}
+
 QRect BoxGeometry::rect() const {
-    return QRect(mLeft.value_or(0), mTop.value_or(0), mWidth.value_or(0), mHeight.value_or(0));
+    return QRect(mLeft.value_or(0), mTop.value_or(0), mWidth.value_or(300), mHeight.value_or(100));
 }
 
-std::optional<double> BoxGeometry::angle() const {
-    return mAngle;
+QSize BoxGeometry::size() const {
+    return {width(), height()};
+}
+
+QPoint BoxGeometry::topLeft() const {
+    return {left(), top()};
+}
+
+double BoxGeometry::angle() const {
+    return mAngle.value_or(0);
+}
+
+int BoxGeometry::left() const {
+    return mLeft.value_or(0);
+}
+
+int BoxGeometry::top() const {
+    return mTop.value_or(0);
+}
+
+int BoxGeometry::width() const {
+    return mWidth.value_or(300);
+}
+
+int BoxGeometry::height() const {
+    return mHeight.value_or(100);
+}
+
+MemberBoxGeometry BoxGeometry::toValue() const {
+    return {angle(), QRect(left(), top(), width(), height())};
+}
+
+void BoxGeometry::setLeftIfNotSet(int left) {
+    mLeft = mLeft.value_or(left);
+}
+
+void BoxGeometry::setTopIfNotSet(int top) {
+    mTop = mTop.value_or(top);
+}
+
+void BoxGeometry::setWidthIfNotSet(int width) {
+    mWidth = mWidth.value_or(width);
+}
+
+void BoxGeometry::setHeightIfNotSet(int height) {
+    mHeight = mHeight.value_or(height);
+}
+
+void BoxGeometry::setAngleIfNotSet(double angle) {
+    mAngle = mAngle.value_or(angle);
+}
+
+void BoxGeometry::setRect(QRect rect) {
+    mLeft = rect.left();
+    mTop = rect.top();
+    mWidth = rect.width();
+    mHeight = rect.height();
 }
 
 void BoxGeometry::setAngle(double angle) {
@@ -28,6 +91,22 @@ void BoxGeometry::setAngle(double angle) {
     if(mAngle < 0){
         mAngle = mAngle.value() + 360;
     }
+}
+
+void BoxGeometry::setLeft(int left) {
+    mLeft = left;
+}
+
+void BoxGeometry::setTop(int top) {
+    mTop = top;
+}
+
+void BoxGeometry::setWidth(int width) {
+    mWidth = width;
+}
+
+void BoxGeometry::setHeight(int height) {
+    mHeight = height;
 }
 
 void BoxGeometry::addAngle(qreal dAngle) {
@@ -100,6 +179,10 @@ QTransform BoxGeometry::rotateTransform() const {
     return transform;
 }
 
-qreal BoxGeometry::lengthDiagonal() {
+qreal BoxGeometry::lengthDiagonal() const {
     return std::sqrt(mWidth.value() * mWidth.value() + mHeight.value() * mHeight.value());
+}
+
+bool BoxGeometry::empty() const {
+    return !(mLeft.has_value() || mTop.has_value() || mWidth.has_value() || mHeight.has_value() || mAngle.has_value());
 }
