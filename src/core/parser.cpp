@@ -160,8 +160,11 @@ void Parser::newTextField(int line){
         throw ParserError{"missing frame: type \\frame id", line};
         return;
     }
-    auto id = generateId();
+    QString id;
     auto const boxStyle = readArguments(id);
+    if(id.isEmpty()) {
+        id = generateId("text", boxStyle.boxClass);
+    }
 
     QString text = "";
     auto const peekNextKind = mTokenizer.peekNext().mKind;
@@ -181,9 +184,14 @@ void Parser::newImage(int line) {
         throw ParserError{"missing frame: type \\frame id", line};
         return;
     }
-    auto id = generateId();
-    auto const boxStyle = readArguments(id);
-
+    QString id;
+    auto boxStyle = readArguments(id);
+    if(boxStyle.boxClass.isEmpty()) {
+        boxStyle.boxClass = "body";
+    }
+    if(id.isEmpty()) {
+        id = generateId("image", boxStyle.boxClass);
+    }
     QString text = "";
     if(mTokenizer.peekNext().mKind == Token::Kind::Text) {
         text = QString(mTokenizer.next().mText);
@@ -199,8 +207,12 @@ void Parser::newTitle(int line){
         throw ParserError{"missing frame: type \\frame id", line};
         return;
     }
-    auto id = generateId();
+    QString id;
     auto boxStyle = readArguments(id);
+    boxStyle.boxClass = "title";
+    if(id.isEmpty()) {
+        id = generateId("text", boxStyle.boxClass);
+    }
 
     auto const frameId = mFrameList.vector.back()->id();
     QString text = frameId;
@@ -208,7 +220,6 @@ void Parser::newTitle(int line){
     if(nextToken.mKind == Token::Kind::Text && !nextToken.mText.isEmpty()) {
         text = QString(mTokenizer.next().mText);
     }
-    boxStyle.boxClass = "title";
     auto const textField = std::make_shared<TextBox>(text, boxStyle, id);
     textField->setPauseCounter(mPauseCount);
     mBoxCounter++;
@@ -220,15 +231,18 @@ void Parser::newBody(int line){
         throw ParserError{"missing frame: type \\frame id", line};
         return;
     }
-    auto id = generateId();
+    QString id;
     auto boxStyle = readArguments(id);
+    boxStyle.boxClass = "body";
+    if(id.isEmpty()) {
+        id = generateId("text", boxStyle.boxClass);
+    }
 
     QString text;
     auto const nextToken = mTokenizer.peekNext();
     if(nextToken.mKind == Token::Kind::Text || nextToken.mKind == Token::Kind::MultiLineText) {
         text = QString(mTokenizer.next().mText);
     }
-    boxStyle.boxClass = "body";
     auto const textField = std::make_shared<TextBox>(text, boxStyle, id);
     textField->setPauseCounter(mPauseCount);
     mBoxCounter++;
@@ -240,11 +254,13 @@ void Parser::newArrow(int line){
         throw ParserError{"missing frame: type \\frame id", line};
         return;
     }
-    auto id = generateId();
+    QString id;
+    auto const boxStyle = readArguments(id);
+    if(id.isEmpty()) {
+        id = generateId("arrow", boxStyle.boxClass);
+    }
 
-    auto const style = readArguments(id);
-
-    auto const arrow = std::make_shared<ArrowBox>(style, id);
+    auto const arrow = std::make_shared<ArrowBox>(boxStyle, id);
     arrow->setPauseCounter(mPauseCount);
     mFrameList.vector.back()->appendBox(arrow);
     mBoxCounter++;
@@ -261,11 +277,14 @@ void Parser::newLine(int line){
         throw ParserError{"missing frame: type \\frame id", line};
         return;
     }
-    auto id = generateId();
 
-    auto const style = readArguments(id);
+    QString id;
+    auto const boxStyle = readArguments(id);
+    if(id.isEmpty()) {
+        id = generateId("line", boxStyle.boxClass);
+    }
 
-    auto const arrow = std::make_shared<LineBox>(style, id);
+    auto const arrow = std::make_shared<LineBox>(boxStyle, id);
     arrow->setPauseCounter(mPauseCount);
     mFrameList.vector.back()->appendBox(arrow);
     mBoxCounter++;
@@ -282,9 +301,15 @@ void Parser::newPlainText(int line) {
         throw ParserError{"missing frame: type \\frame id", line};
         return;
     }
-    auto id = generateId();
+
+    QString id;
     auto boxStyle = readArguments(id);
-    boxStyle.boxClass = "body";
+    if(boxStyle.boxClass.isEmpty()) {
+        boxStyle.boxClass = "body";
+    }
+    if(id.isEmpty()) {
+        id = generateId("arrow", boxStyle.boxClass);
+    }
 
     QString text = "";
     auto const peekNextKind = mTokenizer.peekNext().mKind;
@@ -303,9 +328,16 @@ void Parser::newBlindText(int line) {
         throw ParserError{"missing frame: type \\frame id", line};
         return;
     }
-    auto id = generateId();
+
+    QString id;
     auto boxStyle = readArguments(id);
-    boxStyle.boxClass = "body";
+    if(boxStyle.boxClass.isEmpty()) {
+        boxStyle.boxClass = "body";
+    }
+    if(id.isEmpty()) {
+        id = generateId("arrow", boxStyle.boxClass);
+    }
+
 
     QString text = "Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
     auto const peekNext = mTokenizer.peekNext();
@@ -423,9 +455,9 @@ BoxStyle Parser::readArguments(QString &id) {
     return boxStyle;
 }
 
-QString Parser::generateId() {
+QString Parser::generateId(QString type, QString boxclass) {
     auto const frameId = mFrameList.vector.back()->id();
-    auto id = frameId + "-intern-" + QString::number(mBoxCounter);
+    auto id = frameId + "-intern-" + type + "-" + boxclass + "-" + QString::number(mBoxCounter);
     return id;
 }
 

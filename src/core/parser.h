@@ -44,7 +44,7 @@ private:
     void setVariable(int line);
     QString addBracketsToVariable(QString variable) const;
     BoxStyle readArguments(QString &id);
-    QString generateId();
+    QString generateId(QString type, QString boxclass);
 
     Tokenizer mTokenizer;
     int mBoxCounter = 0;
