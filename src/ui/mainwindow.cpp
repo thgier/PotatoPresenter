@@ -75,6 +75,8 @@ MainWindow::MainWindow(QWidget *parent)
                            fileChanged();});
     connect(ui->actionCreatePDF, &QAction::triggered,
                      this, &MainWindow::exportPDF);
+    connect(ui->actionExport_PDF_as, &QAction::triggered,
+            this, &MainWindow::exportPDFAs);
 
     connect(&cacheManager(), &EquationCacheManager::conversionFinished,
             mFrameWidget, QOverload<>::of(&FrameWidget::update));

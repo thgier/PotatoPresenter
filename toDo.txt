@@ -6,4 +6,3 @@
 - latex
 - arrow buttons to move boxes
 - switch to last frame when created
-- save as
