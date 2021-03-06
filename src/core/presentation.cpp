@@ -80,6 +80,54 @@ QSize Presentation::dimensions() const {
     return mDimensions;
 }
 
+Box::Ptr Presentation::findBox(const QString &id) const {
+    if(id.startsWith("intern")) {
+        for(auto const& frame: mFrames.vector) {
+            if(id.contains(frame->id())) {
+                for(auto const& box: frame->boxes()) {
+                    if(box->id() == id) {
+                        return box;
+                    }
+                }
+            }
+        }
+    }
+    else{
+        for(auto const& frame: mFrames.vector) {
+            for(auto const& box: frame->boxes()) {
+                if(box->id() == id) {
+                    return box;
+                }
+            }
+        }
+    }
+    return {};
+}
+
+std::pair<Frame::Ptr, Box::Ptr> Presentation::findBoxForLine(int line) const {
+    if(mFrames.empty()) {
+        return {};
+    }
+    qInfo() << "lines;";
+    for(auto const& frame: mFrames.vector) {
+        qInfo() << frame->line();
+    }
+    qInfo() << "line" << line;
+    auto frame = std::lower_bound(mFrames.vector.begin(), mFrames.vector.end(), line,
+                     [](auto const& a, auto b){return a->line() <= b;});
+    if(frame == mFrames.vector.begin()) {
+        return {};
+    }
+    frame--;
+    auto box = std::lower_bound(frame->get()->boxes().begin(), frame->get()->boxes().end(), line,
+                               [](auto const& a, auto b){return a->line() <= b;});
+    if(box == frame->get()->boxes().begin()) {
+        return {*frame, nullptr};
+    }
+    box--;
+    return std::pair(*frame, *box);
+}
+
 void Presentation::applyStandardTemplateToBox(Box::Ptr box) const {
     QRect rect;
     auto style = box->style();

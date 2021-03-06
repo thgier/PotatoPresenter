@@ -6,7 +6,7 @@
 class PlainTextBox : public Box
 {
 public:
-    PlainTextBox(QString text, BoxStyle style, QString id);
+    PlainTextBox(QString text, BoxStyle style, QString id, int line);
     QString mText;
     QString Text();
     void drawContent(QPainter& painter, std::map<QString, QString> variables) override;

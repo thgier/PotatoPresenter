@@ -37,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent)
     mViewTextDoc = mDoc->createView(this);
     ui->editor->addWidget(mViewTextDoc);
 
+    // setup Item model
     mFrameModel = new FrameListModel(this);
     mFrameModel->setPresentation(mPresentation);
     ui->pagePreview->setModel(mFrameModel);
@@ -44,6 +45,18 @@ MainWindow::MainWindow(QWidget *parent)
     ui->pagePreview->setItemDelegate(delegate);
     ui->pagePreview->setViewMode(QListView::IconMode);
     QItemSelectionModel *selectionModel = ui->pagePreview->selectionModel();
+
+    // setup bar with error messages and couple button
+    auto *barTop = new QHBoxLayout(this);
+    ui->paint->insertLayout(0, barTop);
+    mCoupleButton = new QToolButton(this);
+    mCoupleButton->setCheckable(true);
+    mCoupleButton->setChecked(true);
+    mCoupleButton->setIcon(QIcon::fromTheme("edit-link"));
+    mCoupleButton->setToolTip("Couple the Cursor in the Editor and the selection in Frame view");
+    mErrorOutput = new QLabel(this);
+    barTop->addWidget(mErrorOutput);
+    barTop->addWidget(mCoupleButton);
 
     newDocument();
     fileChanged();
@@ -69,7 +82,7 @@ MainWindow::MainWindow(QWidget *parent)
     CacheManager<QImage>::instance().setCallback([this](QString){mFrameWidget->update();});
     CacheManager<QSvgRenderer>::instance().setCallback([this](QString){mFrameWidget->update();});
 
-    ui->error->setWordWrap(true);
+    mErrorOutput->setWordWrap(true);
 
     auto transformGroup = new QActionGroup(this);
     transformGroup->addAction(ui->actionRotate);
@@ -79,6 +92,33 @@ MainWindow::MainWindow(QWidget *parent)
            this, [this](){mFrameWidget->setTransformationType(TransformationType::rotate);});
     connect(ui->actionTranslate, &QAction::triggered,
             this, [this](){mFrameWidget->setTransformationType(TransformationType::translate);});
+
+    connect(mFrameWidget, &FrameWidget::selectionChanged,
+            this, [this](Frame::Ptr frame){
+            if(!mCoupleButton->isChecked()) {return ;}
+            auto [frameInLine, boxInLine] = mPresentation->findBoxForLine(mViewTextDoc->cursorPosition().line());
+            if(frameInLine != frame) {
+                mViewTextDoc->setCursorPosition(KTextEditor::Cursor(frame->line(), 0));
+                mViewTextDoc->removeSelection();
+            }});
+    connect(mFrameWidget, &FrameWidget::boxSelectionChanged,
+            this, [this](Box::Ptr box){
+            if(!mCoupleButton->isChecked()) {return ;}
+            auto [frameInLine, boxInLine] = mPresentation->findBoxForLine(mViewTextDoc->cursorPosition().line());
+            if(boxInLine != box) {
+                mViewTextDoc->setCursorPosition(KTextEditor::Cursor(box->line(), 0));
+                mViewTextDoc->removeSelection();
+            }});
+
+    mCursorTimer.setSingleShot(true);
+    connect(mViewTextDoc, &KTextEditor::View::cursorPositionChanged,
+            this, [this](KTextEditor::View *, const KTextEditor::Cursor &){mCursorTimer.start(10);});
+    connect(mDoc, &KTextEditor::Document::textChanged,
+            this,[this](){mCursorTimer.start(10);});
+    connect(&mCursorTimer, &QTimer::timeout,
+            this, &MainWindow::updateCursor);
+
+    mViewTextDoc->setFocus();
 }
 
 MainWindow::~MainWindow()
@@ -99,9 +139,9 @@ void MainWindow::fileChanged() {
             mPresentation->setTemplate(&mTemplate);
         }
         mPresentation->setFrames(frames);
-        ui->error->setText("Conversion succeeded \u2714");
+        mErrorOutput->setText("Conversion succeeded \u2714");
     }  catch (ParserError& error) {
-        ui->error->setText("Line " + QString::number(error.line + 1) + ": " + error.message + " \u26A0");
+        mErrorOutput->setText("Line " + QString::number(error.line + 1) + ": " + error.message + " \u26A0");
         iface->addMark(error.line, KTextEditor::MarkInterface::MarkTypes::Error);
         return;
     }
@@ -274,3 +314,16 @@ QAction* MainWindow::importActionFromKDoc(const char* name, std::function<void()
     return action;
 }
 
+void MainWindow::updateCursor() {
+    if(!mCoupleButton->isChecked()) {
+        return ;
+    }
+    auto [frame, box] = mPresentation->findBoxForLine(mViewTextDoc->cursorPosition().line());
+    if(!frame) {
+        return;
+    }
+    mFrameWidget->setActiveBox(box ? box->id() : QString(), frame->id());
+    auto const index = mFrameModel->index(mFrameWidget->pageNumber());
+    ui->pagePreview->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
+    ui->pagePreview->scrollTo(index);
+}

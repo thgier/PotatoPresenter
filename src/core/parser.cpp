@@ -37,6 +37,9 @@ Preamble Parser::readPreamble() {
         if (token.mKind == Token::Kind::Command) {
             preambleCommand(token);
         }
+        else if(token.mKind == Token::Kind::EndOfFile) {
+            throw ParserError{"missing command", 0};
+        }
         else{
             throw ParserError{"missing command", token.mLine};
         }
@@ -149,7 +152,7 @@ void Parser::newFrame(int line){
     if(mVariables.find("%{resourcepath}") == mVariables.end()){
         mVariables["%{resourcepath}"] = mResourcepath;
     }
-    mFrameList.vector.push_back(std::make_shared<Frame>(id, mVariables));
+    mFrameList.vector.push_back(std::make_shared<Frame>(id, mVariables, line));
     mFrameList.vector.back()->setTemplateBoxes(templateBoxes);
     mFrameList.vector.back()->setFrameClass(frameClass);
 }
@@ -171,7 +174,7 @@ void Parser::newTextField(int line){
     if(peekNextKind == Token::Kind::Text || peekNextKind == Token::Kind::MultiLineText) {
         text = QString(mTokenizer.next().mText);
     }
-    auto const textField = std::make_shared<TextBox>(text, boxStyle, id);
+    auto const textField = std::make_shared<TextBox>(text, boxStyle, id, line);
     textField->setBoxStyle(boxStyle);
     textField->setPauseCounter(mPauseCount);
     mFrameList.vector.back()->appendBox(textField);
@@ -194,7 +197,7 @@ void Parser::newImage(int line) {
     if(mTokenizer.peekNext().mKind == Token::Kind::Text) {
         text = QString(mTokenizer.next().mText);
     }
-    auto const imageBox = std::make_shared<ImageBox>(text, boxStyle, id);
+    auto const imageBox = std::make_shared<ImageBox>(text, boxStyle, id, line);
     imageBox->setPauseCounter(mPauseCount);
     mFrameList.vector.back()->appendBox(imageBox);
 }
@@ -217,7 +220,7 @@ void Parser::newTitle(int line){
     if(nextToken.mKind == Token::Kind::Text && !nextToken.mText.isEmpty()) {
         text = QString(mTokenizer.next().mText);
     }
-    auto const textField = std::make_shared<TextBox>(text, boxStyle, id);
+    auto const textField = std::make_shared<TextBox>(text, boxStyle, id, line);
     textField->setPauseCounter(mPauseCount);
     mFrameList.vector.back()->appendBox(textField);
 }
@@ -239,7 +242,7 @@ void Parser::newBody(int line){
     if(nextToken.mKind == Token::Kind::Text || nextToken.mKind == Token::Kind::MultiLineText) {
         text = QString(mTokenizer.next().mText);
     }
-    auto const textField = std::make_shared<TextBox>(text, boxStyle, id);
+    auto const textField = std::make_shared<TextBox>(text, boxStyle, id, line);
     textField->setPauseCounter(mPauseCount);
     mFrameList.vector.back()->appendBox(textField);
 }
@@ -255,7 +258,7 @@ void Parser::newArrow(int line){
         id = generateId("arrow", boxStyle.boxClass);
     }
 
-    auto const arrow = std::make_shared<ArrowBox>(boxStyle, id);
+    auto const arrow = std::make_shared<ArrowBox>(boxStyle, id, line);
     arrow->setPauseCounter(mPauseCount);
     mFrameList.vector.back()->appendBox(arrow);
 
@@ -278,7 +281,7 @@ void Parser::newLine(int line){
         id = generateId("line", boxStyle.boxClass);
     }
 
-    auto const arrow = std::make_shared<LineBox>(boxStyle, id);
+    auto const arrow = std::make_shared<LineBox>(boxStyle, id, line);
     arrow->setPauseCounter(mPauseCount);
     mFrameList.vector.back()->appendBox(arrow);
 
@@ -310,7 +313,7 @@ void Parser::newPlainText(int line) {
     if(peekNextKind == Token::Kind::Text || peekNextKind == Token::Kind::MultiLineText) {
         text = QString(mTokenizer.next().mText);
     }
-    auto const textField = std::make_shared<PlainTextBox>(text, boxStyle, id);
+    auto const textField = std::make_shared<PlainTextBox>(text, boxStyle, id, line);
     textField->setPauseCounter(mPauseCount);
     mFrameList.vector.back()->appendBox(textField);
 }
@@ -338,7 +341,7 @@ void Parser::newBlindText(int line) {
         text = text.left(lenght);
         mTokenizer.next();
     }
-    auto const textField = std::make_shared<TextBox>(text, boxStyle, id);
+    auto const textField = std::make_shared<TextBox>(text, boxStyle, id, line);
     textField->setPauseCounter(mPauseCount);
     mFrameList.vector.back()->appendBox(textField);
 }
@@ -401,6 +404,9 @@ BoxStyle Parser::readArguments(QString &id) {
         }
         if(argument.mText == "id"){
             id = QString(argumentValue.mText);
+            if(id.startsWith("intern")) {
+                throw ParserError{"User defined Box Ids should not start with \"intern\"", argumentValue.mLine};
+            }
             if(mBoxIds.find(id) != mBoxIds.end()) {
                 throw ParserError{"Box Id already exists", argumentValue.mLine};
             }
@@ -449,10 +455,10 @@ BoxStyle Parser::readArguments(QString &id) {
 QString Parser::generateId(QString type, QString boxclass) {
     auto const frameId = mFrameList.vector.back()->id();
     int boxCounter = 0;
-    auto id = frameId + "-intern-" + type + "-" + boxclass + "-0";
+    auto id = "intern-" + frameId + "-" + type + "-" + boxclass + "-0";
     while(mBoxIds.find(id) != mBoxIds.end()) {
         boxCounter++;
-        id = frameId + "-intern-" + type + "-" + boxclass + "-" + QString::number(boxCounter);
+        id = "intern-" + frameId + "-" + type + "-" + boxclass + "-" + QString::number(boxCounter);
     }
     mBoxIds.insert(id);
     return id;

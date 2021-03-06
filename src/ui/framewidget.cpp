@@ -96,9 +96,6 @@ void FrameWidget::setCurrentPage(QString frameId){
     int counter = 0;
     for(auto const & frame: mPresentation->frameList().vector) {
         if(frame->id() == frameId) {
-            if(mPageNumber != counter){
-                mActiveBoxId = QString();
-            }
             mPageNumber = counter;
             Q_EMIT pageNumberChanged(mPageNumber);
             break;
@@ -190,6 +187,10 @@ void FrameWidget::mouseReleaseEvent(QMouseEvent *event)
     }
     if(mActiveBoxId.isEmpty() || !mMomentTrafo){
         determineBoxInFocus(ScaledMousePos(event));
+        auto box = mPresentation->findBox(mActiveBoxId);
+        if(box) {
+            Q_EMIT boxSelectionChanged(box);
+        }
     }
     update();
 }
@@ -272,6 +273,12 @@ void FrameWidget::deleteBoxPosition() {
     }
     mPresentation->deleteBoxGeometry(mActiveBoxId, mPageNumber);
     update();
+}
+
+void FrameWidget::setActiveBox(QString boxId, QString frameId) {
+    mActiveBoxId = boxId;
+    mCurrentFrameId = frameId;
+    updateFrames();
 }
 
 void FrameWidget::setTransformationType(TransformationType type){

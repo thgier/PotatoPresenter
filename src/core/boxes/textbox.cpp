@@ -16,8 +16,9 @@
 #include "markdownParser.h"
 #include "markdownformatvisitor.h"
 
-TextBox::TextBox(QString text, BoxStyle style, QString id)
-    : Box(style, id), mText(text)
+TextBox::TextBox(QString text, BoxStyle style, QString id, int line)
+    : Box(style, id, line)
+    , mText(text)
 {
 }
 

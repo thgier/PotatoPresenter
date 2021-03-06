@@ -29,13 +29,6 @@
          <number>1</number>
         </property>
         <item>
-         <widget class="QLabel" name="error">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item>
          <widget class="FrameWidget" name="framewidget" native="true"/>
         </item>
         <item>
@@ -222,10 +215,25 @@
   </action>
   <action name="actionClean_Configurations">
    <property name="icon">
-    <iconset theme="edit-clear-all"/>
+    <iconset theme="edit-clear-all">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Clean Configurations</string>
+   </property>
+  </action>
+  <action name="actionCouple_Editor_and_Preview">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="edit-link"/>
+   </property>
+   <property name="text">
+    <string>Couple Editor and Preview </string>
+   </property>
+   <property name="toolTip">
+    <string>Couple Editor and Preview </string>
    </property>
   </action>
  </widget>

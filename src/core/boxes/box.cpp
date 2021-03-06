@@ -1,9 +1,10 @@
 #include "box.h"
 #include <QRegularExpression>
 
-Box::Box(BoxStyle boxStyle, QString id)
+Box::Box(BoxStyle boxStyle, QString id, int line)
     : mStyle{boxStyle}
     , mId{id}
+    , mLine{line}
 {
 }
 
@@ -31,8 +32,12 @@ void Box::setMovable(bool move) {
     mMovable = move;
 }
 
-QString Box::id() {
+QString Box::id() const {
     return mId;
+}
+
+int Box::line() const {
+    return mLine;
 }
 
 void Box::startDraw(QPainter &painter) {

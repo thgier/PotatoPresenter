@@ -1,8 +1,8 @@
 #include "arrowbox.h"
 #include <QPainterPath>
 
-ArrowBox::ArrowBox(BoxStyle style, QString id)
-    : Box(style, id)
+ArrowBox::ArrowBox(BoxStyle style, QString id, int line)
+    : Box(style, id, line)
 {
 }
 

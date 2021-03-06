@@ -62,7 +62,7 @@ public:
     using List = std::vector<Ptr>;
 
     Box();
-    Box(BoxStyle boxStyle, QString id);
+    Box(BoxStyle boxStyle, QString id, int line);
 
     // Implement this in child classes to draw the box's contents given the passed @p variables
     virtual void drawContent(QPainter& painter, std::map<QString, QString> variables) = 0;
@@ -81,7 +81,8 @@ public:
     void setGeometry(BoxGeometry const& geometry);
     void setGeometry(MemberBoxGeometry const& geometry);
 
-    QString id();
+    QString id() const;
+    int line() const;
     bool pauseCounterSmaller(int counter) const;
     int pauseCounter() const;
 
@@ -116,4 +117,5 @@ private:
     bool mVisible = true;
     bool mMovable = true;
     int mPauseCounter = 0;
+    int mLine;
 };

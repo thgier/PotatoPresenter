@@ -3,8 +3,9 @@
 #include <QTextLayout>
 #include <QTextDocument>
 
-PlainTextBox::PlainTextBox(QString text, BoxStyle style, QString id)
-    : Box(style, id), mText(text)
+PlainTextBox::PlainTextBox(QString text, BoxStyle style, QString id, int line)
+    : Box(style, id, line)
+    , mText(text)
 {
 }
 

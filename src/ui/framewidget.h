@@ -38,9 +38,12 @@ public:
 //    set the active Box on the position of a tool bar button
     void deleteBoxPosition();
 
+    void setActiveBox(QString boxId, QString frameId);
+
 Q_SIGNALS:
     void pageNumberChanged(int page);
     void selectionChanged(Frame::Ptr);
+    void boxSelectionChanged(Box::Ptr);
 
 private:
     void paintEvent(QPaintEvent *event) override;

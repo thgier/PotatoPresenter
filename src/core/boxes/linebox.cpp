@@ -2,8 +2,8 @@
 
 #include <QPainterPath>
 
-LineBox::LineBox(BoxStyle style, QString id)
-    : Box(style, id)
+LineBox::LineBox(BoxStyle style, QString id, int line)
+    : Box(style, id, line)
 {
 }
 

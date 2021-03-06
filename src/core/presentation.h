@@ -61,10 +61,12 @@ public:
     void setTemplate(Template *templateObject);
     void setFrames(FrameList const& frames);
 
+    // access to contained box
+    Box::Ptr findBox(QString const& id) const;
+    std::pair<Frame::Ptr, Box::Ptr> findBoxForLine(int line) const;
+
     bool empty() const;
     QSize dimensions() const;
-
-    Box::Ptr findBox(QString const& id) const;
 
     void applyStandardTemplateToBox(Box::Ptr box) const;
 
@@ -77,7 +79,7 @@ public:
     void saveConfig(QString const& file);
     ConfigBoxes& configuration();
 
-    void deleteNotNeededConfigurations();
+    void deleteNotNeededConfigurations()    ;
 
 Q_SIGNALS:
     void presentationChanged();

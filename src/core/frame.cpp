@@ -6,13 +6,14 @@ Frame::Frame()
 
 }
 
-Frame::Frame(const QString &id, const std::map<QString, QString> &variables)
+Frame::Frame(const QString &id, const std::map<QString, QString> &variables, int line)
     : mId{id}
     , mVariables{variables}
+    , mLine{line}
 {
 }
 
-Box::List Frame::boxes() const
+const Box::List &Frame::boxes() const
 {
     return mBoxes;
 }
@@ -79,6 +80,10 @@ void Frame::setVariable(QString const& name, QString const& value){
 int Frame::numberPauses() const {
     auto const& maxBox = std::max_element(mBoxes.begin(), mBoxes.end(), [](auto const& a, auto const& b){return a->pauseCounter() < b->pauseCounter();});
     return maxBox->get()->pauseCounter() + 1;
+}
+
+int Frame::line() const {
+    return mLine;
 }
 
 void Frame::setFrameClass(QString const& frameClass) {

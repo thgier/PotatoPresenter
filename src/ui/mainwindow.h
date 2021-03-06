@@ -8,6 +8,9 @@
 #include <KTextEditor/Document>
 #include <KTextEditor/Editor>
 #include <QListWidget>
+#include <QTimer>
+#include <QLabel>
+#include <QToolButton>
 #include <KXmlGuiWindow>
 #include "frame.h"
 #include "framewidget.h"
@@ -50,6 +53,8 @@ private:
     QString getPdfFilename();
     QAction* importActionFromKDoc(const char* name, std::function<void()> method);
 
+    void updateCursor();
+
 private:
     Ui::MainWindow *ui;
     KTextEditor::Editor* mEditor;
@@ -66,5 +71,10 @@ private:
     QString mPdfFile;
 
     Template mTemplate;
+
+    QTimer mCursorTimer;
+
+    QLabel* mErrorOutput;
+    QToolButton* mCoupleButton;
 };
 #endif // MAINWINDOW_H

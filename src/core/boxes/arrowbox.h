@@ -6,7 +6,7 @@
 class ArrowBox : public Box
 {
 public:
-    ArrowBox(BoxStyle style, QString id);
+    ArrowBox(BoxStyle style, QString id, int line);
     void drawContent(QPainter& painter, std::map<QString, QString> variables) override;
 };
 
