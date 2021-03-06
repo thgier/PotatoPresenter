@@ -3,6 +3,7 @@
 
 #include <QFile>
 #include <vector>
+#include <set>
 #include <QString>
 #include "frame.h"
 #include "configboxes.h"
@@ -47,14 +48,13 @@ private:
     QString generateId(QString type, QString boxclass);
 
     Tokenizer mTokenizer;
-    int mBoxCounter = 0;
     FrameList mFrameList;
-    std::vector<QString> mUserIds;
     std::map<QString, QString> mVariables;
     bool mParsingTemplate = false;
     int mPauseCount = 0;
     Preamble mPreamble;
     QString mResourcepath;
+    std::set<QString> mBoxIds;
 };
 
 #endif // PARSER_H
