@@ -93,6 +93,7 @@
     </property>
     <addaction name="separator"/>
     <addaction name="actionReload_Resources"/>
+    <addaction name="actionClean_Configurations"/>
    </widget>
    <addaction name="menufile"/>
    <addaction name="menuEdit"/>
@@ -212,10 +213,19 @@
   </action>
   <action name="actionReset_Position">
    <property name="icon">
-    <iconset theme="edit-reset"/>
+    <iconset theme="edit-reset">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Reset Position</string>
+   </property>
+  </action>
+  <action name="actionClean_Configurations">
+   <property name="icon">
+    <iconset theme="edit-clear-all"/>
+   </property>
+   <property name="text">
+    <string>Clean Configurations</string>
    </property>
   </action>
  </widget>

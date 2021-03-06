@@ -77,6 +77,8 @@ public:
     void saveConfig(QString const& file);
     ConfigBoxes& configuration();
 
+    void deleteNotNeededConfigurations();
+
 Q_SIGNALS:
     void presentationChanged();
     void frameChanged(int pageNumber);

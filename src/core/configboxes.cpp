@@ -2,6 +2,7 @@
 #include <QDebug>
 #include <QFileInfo>
 #include <QDir>
+#include <set>
 
 ConfigBoxes::ConfigBoxes()
 {
@@ -83,6 +84,16 @@ void ConfigBoxes::deleteRect(QString id) {
     if (auto it = mConfigMap.find(id); it != mConfigMap.end()) {
         mConfigMap.erase(it);
     }
+}
+
+void ConfigBoxes::deleteAllRectsExcept(std::vector<QString> const& boxIds) {
+    std::set<QString> keepItems;
+    std::ranges::copy(boxIds, std::inserter(keepItems, keepItems.begin()));
+
+    auto shouldRemove = [&keepItems](auto const& config) {
+        return keepItems.find(config.first) == keepItems.end();
+    };
+    std::erase_if(mConfigMap, shouldRemove);
 }
 
 MemberBoxGeometry ConfigBoxes::getRect(QString id) const{

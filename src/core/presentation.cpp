@@ -115,3 +115,13 @@ void Presentation::applyStandardTemplateToBox(Box::Ptr box) const {
 
     box->setBoxStyle(style);
 }
+
+void Presentation::deleteNotNeededConfigurations() {
+    std::vector<QString> ids;
+    for(auto const& frame: mFrames.vector) {
+        for(auto const& box: frame->boxes()) {
+            ids.push_back(box->id());
+        }
+    }
+    mConfig.deleteAllRectsExcept(ids);
+}

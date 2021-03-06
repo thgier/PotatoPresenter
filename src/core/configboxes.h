@@ -28,6 +28,8 @@ public:
     void addRect(const MemberBoxGeometry &rect, QString const& id);
     void deleteRect(QString id);
 
+    void deleteAllRectsExcept(std::vector<QString> const& boxIds);
+
     MemberBoxGeometry getRect(QString id) const;
 
 private:

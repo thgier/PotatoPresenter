@@ -49,18 +49,21 @@ MainWindow::MainWindow(QWidget *parent)
     fileChanged();
     setupFileActions();
 
+    connect(ui->actionClean_Configurations, &QAction::triggered,
+            mPresentation.get(), &Presentation::deleteNotNeededConfigurations);
+
     connect(selectionModel, &QItemSelectionModel::currentChanged,
             this, [this](const QModelIndex &current){mFrameWidget->setCurrentPage(current.row());});
 
-    QObject::connect(mDoc, &KTextEditor::Document::textChanged,
+    connect(mDoc, &KTextEditor::Document::textChanged,
                      this, &MainWindow::fileChanged);
     connect(ui->actionReset_Position, &QAction::triggered,
             this, [this](){mFrameWidget->deleteBoxPosition();
                            fileChanged();});
-    QObject::connect(ui->actionCreatePDF, &QAction::triggered,
+    connect(ui->actionCreatePDF, &QAction::triggered,
                      this, &MainWindow::exportPDF);
 
-    QObject::connect(&cacheManager(), &EquationCacheManager::conversionFinished,
+    connect(&cacheManager(), &EquationCacheManager::conversionFinished,
             mFrameWidget, QOverload<>::of(&FrameWidget::update));
 
     CacheManager<QImage>::instance().setCallback([this](QString){mFrameWidget->update();});
