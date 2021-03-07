@@ -55,6 +55,11 @@ ConfigBoxes& Presentation::configuration() {
     return mConfig;
 }
 
+void Presentation::setConfig(ConfigBoxes config) {
+    mConfig = config;
+    Q_EMIT rebuildNeeded();
+}
+
 void Presentation::applyConfiguration() {
     for(auto const& frame: mFrames.vector) {
         for(auto const& box: frame->boxes()) {

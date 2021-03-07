@@ -78,12 +78,14 @@ public:
     // Configuration Class to follow and save the Geometry of the boxes
     void saveConfig(QString const& file);
     ConfigBoxes& configuration();
+    void setConfig(ConfigBoxes config);
 
     void deleteNotNeededConfigurations()    ;
 
 Q_SIGNALS:
     void presentationChanged();
     void frameChanged(int pageNumber);
+    void rebuildNeeded();
 
 private:
     // apply Configuration in json file to mFrames

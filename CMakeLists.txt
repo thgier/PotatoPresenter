@@ -40,6 +40,7 @@ add_executable(praes
     src/core/presentation.cpp
     src/core/template.cpp
     src/core/tokenizer.cpp
+    src/core/transformboxundo.cpp
     src/core/markdownformatvisitor.cpp
     src/antlr/generated/markdownParser.cpp
     src/antlr/generated/markdownListener.cpp

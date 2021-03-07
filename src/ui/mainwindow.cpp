@@ -120,6 +120,14 @@ MainWindow::MainWindow(QWidget *parent)
     connect(&mCursorTimer, &QTimer::timeout,
             this, &MainWindow::updateCursor);
 
+    connect(ui->actionUndo, &QAction::triggered,
+            mFrameWidget, &FrameWidget::undo);
+    connect(ui->actionRedo, &QAction::triggered,
+            mFrameWidget, &FrameWidget::redo);
+
+    connect(mPresentation.get(), &Presentation::rebuildNeeded,
+            this, &MainWindow::fileChanged);
+
     mViewTextDoc->setFocus();
 }
 

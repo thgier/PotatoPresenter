@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <QObject>
 #include <vector>
+#include <QUndoStack>
 #include "frame.h"
 #include "parser.h"
 #include "equationcachemanager.h"
@@ -39,6 +40,10 @@ public:
     void deleteBoxPosition();
 
     void setActiveBox(QString boxId, QString frameId);
+
+    // trigger undo / redo actions
+    void undo();
+    void redo();
 
 Q_SIGNALS:
     void pageNumberChanged(int page);
@@ -87,6 +92,11 @@ private:
 
     QAction* openInkscape;
     QAction* createAndOpenInkscape;
+    QAction* mUndo;
+    QAction* mRedo;
+
+    QUndoStack mUndoStack;
+    ConfigBoxes mLastConfigFile;
 };
 
 #endif // PAINTDOCUMENT_H

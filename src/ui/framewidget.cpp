@@ -5,9 +5,11 @@
 #include<QSvgGenerator>
 #include <QPainter>
 #include <QDir>
+#include <QShortcut>
 #include "framepainter.h"
 #include "imagebox.h"
 #include "cachemanager.h"
+#include "transformboxundo.h"
 
 FrameWidget::FrameWidget(QWidget*&)
     : QWidget(), mPageNumber{0}, mWidth{frameSize().width()}
@@ -142,6 +144,7 @@ void FrameWidget::mousePressEvent(QMouseEvent *event)
     }
     mCursorLastPosition = ScaledMousePos(event);
     cursorApperance(mCursorLastPosition);
+    mLastConfigFile = mPresentation->configuration();
     update();
 }
 
@@ -191,6 +194,10 @@ void FrameWidget::mouseReleaseEvent(QMouseEvent *event)
         if(box) {
             Q_EMIT boxSelectionChanged(box);
         }
+    }
+    else {
+        auto transform = new TransformBoxUndo(mPresentation, mLastConfigFile, mPresentation->configuration());
+        mUndoStack.push(transform);
     }
     update();
 }
@@ -313,12 +320,21 @@ QPoint FrameWidget::ScaledMousePos(QMouseEvent *event) const{
 }
 
 void FrameWidget::createActions(){
-    openInkscape = new QAction(tr("&open in Inkscape"), this);
-    createAndOpenInkscape = new QAction(tr("&create Svg and open in Inkscape"), this);
+    openInkscape = new QAction(tr("&Open in Inkscape"), this);
+    createAndOpenInkscape = new QAction(tr("&Create SVG and open in Inkscape"), this);
     connect(openInkscape, &QAction::triggered,
             this, &FrameWidget::openInInkscape);
     connect(createAndOpenInkscape, &QAction::triggered,
             this, &FrameWidget::createAndOpenSvg);
+
+    mUndo = mUndoStack.createUndoAction(this);
+    mRedo = mUndoStack.createRedoAction(this);
+    mUndo->setShortcut(QKeySequence("Ctrl+Z"));
+    mUndo->setShortcutContext(Qt::WidgetShortcut);
+    mRedo->setShortcut(QKeySequence("Ctrl+Shift+Z"));
+    mRedo->setShortcutContext(Qt::WidgetShortcut);
+    this->addAction(mUndo);
+    this->addAction(mRedo);
 }
 
 void FrameWidget::openInInkscape(){
@@ -349,4 +365,12 @@ void FrameWidget::createAndOpenSvg(){
     painter.end();
     update();
     openInInkscape();
+}
+
+void FrameWidget::undo() {
+    mUndo->trigger();
+}
+
+void FrameWidget::redo() {
+    mRedo->trigger();
 }

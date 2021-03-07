@@ -29,7 +29,11 @@
          <number>1</number>
         </property>
         <item>
-         <widget class="FrameWidget" name="framewidget" native="true"/>
+         <widget class="FrameWidget" name="framewidget" native="true">
+          <property name="focusPolicy">
+           <enum>Qt::StrongFocus</enum>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QListView" name="pagePreview">
@@ -109,6 +113,8 @@
    <addaction name="actionOpen"/>
    <addaction name="actionCreatePDF"/>
    <addaction name="separator"/>
+   <addaction name="actionUndo"/>
+   <addaction name="actionRedo"/>
    <addaction name="actionReset_Position"/>
    <addaction name="separator"/>
    <addaction name="actionTranslate"/>
@@ -222,18 +228,20 @@
     <string>Clean Configurations</string>
    </property>
   </action>
-  <action name="actionCouple_Editor_and_Preview">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
+  <action name="actionUndo">
    <property name="icon">
-    <iconset theme="edit-link"/>
+    <iconset theme="edit-undo"/>
    </property>
    <property name="text">
-    <string>Couple Editor and Preview </string>
+    <string>Undo</string>
    </property>
-   <property name="toolTip">
-    <string>Couple Editor and Preview </string>
+  </action>
+  <action name="actionRedo">
+   <property name="icon">
+    <iconset theme="edit-redo"/>
+   </property>
+   <property name="text">
+    <string>Redo</string>
    </property>
   </action>
  </widget>
