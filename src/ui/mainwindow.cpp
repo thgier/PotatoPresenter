@@ -55,8 +55,8 @@ MainWindow::MainWindow(QWidget *parent)
     mCoupleButton->setIcon(QIcon::fromTheme("edit-link"));
     mCoupleButton->setToolTip("Couple the Cursor in the Editor and the selection in Frame view");
     mErrorOutput = new QLabel(this);
-    barTop->addWidget(mErrorOutput);
     barTop->addWidget(mCoupleButton);
+    barTop->addWidget(mErrorOutput);
 
     newDocument();
     fileChanged();
