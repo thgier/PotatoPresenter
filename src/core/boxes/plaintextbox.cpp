@@ -4,13 +4,12 @@
 #include <QTextDocument>
 
 PlainTextBox::PlainTextBox(QString text, BoxStyle style, QString id, int line)
-    : Box(style, id, line)
-    , mText(text)
+    : TextBox(text, style, id, line)
 {
 }
 
-QString PlainTextBox::Text(){
-    return mText;
+std::shared_ptr<TextBox> PlainTextBox::clone() {
+    return std::make_shared<PlainTextBox>(*this);
 }
 
 void PlainTextBox::drawContent(QPainter& painter, std::map<QString, QString> variables) {

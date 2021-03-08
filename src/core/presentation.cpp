@@ -63,7 +63,7 @@ void Presentation::setConfig(ConfigBoxes config) {
 void Presentation::applyConfiguration() {
     for(auto const& frame: mFrames.vector) {
         for(auto const& box: frame->boxes()) {
-            auto const config = mConfig.getRect(box->id());
+            auto const config = mConfig.getRect(box->configId());
             if(!config.empty()) {
                 box->setGeometry(config);
             }

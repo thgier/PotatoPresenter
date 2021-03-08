@@ -43,6 +43,7 @@ private:
     void newPlainText(int line);
     void newBlindText(int line);
     void setVariable(int line);
+    void applyPause();
     QString addBracketsToVariable(QString variable) const;
     BoxStyle readArguments(QString &id);
     QString generateId(QString type, QString boxclass);

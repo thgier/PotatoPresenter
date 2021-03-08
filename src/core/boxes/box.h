@@ -11,6 +11,11 @@ enum FontWeight{
     bold
 };
 
+enum PauseDisplayMode {
+    onlyInPause,
+    fromPauseOn
+};
+
 struct BoxStyle{
     QString boxClass;
     std::optional<QColor> mColor;
@@ -77,14 +82,24 @@ public:
     void setVisibility(bool vis);
     void setMovable(bool move);
     void setBoxStyle(BoxStyle style);
-    void setPauseCounter(int counter);
     void setGeometry(BoxGeometry const& geometry);
     void setGeometry(MemberBoxGeometry const& geometry);
 
-    QString id() const;
+    QString const& id() const;
+    void setId(QString const& id);
+
+    // line in input file where box is defined
     int line() const;
-    bool pauseCounterSmaller(int counter) const;
-    int pauseCounter() const;
+
+    // pause comment construct several boxes with different content and different
+    // read configuration from another box if this is the case
+    void setConfigId(QString configId);
+    QString configId() const;
+
+    // box is only shown on one pause counter or on different
+    void setPauseMode(PauseDisplayMode mode);
+    void setPauseCounter(int counter);
+    std::pair<int, PauseDisplayMode> pauseCounter() const;
 
 protected:
     // Call this in child classes when implemting drawContent to substitute variables (e.g. page number)
@@ -118,4 +133,6 @@ private:
     bool mMovable = true;
     int mPauseCounter = 0;
     int mLine;
+    std::optional<QString> mConfigId;
+    PauseDisplayMode mPauseMode = PauseDisplayMode::fromPauseOn;
 };

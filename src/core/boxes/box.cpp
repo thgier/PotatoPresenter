@@ -32,8 +32,20 @@ void Box::setMovable(bool move) {
     mMovable = move;
 }
 
-QString Box::id() const {
+const QString &Box::id() const {
     return mId;
+}
+
+void Box::setId(QString const& id) {
+    mId = id;
+}
+
+QString Box::configId() const {
+    return mConfigId.value_or(mId);
+}
+
+void Box::setConfigId(QString configId) {
+    mConfigId = configId;
 }
 
 int Box::line() const {
@@ -135,10 +147,10 @@ void Box::setGeometry(const MemberBoxGeometry &geometry) {
     mStyle.mGeometry = BoxGeometry(geometry);
 }
 
-bool Box::pauseCounterSmaller(int counter) const {
-    return mPauseCounter <= counter;
+void Box::setPauseMode(PauseDisplayMode mode) {
+    mPauseMode = mode;
 }
 
-int Box::pauseCounter() const {
-    return mPauseCounter;
+std::pair<int, PauseDisplayMode> Box::pauseCounter() const {
+    return std::pair(mPauseCounter, mPauseMode);
 }

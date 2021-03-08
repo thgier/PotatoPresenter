@@ -12,7 +12,7 @@
 #include "frame.h"
 #include "box.h"
 #include "imagebox.h"
-#include "textbox.h"
+#include "markdowntextbox.h"
 #include "arrowbox.h"
 #include "plaintextbox.h"
 #include "linebox.h"
@@ -101,7 +101,7 @@ void Parser::command(Token token){
         newLine(token.mLine);
     }
     else if(token.mText == "\\pause"){
-        mPauseCount++;
+        applyPause();
     }
     else if(token.mText == "\\plaintext"){
         newPlainText(token.mLine);
@@ -174,7 +174,7 @@ void Parser::newTextField(int line){
     if(peekNextKind == Token::Kind::Text || peekNextKind == Token::Kind::MultiLineText) {
         text = QString(mTokenizer.next().mText);
     }
-    auto const textField = std::make_shared<TextBox>(text, boxStyle, id, line);
+    auto const textField = std::make_shared<MarkdownTextBox>(text, boxStyle, id, line);
     textField->setBoxStyle(boxStyle);
     textField->setPauseCounter(mPauseCount);
     mFrameList.vector.back()->appendBox(textField);
@@ -220,7 +220,7 @@ void Parser::newTitle(int line){
     if(nextToken.mKind == Token::Kind::Text && !nextToken.mText.isEmpty()) {
         text = QString(mTokenizer.next().mText);
     }
-    auto const textField = std::make_shared<TextBox>(text, boxStyle, id, line);
+    auto const textField = std::make_shared<MarkdownTextBox>(text, boxStyle, id, line);
     textField->setPauseCounter(mPauseCount);
     mFrameList.vector.back()->appendBox(textField);
 }
@@ -242,7 +242,7 @@ void Parser::newBody(int line){
     if(nextToken.mKind == Token::Kind::Text || nextToken.mKind == Token::Kind::MultiLineText) {
         text = QString(mTokenizer.next().mText);
     }
-    auto const textField = std::make_shared<TextBox>(text, boxStyle, id, line);
+    auto const textField = std::make_shared<MarkdownTextBox>(text, boxStyle, id, line);
     textField->setPauseCounter(mPauseCount);
     mFrameList.vector.back()->appendBox(textField);
 }
@@ -341,7 +341,7 @@ void Parser::newBlindText(int line) {
         text = text.left(lenght);
         mTokenizer.next();
     }
-    auto const textField = std::make_shared<TextBox>(text, boxStyle, id, line);
+    auto const textField = std::make_shared<MarkdownTextBox>(text, boxStyle, id, line);
     textField->setPauseCounter(mPauseCount);
     mFrameList.vector.back()->appendBox(textField);
 }
@@ -356,6 +356,30 @@ void Parser::setVariable(int line) {
     auto list = text.split(QRegularExpression("\\s+"));
     auto variable = list[0];
     mVariables[addBracketsToVariable(variable)] = text.right(text.size() - variable.size() - 1);
+}
+
+void Parser::applyPause() {
+    mPauseCount++;
+    if(mTokenizer.peekNext().mKind != Token::Kind::Text && mTokenizer.peekNext().mKind != Token::Kind::MultiLineText) {
+        return;
+    }
+
+    auto const lastTextBox = std::dynamic_pointer_cast<TextBox>(mFrameList.vector.back()->boxes().back());
+    if(!lastTextBox) {
+        return;
+    }
+
+    auto text = mTokenizer.next().mText;
+    // Hack: need to be refractored
+    text.insert(0, '\n');
+    auto box = lastTextBox->clone();
+    box->appendText(text);
+    box->setPauseCounter(mPauseCount);
+    box->setPauseMode(PauseDisplayMode::onlyInPause);
+    mFrameList.vector.back()->appendBox(box);
+    lastTextBox->setConfigId(lastTextBox->id());
+    lastTextBox->setPauseMode(PauseDisplayMode::onlyInPause);
+    lastTextBox->setId(generateId("text", lastTextBox->style().boxClass));
 }
 
 QString Parser::addBracketsToVariable(QString variable) const {

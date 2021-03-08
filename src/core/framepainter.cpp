@@ -28,7 +28,22 @@ void FramePainter::paintFrame(Frame::Ptr frame, int pauseCount) const {
     }
     auto const& boxes = frame->boxes();
     for(auto const& box: boxes){
-        if(box->pauseCounterSmaller(pauseCount)) {
+        bool boxGetPainted = false;
+        // boxes get only painted when pause counter conform
+        auto const [pauseCounter, pauseMode] = box->pauseCounter();
+        switch(pauseMode) {
+            case PauseDisplayMode::fromPauseOn:
+                if(pauseCounter <= pauseCount) {
+                    boxGetPainted = true;
+                }
+                break;
+            case PauseDisplayMode::onlyInPause:
+                if(pauseCounter == pauseCount) {
+                    boxGetPainted = true;
+                }
+                break;
+        }
+        if(boxGetPainted) {
             box->drawContent(mPainter, variables);
         }
     }

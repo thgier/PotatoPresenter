@@ -1,17 +1,18 @@
-#ifndef TEXTFIELD_H
-#define TEXTFIELD_H
+#ifndef TEXTBOX_H
+#define TEXTBOX_H
 
-#include "box.h"
-#include <QString>
-#include <QSize>
+#include <box.h>
 
-class TextBox: public Box
+class TextBox : public Box
 {
 public:
     TextBox(QString text, BoxStyle style, QString id, int line);
+    virtual std::shared_ptr<TextBox> clone() = 0;
+    void appendText(QString const& text);
+    QString const& text() const;
+
+protected:
     QString mText;
-    QString Text();
-    void drawContent(QPainter& painter, std::map<QString, QString> variables) override;
 };
 
-#endif // TEXTFIELD_H
+#endif // TEXTBOX_H
