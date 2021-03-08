@@ -30,10 +30,44 @@
         </property>
         <item>
          <widget class="FrameWidget" name="framewidget" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>200</height>
+           </size>
+          </property>
           <property name="focusPolicy">
            <enum>Qt::StrongFocus</enum>
           </property>
          </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="currentFrameId">
+          <property name="font">
+           <font>
+            <pointsize>14</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>jkzuhitgiuztgiouzftiuk</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
         </item>
         <item>
          <widget class="QListView" name="pagePreview">
@@ -85,6 +119,11 @@
     <addaction name="actionExport_PDF_as"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
     <property name="title">
      <string>Edit</string>
     </property>
@@ -230,7 +269,8 @@
   </action>
   <action name="actionUndo">
    <property name="icon">
-    <iconset theme="edit-undo"/>
+    <iconset theme="edit-undo">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Undo</string>
@@ -238,7 +278,8 @@
   </action>
   <action name="actionRedo">
    <property name="icon">
-    <iconset theme="edit-redo"/>
+    <iconset theme="edit-redo">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Redo</string>

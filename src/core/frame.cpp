@@ -31,7 +31,7 @@ bool Frame::empty() {
     return mBoxes.empty();
 }
 
-QString Frame::id() const {
+QString const& Frame::id() const {
     return mId;
 }
 
@@ -90,6 +90,6 @@ void Frame::setFrameClass(QString const& frameClass) {
     mClass = frameClass;
 }
 
-QString Frame::frameClass() const {
+const QString &Frame::frameClass() const {
     return mClass;
 }

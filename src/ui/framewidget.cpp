@@ -31,16 +31,26 @@ void FrameWidget::setPresentation(std::shared_ptr<Presentation> pres){
 void FrameWidget::paintEvent(QPaintEvent*)
 {
     mPainter.begin(this);
-    mPainter.setViewport(QRect(0, 0, mWidth, 1.0 * mWidth/mSize.width()*mSize.height()));
-    mPainter.setWindow(QRect(QPoint(0, 0), mSize));
+    mPainter.setViewport(QRect(0, 0, this->width(), this->width() * 9 / 16.));
+    mPainter.setWindow(QRect(QPoint(-2, -2), mSize.grownBy(QMargins(0, 0, 12, 12))));
     mPainter.setRenderHint(QPainter::SmoothPixmapTransform);
+    mPainter.fillRect(QRect(QPoint(10, 10), mSize), QColor(Qt::darkGray).lighter(125));
+    mPainter.fillRect(QRect(QPoint(8, 8), mSize), QColor(Qt::darkGray).lighter(100));
+    mPainter.fillRect(QRect(QPoint(6, 6), mSize), QColor(Qt::darkGray).lighter(75));
+    mPainter.fillRect(QRect(QPoint(4, 4), mSize), QColor(Qt::darkGray).lighter(50));
+    mPainter.fillRect(QRect(QPoint(2, 2), mSize), QColor(Qt::darkGray).lighter(25));
+    if(hasFocus()) {
+        mPainter.fillRect(QRect(QPoint(-2, -2), mSize.grownBy(QMargins(2, 2, 2, 2))), this->palette().highlight());
+    }
     mPainter.fillRect(QRect(QPoint(0, 0), mSize), Qt::white);
+    mPainter.setClipping(true);
+    mPainter.setClipRect(QRect(QPoint(0, 0), mSize));
     if(!mPresentation->frameList().empty()){
         FramePainter paint(mPainter);
         paint.paintFrame(mPresentation->frameList().frameAt(mPageNumber));
         mCurrentFrameId = mPresentation->frameList().frameAt(mPageNumber)->id();
     }
-    auto const box = mPresentation->frameList().findBox(mActiveBoxId);
+    auto const& box = mPresentation->frameList().findBox(mActiveBoxId);
     if(box != nullptr && mPresentation->frameList().findFrame(mCurrentFrameId)->containsBox(mActiveBoxId)){
         box->drawSelectionFrame(mPainter);
         box->drawScaleHandle(mPainter, mDiffToMouse);
@@ -48,15 +58,11 @@ void FrameWidget::paintEvent(QPaintEvent*)
     else{
         mActiveBoxId = QString();
     }
-    auto font = mPainter.font();
-    font.setPixelSize(50);
-    mPainter.setFont(font);
-    mPainter.drawText(QRect(0, mSize.height(), mSize.width(), 80), Qt::AlignCenter, mCurrentFrameId);
     mPainter.end();
 }
 
 QSize FrameWidget::sizeHint() const{
-    return mSize;
+    return QSize(this->width(), this->width() * 9 / 16.);
 }
 
 void FrameWidget::contextMenuEvent(QContextMenuEvent *event){
@@ -109,6 +115,7 @@ void FrameWidget::setCurrentPage(QString frameId){
 void FrameWidget::resizeEvent(QResizeEvent*) {
     mWidth = frameSize().width();
     mScale = 1.0 * mSize.width() / mWidth;
+    updateGeometry();
 }
 
 void FrameWidget::determineBoxInFocus(QPoint mousePos){
@@ -313,6 +320,10 @@ Qt::CursorShape FrameWidget::angleToCursor(qreal angle) const{
 
 int FrameWidget::pageNumber() const{
     return mPageNumber;
+}
+
+QString const& FrameWidget::currentFrameId() const {
+    return mCurrentFrameId;
 }
 
 QPoint FrameWidget::ScaledMousePos(QMouseEvent *event) const{

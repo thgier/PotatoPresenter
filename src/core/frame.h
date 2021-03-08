@@ -33,7 +33,7 @@ public:
 
     // The frame ID is the string after the "\frame" command, and is used to track
     // the frame when the document changes.
-    QString id() const;
+    QString const& id() const;
 
     // Access to this frame's variables
     void setVariables(Variables const& variables);
@@ -41,7 +41,7 @@ public:
     Variables const& variables() const;
 
     void setFrameClass(QString const& frameClass);
-    QString frameClass() const;
+    QString const& frameClass() const;
 
 private:
     Box::List mBoxes;
