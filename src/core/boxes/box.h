@@ -18,6 +18,7 @@ enum PauseDisplayMode {
 
 struct BoxStyle{
     QString boxClass;
+    bool movable = true;
     std::optional<QColor> mColor;
     std::optional<int> mFontSize;
     std::optional<double> mLineSpacing;
@@ -79,8 +80,6 @@ public:
     BoxStyle& style();
     BoxGeometry& geometry();
 
-    void setVisibility(bool vis);
-    void setMovable(bool move);
     void setBoxStyle(BoxStyle style);
     void setGeometry(BoxGeometry const& geometry);
     void setGeometry(MemberBoxGeometry const& geometry);
@@ -129,8 +128,6 @@ private:
 
 private:
     QString mId;
-    bool mVisible = true;
-    bool mMovable = true;
     int mPauseCounter = 0;
     int mLine;
     std::optional<QString> mConfigId;

@@ -24,14 +24,6 @@ BoxGeometry &Box::geometry()  {
     return mStyle.mGeometry;
 }
 
-void Box::setVisibility(bool vis){
-    mVisible = vis;
-}
-
-void Box::setMovable(bool move) {
-    mMovable = move;
-}
-
 const QString &Box::id() const {
     return mId;
 }

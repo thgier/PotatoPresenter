@@ -438,18 +438,34 @@ BoxStyle Parser::readArguments(QString &id) {
         }
         if(argument.mText == "left"){
             boxStyle.mGeometry.setLeft(argumentValue.mText.toInt());
+            boxStyle.movable = false;
         }
         if(argument.mText == "top"){
             boxStyle.mGeometry.setTop(argumentValue.mText.toInt());
+            boxStyle.movable = false;
         }
         if(argument.mText == "width"){
             boxStyle.mGeometry.setWidth(argumentValue.mText.toInt());
+            boxStyle.movable = false;
         }
         if(argument.mText == "height"){
             boxStyle.mGeometry.setHeight(argumentValue.mText.toInt());
+            boxStyle.movable = false;
         }
         if(argument.mText == "angle"){
             boxStyle.mGeometry.setAngle(argumentValue.mText.toDouble());
+            boxStyle.movable = false;
+        }
+        if(argument.mText == "movable"){
+            if(argumentValue.mText == "true") {
+                boxStyle.movable = true;
+            }
+            else if(argumentValue.mText == "true") {
+                boxStyle.movable = true;
+            }
+            else {
+                throw ParserError{"movable: expect true or false", argumentValue.mLine};
+            }
         }
         if(argument.mText == "text-align"){
             if(argumentValue.mText == "left") {

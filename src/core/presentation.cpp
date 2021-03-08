@@ -64,9 +64,14 @@ void Presentation::applyConfiguration() {
     for(auto const& frame: mFrames.vector) {
         for(auto const& box: frame->boxes()) {
             auto const config = mConfig.getRect(box->configId());
-            if(!config.empty()) {
-                box->setGeometry(config);
+            if(config.empty()) {
+                continue;
             }
+            box->geometry().setLeftIfNotSet(config.rect.left());
+            box->geometry().setTopIfNotSet(config.rect.top());
+            box->geometry().setWidthIfNotSet(config.rect.width());
+            box->geometry().setHeightIfNotSet(config.rect.height());
+            box->geometry().setAngleIfNotSet(config.angle);
         }
     }
 }

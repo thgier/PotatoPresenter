@@ -175,10 +175,10 @@ void FrameWidget::mouseMoveEvent(QMouseEvent *event)
         return;
     }
     if(!mMomentTrafo){
-        cursorApperance(newPosition);
-        if(mActiveBoxId.isEmpty()){
+        if(mActiveBoxId.isEmpty() || !mPresentation->findBox(mActiveBoxId)->style().movable){
             return;
         }
+        cursorApperance(newPosition);
         auto const activeBox = mPresentation->frameList().findBox(mActiveBoxId);
         auto const clasifiedMousePos = activeBox->geometry().classifyPoint(mCursorLastPosition, mDiffToMouse);
         if(clasifiedMousePos == pointPosition::notInBox){
