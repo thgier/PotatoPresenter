@@ -20,38 +20,38 @@ find_package(Qt5Test REQUIRED)
 enable_testing(true)
 
 add_executable(praes
+    src/antlr/generated/markdownBaseListener.cpp
+    src/antlr/generated/markdownLexer.cpp
+    src/antlr/generated/markdownListener.cpp
+    src/antlr/generated/markdownParser.cpp
     src/core/boxes/arrowbox.cpp
     src/core/boxes/box.cpp
-    src/core/boxes/boxgeometry.cpp
-    src/core/boxes/cachemanager.cpp
-    src/core/boxes/equationcachemanager.cpp
+    src/core/boxes/imagebox.cpp
     src/core/boxes/linebox.cpp
     src/core/boxes/markdowntextbox.cpp
-    src/core/boxes/imagebox.cpp
-    src/core/boxes/textbox.cpp
     src/core/boxes/plaintextbox.cpp
+    src/core/boxes/textbox.cpp
+    src/core/boxgeometry.cpp
+    src/core/cachemanager.cpp
     src/core/configboxes.cpp
+    src/core/equationcachemanager.cpp
     src/core/frame.cpp
-    src/core/main.cpp
-    src/core/pdfcreator.cpp
-    src/ui/mainwindow.cpp
-    src/ui/mainwindow.ui
     src/core/framepainter.cpp
+    src/core/main.cpp
+    src/core/markdownformatvisitor.cpp
     src/core/parser.cpp
+    src/core/pdfcreator.cpp
     src/core/presentation.cpp
     src/core/template.cpp
     src/core/tokenizer.cpp
     src/core/transformboxundo.cpp
-    src/core/markdownformatvisitor.cpp
-    src/antlr/generated/markdownParser.cpp
-    src/antlr/generated/markdownListener.cpp
-    src/antlr/generated/markdownLexer.cpp
-    src/antlr/generated/markdownBaseListener.cpp
     src/files.qrc
     src/ui/boxtransformation.cpp
     src/ui/framelistdelegate.cpp
     src/ui/framelistmodel.cpp
     src/ui/framewidget.cpp
+    src/ui/mainwindow.cpp
+    src/ui/mainwindow.ui
 )
 
 add_executable(testtokenizer
