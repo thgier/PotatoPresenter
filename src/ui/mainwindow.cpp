@@ -130,6 +130,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     mViewTextDoc->setFocus();
     ui->currentFrameId->setAlignment(Qt::AlignCenter);
+    ui->currentFrameId->setText("");
 }
 
 MainWindow::~MainWindow()
@@ -156,7 +157,8 @@ void MainWindow::fileChanged() {
         iface->addMark(error.line, KTextEditor::MarkInterface::MarkTypes::Error);
         return;
     }
-    mFrameWidget->updateFrames();
+    mFrameWidget->updateFrameId();
+    mFrameWidget->update();
     auto const index = mFrameModel->index(mFrameWidget->pageNumber());
     ui->pagePreview->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     ui->pagePreview->scrollTo(index);

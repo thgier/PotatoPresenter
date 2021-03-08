@@ -29,6 +29,7 @@ public:
     // Presentation that is shown
     void setPresentation(std::shared_ptr<Presentation> pres);
     void updateFrames();
+    void updateFrameId();
     void setCurrentPage(int);
     void setCurrentPage(QString frameId);
     int pageNumber() const;

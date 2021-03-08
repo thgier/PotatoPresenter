@@ -47,8 +47,9 @@ void FrameWidget::paintEvent(QPaintEvent*)
     mPainter.setClipRect(QRect(QPoint(0, 0), mSize));
     if(!mPresentation->frameList().empty()){
         FramePainter paint(mPainter);
-        paint.paintFrame(mPresentation->frameList().frameAt(mPageNumber));
-        mCurrentFrameId = mPresentation->frameList().frameAt(mPageNumber)->id();
+        auto const frame = mPresentation->frameList().frameAt(mPageNumber);
+        paint.paintFrame(frame);
+        mCurrentFrameId = frame->id();
     }
     auto const& box = mPresentation->frameList().findBox(mActiveBoxId);
     if(box != nullptr && mPresentation->frameList().findFrame(mCurrentFrameId)->containsBox(mActiveBoxId)){
@@ -87,6 +88,10 @@ void FrameWidget::updateFrames(){
         mCurrentFrameId = mPresentation->frameList().vector.back()->id();
     }
     update();
+}
+
+void FrameWidget::updateFrameId() {
+    mCurrentFrameId = mPresentation->frameList().frameAt(mPageNumber)->id();
 }
 
 void FrameWidget::setCurrentPage(int page){
