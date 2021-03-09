@@ -72,10 +72,8 @@ void Box::drawSelectionFrame(QPainter &painter){
     PainterTransformScope scope(this, painter);
     painter.setRenderHint(QPainter::Antialiasing);
     auto pen = painter.pen();
-    auto const sizePen = 0.1;
-    pen.setWidth(sizePen);
+    pen.setCosmetic(true);
     painter.setPen(pen);
-    painter.translate(QPoint(0, -sizePen));
     painter.drawRect(style().mGeometry.rect());
 }
 
