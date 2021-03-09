@@ -129,7 +129,7 @@ void Parser::newFrame(int line){
         }
         auto const tokenArgValue = mTokenizer.next();
         if(tokenArgValue.mKind != Token::Kind::ArgumentValue){
-            throw ParserError{"Argment Value is missing", token.mLine};
+            throw ParserError{"Argument Value is missing", token.mLine};
             return;
         }
         frameClass = tokenArgValue.mText;

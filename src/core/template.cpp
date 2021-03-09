@@ -57,10 +57,14 @@ void Template::setFrames(FrameList frames) {
 void Template::applyTemplate(FrameList& frameList) {
     for(auto const& frame: frameList.vector) {
         auto const frameclass = frame->frameClass();
+        Box::List boxlist;
         if(!frameclass.isEmpty()) {
-            auto const boxlist = getTemplateSlide(frameclass);
-            frame->setTemplateBoxes(boxlist);
+            boxlist = getTemplateSlide(frameclass);
         }
+        else {
+            boxlist = getTemplateSlide("default");
+        }
+        frame->setTemplateBoxes(boxlist);
         for(auto const& box: frame->boxes()) {
             applyTemplateToBox(box);
         }

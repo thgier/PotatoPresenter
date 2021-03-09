@@ -48,7 +48,7 @@ private:
     Box::List mTemplateBoxes;
     QString mId;
     Variables mVariables;
-    QString mClass = "body";
+    QString mClass;
     int mLine;
 };
 
