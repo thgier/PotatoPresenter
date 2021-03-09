@@ -46,6 +46,7 @@ void TestTokenizer::tokenTest_data(){
     QTest::newRow("one space") << QByteArray(" ")
                                << QVector<Token>{Token{Token::Kind::EndOfFile, "", 1}};
     QTest::newRow("multiline") << QByteArray("\\text ich bin eine \n neue Zeile") << QVector<Token>{Token{Token::Kind::Command, "\\text", 1}, Token{Token::Kind::MultiLineText, "ich bin eine \n neue Zeile", 1}};
+    QTest::newRow("multiline paragraph") << QByteArray("\\text ich bin eine \n\n neue Zeile") << QVector<Token>{Token{Token::Kind::Command, "\\text", 1}, Token{Token::Kind::MultiLineText, "ich bin eine \n\n neue Zeile", 1}};
     QTest::newRow("next line") << QByteArray("\\text hallo\n\\frame du")
                                << QVector<Token>{Token{Token::Kind::Command, "\\text", 1}, Token{Token::Kind::Text, "hallo", 1},
                                 Token{Token::Kind::Command, "\\frame", 2}, Token{Token::Kind::Text, "du", 2}};

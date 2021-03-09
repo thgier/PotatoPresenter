@@ -14,24 +14,27 @@ std::shared_ptr<TextBox> PlainTextBox::clone() {
 
 void PlainTextBox::drawContent(QPainter& painter, std::map<QString, QString> variables) {
     auto const text = substituteVariables(mText, variables);
+    auto const paragraphs = text.split("\n");
     PainterTransformScope scope(this, painter);
     painter.setPen(mStyle.color());
     auto const linespacing = painter.fontMetrics().leading() + mStyle.linespacing() * painter.fontMetrics().lineSpacing();
-    QTextLayout textLayout(text);
-    textLayout.setTextOption(QTextOption(mStyle.alignment()));
-    textLayout.setFont(painter.font());
-    textLayout.setCacheEnabled(true);
-    textLayout.beginLayout();
     double y = 0;
-    while (1) {
-        QTextLine line = textLayout.createLine();
-        if (!line.isValid()){
-            break;
+    for(auto const& paragraph: paragraphs) {
+        QTextLayout textLayout(paragraph);
+        textLayout.setTextOption(QTextOption(mStyle.alignment()));
+        textLayout.setFont(painter.font());
+        textLayout.setCacheEnabled(true);
+        textLayout.beginLayout();
+            while (1) {
+                QTextLine line = textLayout.createLine();
+                if (!line.isValid()){
+                    break;
+                }
+                line.setLineWidth(geometry().width());
+                line.setPosition(QPointF(0, y));
+                y += linespacing;
         }
-        line.setLineWidth(geometry().width());
-        line.setPosition(QPointF(0, y));
-        y += linespacing;
+        textLayout.endLayout();
+        textLayout.draw(&painter, geometry().topLeft());
     }
-    textLayout.endLayout();
-    textLayout.draw(&painter, geometry().topLeft());
 }

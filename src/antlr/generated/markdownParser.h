@@ -175,7 +175,6 @@ public:
     ParagraphContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     Latex_next_lineContext *latex_next_line();
-    New_lineContext *new_line();
     antlr4::tree::TerminalNode *EOF();
     std::vector<Text_plainContext *> text_plain();
     Text_plainContext* text_plain(size_t i);
@@ -183,6 +182,8 @@ public:
     Text_decoratedContext* text_decorated(size_t i);
     std::vector<LatexContext *> latex();
     LatexContext* latex(size_t i);
+    std::vector<New_lineContext *> new_line();
+    New_lineContext* new_line(size_t i);
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;

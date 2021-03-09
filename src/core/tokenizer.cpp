@@ -44,10 +44,11 @@ Token Tokenizer::readText(){
     ret.mLine = mLine;
     QByteArray text = "";
     bool multiline = false;
-    while(!(mText[mPos] == '\n' && mText[mPos+1] == '\\')
-            && !(mText[mPos] == '\n' && mText[mPos+1] == '\n')
-            && !(mText[mPos] == '\n' && mPos+1 >= mText.size())
-            && mPos < mText.size())
+    while(mPos < mText.size()
+          && !(mText[mPos] == '\n' && mPos+1 >= mText.size())
+          && !(mText[mPos] == '\n' && mText[mPos+1] == '\n' && mPos+2 >= mText.size())
+          && !(mText[mPos] == '\n' && mText[mPos+1] == '\\')
+          && !(mText[mPos] == '\n' && mText[mPos+1] == '\n' && mText[mPos+2] == '\\'))
     {
         if(mText[mPos] == '\n' ) {
             multiline = true;

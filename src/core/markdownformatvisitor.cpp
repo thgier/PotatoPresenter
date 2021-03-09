@@ -131,7 +131,7 @@ void MarkdownFormatVisitor::exitLatex_next_line(markdownParser::Latex_next_lineC
 void MarkdownFormatVisitor::enterNew_line(markdownParser::New_lineContext * /*ctx*/) {
 }
 
-void MarkdownFormatVisitor::exitParagraph(markdownParser::ParagraphContext * /*ctx*/) {
+void MarkdownFormatVisitor::exitParagraph(markdownParser::ParagraphContext * ctx) {
     QTextLayout textLayout(mCurrentParagraph.mText);
     textLayout.setTextOption(QTextOption(mBoxStyle.alignment()));
     textLayout.setFont(mPainter.font());
@@ -146,6 +146,11 @@ void MarkdownFormatVisitor::exitParagraph(markdownParser::ParagraphContext * /*c
         line.setLineWidth(mRect.width() - mStartOfLine.x());
         line.setPosition(QPointF(mStartOfLine.x(), mStartOfLine.y()));
         newLine();
+    }
+    if(ctx->new_line().size() > 1) {
+        for(auto i = 1; i < int(ctx->new_line().size()); i++)  {
+            newLine();
+        }
     }
     textLayout.endLayout();
     textLayout.draw(&mPainter, mRect.topLeft());
