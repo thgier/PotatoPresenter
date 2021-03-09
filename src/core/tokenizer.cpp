@@ -156,14 +156,44 @@ QByteArray Tokenizer::removeSpacesNewLines(QByteArray text) const{
     if(text.isEmpty()) {
         return {};
     }
-    while(text.front() == ' ' || text.front() == '\n'){
+    if(text.front() == ' '){
         text = text.mid(1);
+        if(text.isEmpty()) {
+            return {};
+        }
+        if(text.front() == '\n') {
+            text = text.mid(1);
+        }
+    }
+    else if(text.front() == '\n'){
+        text = text.mid(1);
+        if(text.isEmpty()) {
+            return {};
+        }
+        if(text.front() == ' ') {
+            text = text.mid(1);
+        }
     }
     if(text.isEmpty()) {
         return {};
     }
-    while(text.back() == ' ' || text.back() == '\n'){
+    if(text.back() == ' '){
         text.chop(1);
+        if(text.isEmpty()) {
+            return {};
+        }
+        if(text.back() == '\n') {
+            text.chop(1);
+        }
+    }
+    else if(text.back() == '\n'){
+        text.chop(1);
+        if(text.isEmpty()) {
+            return {};
+        }
+        if(text.back() == ' ') {
+            text.chop(1);
+        }
     }
     return text;
 }
