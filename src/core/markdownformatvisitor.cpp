@@ -259,4 +259,5 @@ MapSvg MarkdownFormatVisitor::loadSvg(QString mathExpression, int start) {
         equation.svg->setAspectRatioMode(Qt::KeepAspectRatio);
         return {start, equation.svg, QSizeF(width, height)};
     }
+    return {};
 }
