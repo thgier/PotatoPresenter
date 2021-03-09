@@ -22,7 +22,6 @@ class FrameWidget : public QWidget
 public:
     FrameWidget(QWidget*&);
 
-    QSize sizeHint() const override;
     void resizeEvent(QResizeEvent *) override;
     void contextMenuEvent(QContextMenuEvent *event) override;
 
@@ -48,7 +47,6 @@ public:
     void redo();
 
 Q_SIGNALS:
-    void pageNumberChanged(int page);
     void selectionChanged(Frame::Ptr);
     void boxSelectionChanged(Box::Ptr);
 
@@ -57,6 +55,8 @@ private:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
+
+    void recalculateGeometry();
 
     // Mouse interaction / apperance
     // scale mouse position to viewport of widget
@@ -82,11 +82,19 @@ private:
     int mPageNumber = 0;
 
     int const mDiffToMouse = 15;
-    QPainter mPainter;
 
-    double mScale;
     QSize mSize;
     int mWidth;
+    QFont mTitleFont;
+
+    struct {
+        // Transform from widget to frame coordinates
+        QTransform mWidgetToFrameTransform;
+        // Top left corner of the painted frame, in widget coordinates
+        QPoint mTopLeft;
+        // Frame size, in widget coordinates
+        QSize mFrameSize;
+    } mGeometryDetail;
 
     std::optional<BoxTransformation> mMomentTrafo;
     TransformationType mTransform = TransformationType::translate;

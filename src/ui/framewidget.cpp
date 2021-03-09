@@ -11,13 +11,16 @@
 #include "cachemanager.h"
 #include "transformboxundo.h"
 
+auto constexpr frameTitleSpacing = 5;
+
 FrameWidget::FrameWidget(QWidget*&)
     : QWidget(), mPageNumber{0}, mWidth{frameSize().width()}
 {
     setMouseTracking(true);
     mSize = QSize{1600, 900};
-    mScale = 1.0 * mSize.width() / mWidth;
     createActions();
+    recalculateGeometry();
+    mTitleFont.setPixelSize(25);
 }
 
 void FrameWidget::setPresentation(std::shared_ptr<Presentation> pres){
@@ -25,45 +28,100 @@ void FrameWidget::setPresentation(std::shared_ptr<Presentation> pres){
     mActiveBoxId = QString();
     mCurrentFrameId = QString();
     mPresentation->dimensions();
-    mScale = 1.0 * mSize.width() / mWidth;
+}
+
+void FrameWidget::recalculateGeometry() {
+    // Compute geometry of inner frame
+    QPoint marginLeft = {8, 8};
+    QPoint const marginRight = {15, 15};
+    auto const widthOffset = marginLeft.x() + marginRight.x();
+    auto const heightOffset = marginLeft.y() + marginRight.y() + QFontMetrics(mTitleFont).height() + frameTitleSpacing;
+
+    QSize innerSize;
+    auto const usableHeight = height() - heightOffset;
+    auto const usableWidth = width() - widthOffset;
+    if (width() * 9 / 16. > usableHeight) {
+        // full height, reduced width
+        auto const maxWidthForHeight = usableHeight * 16. / 9;
+        innerSize = QSize(maxWidthForHeight, usableHeight);
+        marginLeft.rx() += (usableWidth - maxWidthForHeight) / 2;
+    }
+    else {
+        // full width, reduced height
+        innerSize = QSize(usableWidth, usableWidth * 9 / 16.);
+    }
+
+    mGeometryDetail.mTopLeft = marginLeft;
+    mGeometryDetail.mFrameSize = innerSize;
 }
 
 void FrameWidget::paintEvent(QPaintEvent*)
 {
-    mPainter.begin(this);
-    mPainter.setViewport(QRect(0, 0, this->width(), this->width() * 9 / 16.));
-    mPainter.setWindow(QRect(QPoint(-2, -2), mSize.grownBy(QMargins(0, 0, 12, 12))));
-    mPainter.setRenderHint(QPainter::SmoothPixmapTransform);
-    mPainter.fillRect(QRect(QPoint(10, 10), mSize), QColor(Qt::darkGray).lighter(125));
-    mPainter.fillRect(QRect(QPoint(8, 8), mSize), QColor(Qt::darkGray).lighter(100));
-    mPainter.fillRect(QRect(QPoint(6, 6), mSize), QColor(Qt::darkGray).lighter(75));
-    mPainter.fillRect(QRect(QPoint(4, 4), mSize), QColor(Qt::darkGray).lighter(50));
-    mPainter.fillRect(QRect(QPoint(2, 2), mSize), QColor(Qt::darkGray).lighter(25));
-    if(hasFocus()) {
-        mPainter.fillRect(QRect(QPoint(-2, -2), mSize.grownBy(QMargins(2, 2, 2, 2))), this->palette().highlight());
+    QPainter painter;
+    painter.begin(this);
+    painter.save();
+
+    auto const marginLeft = mGeometryDetail.mTopLeft;
+    auto const innerSize = mGeometryDetail.mFrameSize;
+
+    // Draw drop shadow
+    QPoint const shadowOffset = {3, 3};
+    auto const shadowBasePos = marginLeft + shadowOffset;
+    auto const shadowColors = {"#bbbbbb", "#cccccc", "#dddddd", "#eeeeee"};
+    for (int offset = shadowColors.size()-1; offset >= 0; offset--) {
+        painter.setPen(*(shadowColors.begin()+offset));
+        painter.drawRect(QRect(shadowBasePos + QPoint(offset, offset), innerSize));
     }
-    mPainter.fillRect(QRect(QPoint(0, 0), mSize), Qt::white);
-    mPainter.setClipping(true);
-    mPainter.setClipRect(QRect(QPoint(0, 0), mSize));
-    if(!mPresentation->frameList().empty()){
-        FramePainter paint(mPainter);
-        auto const frame = mPresentation->frameList().frameAt(mPageNumber);
-        paint.paintFrame(frame);
-        mCurrentFrameId = frame->id();
+    painter.fillRect(QRect(shadowBasePos, innerSize), "#aaaaaa");
+
+    // Draw focus rect
+    if (hasFocus()) {
+        painter.setPen(this->palette().highlight().color());
     }
+    else {
+        painter.setPen(this->palette().mid().color());
+    }
+    painter.drawRect(QRect(marginLeft - QPoint(1, 1), innerSize.grownBy({1, 1, 0, 0})));
+
+    // Done drawing the surroundings -- draw slide content now
+    painter.setViewport(QRect(marginLeft, innerSize));
+    painter.setWindow(QRect({0, 0}, mSize));
+
+    mGeometryDetail.mWidgetToFrameTransform = painter.combinedTransform().inverted();
+
+    painter.setRenderHint(QPainter::SmoothPixmapTransform);
+    painter.fillRect(QRect(QPoint(0, 0), mSize), Qt::white);
+
+    if (mPresentation->frameList().empty()) {
+        painter.restore();
+        painter.end();
+        return;
+    }
+
+    painter.setClipping(true);
+    painter.setClipRect(QRect(QPoint(0, 0), mSize));
+
+    FramePainter paint(painter);
+    auto const frame = mPresentation->frameList().frameAt(mPageNumber);
+    paint.paintFrame(frame);
+    mCurrentFrameId = frame->id();
+
     auto const& box = mPresentation->frameList().findBox(mActiveBoxId);
-    if(box != nullptr && mPresentation->frameList().findFrame(mCurrentFrameId)->containsBox(mActiveBoxId)){
-        box->drawSelectionFrame(mPainter);
-        box->drawScaleHandle(mPainter, mDiffToMouse);
+    if(box != nullptr && frame->containsBox(mActiveBoxId)){
+        box->drawSelectionFrame(painter);
+        box->drawScaleHandle(painter, mDiffToMouse);
     }
     else{
         mActiveBoxId = QString();
     }
-    mPainter.end();
-}
 
-QSize FrameWidget::sizeHint() const{
-    return QSize(this->width(), this->width() * 9 / 16.);
+    // draw frame title
+    painter.restore();
+    painter.setFont(mTitleFont);
+    auto const frameTitleRect = QRect(rect().translated(0, innerSize.height() + marginLeft.y() + frameTitleSpacing));
+    painter.drawText(frameTitleRect, frame->id(), QTextOption(Qt::AlignHCenter | Qt::AlignTop));
+
+    painter.end();
 }
 
 void FrameWidget::contextMenuEvent(QContextMenuEvent *event){
@@ -110,17 +168,15 @@ void FrameWidget::setCurrentPage(QString frameId){
     for(auto const & frame: mPresentation->frameList().vector) {
         if(frame->id() == frameId) {
             mPageNumber = counter;
-            Q_EMIT pageNumberChanged(mPageNumber);
             break;
         }
         counter++;
     }
 }
 
-void FrameWidget::resizeEvent(QResizeEvent*) {
+void FrameWidget::resizeEvent(QResizeEvent* event) {
     mWidth = frameSize().width();
-    mScale = 1.0 * mSize.width() / mWidth;
-    updateGeometry();
+    recalculateGeometry();
 }
 
 void FrameWidget::determineBoxInFocus(QPoint mousePos){
@@ -332,7 +388,7 @@ QString const& FrameWidget::currentFrameId() const {
 }
 
 QPoint FrameWidget::ScaledMousePos(QMouseEvent *event) const{
-    return event->pos() * mScale;
+    return mGeometryDetail.mWidgetToFrameTransform.map(event->pos());
 }
 
 void FrameWidget::createActions(){

@@ -129,8 +129,6 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::fileChanged);
 
     mViewTextDoc->setFocus();
-    ui->currentFrameId->setAlignment(Qt::AlignCenter);
-    ui->currentFrameId->setText("");
 }
 
 MainWindow::~MainWindow()
@@ -162,7 +160,6 @@ void MainWindow::fileChanged() {
     auto const index = mFrameModel->index(mFrameWidget->pageNumber());
     ui->pagePreview->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     ui->pagePreview->scrollTo(index);
-    ui->currentFrameId->setText(mFrameWidget->currentFrameId());
 }
 
 void MainWindow::readTemplate(QString filename) {
