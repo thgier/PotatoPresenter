@@ -41,6 +41,7 @@ private:
     void newArrow(int line);
     void newLine(int line);
     void newPlainText(int line);
+    void newCodeBox(int line);
     void newBlindText(int line);
     void setVariable(int line);
     void applyPause();

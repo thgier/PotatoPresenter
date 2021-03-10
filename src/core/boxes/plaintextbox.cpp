@@ -3,10 +3,6 @@
 #include <QTextLayout>
 #include <QTextDocument>
 
-PlainTextBox::PlainTextBox(QString text, BoxStyle style, QString id, int line)
-    : TextBox(text, style, id, line)
-{
-}
 
 std::shared_ptr<TextBox> PlainTextBox::clone() {
     return std::make_shared<PlainTextBox>(*this);

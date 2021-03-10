@@ -16,6 +16,7 @@
 #include "arrowbox.h"
 #include "plaintextbox.h"
 #include "linebox.h"
+#include "codebox.h"
 
 Parser::Parser(QString resourcepath)
     : mResourcepath(resourcepath)
@@ -105,6 +106,9 @@ void Parser::command(Token token){
     }
     else if(token.mText == "\\plaintext"){
         newPlainText(token.mLine);
+    }
+    else if(token.mText == "\\code"){
+        newCodeBox(token.mLine);
     }
     else if(token.mText == "\\blindtext"){
         newBlindText(token.mLine);
@@ -304,7 +308,7 @@ void Parser::newPlainText(int line) {
         boxStyle.boxClass = "body";
     }
     if(id.isEmpty()) {
-        id = generateId("arrow", boxStyle.boxClass);
+        id = generateId("plaintext", boxStyle.boxClass);
     }
 
     QString text = "";
@@ -314,6 +318,35 @@ void Parser::newPlainText(int line) {
         text = QString(mTokenizer.next().mText);
     }
     auto const textField = std::make_shared<PlainTextBox>(text, boxStyle, id, line);
+    textField->setPauseCounter(mPauseCount);
+    mFrameList.vector.back()->appendBox(textField);
+}
+
+void Parser::newCodeBox(int line) {
+    if(mFrameList.empty()){
+        throw ParserError{"missing frame: type \\frame id", line};
+        return;
+    }
+
+    QString id;
+    auto boxStyle = readArguments(id);
+    if(boxStyle.boxClass.isEmpty()) {
+        boxStyle.boxClass = "body";
+    }
+    if(!boxStyle.mFont.has_value()) {
+        boxStyle.mFont = "Hack";
+    }
+    if(id.isEmpty()) {
+        id = generateId("code", boxStyle.boxClass);
+    }
+
+    QString text = "";
+    auto const peekNextKind = mTokenizer.peekNext().mKind;
+    auto const peeknext = mTokenizer.peekNext();
+    if(peekNextKind == Token::Kind::Text || peekNextKind == Token::Kind::MultiLineText) {
+        text = QString(mTokenizer.next().mText);
+    }
+    auto const textField = std::make_shared<CodeBox>(text, boxStyle, id, line);
     textField->setPauseCounter(mPauseCount);
     mFrameList.vector.back()->appendBox(textField);
 }
@@ -330,7 +363,7 @@ void Parser::newBlindText(int line) {
         boxStyle.boxClass = "body";
     }
     if(id.isEmpty()) {
-        id = generateId("arrow", boxStyle.boxClass);
+        id = generateId("blindtext", boxStyle.boxClass);
     }
 
 
@@ -375,7 +408,6 @@ void Parser::applyPause() {
     auto box = lastTextBox->clone();
     box->appendText(text);
     box->setPauseCounter(mPauseCount);
-    box->setPauseMode(PauseDisplayMode::onlyInPause);
     mFrameList.vector.back()->appendBox(box);
     lastTextBox->setConfigId(lastTextBox->id());
     lastTextBox->setPauseMode(PauseDisplayMode::onlyInPause);
@@ -486,6 +518,9 @@ BoxStyle Parser::readArguments(QString &id) {
         }
         if(argument.mText == "class"){
             boxStyle.boxClass = argumentValue.mText;
+        }
+        if(argument.mText == "language"){
+            boxStyle.language = QString(argumentValue.mText);
         }
         argument = mTokenizer.peekNext();
     }

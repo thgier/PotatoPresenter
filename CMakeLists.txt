@@ -13,6 +13,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(KF5TextEditor)
+find_package(KF5SyntaxHighlighting)
 find_package(Qt5PrintSupport REQUIRED)
 find_package(Qt5Svg REQUIRED)
 find_package(Qt5Test REQUIRED)
@@ -26,6 +27,7 @@ add_executable(praes
     src/antlr/generated/markdownParser.cpp
     src/core/boxes/arrowbox.cpp
     src/core/boxes/box.cpp
+    src/core/boxes/codebox.cpp
     src/core/boxes/imagebox.cpp
     src/core/boxes/linebox.cpp
     src/core/boxes/markdowntextbox.cpp
@@ -33,6 +35,7 @@ add_executable(praes
     src/core/boxes/textbox.cpp
     src/core/boxgeometry.cpp
     src/core/cachemanager.cpp
+    src/core/codehighlighter.cpp
     src/core/configboxes.cpp
     src/core/equationcachemanager.cpp
     src/core/frame.cpp
@@ -59,7 +62,7 @@ add_executable(testtokenizer
     src/core/tokenizer.cpp)
 add_test(NAME testtokenizer COMMAND testtokenizer)
 
-target_link_libraries(praes PRIVATE Qt5::Widgets KF5::TextEditor)
+target_link_libraries(praes PRIVATE Qt5::Widgets KF5::TextEditor KF5::SyntaxHighlighting)
 target_link_libraries(praes PRIVATE Qt5::PrintSupport)
 target_link_libraries(praes PRIVATE Qt5::Svg)
 target_link_libraries(testtokenizer PRIVATE Qt5::Test)

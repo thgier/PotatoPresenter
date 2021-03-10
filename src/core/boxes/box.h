@@ -18,6 +18,7 @@ enum PauseDisplayMode {
 
 struct BoxStyle{
     QString boxClass;
+    QString language;
     bool movable = true;
     std::optional<QColor> mColor;
     std::optional<int> mFontSize;
@@ -68,7 +69,7 @@ public:
     using List = std::vector<Ptr>;
 
     Box();
-    Box(BoxStyle boxStyle, QString id, int line);
+    Box(BoxStyle const& boxStyle, QString const& id, int line);
 
     // Implement this in child classes to draw the box's contents given the passed @p variables
     virtual void drawContent(QPainter& painter, std::map<QString, QString> variables) = 0;

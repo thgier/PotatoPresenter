@@ -1,7 +1,7 @@
 #include "box.h"
 #include <QRegularExpression>
 
-Box::Box(BoxStyle boxStyle, QString id, int line)
+Box::Box(const BoxStyle &boxStyle, const QString &id, int line)
     : mStyle{boxStyle}
     , mId{id}
     , mLine{line}
