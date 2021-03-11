@@ -39,10 +39,10 @@ Preamble Parser::readPreamble() {
             preambleCommand(token);
         }
         else if(token.mKind == Token::Kind::EndOfFile) {
-            throw ParserError{"missing command", 0};
+            throw ParserError{"Expecting command", 0};
         }
         else{
-            throw ParserError{"missing command", token.mLine};
+            throw ParserError{"Expecting command", token.mLine};
         }
     }
     return mPreamble;
@@ -52,7 +52,7 @@ void Parser::preambleCommand(Token token) {
     if(token.mText == "\\usetemplate"){
         auto const nextToken = mTokenizer.next();
         if(nextToken.mKind != Token::Kind::Text) {
-            throw ParserError{"Missing Template name", token.mLine};
+            throw ParserError{"Expecting template name", token.mLine};
             return;
         }
         mPreamble.templateName = nextToken.mText;
@@ -69,7 +69,7 @@ FrameList Parser::readInput(){
             command(token);
         }
         else{
-            throw ParserError{"missing command", token.mLine};
+            throw ParserError{"Expecting command", token.mLine};
         }
         token = mTokenizer.next();
     }
@@ -117,7 +117,7 @@ void Parser::command(Token token){
         setVariable(token.mLine);
     }
     else{
-        throw ParserError{"command does not exist", token.mLine};
+        throw ParserError{QString("Invalid command '%1'").arg(QString(token.mText)), token.mLine};
     }
 }
 
@@ -128,25 +128,25 @@ void Parser::newFrame(int line){
     QString frameClass;
     if(token.mKind == Token::Kind::Argument){
         if(token.mText != "class"){
-            throw ParserError{"Only the Argument \"class\" is allowed after frame Command", token.mLine};
+            throw ParserError{QString("Invalid argument '%1' for \\frame").arg(QString(token.mText)), token.mLine};
             return;
         }
         auto const tokenArgValue = mTokenizer.next();
         if(tokenArgValue.mKind != Token::Kind::ArgumentValue){
-            throw ParserError{"Argument Value is missing", token.mLine};
+            throw ParserError{"Missing value for argument", token.mLine};
             return;
         }
         frameClass = tokenArgValue.mText;
         token = mTokenizer.next();
     }
     if(token.mKind != Token::Kind::Text || token.mText.isEmpty()) {
-        throw ParserError{"missing frame id", line};
+        throw ParserError{"Expecting frame id", line};
         return;
     }
     auto const id = QString(token.mText);
     for(auto const& frame: mFrameList.vector) {
         if(frame->id() == id){
-            throw ParserError{"frame id already exist", line};
+            throw ParserError{QString("Duplicate frame ID '%1'").arg(id), line};
         }
     }
     mVariables["%{pagenumber}"] = QString::number(mFrameList.vector.size());
@@ -163,7 +163,7 @@ void Parser::newFrame(int line){
 
 void Parser::newTextField(int line){
     if(mFrameList.empty()){
-        throw ParserError{"missing frame: type \\frame id", line};
+        throw ParserError{"Expecting \\frame", line};
         return;
     }
     QString id;
@@ -186,7 +186,7 @@ void Parser::newTextField(int line){
 
 void Parser::newImage(int line) {
     if(mFrameList.empty()){
-        throw ParserError{"missing frame: type \\frame id", line};
+        throw ParserError{"Expecting \\frame", line};
         return;
     }
     QString id;
@@ -208,7 +208,7 @@ void Parser::newImage(int line) {
 
 void Parser::newTitle(int line){
     if(mFrameList.empty()){
-        throw ParserError{"missing frame: type \\frame id", line};
+        throw ParserError{"Expecting \\frame", line};
         return;
     }
     QString id;
@@ -231,7 +231,7 @@ void Parser::newTitle(int line){
 
 void Parser::newBody(int line){
     if(mFrameList.empty()){
-        throw ParserError{"missing frame: type \\frame id", line};
+        throw ParserError{"Expecting \\frame", line};
         return;
     }
     QString id;
@@ -253,7 +253,7 @@ void Parser::newBody(int line){
 
 void Parser::newArrow(int line){
     if(mFrameList.empty()){
-        throw ParserError{"missing frame: type \\frame id", line};
+        throw ParserError{"Expecting \\frame", line};
         return;
     }
     QString id;
@@ -268,14 +268,14 @@ void Parser::newArrow(int line){
 
     auto const nextToken = mTokenizer.peekNext();
     if(nextToken.mKind != Token::Kind::Command && nextToken.mKind != Token::Kind::EndOfFile){
-        throw ParserError{"\\arrow command need no text", line};
+        throw ParserError{"Expecting end of line", line};
         return;
     }
 }
 
 void Parser::newLine(int line){
     if(mFrameList.empty()){
-        throw ParserError{"missing frame: type \\frame id", line};
+        throw ParserError{"Expecting \\frame", line};
         return;
     }
 
@@ -291,14 +291,14 @@ void Parser::newLine(int line){
 
     auto const nextToken = mTokenizer.peekNext();
     if(nextToken.mKind != Token::Kind::Command && nextToken.mKind != Token::Kind::EndOfFile){
-        throw ParserError{"\\line command need no text", line};
+        throw ParserError{"Expecting end of line", line};
         return;
     }
 }
 
 void Parser::newPlainText(int line) {
     if(mFrameList.empty()){
-        throw ParserError{"missing frame: type \\frame id", line};
+        throw ParserError{"Expecting \\frame", line};
         return;
     }
 
@@ -324,7 +324,7 @@ void Parser::newPlainText(int line) {
 
 void Parser::newCodeBox(int line) {
     if(mFrameList.empty()){
-        throw ParserError{"missing frame: type \\frame id", line};
+        throw ParserError{"Expecting \\frame", line};
         return;
     }
 
@@ -353,7 +353,7 @@ void Parser::newCodeBox(int line) {
 
 void Parser::newBlindText(int line) {
     if(mFrameList.empty()){
-        throw ParserError{"missing frame: type \\frame id", line};
+        throw ParserError{"Expecting \\frame", line};
         return;
     }
 
@@ -382,7 +382,7 @@ void Parser::newBlindText(int line) {
 void Parser::setVariable(int line) {
     Token nextToken = mTokenizer.next();
     if(nextToken.mKind != Token::Kind::Text){
-        throw ParserError{"Missing Variable declaration", line};
+        throw ParserError{"Expecting variable value", line};
         return;
     }
     auto text = QString(nextToken.mText);
@@ -425,7 +425,7 @@ BoxStyle Parser::readArguments(QString &id) {
         mTokenizer.next();
         auto argumentValue = mTokenizer.next();
         if(argumentValue.mKind != Token::Kind::ArgumentValue && !argumentValue.mText.isEmpty()){
-            throw ParserError{"Missing Value in argument", argument.mLine};
+            throw ParserError{"Expecting argument value", argument.mLine};
             return {};
         }
         if(argument.mText == "color"){
@@ -452,7 +452,7 @@ BoxStyle Parser::readArguments(QString &id) {
                 boxStyle.mFontWeight = FontWeight::normal;
             }
             else{
-                throw ParserError{"font-weight can only be bold or normal", argumentValue.mLine};
+                throw ParserError{"Invalid value for 'font-weight' (possible values: bold, normal)", argumentValue.mLine};
             }
         }
         if(argument.mText == "font"){
@@ -461,10 +461,10 @@ BoxStyle Parser::readArguments(QString &id) {
         if(argument.mText == "id"){
             id = QString(argumentValue.mText);
             if(id.startsWith("intern")) {
-                throw ParserError{"User defined Box Ids should not start with \"intern\"", argumentValue.mLine};
+                throw ParserError{"User defined box IDs must not start with \"intern\"", argumentValue.mLine};
             }
             if(mBoxIds.find(id) != mBoxIds.end()) {
-                throw ParserError{"Box Id already exists", argumentValue.mLine};
+                throw ParserError{"Duplicate box ID", argumentValue.mLine};
             }
             mBoxIds.insert(id);
         }
@@ -496,7 +496,7 @@ BoxStyle Parser::readArguments(QString &id) {
                 boxStyle.movable = true;
             }
             else {
-                throw ParserError{"movable: expect true or false", argumentValue.mLine};
+                throw ParserError{"Invalid value for 'movable' (possible values: true, false)", argumentValue.mLine};
             }
         }
         if(argument.mText == "text-align"){
@@ -513,7 +513,7 @@ BoxStyle Parser::readArguments(QString &id) {
                 boxStyle.mAlignment = Qt::AlignJustify;
             }
             else {
-                throw ParserError{"possible alignment: left, right, center, justify", argumentValue.mLine};
+                throw ParserError{"Invalid value for 'text-align' (possible values: left, right, center, justify)", argumentValue.mLine};
             }
         }
         if(argument.mText == "class"){
@@ -526,7 +526,7 @@ BoxStyle Parser::readArguments(QString &id) {
             QColor color;
             color.setNamedColor(argumentValue.mText);
             if(!color.isValid()) {
-                throw ParserError{"Do not know color", argumentValue.mLine};
+                throw ParserError{"Invalid color", argumentValue.mLine};
             }
             boxStyle.mBackgroundColor = color;
         }
@@ -534,7 +534,7 @@ BoxStyle Parser::readArguments(QString &id) {
             QColor color;
             color.setNamedColor(argumentValue.mText);
             if(!color.isValid()) {
-                throw ParserError{"Do not know color", argumentValue.mLine};
+                throw ParserError{"Invalid color", argumentValue.mLine};
             }
             boxStyle.mBackgroundColor = color;
         }
@@ -549,7 +549,7 @@ BoxStyle Parser::readArguments(QString &id) {
                 bool ok;
                 boxStyle.mBorder.width = value.toInt(&ok);
                 if(!ok) {
-                    throw ParserError{"Cannot read border width", argumentValue.mLine};
+                    throw ParserError{"Invalid width value for 'border'", argumentValue.mLine};
                 }
                 boxStyle.mBorder.style = values[1];
                 if(values.length() >= 3) {
