@@ -27,9 +27,9 @@ std::shared_ptr<TextBox> MarkdownTextBox::clone() {
 }
 
 void MarkdownTextBox::drawContent(QPainter& painter, std::map<QString, QString> variables) {
-    auto const text = substituteVariables(mText, variables);
     PainterTransformScope scope(this, painter);
-    painter.setPen(mStyle.color());
+    drawGlobalBoxSettings(painter);
+    auto const text = substituteVariables(mText, variables);
 
     std::istringstream str(text.toStdString());
     antlr4::ANTLRInputStream input(str);

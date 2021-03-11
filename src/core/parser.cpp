@@ -522,6 +522,48 @@ BoxStyle Parser::readArguments(QString &id) {
         if(argument.mText == "language"){
             boxStyle.language = QString(argumentValue.mText);
         }
+        if(argument.mText == "background"){
+            QColor color;
+            color.setNamedColor(argumentValue.mText);
+            if(!color.isValid()) {
+                throw ParserError{"Do not know color", argumentValue.mLine};
+            }
+            boxStyle.mBackgroundColor = color;
+        }
+        if(argument.mText == "background-color"){
+            QColor color;
+            color.setNamedColor(argumentValue.mText);
+            if(!color.isValid()) {
+                throw ParserError{"Do not know color", argumentValue.mLine};
+            }
+            boxStyle.mBackgroundColor = color;
+        }
+        if(argument.mText == "border"){
+            auto values = QString(argumentValue.mText).split(" ");
+            if(values.empty()) {
+                continue;
+            }
+            if(values[0].endsWith("px") && values.length() >= 2) {
+                auto value = values[0];
+                value.chop(2);
+                bool ok;
+                boxStyle.mBorder.width = value.toInt(&ok);
+                if(!ok) {
+                    throw ParserError{"Cannot read border width", argumentValue.mLine};
+                }
+                boxStyle.mBorder.style = values[1];
+                if(values.length() >= 3) {
+                    boxStyle.mBorder.color = QColor(QString(values[2]));
+                }
+            }
+            else {
+                boxStyle.mBorder.style = values[0];
+                if(values.length() >= 2) {
+                    boxStyle.mBorder.color = QColor(QString(values[1]));
+                }
+            }
+        }
+
         argument = mTokenizer.peekNext();
     }
     return boxStyle;

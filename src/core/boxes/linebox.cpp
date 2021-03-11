@@ -9,7 +9,7 @@ LineBox::LineBox(BoxStyle style, QString id, int line)
 
 void LineBox::drawContent(QPainter& painter, std::map<QString, QString>){
     PainterTransformScope scope(this, painter);
-    painter.setRenderHint(QPainter::Antialiasing);
+    drawGlobalBoxSettings(painter);
     auto const left = QPoint(geometry().left(), geometry().rect().center().y());
     auto const right = QPoint(geometry().rect().right(), geometry().rect().center().y());
     painter.drawLine(left, right);

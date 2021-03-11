@@ -21,6 +21,7 @@ struct BoxStyle{
     QString language;
     bool movable = true;
     std::optional<QColor> mColor;
+    std::optional<QColor> mBackgroundColor;
     std::optional<int> mFontSize;
     std::optional<double> mLineSpacing;
     std::optional<FontWeight> mFontWeight;
@@ -28,9 +29,18 @@ struct BoxStyle{
     std::optional<Qt::Alignment> mAlignment;
     std::optional<double> mOpacity;
     BoxGeometry mGeometry;
+    std::optional<int> mPadding;
+    struct {
+        std::optional<int> width;
+        std::optional<QString> style;
+        std::optional<QColor> color;
+    } mBorder;
 
     QColor color() const {
         return mColor.value_or(Qt::black);
+    }
+    QColor backgroundColor() const {
+        return mBackgroundColor.value_or(Qt::white);
     }
     int fontSize() const {
         return mFontSize.value_or(50);
@@ -54,6 +64,19 @@ struct BoxStyle{
         return !(mColor.has_value() || mFontSize.has_value() || mLineSpacing.has_value() || mFontWeight.has_value()
                 || mFont.has_value() || mAlignment.has_value() || mOpacity.has_value()) && mGeometry.empty();
     }
+    bool hasBorder() {
+        // CSS standard says style has to be given
+        return mBorder.style.has_value();
+    }
+    int borderWidth() {
+        return mBorder.width.value_or(5);
+    }
+    QColor borderColor() {
+        return mBorder.color.value_or(Qt::black);
+    }
+    QString borderStyle() {
+        return mBorder.style.value_or("solid");
+    }
 };
 
 struct VariableSubstitution{
@@ -73,8 +96,9 @@ public:
 
     // Implement this in child classes to draw the box's contents given the passed @p variables
     virtual void drawContent(QPainter& painter, std::map<QString, QString> variables) = 0;
-    void drawSelectionFrame(QPainter& painter);
-    void drawScaleHandle(QPainter& painter, int size);
+    void drawManipulationFrame(QPainter& painter, int size);
+    // e.g. Border, background
+    void drawGlobalBoxSettings(QPainter& painter);
 
     BoxStyle const& style() const;
     BoxGeometry const& geometry() const;
@@ -111,7 +135,7 @@ protected:
             : mSelf(self)
             , mPainter(painter)
         {
-            self->startDraw(painter);
+            self->startDraw(mPainter);
         }
         ~PainterTransformScope() {
             mSelf->endDraw(mPainter);

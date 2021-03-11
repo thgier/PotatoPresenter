@@ -7,7 +7,6 @@ namespace {
 void drawItemMarker(QPainter &painter, QPointF position, qreal size) {
     painter.save();
     painter.setBrush(Qt::black);
-    painter.setRenderHint(QPainter::Antialiasing);
     painter.drawEllipse(position, size, size);
     painter.restore();
 }

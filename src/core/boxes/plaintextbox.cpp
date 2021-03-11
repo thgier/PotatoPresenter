@@ -9,10 +9,12 @@ std::shared_ptr<TextBox> PlainTextBox::clone() {
 }
 
 void PlainTextBox::drawContent(QPainter& painter, std::map<QString, QString> variables) {
+    PainterTransformScope scope(this, painter);
+    drawGlobalBoxSettings(painter);
+
     auto const text = substituteVariables(mText, variables);
     auto const paragraphs = text.split("\n");
-    PainterTransformScope scope(this, painter);
-    painter.setPen(mStyle.color());
+
     auto const linespacing = painter.fontMetrics().leading() + mStyle.linespacing() * painter.fontMetrics().lineSpacing();
     double y = 0;
     for(auto const& paragraph: paragraphs) {

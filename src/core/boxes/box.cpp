@@ -1,6 +1,18 @@
 #include "box.h"
 #include <QRegularExpression>
 
+namespace{
+Qt::PenStyle CSSToPenStyle(QString cssStyle) {
+    if (cssStyle == "dotted") {
+        return Qt::PenStyle::DotLine;
+    }
+    else if(cssStyle == "dashed") {
+        return Qt::PenStyle::DashLine;
+    }
+    return Qt::PenStyle::SolidLine;
+}
+}
+
 Box::Box(const BoxStyle &boxStyle, const QString &id, int line)
     : mStyle{boxStyle}
     , mId{id}
@@ -46,12 +58,19 @@ int Box::line() const {
 
 void Box::startDraw(QPainter &painter) {
     painter.save();
+
+    // geometry
     auto rect = style().mGeometry.rect();
     rect.moveLeft(mStyle.mGeometry.left());
     rect.moveTop(mStyle.mGeometry.top());
     rect.setWidth(mStyle.mGeometry.width());
     rect.setHeight(mStyle.mGeometry.height());
     style().mGeometry.setAngle(mStyle.mGeometry.angle());
+
+    painter.setTransform(style().mGeometry.transform());
+    painter.setRenderHint(QPainter::Antialiasing);
+
+    // font
     auto font = painter.font();
     if(mStyle.mFontWeight == FontWeight::bold){
         font.setBold(true);
@@ -60,7 +79,7 @@ void Box::startDraw(QPainter &painter) {
     font.setFamily(mStyle.font());
     font.setPixelSize(mStyle.fontSize());
     painter.setFont(font);
-    painter.setTransform(style().mGeometry.transform());
+    painter.setPen(mStyle.color());
     painter.setOpacity(mStyle.opacity());
 }
 
@@ -68,25 +87,25 @@ void Box::endDraw(QPainter &painter) const{
     painter.restore();
 }
 
-void Box::drawSelectionFrame(QPainter &painter){
+void Box::drawManipulationFrame(QPainter &painter, int size){
     PainterTransformScope scope(this, painter);
-    painter.setRenderHint(QPainter::Antialiasing);
     auto pen = painter.pen();
+    pen.setColor(Qt::black);
     pen.setCosmetic(true);
     painter.setPen(pen);
-    painter.drawRect(style().mGeometry.rect());
-}
 
-void Box::drawScaleHandle(QPainter &painter, int size){
-    PainterTransformScope scope(this, painter);
-    size /= 2;
-    painter.setRenderHint(QPainter::Antialiasing);
-    painter.setBrush(Qt::black);
-    QPoint(size/2, size/2);
-    painter.fillRect(QRect(style().mGeometry.rect().topLeft() + QPoint(-size/2, -size/2), QSize(size, size)), Qt::black);
-    painter.fillRect(QRect(style().mGeometry.rect().topRight() + QPoint(size/2, -size/2), QSize(-size, size)), Qt::black);
-    painter.fillRect(QRect(style().mGeometry.rect().bottomLeft() + QPoint(-size/2, size/2), QSize(size, -size)), Qt::black);
-    painter.fillRect(QRect(style().mGeometry.rect().bottomRight() + QPoint(size/2, size/2), QSize(-size, -size)), Qt::black);
+    painter.drawRect(style().mGeometry.rect());
+
+    painter.fillRect(QRect(style().mGeometry.rect().topLeft() + QPoint(-size/2, -size/2), QSize(size, size)), Qt::white);
+    painter.fillRect(QRect(style().mGeometry.rect().topRight() + QPoint(size/2, -size/2), QSize(-size, size)), Qt::white);
+    painter.fillRect(QRect(style().mGeometry.rect().bottomLeft() + QPoint(-size/2, size/2), QSize(size, -size)), Qt::white);
+    painter.fillRect(QRect(style().mGeometry.rect().bottomRight() + QPoint(size/2, size/2), QSize(-size, -size)), Qt::white);
+
+    painter.drawRect(QRect(style().mGeometry.rect().topLeft() + QPoint(-size/2, -size/2), QSize(size, size)));
+    painter.drawRect(QRect(style().mGeometry.rect().topRight() + QPoint(size/2, -size/2), QSize(-size, size)));
+    painter.drawRect(QRect(style().mGeometry.rect().bottomLeft() + QPoint(-size/2, size/2), QSize(size, -size)));
+    painter.drawRect(QRect(style().mGeometry.rect().bottomRight() + QPoint(size/2, size/2), QSize(-size, -size)));
+
 }
 
 void Box::setBoxStyle(BoxStyle style){

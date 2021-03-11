@@ -108,8 +108,7 @@ void FrameWidget::paintEvent(QPaintEvent*)
 
     auto const& box = mPresentation->frameList().findBox(mActiveBoxId);
     if(box != nullptr && frame->containsBox(mActiveBoxId)){
-        box->drawSelectionFrame(painter);
-        box->drawScaleHandle(painter, mDiffToMouse);
+        box->drawManipulationFrame(painter, mDiffToMouse);
     }
     else{
         mActiveBoxId = QString();

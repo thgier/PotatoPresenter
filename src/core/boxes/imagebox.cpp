@@ -13,12 +13,13 @@ ImageBox::ImageBox(QString imagePath, BoxStyle boxstyle, QString id, int line)
 }
 
 void ImageBox::drawContent(QPainter& painter, std::map<QString, QString> variables){
+    PainterTransformScope scope(this, painter);
+    drawGlobalBoxSettings(painter);
     auto path = substituteVariables(mImagePath, variables);
     if(!path.startsWith("/home") && variables.find("%{resourcepath}") != variables.end()) {
         path = variables["%{resourcepath}"] + "/" + path;
     }
     auto const fileInfo = QFileInfo(path);
-    PainterTransformScope scope(this, painter);
     if(fileInfo.suffix() == "svg"){
         drawSvg(loadSvg(path), painter);
     }

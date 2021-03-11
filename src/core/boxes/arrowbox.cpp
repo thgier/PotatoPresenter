@@ -8,6 +8,7 @@ ArrowBox::ArrowBox(BoxStyle style, QString id, int line)
 
 void ArrowBox::drawContent(QPainter& painter, std::map<QString, QString>){
     PainterTransformScope scope(this, painter);
+    drawGlobalBoxSettings(painter);
     painter.setRenderHint(QPainter::Antialiasing);
     auto const rect = geometry().rect();
     QPainterPath path;
