@@ -23,14 +23,15 @@ void PlainTextBox::drawContent(QPainter& painter, std::map<QString, QString> var
         textLayout.setFont(painter.font());
         textLayout.setCacheEnabled(true);
         textLayout.beginLayout();
-            while (1) {
-                QTextLine line = textLayout.createLine();
-                if (!line.isValid()){
-                    break;
-                }
-                line.setLineWidth(geometry().width());
-                line.setPosition(QPointF(0, y));
-                y += linespacing;
+        while (1) {
+            QTextLine line = textLayout.createLine();
+            if (!line.isValid()){
+                break;
+            }
+            line.setLineWidth(geometry().width());
+            line.setPosition(QPointF(0, y));
+            mTextBoundings.lineBoundingRects.push_back(line.naturalTextRect());
+            y += linespacing;
         }
         textLayout.endLayout();
         textLayout.draw(&painter, geometry().topLeft());

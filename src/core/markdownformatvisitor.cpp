@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <QCryptographicHash>
 #include "equationcachemanager.h"
+#include "textbox.h"
 
 namespace {
 void drawItemMarker(QPainter &painter, QPointF position, qreal size) {
@@ -144,6 +145,7 @@ void MarkdownFormatVisitor::exitParagraph(markdownParser::ParagraphContext * ctx
         }
         line.setLineWidth(mRect.width() - mStartOfLine.x());
         line.setPosition(QPointF(mStartOfLine.x(), mStartOfLine.y()));
+        mTextBoundings.lineBoundingRects.push_back(line.naturalTextRect());
         newLine();
     }
     if(ctx->new_line().size() > 1) {
@@ -259,4 +261,8 @@ MapSvg MarkdownFormatVisitor::loadSvg(QString mathExpression, int start) {
         return {start, equation.svg, QSizeF(width, height)};
     }
     return {};
+}
+
+TextBoundings MarkdownFormatVisitor::textBoundings() const {
+    return mTextBoundings;
 }

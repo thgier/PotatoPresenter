@@ -2,6 +2,7 @@
 
 #include "markdownBaseListener.h"
 #include "box.h"
+#include "textbox.h"
 
 #include <QPainter>
 #include <QTextLayout>
@@ -35,6 +36,7 @@ struct MapSvg{
     QSizeF mSize;
 };
 
+
 class MarkdownFormatVisitor: public markdownBaseListener {
 public:
     MarkdownFormatVisitor(QPainter& painter, QRect rect, BoxStyle style);
@@ -62,7 +64,7 @@ public:
     void enterEnum_item(markdownParser::Enum_itemContext *ctx) override;
     void enterEnum_item_second(markdownParser::Enum_item_secondContext *ctx) override;
 
-    void setPainter(QPainter& painter);
+    TextBoundings textBoundings() const;
 
 private:
     void addXToPosition(qreal dx);
@@ -82,6 +84,8 @@ private:
     bool mDrawPlainText = true;
     BoxStyle mBoxStyle;
     std::vector<MapSvg> mMapSvgs;
+
+    TextBoundings mTextBoundings;
 
 };
 

@@ -108,6 +108,41 @@ void Box::drawManipulationFrame(QPainter &painter, int size){
 
 }
 
+void Box::drawGlobalBoxSettings(QPainter &painter) {
+    PainterTransformScope scope(this, painter);
+
+    //background Color
+    if(mStyle.mBackgroundColor.has_value()) {
+        painter.fillRect(geometry().rect(), mStyle.backgroundColor());
+    }
+
+    // border
+    if(mStyle.hasBorder()) {
+        painter.save();
+        auto pen = painter.pen();
+        pen.setColor(mStyle.borderColor());
+        pen.setWidth(mStyle.borderWidth());
+        if(mStyle.borderStyle() == "double") {
+            painter.setPen(pen);
+            painter.drawRect(geometry().rect());
+            auto const borderWidth = 2 * mStyle.borderWidth();
+            auto const margins = QMargins(borderWidth, borderWidth, borderWidth, borderWidth);
+            painter.drawRect(geometry().rect().marginsAdded(margins));
+        }
+        else {
+            pen.setStyle(CSSToPenStyle(mStyle.borderStyle()));
+            painter.setPen(pen);
+            painter.drawRect(geometry().rect());
+        }
+        painter.restore();
+    }
+
+}
+
+bool Box::containsPoint(QPoint point, int margin) const {
+    return geometry().contains(point, margin);
+}
+
 void Box::setBoxStyle(BoxStyle style){
     mStyle = style;
 }

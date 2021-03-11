@@ -67,7 +67,8 @@ private:
 
     // transform boxes
     TransformationType getTransformationType(QPoint mousePosition);
-    Box::List determineBoxesUnderMouse(QPoint mousePos);
+    std::vector<QString> determineVisibleBoxesUnderMouse(QPoint mousePos);
+    std::vector<QString> determineBoxesUnderMouse(QPoint mousePos);
     void determineBoxInFocus(QPoint mousePos);
 
     // actions in Context Menu

@@ -100,6 +100,9 @@ public:
     // e.g. Border, background
     void drawGlobalBoxSettings(QPainter& painter);
 
+    // override this if the selectable area should be another than the boxGeometry
+    virtual bool containsPoint(QPoint point, int margin) const;
+
     BoxStyle const& style() const;
     BoxGeometry const& geometry() const;
     BoxStyle& style();

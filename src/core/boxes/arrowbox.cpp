@@ -1,5 +1,4 @@
 #include "arrowbox.h"
-#include <QPainterPath>
 
 ArrowBox::ArrowBox(BoxStyle style, QString id, int line)
     : Box(style, id, line)
@@ -29,4 +28,9 @@ void ArrowBox::drawContent(QPainter& painter, std::map<QString, QString>){
 
     painter.setBrush(mStyle.color());
     painter.drawPath(path);
+    mPainterPath = path;
+}
+
+bool ArrowBox::containsPoint(QPoint point, int) const {
+    return mPainterPath.contains(geometry().transform().inverted().map(point));
 }

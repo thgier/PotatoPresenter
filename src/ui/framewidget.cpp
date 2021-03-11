@@ -173,28 +173,49 @@ void FrameWidget::setCurrentPage(QString frameId){
     }
 }
 
-void FrameWidget::resizeEvent(QResizeEvent* event) {
+void FrameWidget::resizeEvent(QResizeEvent*) {
     mWidth = frameSize().width();
     recalculateGeometry();
 }
 
 void FrameWidget::determineBoxInFocus(QPoint mousePos){
-    auto lastId = mActiveBoxId;
-    mActiveBoxId = QString();
-    for(auto box: mPresentation->frameList().frameAt(mPageNumber)->boxes()) {
-        if(box->geometry().contains(mousePos) && lastId != box->id()) {
-            mActiveBoxId = box->id();
-            break;
+    auto boxList = determineVisibleBoxesUnderMouse(mousePos);
+    if(boxList.empty()) {
+        boxList = determineBoxesUnderMouse(mousePos);
+        if(boxList.empty()) {
+            mActiveBoxId = "";
+            return;
+        }
+    }
+    else if (boxList.size() == 1) {
+        mActiveBoxId = boxList[0];
+    }
+    else {
+        auto currentBox = std::find(boxList.begin(), boxList.end(), mActiveBoxId);
+        if(currentBox == boxList.end() || currentBox == boxList.begin()) {
+            mActiveBoxId = boxList.back();
+        }
+        else {
+            mActiveBoxId = *(currentBox - 1);
         }
     }
 }
 
-Box::List FrameWidget::determineBoxesUnderMouse(QPoint mousePos){
-    mActiveBoxId = QString();
-    Box::List boxesUnderMouse;
+std::vector<QString> FrameWidget::determineVisibleBoxesUnderMouse(QPoint mousePos){
+    std::vector<QString> boxesUnderMouse;
+    for(auto &box: mPresentation->frameList().frameAt(mPageNumber)->boxes()) {
+        if(box->containsPoint(mousePos, mDiffToMouse)) {
+            boxesUnderMouse.push_back(box->id());
+        }
+    }
+    return boxesUnderMouse;
+}
+
+std::vector<QString> FrameWidget::determineBoxesUnderMouse(QPoint mousePos){
+    std::vector<QString> boxesUnderMouse;
     for(auto &box: mPresentation->frameList().frameAt(mPageNumber)->boxes()) {
         if(box->geometry().contains(mousePos, mDiffToMouse)) {
-            boxesUnderMouse.push_back(box);
+            boxesUnderMouse.push_back(box->id());
         }
     }
     return boxesUnderMouse;

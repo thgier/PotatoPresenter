@@ -43,6 +43,7 @@ void MarkdownTextBox::drawContent(QPainter& painter, std::map<QString, QString> 
     auto listener = MarkdownFormatVisitor(painter, geometry().rect(), mStyle);
     auto walker = antlr4::tree::ParseTreeWalker();
     walker.walk(&listener, tree);
+    mTextBoundings = listener.textBoundings();
 }
 
 

@@ -87,7 +87,8 @@ void ImageBox::drawImage(std::shared_ptr<QImage> image, QPainter& painter) {
     auto const source = paintImage.size();
     auto const x = geometry().left() + (geometry().width() - source.width()) / 2;
     auto const y = geometry().top() + (geometry().height() - source.height()) / 2;
-    painter.drawImage(QRect(QPoint(x, y), source), paintImage);
+    mBoundingBox = QRect(QPoint(x, y), source);
+    painter.drawImage(mBoundingBox, paintImage);
 }
 
 void ImageBox::drawSvg(std::shared_ptr<QSvgRenderer> svg, QPainter& painter) {
@@ -96,6 +97,23 @@ void ImageBox::drawSvg(std::shared_ptr<QSvgRenderer> svg, QPainter& painter) {
     }
     svg->setAspectRatioMode(Qt::KeepAspectRatio);
     svg->render(&painter, geometry().rect());
+
+    auto const viewBox = svg->viewBox();
+    mBoundingBox = geometry().rect();
+    if(geometry().width() / geometry().height() > viewBox.width() / viewBox.height()) {
+        auto const svgWidth = viewBox.width()  * geometry().height() / (1.0 * viewBox.height());
+        mBoundingBox.setLeft(geometry().left() + (geometry().width() - svgWidth) / 2);
+        mBoundingBox.setWidth(svgWidth);
+    }
+    else {
+        auto const svgHeight = viewBox.height()  * geometry().width() / (1.0 * viewBox.width());
+        mBoundingBox.setTop(geometry().top() + (geometry().height() - svgHeight) / 2);
+        mBoundingBox.setHeight(svgHeight);
+    }
+}
+
+bool ImageBox::containsPoint(QPoint point, int) const {
+    return mBoundingBox.contains(geometry().transform().inverted().map(point));
 }
 
 QString ImageBox::ImagePath() const{
