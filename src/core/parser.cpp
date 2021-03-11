@@ -409,6 +409,7 @@ void Parser::applyPause() {
     box->appendText(text);
     box->setPauseCounter(mPauseCount);
     mFrameList.vector.back()->appendBox(box);
+
     lastTextBox->setConfigId(lastTextBox->id());
     lastTextBox->setPauseMode(PauseDisplayMode::onlyInPause);
     lastTextBox->setId(generateId("text", lastTextBox->style().boxClass));

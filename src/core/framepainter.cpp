@@ -6,6 +6,10 @@ FramePainter::FramePainter(QPainter& painter)
 }
 
 void FramePainter::paintFrame(Frame::Ptr frame) const {
+    paintFrame(frame, frame->numberPauses());
+}
+
+void FramePainter::paintFrame(Frame::Ptr frame, int pauseCount) const {
     if(frame->empty()) {
         return;
     }
@@ -16,29 +20,17 @@ void FramePainter::paintFrame(Frame::Ptr frame) const {
     }
     auto const& boxes = frame->boxes();
     for(auto const& box: boxes){
-        box->drawContent(mPainter, variables);
-    }
-}
-
-void FramePainter::paintFrame(Frame::Ptr frame, int pauseCount) const {
-    auto const templateBoxes = frame->templateBoxes();
-    auto const variables = frame->variables();
-    for(auto const& box: templateBoxes){
-        box->drawContent(mPainter, variables);
-    }
-    auto const& boxes = frame->boxes();
-    for(auto const& box: boxes){
         bool boxGetPainted = false;
         // boxes get only painted when pause counter conform
-        auto const [pauseCounter, pauseMode] = box->pauseCounter();
-        switch(pauseMode) {
+        auto const [boxPauseCounter, boxPauseMode] = box->pauseCounter();
+        switch(boxPauseMode) {
             case PauseDisplayMode::fromPauseOn:
-                if(pauseCounter <= pauseCount) {
+                if(boxPauseCounter <= pauseCount) {
                     boxGetPainted = true;
                 }
                 break;
             case PauseDisplayMode::onlyInPause:
-                if(pauseCounter == pauseCount) {
+                if(boxPauseCounter == pauseCount) {
                     boxGetPainted = true;
                 }
                 break;
