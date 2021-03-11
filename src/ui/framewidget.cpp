@@ -148,6 +148,13 @@ void FrameWidget::updateFrames(){
 }
 
 void FrameWidget::updateFrameId() {
+    if(mPresentation->frameList().vector.empty()) {
+        mCurrentFrameId = "";
+        return;
+    }
+    if(mPageNumber >= int(mPresentation->frameList().vector.size())) {
+        mPageNumber = mPresentation->frameList().vector.size() - 1;
+    }
     mCurrentFrameId = mPresentation->frameList().frameAt(mPageNumber)->id();
 }
 
