@@ -194,7 +194,7 @@ void FrameWidget::determineBoxInFocus(QPoint mousePos){
             return;
         }
     }
-    else if (boxList.size() == 1) {
+    if (boxList.size() == 1) {
         mActiveBoxId = boxList[0];
     }
     else {
@@ -257,18 +257,18 @@ void FrameWidget::mouseMoveEvent(QMouseEvent *event)
     if(mouseMovement.manhattanLength() < mDiffToMouse / 5){
         return;
     }
+    auto boxInFocus = mPresentation->findBox(mActiveBoxId);
     if(!mMomentTrafo){
-        if(mActiveBoxId.isEmpty() || !mPresentation->findBox(mActiveBoxId)->style().movable){
+        if(mActiveBoxId.isEmpty() || !boxInFocus->style().movable){
             return;
         }
         cursorApperance(newPosition);
-        auto const activeBox = mPresentation->frameList().findBox(mActiveBoxId);
-        auto const clasifiedMousePos = activeBox->geometry().classifyPoint(mCursorLastPosition, mDiffToMouse);
+        auto const clasifiedMousePos = boxInFocus->geometry().classifyPoint(mCursorLastPosition, mDiffToMouse);
         if(clasifiedMousePos == pointPosition::notInBox){
             mActiveBoxId = QString();
             return;
         }
-        mMomentTrafo = BoxTransformation(activeBox, mTransform, clasifiedMousePos, mPageNumber, newPosition);
+        mMomentTrafo = BoxTransformation(boxInFocus, mTransform, clasifiedMousePos, mPageNumber, newPosition);
     }
     mMomentTrafo->doTransformation(newPosition, mPresentation);
     mCursorLastPosition = newPosition;
