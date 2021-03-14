@@ -49,15 +49,27 @@ MainWindow::MainWindow(QWidget *parent)
     // setup bar with error messages and couple button
     auto *barTop = new QHBoxLayout(this);
     ui->paint->insertLayout(0, barTop);
+
     mCoupleButton = new QToolButton(this);
     mCoupleButton->setCheckable(true);
     mCoupleButton->setChecked(true);
     mCoupleButton->setIcon(QIcon::fromTheme("edit-link"));
     mCoupleButton->setToolTip("Couple the Cursor in the Editor and the selection in Frame view");
+
+    mSnappingButton = new QToolButton(this);
+    mSnappingButton->setCheckable(true);
+    mSnappingButton->setChecked(true);
+    mSnappingButton->setIcon(QIcon::fromTheme("snap-nodes-cusp"));
+    mSnappingButton->setToolTip("Turn Snapping on/off during Box Geometry manipulation");
+
     mErrorOutput = new QLabel(this);
+
     barTop->addWidget(mCoupleButton);
+    barTop->addWidget(mSnappingButton);
     barTop->addWidget(mErrorOutput);
 
+
+    // setup document
     newDocument();
     fileChanged();
     setupFileActions();
@@ -127,6 +139,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(mPresentation.get(), &Presentation::rebuildNeeded,
             this, &MainWindow::fileChanged);
+
+    connect(mSnappingButton, &QToolButton::clicked,
+            this, [this](){mFrameWidget->setSnapping(mSnappingButton->isChecked());});
 
     mViewTextDoc->setFocus();
 }

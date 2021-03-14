@@ -302,11 +302,17 @@ void FrameWidget::mouseMoveEvent(QMouseEvent *event)
             return;
         }
         mMomentTrafo = BoxTransformation(boxInFocus->geometry(), mTransform, classifiedMousePos, newPosition);
-        auto boxesWithoutActive = mPresentation->frameList().vector[mPageNumber]->boxes();
-        std::erase_if(boxesWithoutActive, [this](auto a){return a->id() == mActiveBoxId;});
-        auto const xSnapGuides = boxesToXGuides(boxesWithoutActive);
-        auto const ySnapGuides = boxesToYGuides(boxesWithoutActive);
-        mMomentTrafo->setSnapping({xSnapGuides, ySnapGuides});
+        if(mSnapping) {
+            auto boxesWithoutActive = mPresentation->frameList().vector[mPageNumber]->boxes();
+            std::erase_if(boxesWithoutActive, [this](auto a){return a->id() == mActiveBoxId;});
+            auto xSnapGuides = boxesToXGuides(boxesWithoutActive);
+            xSnapGuides.push_back(0);
+            xSnapGuides.push_back(mSize.width());
+            auto ySnapGuides = boxesToYGuides(boxesWithoutActive);
+            ySnapGuides.push_back(0);
+            ySnapGuides.push_back(mSize.height());
+            mMomentTrafo->setSnapping({xSnapGuides, ySnapGuides, mDiffToMouse});
+        }
     }
     auto transformedRect = mMomentTrafo->doTransformation(newPosition);
     mPresentation->setBoxGeometry(mActiveBoxId, transformedRect, mPageNumber);
@@ -511,4 +517,8 @@ void FrameWidget::undo() {
 
 void FrameWidget::redo() {
     mRedo->trigger();
+}
+
+void FrameWidget::setSnapping(bool snapping) {
+    mSnapping = snapping;
 }

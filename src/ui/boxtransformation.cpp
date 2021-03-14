@@ -39,8 +39,8 @@ BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
             rect.setTopLeft(localMouse);
 
             if(mSnapping && geometry.angle() == 0) {
-                auto snapX = mSnapping.value().snapX(rect.left(), mMargin);
-                auto snapY = mSnapping.value().snapY(rect.top(), mMargin);
+                auto snapX = mSnapping.value().snapX(rect.left());
+                auto snapY = mSnapping.value().snapY(rect.top());
                 if(snapX) {
                     rect.setLeft(snapX.value());
                     mXGuide = snapX.value();
@@ -62,8 +62,8 @@ BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
             rect.setTopRight(localMouse);
 
             if(mSnapping && geometry.angle() == 0) {
-                auto snapX = mSnapping.value().snapX(rect.right(), mMargin);
-                auto snapY = mSnapping.value().snapY(rect.top(), mMargin);
+                auto snapX = mSnapping.value().snapX(rect.right());
+                auto snapY = mSnapping.value().snapY(rect.top());
                 if(snapX) {
                     rect.setRight(snapX.value());
                     mXGuide = snapX.value();
@@ -85,8 +85,8 @@ BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
             rect.setBottomLeft(localMouse);
 
             if(mSnapping && geometry.angle() == 0) {
-                auto snapX = mSnapping.value().snapX(rect.left(), mMargin);
-                auto snapY = mSnapping.value().snapY(rect.bottom(), mMargin);
+                auto snapX = mSnapping.value().snapX(rect.left());
+                auto snapY = mSnapping.value().snapY(rect.bottom());
                 if(snapX) {
                     rect.setLeft(snapX.value());
                     mXGuide = snapX.value();
@@ -108,8 +108,8 @@ BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
             rect.setBottomRight(localMouse);
 
             if(mSnapping && geometry.angle() == 0) {
-                auto snapX = mSnapping.value().snapX(rect.right(), mMargin);
-                auto snapY = mSnapping.value().snapY(rect.bottom(), mMargin);
+                auto snapX = mSnapping.value().snapX(rect.right());
+                auto snapY = mSnapping.value().snapY(rect.bottom());
                 if(snapX) {
                     rect.setRight(snapX.value());
                     mXGuide = snapX.value();
@@ -131,7 +131,7 @@ BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
             rect.setTop(localMouse.y());
 
             if(mSnapping && geometry.angle() == 0) {
-                auto snapY = mSnapping.value().snapY(rect.top(), mMargin);
+                auto snapY = mSnapping.value().snapY(rect.top());
                 if(snapY) {
                     rect.setTop(snapY.value());
                     mYGuide = snapY.value();
@@ -149,7 +149,7 @@ BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
             rect.setBottom(localMouse.y());
 
             if(mSnapping && geometry.angle() == 0) {
-                auto snapY = mSnapping.value().snapY(rect.bottom(), mMargin);
+                auto snapY = mSnapping.value().snapY(rect.bottom());
                 if(snapY) {
                     rect.setBottom(snapY.value());
                     mYGuide = snapY.value();
@@ -167,7 +167,7 @@ BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
             rect.setLeft(localMouse.x());
 
             if(mSnapping && geometry.angle() == 0) {
-                auto snapX = mSnapping.value().snapX(rect.left(), mMargin);
+                auto snapX = mSnapping.value().snapX(rect.left());
                 if(snapX) {
                     rect.setLeft(snapX.value());
                     mXGuide = snapX.value();
@@ -185,7 +185,7 @@ BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
             rect.setRight(localMouse.x());
 
             if(mSnapping && geometry.angle() == 0) {
-                auto snapX = mSnapping.value().snapX(rect.right(), mMargin);
+                auto snapX = mSnapping.value().snapX(rect.right());
                 if(snapX) {
                     rect.setRight(snapX.value());
                     mXGuide = snapX.value();
@@ -198,7 +198,7 @@ BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
         }
         case pointPosition::inBox:{
             rect.translate(mousePos - mStartMousePosition);
-            if(geometry.angle() == 0) {
+            if(mSnapping && geometry.angle() == 0) {
                 rect = makeSnappingTranslating(rect);
             }
             geometry.setRect(rect);
@@ -239,7 +239,7 @@ BoxGeometry BoxTransformation::makeRotateTransformation(QPoint mousePos){
     case pointPosition::inBox:{
         auto rect = geometry.rect();
         rect.translate(mousePos - mStartMousePosition);
-        if(geometry.angle() == 0) {
+        if(mSnapping && geometry.angle() == 0) {
             rect = makeSnappingTranslating(rect);
         }
         geometry.setRect(rect);
@@ -270,8 +270,8 @@ void BoxTransformation::setSnapping(Snapping snapping) {
 }
 
 QRect BoxTransformation::makeSnappingTranslating(QRect rect) {
-    auto const leftSnap = mSnapping.value().snapX(rect.left(), mMargin);
-    auto const rightSnap = mSnapping.value().snapX(rect.right(), mMargin);
+    auto const leftSnap = mSnapping.value().snapX(rect.left());
+    auto const rightSnap = mSnapping.value().snapX(rect.right());
     if(!leftSnap.has_value() && !rightSnap.has_value()) {
     }
     else if(leftSnap.has_value() && !rightSnap.has_value()) {
@@ -291,8 +291,8 @@ QRect BoxTransformation::makeSnappingTranslating(QRect rect) {
         mXGuide = rightSnap.value();
     }
 
-    auto const topSnap = mSnapping.value().snapY(rect.top(), mMargin);
-    auto const bottomSnap = mSnapping.value().snapY(rect.bottom(), mMargin);
+    auto const topSnap = mSnapping.value().snapY(rect.top());
+    auto const bottomSnap = mSnapping.value().snapY(rect.bottom());
     if(!topSnap.has_value() && !bottomSnap.has_value()) {
     }
     else if(topSnap.has_value() && !bottomSnap.has_value()) {

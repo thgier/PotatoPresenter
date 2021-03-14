@@ -38,6 +38,8 @@ public:
     // change cursor mode: scale or rotate
     void setTransformationType(TransformationType type);
 
+    void setSnapping(bool snapping);
+
     // set the active Box on the position of a tool bar button
     void deleteBoxPosition();
 
@@ -109,6 +111,8 @@ private:
 
     QUndoStack mUndoStack;
     ConfigBoxes mLastConfigFile;
+
+    bool mSnapping = true;
 };
 
 #endif // PAINTDOCUMENT_H
