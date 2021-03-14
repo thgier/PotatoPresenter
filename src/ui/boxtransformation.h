@@ -15,20 +15,19 @@ enum TransformationType {
 struct BoxTransformation
 {
 public:
-    BoxTransformation();
-    BoxTransformation(std::shared_ptr<Box> box, TransformationType trafo, pointPosition posMouseBox, int pageNumber, QPoint mousePos);
-    void doTransformation(QPoint mousePos, std::shared_ptr<Presentation> pres);
+    BoxTransformation() = default;
+    BoxTransformation(BoxGeometry geometry, TransformationType trafo, pointPosition classifiedMousePosition, QPoint mousePos);
+    BoxGeometry doTransformation(QPoint mousePos);
+
+private:
     BoxGeometry makeScaleTransformation(QPoint mousePos);
     BoxGeometry makeRotateTransformation(QPoint mousePos);
 
 private:
-    QRect scale(QPoint mouse, QPointF v, BoxGeometry* boxrect) const;
-//    BoxTransformation &operator = (const BoxTransformation &b) { mTrafo = b.mTrafo; return *this; }
-    std::shared_ptr<Box> mBox;
+    BoxGeometry mGeometry;
     TransformationType mTrafo;
-    pointPosition mPosMouseBox;
-    int mPageNumber;
-    QPoint mLastMousePosition;
+    pointPosition mClassifiedMousePosition;
+    QPoint mStartMousePosition;
 
 };
 

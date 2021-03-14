@@ -3,51 +3,33 @@
 #include <math.h>
 #include <numbers>
 
-BoxTransformation::BoxTransformation()
-{
-
-}
-
-BoxTransformation::BoxTransformation(std::shared_ptr<Box> box, TransformationType trafo, pointPosition posMouseBox, int pageNumber, QPoint mousePos)
-    : mBox{box}
+BoxTransformation::BoxTransformation(BoxGeometry geometry, TransformationType trafo, pointPosition classifiedMousePosition, QPoint mousePos)
+    : mGeometry(geometry)
     , mTrafo{trafo}
-    , mPosMouseBox{posMouseBox}
-    , mPageNumber{pageNumber}
-    , mLastMousePosition{mousePos}
+    , mClassifiedMousePosition{classifiedMousePosition}
+    , mStartMousePosition{mousePos}
 {
 }
 
-void BoxTransformation::doTransformation(QPoint mousePos, std::shared_ptr<Presentation> pres){
-    BoxGeometry box;
+BoxGeometry BoxTransformation::doTransformation(QPoint mousePos){
+    BoxGeometry geometry;
     switch (mTrafo) {
         case TransformationType::translate:{
-            box = makeScaleTransformation(mousePos);
+            geometry = makeScaleTransformation(mousePos);
             break;
         }
         case TransformationType::rotate:
-            box = makeRotateTransformation(mousePos);
+            geometry = makeRotateTransformation(mousePos);
             break;
         }
-    pres->setBoxGeometry(mBox->id(), box, mPageNumber);
-}
-
-QRect BoxTransformation::scale(QPoint mouse, QPointF v, BoxGeometry* boxrect) const{
-    QRect rect = boxrect->rect();
-    auto const transformV = boxrect->rotateTransform().map(v);
-    auto const projection = QPointF::dotProduct(mouse, transformV);
-    qWarning() << "pro" << projection * v.x() << mouse.x();
-    auto const width = rect.width() - projection * v.x();
-    auto const height = rect.height() - projection * v.y();
-    rect.setSize(QSize(width, height));
-    return rect;
+    return geometry;
 }
 
 BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
-    auto mouseMovement = mousePos - mLastMousePosition;
-    mLastMousePosition = mousePos;
-    auto geometry = mBox->geometry();
+    auto mouseMovement = mousePos - mStartMousePosition;
+    auto geometry = mGeometry;
     auto rect = geometry.rect();
-    switch (mPosMouseBox) {
+    switch (mClassifiedMousePosition) {
         case pointPosition::topLeftCorner:{
             auto const bottomRight = geometry.transform().map(rect.bottomRight());
             rect.moveBottomRight(bottomRight);
@@ -136,15 +118,15 @@ BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
 }
 
 BoxGeometry BoxTransformation::makeRotateTransformation(QPoint mousePos){
-    auto boxrect = mBox->geometry();
-    auto const center = boxrect.rect().center();
+    auto geometry = mGeometry;
+    auto const center = geometry.rect().center();
     auto const centerToMouse = center - mousePos;
     qInfo() << centerToMouse;
     auto const mouseAngle = std::atan2(double(centerToMouse.y()), centerToMouse.x());
-    auto const angleCenterEdge = std::atan2(boxrect.rect().height(), boxrect.rect().width());
+    auto const angleCenterEdge = std::atan2(geometry.rect().height(), geometry.rect().width());
     qreal rectAngle;
     qInfo() << "mouseAngle: " << mouseAngle;
-    switch (mPosMouseBox) {
+    switch (mClassifiedMousePosition) {
     case pointPosition::topLeftCorner:
         rectAngle = mouseAngle - angleCenterEdge;
         break;
@@ -158,18 +140,17 @@ BoxGeometry BoxTransformation::makeRotateTransformation(QPoint mousePos){
         rectAngle = mouseAngle - std::numbers::pi + angleCenterEdge;
         break;
     case pointPosition::inBox:{
-        auto rect = boxrect.rect();
-        rect.translate(mousePos - mLastMousePosition);
-        mLastMousePosition = mousePos;
-        boxrect.setRect(rect);
-        return boxrect;
+        auto rect = geometry.rect();
+        rect.translate(mousePos - mStartMousePosition);
+        geometry.setRect(rect);
+        return geometry;
     }
     default:
         return {};
         break;
     }
-    boxrect.setAngle(rectAngle / std::numbers::pi * 180);
-    return boxrect;
+    geometry.setAngle(rectAngle / std::numbers::pi * 180);
+    return geometry;
 }
 
 

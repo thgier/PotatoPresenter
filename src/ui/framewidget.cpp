@@ -263,14 +263,14 @@ void FrameWidget::mouseMoveEvent(QMouseEvent *event)
             return;
         }
         cursorApperance(newPosition);
-        auto const clasifiedMousePos = boxInFocus->geometry().classifyPoint(mCursorLastPosition, mDiffToMouse);
-        if(clasifiedMousePos == pointPosition::notInBox){
+        auto const classifiedMousePos = boxInFocus->geometry().classifyPoint(mCursorLastPosition, mDiffToMouse);
+        if(classifiedMousePos == pointPosition::notInBox){
             mActiveBoxId = QString();
             return;
         }
-        mMomentTrafo = BoxTransformation(boxInFocus, mTransform, clasifiedMousePos, mPageNumber, newPosition);
+        mMomentTrafo = BoxTransformation(boxInFocus->geometry(), mTransform, classifiedMousePos, newPosition);
     }
-    mMomentTrafo->doTransformation(newPosition, mPresentation);
+    mPresentation->setBoxGeometry(mActiveBoxId, mMomentTrafo->doTransformation(newPosition), mPageNumber);
     mCursorLastPosition = newPosition;
     update();
 }
