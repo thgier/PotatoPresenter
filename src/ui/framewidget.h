@@ -15,6 +15,7 @@
 #include "presentation.h"
 #include "boxgeometry.h"
 #include "boxtransformation.h"
+#include "snapping.h"
 
 class FrameWidget : public QWidget
 {

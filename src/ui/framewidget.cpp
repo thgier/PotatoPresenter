@@ -11,6 +11,26 @@
 #include "cachemanager.h"
 #include "transformboxundo.h"
 
+namespace {
+std::vector<int> boxesToXGuides(Box::List boxes) {
+    std::vector<int> guides;
+    for(auto const& box: boxes) {
+        guides.push_back(box->geometry().left());
+        guides.push_back(box->geometry().rect().right());
+    }
+    return guides;
+}
+
+std::vector<int> boxesToYGuides(Box::List boxes) {
+    std::vector<int> guides;
+    for(auto const& box: boxes) {
+        guides.push_back(box->geometry().top());
+        guides.push_back(box->geometry().rect().bottom());
+    }
+    return guides;
+}
+}
+
 auto constexpr frameTitleSpacing = 5;
 
 FrameWidget::FrameWidget(QWidget*&)
@@ -105,6 +125,19 @@ void FrameWidget::paintEvent(QPaintEvent*)
     auto const frame = mPresentation->frameList().frameAt(mPageNumber);
     paint.paintFrame(frame);
     mCurrentFrameId = frame->id();
+
+    // draw Guides for Snapping
+    painter.setPen(Qt::black);
+    if(mMomentTrafo) {
+        if(mMomentTrafo->xGuide()) {
+            auto const x = mMomentTrafo->xGuide().value();
+            painter.drawLine(x, 0, x, mSize.height());
+        }
+        if(mMomentTrafo->yGuide()) {
+            auto const y = mMomentTrafo->yGuide().value();
+            painter.drawLine(0, y, mSize.width(), y);
+        }
+    }
 
     auto const& box = mPresentation->frameList().findBox(mActiveBoxId);
     if(box != nullptr && frame->containsBox(mActiveBoxId)){
@@ -239,7 +272,7 @@ void FrameWidget::mousePressEvent(QMouseEvent *event)
     }
     mCursorLastPosition = ScaledMousePos(event);
     cursorApperance(mCursorLastPosition);
-    mLastConfigFile = mPresentation->configuration();
+    mLastConfigFile = mPresentation->configuration();    
     update();
 }
 
@@ -269,8 +302,14 @@ void FrameWidget::mouseMoveEvent(QMouseEvent *event)
             return;
         }
         mMomentTrafo = BoxTransformation(boxInFocus->geometry(), mTransform, classifiedMousePos, newPosition);
+        auto boxesWithoutActive = mPresentation->frameList().vector[mPageNumber]->boxes();
+        std::erase_if(boxesWithoutActive, [this](auto a){return a->id() == mActiveBoxId;});
+        auto const xSnapGuides = boxesToXGuides(boxesWithoutActive);
+        auto const ySnapGuides = boxesToYGuides(boxesWithoutActive);
+        mMomentTrafo->setSnapping({xSnapGuides, ySnapGuides});
     }
-    mPresentation->setBoxGeometry(mActiveBoxId, mMomentTrafo->doTransformation(newPosition), mPageNumber);
+    auto transformedRect = mMomentTrafo->doTransformation(newPosition);
+    mPresentation->setBoxGeometry(mActiveBoxId, transformedRect, mPageNumber);
     mCursorLastPosition = newPosition;
     update();
 }
