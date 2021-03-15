@@ -127,7 +127,7 @@ void FrameWidget::paintEvent(QPaintEvent*)
     mCurrentFrameId = frame->id();
 
     // draw Guides for Snapping
-    painter.setPen(Qt::black);
+    painter.setPen("#999");
     if(mMomentTrafo) {
         if(mMomentTrafo->xGuide()) {
             auto const x = mMomentTrafo->xGuide().value();
@@ -339,6 +339,7 @@ void FrameWidget::mouseReleaseEvent(QMouseEvent *event)
         auto transform = new TransformBoxUndo(mPresentation, mLastConfigFile, mPresentation->configuration());
         mUndoStack.push(transform);
     }
+    mMomentTrafo.reset();
     update();
 }
 

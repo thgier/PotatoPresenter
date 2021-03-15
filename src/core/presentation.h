@@ -80,7 +80,7 @@ public:
     ConfigBoxes& configuration();
     void setConfig(ConfigBoxes config);
 
-    void deleteNotNeededConfigurations()    ;
+    void deleteNotNeededConfigurations();
 
 Q_SIGNALS:
     void presentationChanged();

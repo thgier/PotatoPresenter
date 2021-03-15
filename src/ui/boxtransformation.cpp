@@ -249,7 +249,22 @@ BoxGeometry BoxTransformation::makeRotateTransformation(QPoint mousePos){
         return {};
         break;
     }
-    geometry.setAngle(rectAngle / std::numbers::pi * 180);
+
+    rectAngle = rectAngle / std::numbers::pi * 180;
+
+    // snapping to some angles
+    if(mSnapping) {
+        auto margin = 5;
+        std::vector<double> niceAngles = {0, -45, -90, -135, -180, -225, -270, -315};
+        for(auto niceAngle: niceAngles) {
+            if(std::abs(rectAngle - niceAngle) < margin) {
+                rectAngle = niceAngle;
+                break;
+            }
+        }
+    }
+
+    geometry.setAngle(rectAngle);
     return geometry;
 }
 
