@@ -327,6 +327,13 @@ QRect BoxTransformation::makeSnappingTranslating(QRect rect) {
         mYGuide = bottomSnap.value();
     }
 
+    if(!leftSnap && !rightSnap && std::abs(rect.center().x() - 800) < 25) {
+        auto center = rect.center();
+        center.setX(800);
+        rect.moveCenter(center);
+        mXGuide = 800;
+    }
+
     return rect;
 }
 
