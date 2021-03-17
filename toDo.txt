@@ -1,8 +1,19 @@
-- undo
-- Pause
-- textbox with border, ellipse, rect
-- crop images
-- path to font
-- latex
+- parser refractor
+- highlighting
+- sections
+- assistant
+
+- maybe better pause
 - arrow buttons to move boxes
-- switch to last frame when created
+- path to font
+- guides
+- color choser
+- shrink to boundings
+- textbox with border, ellipse, rect
+
+bugs:
+- undo
+- save
+- resourcepaths
+- sometimes templates?
+- pause in template

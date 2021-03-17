@@ -61,6 +61,9 @@ void TestTokenizer::tokenTest_data(){
     QTest::newRow("argument") << QByteArray("\\frame[opacity:0.5]")
                            << QVector<Token>{Token{Token::Kind::Command, "\\frame", 1}, Token{Token::Kind::Argument, "opacity", 1},
                             Token{Token::Kind::ArgumentValue, "0.5", 1}};
+    QTest::newRow("frameclass") << QByteArray("\\frame[class:titlepage]")
+                              << QVector<Token>{Token{Token::Kind::Command, "\\frame", 1}, Token{Token::Kind::Argument, "class", 1},
+                                 Token{Token::Kind::ArgumentValue, "titlepage", 1}};
     QTest::newRow("multiple arguments") << QByteArray("\\frame[opacity:0.5; color: red] Hello")
                                << QVector<Token>{Token{Token::Kind::Command, "\\frame", 1}, Token{Token::Kind::Argument, "opacity", 1},
                                     Token{Token::Kind::ArgumentValue, "0.5", 1}, Token{Token::Kind::Argument, "color", 1},

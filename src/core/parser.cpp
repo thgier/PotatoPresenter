@@ -124,7 +124,6 @@ void Parser::command(Token token){
 void Parser::newFrame(int line){
     mPauseCount = 0;
     auto token = mTokenizer.next();
-    Box::List templateBoxes;
     QString frameClass;
     if(token.mKind == Token::Kind::Argument){
         if(token.mText != "class"){
@@ -157,7 +156,6 @@ void Parser::newFrame(int line){
         mVariables["%{resourcepath}"] = mResourcepath;
     }
     mFrameList.vector.push_back(std::make_shared<Frame>(id, mVariables, line));
-    mFrameList.vector.back()->setTemplateBoxes(templateBoxes);
     mFrameList.vector.back()->setFrameClass(frameClass);
 }
 

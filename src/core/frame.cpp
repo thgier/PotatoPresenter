@@ -28,7 +28,7 @@ void Frame::setBoxes(std::vector<std::shared_ptr<Box>> boxes){
 }
 
 bool Frame::empty() {
-    return mBoxes.empty();
+    return (mBoxes.empty() && mTemplateBoxes.empty());
 }
 
 QString const& Frame::id() const {
