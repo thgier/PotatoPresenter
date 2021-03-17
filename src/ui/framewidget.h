@@ -79,6 +79,8 @@ private:
     void createAndOpenSvg();
     void openInInkscape();
 
+    QString absoluteImagePath(QString imagePath) const;
+
 private:
     std::shared_ptr<Presentation> mPresentation;
     QString mActiveBoxId;

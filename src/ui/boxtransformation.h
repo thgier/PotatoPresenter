@@ -22,6 +22,7 @@ public:
     pointPosition classifiedPoint() const;
     std::optional<int> xGuide() const;
     std::optional<int> yGuide() const;
+    bool snapToMiddle() const;
     void setSnapping(Snapping snapping);
 
 private:
@@ -38,6 +39,7 @@ private:
     std::optional<int> mXGuide;
     std::optional<int> mYGuide;
     std::optional<Snapping> mSnapping;
+    bool mSnapToMiddle = false;
     int mMargin = 25;
 };
 

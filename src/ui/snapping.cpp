@@ -1,8 +1,9 @@
 #include "snapping.h"
 
-Snapping::Snapping(std::vector<int> xGuides, std::vector<int> yGuides, int margin)
+Snapping::Snapping(std::vector<int> xGuides, std::vector<int> yGuides, std::vector<int> yMiddleGuides, int margin)
     : mXSnap(xGuides)
     , mYSnap(yGuides)
+    , mYSnapMiddle(yMiddleGuides)
     , mMargin(margin)
 {
 }
@@ -13,6 +14,10 @@ std::optional<int> Snapping::snapX(int position) const {
 
 std::optional<int> Snapping::snapY(int position) const {
     return fittingSnapObjects(position, mYSnap);
+}
+
+std::optional<int> Snapping::snapYMiddle(int position) const {
+    return fittingSnapObjects(position, mYSnapMiddle);
 }
 
 std::optional<int> Snapping::fittingSnapObjects(int position, std::vector<int> possibleSnappings) const {

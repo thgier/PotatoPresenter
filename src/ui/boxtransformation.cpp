@@ -14,6 +14,7 @@ BoxTransformation::BoxTransformation(BoxGeometry geometry, TransformationType tr
 BoxGeometry BoxTransformation::doTransformation(QPoint mousePos){
     mXGuide.reset();
     mYGuide.reset();
+    mSnapToMiddle = false;
 
     BoxGeometry geometry;
     switch (mTrafo) {
@@ -327,13 +328,19 @@ QRect BoxTransformation::makeSnappingTranslating(QRect rect) {
         mYGuide = bottomSnap.value();
     }
 
-    if(!leftSnap && !rightSnap && std::abs(rect.center().x() - 800) < 25) {
+    auto const middleSnapping = mSnapping->snapYMiddle(rect.center().x());
+    if(!leftSnap && !rightSnap && middleSnapping) {
         auto center = rect.center();
-        center.setX(800);
+        center.setX(middleSnapping.value());
         rect.moveCenter(center);
-        mXGuide = 800;
+        mXGuide = middleSnapping.value();
+        mSnapToMiddle = true;
     }
 
     return rect;
+}
+
+bool BoxTransformation::snapToMiddle() const {
+    return mSnapToMiddle;
 }
 
