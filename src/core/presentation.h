@@ -72,7 +72,7 @@ public:
 
     // Change Geometry of Box only through the presentation in order to
     // save it in the Configuration
-    void setBoxGeometry(QString const& boxId, BoxGeometry &rect, int pageNumber);
+    void setBoxGeometry(QString const& boxId, const BoxGeometry &rect, int pageNumber);
     void deleteBoxGeometry(QString const& boxId, int pageNumber);
 
     // Configuration Class to follow and save the Geometry of the boxes
@@ -80,7 +80,7 @@ public:
     ConfigBoxes& configuration();
     void setConfig(ConfigBoxes config);
 
-    void deleteNotNeededConfigurations()    ;
+    void deleteNotNeededConfigurations();
 
 Q_SIGNALS:
     void presentationChanged();

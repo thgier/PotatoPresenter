@@ -32,7 +32,7 @@ void Presentation::setFrames(const FrameList &frames) {
     Q_EMIT presentationChanged();
 }
 
-void Presentation::setBoxGeometry(const QString &boxId, BoxGeometry &rect, int pageNumber) {
+void Presentation::setBoxGeometry(const QString &boxId, BoxGeometry const& rect, int pageNumber) {
     auto const& box = mFrames.findBox(boxId);
     if(!box) {
         return;

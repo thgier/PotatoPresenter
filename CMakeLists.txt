@@ -55,6 +55,7 @@ add_executable(praes
     src/ui/framewidget.cpp
     src/ui/mainwindow.cpp
     src/ui/mainwindow.ui
+    src/ui/snapping.cpp
 )
 
 add_executable(testtokenizer

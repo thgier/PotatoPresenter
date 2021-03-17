@@ -11,6 +11,26 @@
 #include "cachemanager.h"
 #include "transformboxundo.h"
 
+namespace {
+std::vector<int> boxesToXGuides(Box::List boxes) {
+    std::vector<int> guides;
+    for(auto const& box: boxes) {
+        guides.push_back(box->geometry().left());
+        guides.push_back(box->geometry().rect().right());
+    }
+    return guides;
+}
+
+std::vector<int> boxesToYGuides(Box::List boxes) {
+    std::vector<int> guides;
+    for(auto const& box: boxes) {
+        guides.push_back(box->geometry().top());
+        guides.push_back(box->geometry().rect().bottom());
+    }
+    return guides;
+}
+}
+
 auto constexpr frameTitleSpacing = 5;
 
 FrameWidget::FrameWidget(QWidget*&)
@@ -27,7 +47,8 @@ void FrameWidget::setPresentation(std::shared_ptr<Presentation> pres){
     mPresentation = pres;
     mActiveBoxId = QString();
     mCurrentFrameId = QString();
-    mPresentation->dimensions();
+    mUndoStack.clear();
+
 }
 
 void FrameWidget::recalculateGeometry() {
@@ -106,6 +127,29 @@ void FrameWidget::paintEvent(QPaintEvent*)
     paint.paintFrame(frame);
     mCurrentFrameId = frame->id();
 
+    // draw Guides for Snapping
+    if(mMomentTrafo) {
+        painter.save();
+        painter.setPen("#999");
+        if(mMomentTrafo->snapToMiddle()) {
+            auto const textRect = QRect(mSize.width() / 2, 20, 140, 20);
+            painter.fillRect(textRect, "#ddd");
+            painter.setPen(Qt::black);
+            painter.setFont(QFont("sans-serif", 10));
+            painter.drawText(textRect, "Snap to middle");
+            painter.setPen("#777");
+        }
+        if(mMomentTrafo->xGuide()) {
+            auto const x = mMomentTrafo->xGuide().value();
+            painter.drawLine(x, 0, x, mSize.height());
+        }
+        if(mMomentTrafo->yGuide()) {
+            auto const y = mMomentTrafo->yGuide().value();
+            painter.drawLine(0, y, mSize.width(), y);
+        }
+        painter.restore();
+    }
+
     auto const& box = mPresentation->frameList().findBox(mActiveBoxId);
     if(box != nullptr && frame->containsBox(mActiveBoxId)){
         box->drawManipulationFrame(painter, mDiffToMouse);
@@ -127,7 +171,7 @@ void FrameWidget::contextMenuEvent(QContextMenuEvent *event){
     QMenu menu(this);
     auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->frameList().findBox(mActiveBoxId));
     if(image){
-        auto const imagePath = image->ImagePath();
+        auto const imagePath = absoluteImagePath(image->ImagePath());
         if(QFile::exists(imagePath)){
             menu.addAction(openInkscape);
         }
@@ -239,7 +283,7 @@ void FrameWidget::mousePressEvent(QMouseEvent *event)
     }
     mCursorLastPosition = ScaledMousePos(event);
     cursorApperance(mCursorLastPosition);
-    mLastConfigFile = mPresentation->configuration();
+    mLastConfigFile = mPresentation->configuration();    
     update();
 }
 
@@ -263,14 +307,26 @@ void FrameWidget::mouseMoveEvent(QMouseEvent *event)
             return;
         }
         cursorApperance(newPosition);
-        auto const clasifiedMousePos = boxInFocus->geometry().classifyPoint(mCursorLastPosition, mDiffToMouse);
-        if(clasifiedMousePos == pointPosition::notInBox){
+        auto const classifiedMousePos = boxInFocus->geometry().classifyPoint(mCursorLastPosition, mDiffToMouse);
+        if(classifiedMousePos == pointPosition::notInBox){
             mActiveBoxId = QString();
             return;
         }
-        mMomentTrafo = BoxTransformation(boxInFocus, mTransform, clasifiedMousePos, mPageNumber, newPosition);
+        mMomentTrafo = BoxTransformation(boxInFocus->geometry(), mTransform, classifiedMousePos, newPosition);
+        if(mSnapping) {
+            auto boxesWithoutActive = mPresentation->frameList().vector[mPageNumber]->boxes();
+            std::erase_if(boxesWithoutActive, [this](auto a){return a->id() == mActiveBoxId;});
+            auto xSnapGuides = boxesToXGuides(boxesWithoutActive);
+            xSnapGuides.push_back(0);
+            xSnapGuides.push_back(mSize.width());
+            auto ySnapGuides = boxesToYGuides(boxesWithoutActive);
+            ySnapGuides.push_back(0);
+            ySnapGuides.push_back(mSize.height());
+            mMomentTrafo->setSnapping({xSnapGuides, ySnapGuides, {mSize.width() / 2}, mDiffToMouse});
+        }
     }
-    mMomentTrafo->doTransformation(newPosition, mPresentation);
+    auto transformedRect = mMomentTrafo->doTransformation(newPosition);
+    mPresentation->setBoxGeometry(mActiveBoxId, transformedRect, mPageNumber);
     mCursorLastPosition = newPosition;
     update();
 }
@@ -294,6 +350,7 @@ void FrameWidget::mouseReleaseEvent(QMouseEvent *event)
         auto transform = new TransformBoxUndo(mPresentation, mLastConfigFile, mPresentation->configuration());
         mUndoStack.push(transform);
     }
+    mMomentTrafo.reset();
     update();
 }
 
@@ -443,7 +500,7 @@ void FrameWidget::openInInkscape(){
     }
     QString program = "/usr/bin/inkscape";
     QStringList arguments;
-    arguments << image->ImagePath();
+    arguments << absoluteImagePath(image->ImagePath());
     QProcess *inkscapeProcess = new QProcess(this);
     inkscapeProcess->start(program, arguments);
 }
@@ -456,7 +513,7 @@ void FrameWidget::createAndOpenSvg(){
     QDir().mkpath(QFileInfo(image->ImagePath()).absolutePath());
     CacheManager<QSvgRenderer>::instance().deleteFile(image->ImagePath());
     QSvgGenerator generator;
-    generator.setFileName(image->ImagePath());
+    generator.setFileName(absoluteImagePath(image->ImagePath()));
     generator.setSize(image->geometry().rect().size());
     generator.setViewBox(QRect(QPoint(0, 0), image->geometry().rect().size()));
     QPainter painter;
@@ -468,8 +525,24 @@ void FrameWidget::createAndOpenSvg(){
 
 void FrameWidget::undo() {
     mUndo->trigger();
+    qInfo() << "undo";
 }
 
 void FrameWidget::redo() {
     mRedo->trigger();
+}
+
+void FrameWidget::setSnapping(bool snapping) {
+    mSnapping = snapping;
+}
+
+QString FrameWidget::absoluteImagePath(QString imagePath) const {
+    if(!imagePath.startsWith("/home")) {
+        auto variables = mPresentation->frameList().vector[mPageNumber]->variables();
+        auto it = variables.find("%{resourcepath}");
+        if(it != variables.end()) {
+            imagePath = it->second + "/" + imagePath;
+        }
+    }
+    return imagePath;
 }

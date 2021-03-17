@@ -15,6 +15,7 @@
 #include "presentation.h"
 #include "boxgeometry.h"
 #include "boxtransformation.h"
+#include "snapping.h"
 
 class FrameWidget : public QWidget
 {
@@ -36,6 +37,8 @@ public:
 
     // change cursor mode: scale or rotate
     void setTransformationType(TransformationType type);
+
+    void setSnapping(bool snapping);
 
     // set the active Box on the position of a tool bar button
     void deleteBoxPosition();
@@ -76,6 +79,8 @@ private:
     void createAndOpenSvg();
     void openInInkscape();
 
+    QString absoluteImagePath(QString imagePath) const;
+
 private:
     std::shared_ptr<Presentation> mPresentation;
     QString mActiveBoxId;
@@ -108,6 +113,8 @@ private:
 
     QUndoStack mUndoStack;
     ConfigBoxes mLastConfigFile;
+
+    bool mSnapping = true;
 };
 
 #endif // PAINTDOCUMENT_H

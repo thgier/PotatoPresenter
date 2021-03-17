@@ -76,5 +76,6 @@ private:
 
     QLabel* mErrorOutput;
     QToolButton* mCoupleButton;
+    QToolButton* mSnappingButton;
 };
 #endif // MAINWINDOW_H

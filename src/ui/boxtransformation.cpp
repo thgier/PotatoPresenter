@@ -3,56 +3,55 @@
 #include <math.h>
 #include <numbers>
 
-BoxTransformation::BoxTransformation()
-{
-
-}
-
-BoxTransformation::BoxTransformation(std::shared_ptr<Box> box, TransformationType trafo, pointPosition posMouseBox, int pageNumber, QPoint mousePos)
-    : mBox{box}
+BoxTransformation::BoxTransformation(BoxGeometry geometry, TransformationType trafo, pointPosition classifiedMousePosition, QPoint mousePos)
+    : mGeometry(geometry)
     , mTrafo{trafo}
-    , mPosMouseBox{posMouseBox}
-    , mPageNumber{pageNumber}
-    , mLastMousePosition{mousePos}
+    , mClassifiedMousePosition{classifiedMousePosition}
+    , mStartMousePosition{mousePos}
 {
 }
 
-void BoxTransformation::doTransformation(QPoint mousePos, std::shared_ptr<Presentation> pres){
-    BoxGeometry box;
+BoxGeometry BoxTransformation::doTransformation(QPoint mousePos){
+    mXGuide.reset();
+    mYGuide.reset();
+    mSnapToMiddle = false;
+
+    BoxGeometry geometry;
     switch (mTrafo) {
         case TransformationType::translate:{
-            box = makeScaleTransformation(mousePos);
+            geometry = makeScaleTransformation(mousePos);
             break;
         }
         case TransformationType::rotate:
-            box = makeRotateTransformation(mousePos);
+            geometry = makeRotateTransformation(mousePos);
             break;
         }
-    pres->setBoxGeometry(mBox->id(), box, mPageNumber);
-}
-
-QRect BoxTransformation::scale(QPoint mouse, QPointF v, BoxGeometry* boxrect) const{
-    QRect rect = boxrect->rect();
-    auto const transformV = boxrect->rotateTransform().map(v);
-    auto const projection = QPointF::dotProduct(mouse, transformV);
-    qWarning() << "pro" << projection * v.x() << mouse.x();
-    auto const width = rect.width() - projection * v.x();
-    auto const height = rect.height() - projection * v.y();
-    rect.setSize(QSize(width, height));
-    return rect;
+    return geometry;
 }
 
 BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
-    auto mouseMovement = mousePos - mLastMousePosition;
-    mLastMousePosition = mousePos;
-    auto geometry = mBox->geometry();
+    auto geometry = mGeometry;
     auto rect = geometry.rect();
-    switch (mPosMouseBox) {
+    switch (mClassifiedMousePosition) {
         case pointPosition::topLeftCorner:{
             auto const bottomRight = geometry.transform().map(rect.bottomRight());
             rect.moveBottomRight(bottomRight);
             auto const localMouse = geometry.transform(bottomRight).inverted().map(mousePos);
             rect.setTopLeft(localMouse);
+
+            if(mSnapping && geometry.angle() == 0) {
+                auto snapX = mSnapping.value().snapX(rect.left());
+                auto snapY = mSnapping.value().snapY(rect.top());
+                if(snapX) {
+                    rect.setLeft(snapX.value());
+                    mXGuide = snapX.value();
+                }
+                if(snapY) {
+                    rect.setTop(snapY.value());
+                    mYGuide = snapY.value();
+                }
+            }
+
             auto const center = geometry.transform(bottomRight).map(rect.center());
             rect.moveCenter(center);
             break;
@@ -62,6 +61,20 @@ BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
             rect.moveBottomLeft(bottomLeft);
             auto const localMouse = geometry.transform(bottomLeft).inverted().map(mousePos);
             rect.setTopRight(localMouse);
+
+            if(mSnapping && geometry.angle() == 0) {
+                auto snapX = mSnapping.value().snapX(rect.right());
+                auto snapY = mSnapping.value().snapY(rect.top());
+                if(snapX) {
+                    rect.setRight(snapX.value());
+                    mXGuide = snapX.value();
+                }
+                if(snapY) {
+                    rect.setTop(snapY.value());
+                    mYGuide = snapY.value();
+                }
+            }
+
             auto const center = geometry.transform(bottomLeft).map(rect.center());
             rect.moveCenter(center);
             break;
@@ -71,6 +84,20 @@ BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
             rect.moveTopRight(topRight);
             auto const localMouse = geometry.transform(topRight).inverted().map(mousePos);
             rect.setBottomLeft(localMouse);
+
+            if(mSnapping && geometry.angle() == 0) {
+                auto snapX = mSnapping.value().snapX(rect.left());
+                auto snapY = mSnapping.value().snapY(rect.bottom());
+                if(snapX) {
+                    rect.setLeft(snapX.value());
+                    mXGuide = snapX.value();
+                }
+                if(snapY) {
+                    rect.setBottom(snapY.value());
+                    mYGuide = snapY.value();
+                }
+            }
+
             auto const center = geometry.transform(topRight).map(rect.center());
             rect.moveCenter(center);
             break;
@@ -80,6 +107,20 @@ BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
             rect.moveTopLeft(topLeft);
             auto const localMouse = geometry.transform(topLeft).inverted().map(mousePos);
             rect.setBottomRight(localMouse);
+
+            if(mSnapping && geometry.angle() == 0) {
+                auto snapX = mSnapping.value().snapX(rect.right());
+                auto snapY = mSnapping.value().snapY(rect.bottom());
+                if(snapX) {
+                    rect.setRight(snapX.value());
+                    mXGuide = snapX.value();
+                }
+                if(snapY) {
+                    rect.setBottom(snapY.value());
+                    mYGuide = snapY.value();
+                }
+            }
+
             auto const center = geometry.transform(topLeft).map(rect.center());
             rect.moveCenter(center);
             break;
@@ -89,6 +130,15 @@ BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
             rect.moveBottomLeft(bottomLeft);
             auto const localMouse = geometry.transform(bottomLeft).inverted().map(mousePos);
             rect.setTop(localMouse.y());
+
+            if(mSnapping && geometry.angle() == 0) {
+                auto snapY = mSnapping.value().snapY(rect.top());
+                if(snapY) {
+                    rect.setTop(snapY.value());
+                    mYGuide = snapY.value();
+                }
+            }
+
             auto const center = geometry.transform(bottomLeft).map(rect.center());
             rect.moveCenter(center);
             break;
@@ -98,6 +148,15 @@ BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
             rect.moveTopLeft(topLeft);
             auto const localMouse = geometry.transform(topLeft).inverted().map(mousePos);
             rect.setBottom(localMouse.y());
+
+            if(mSnapping && geometry.angle() == 0) {
+                auto snapY = mSnapping.value().snapY(rect.bottom());
+                if(snapY) {
+                    rect.setBottom(snapY.value());
+                    mYGuide = snapY.value();
+                }
+            }
+
             auto const center = geometry.transform(topLeft).map(rect.center());
             rect.moveCenter(center);
             break;
@@ -107,6 +166,15 @@ BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
             rect.moveTopRight(topRight);
             auto const localMouse = geometry.transform(topRight).inverted().map(mousePos);
             rect.setLeft(localMouse.x());
+
+            if(mSnapping && geometry.angle() == 0) {
+                auto snapX = mSnapping.value().snapX(rect.left());
+                if(snapX) {
+                    rect.setLeft(snapX.value());
+                    mXGuide = snapX.value();
+                }
+            }
+
             auto const center = geometry.transform(topRight).map(rect.center());
             rect.moveCenter(center);
             break;
@@ -116,12 +184,24 @@ BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
             rect.moveTopLeft(topLeft);
             auto const localMouse = geometry.transform(topLeft).inverted().map(mousePos);
             rect.setRight(localMouse.x());
+
+            if(mSnapping && geometry.angle() == 0) {
+                auto snapX = mSnapping.value().snapX(rect.right());
+                if(snapX) {
+                    rect.setRight(snapX.value());
+                    mXGuide = snapX.value();
+                }
+            }
+
             auto const center = geometry.transform(topLeft).map(rect.center());
             rect.moveCenter(center);
             break;
         }
         case pointPosition::inBox:{
-            rect.translate(mouseMovement);
+            rect.translate(mousePos - mStartMousePosition);
+            if(mSnapping && geometry.angle() == 0) {
+                rect = makeSnappingTranslating(rect);
+            }
             geometry.setRect(rect);
             return geometry;
             break;
@@ -136,15 +216,15 @@ BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
 }
 
 BoxGeometry BoxTransformation::makeRotateTransformation(QPoint mousePos){
-    auto boxrect = mBox->geometry();
-    auto const center = boxrect.rect().center();
+    auto geometry = mGeometry;
+    auto const center = geometry.rect().center();
     auto const centerToMouse = center - mousePos;
     qInfo() << centerToMouse;
     auto const mouseAngle = std::atan2(double(centerToMouse.y()), centerToMouse.x());
-    auto const angleCenterEdge = std::atan2(boxrect.rect().height(), boxrect.rect().width());
+    auto const angleCenterEdge = std::atan2(geometry.rect().height(), geometry.rect().width());
     qreal rectAngle;
     qInfo() << "mouseAngle: " << mouseAngle;
-    switch (mPosMouseBox) {
+    switch (mClassifiedMousePosition) {
     case pointPosition::topLeftCorner:
         rectAngle = mouseAngle - angleCenterEdge;
         break;
@@ -158,18 +238,109 @@ BoxGeometry BoxTransformation::makeRotateTransformation(QPoint mousePos){
         rectAngle = mouseAngle - std::numbers::pi + angleCenterEdge;
         break;
     case pointPosition::inBox:{
-        auto rect = boxrect.rect();
-        rect.translate(mousePos - mLastMousePosition);
-        mLastMousePosition = mousePos;
-        boxrect.setRect(rect);
-        return boxrect;
+        auto rect = geometry.rect();
+        rect.translate(mousePos - mStartMousePosition);
+        if(mSnapping && geometry.angle() == 0) {
+            rect = makeSnappingTranslating(rect);
+        }
+        geometry.setRect(rect);
+        return geometry;
     }
     default:
         return {};
         break;
     }
-    boxrect.setAngle(rectAngle / std::numbers::pi * 180);
-    return boxrect;
+
+    rectAngle = rectAngle / std::numbers::pi * 180;
+
+    // snapping to some angles
+    if(mSnapping) {
+        auto margin = 5;
+        std::vector<double> niceAngles = {0, -45, -90, -135, -180, -225, -270, -315};
+        for(auto niceAngle: niceAngles) {
+            if(std::abs(rectAngle - niceAngle) < margin) {
+                rectAngle = niceAngle;
+                break;
+            }
+        }
+    }
+
+    geometry.setAngle(rectAngle);
+    return geometry;
 }
 
+pointPosition BoxTransformation::classifiedPoint() const {
+    return mClassifiedMousePosition;
+}
+
+std::optional<int> BoxTransformation::xGuide() const {
+    return mXGuide;
+}
+
+std::optional<int> BoxTransformation::yGuide() const {
+    return mYGuide;
+}
+
+void BoxTransformation::setSnapping(Snapping snapping) {
+    mSnapping = snapping;
+}
+
+QRect BoxTransformation::makeSnappingTranslating(QRect rect) {
+    auto const leftSnap = mSnapping.value().snapX(rect.left());
+    auto const rightSnap = mSnapping.value().snapX(rect.right());
+    if(!leftSnap.has_value() && !rightSnap.has_value()) {
+    }
+    else if(leftSnap.has_value() && !rightSnap.has_value()) {
+        rect.moveLeft(leftSnap.value());
+        mXGuide = leftSnap.value();
+    }
+    else if(!leftSnap.has_value() && rightSnap.has_value()) {
+        rect.moveRight(rightSnap.value());
+        mXGuide = rightSnap.value();
+    }
+    else if(std::abs(leftSnap.value() - rect.left()) < std::abs(rightSnap.value() - rect.right())) {
+        rect.moveLeft(leftSnap.value());
+        mXGuide = leftSnap.value();
+    }
+    else {
+        rect.moveRight(rightSnap.value());
+        mXGuide = rightSnap.value();
+    }
+
+    auto const topSnap = mSnapping.value().snapY(rect.top());
+    auto const bottomSnap = mSnapping.value().snapY(rect.bottom());
+    if(!topSnap.has_value() && !bottomSnap.has_value()) {
+    }
+    else if(topSnap.has_value() && !bottomSnap.has_value()) {
+        rect.moveTop(topSnap.value());
+        mYGuide = topSnap.value();
+    }
+    else if(!topSnap.has_value() && bottomSnap.has_value()) {
+        rect.moveBottom(bottomSnap.value());
+        mYGuide = bottomSnap.value();
+    }
+    else if(std::abs(topSnap.value() - rect.top()) < std::abs(bottomSnap.value() - rect.bottom())) {
+        rect.moveTop(topSnap.value());
+        mYGuide = topSnap.value();
+    }
+    else {
+        rect.moveBottom(bottomSnap.value());
+        mYGuide = bottomSnap.value();
+    }
+
+    auto const middleSnapping = mSnapping->snapYMiddle(rect.center().x());
+    if(!leftSnap && !rightSnap && middleSnapping) {
+        auto center = rect.center();
+        center.setX(middleSnapping.value());
+        rect.moveCenter(center);
+        mXGuide = middleSnapping.value();
+        mSnapToMiddle = true;
+    }
+
+    return rect;
+}
+
+bool BoxTransformation::snapToMiddle() const {
+    return mSnapToMiddle;
+}
 

@@ -5,6 +5,7 @@
 
 #include "box.h"
 #include "presentation.h"
+#include "snapping.h"
 
 enum TransformationType {
     rotate,
@@ -15,21 +16,31 @@ enum TransformationType {
 struct BoxTransformation
 {
 public:
-    BoxTransformation();
-    BoxTransformation(std::shared_ptr<Box> box, TransformationType trafo, pointPosition posMouseBox, int pageNumber, QPoint mousePos);
-    void doTransformation(QPoint mousePos, std::shared_ptr<Presentation> pres);
+    BoxTransformation() = default;
+    BoxTransformation(BoxGeometry geometry, TransformationType trafo, pointPosition classifiedMousePosition, QPoint mousePos);
+    BoxGeometry doTransformation(QPoint mousePos);
+    pointPosition classifiedPoint() const;
+    std::optional<int> xGuide() const;
+    std::optional<int> yGuide() const;
+    bool snapToMiddle() const;
+    void setSnapping(Snapping snapping);
+
+private:
     BoxGeometry makeScaleTransformation(QPoint mousePos);
     BoxGeometry makeRotateTransformation(QPoint mousePos);
 
-private:
-    QRect scale(QPoint mouse, QPointF v, BoxGeometry* boxrect) const;
-//    BoxTransformation &operator = (const BoxTransformation &b) { mTrafo = b.mTrafo; return *this; }
-    std::shared_ptr<Box> mBox;
-    TransformationType mTrafo;
-    pointPosition mPosMouseBox;
-    int mPageNumber;
-    QPoint mLastMousePosition;
+    QRect makeSnappingTranslating(QRect rect);
 
+private:
+    BoxGeometry mGeometry;
+    TransformationType mTrafo;
+    pointPosition mClassifiedMousePosition;
+    QPoint mStartMousePosition;
+    std::optional<int> mXGuide;
+    std::optional<int> mYGuide;
+    std::optional<Snapping> mSnapping;
+    bool mSnapToMiddle = false;
+    int mMargin = 25;
 };
 
 #endif // BOXTRANSFORMATION_H
