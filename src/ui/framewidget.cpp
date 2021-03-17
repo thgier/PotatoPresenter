@@ -48,7 +48,6 @@ void FrameWidget::setPresentation(std::shared_ptr<Presentation> pres){
     mActiveBoxId = QString();
     mCurrentFrameId = QString();
     mUndoStack.clear();
-
 }
 
 void FrameWidget::recalculateGeometry() {
@@ -128,10 +127,10 @@ void FrameWidget::paintEvent(QPaintEvent*)
     mCurrentFrameId = frame->id();
 
     // draw Guides for Snapping
-    if(mMomentTrafo) {
+    if(mCurrentTrafo) {
         painter.save();
         painter.setPen("#999");
-        if(mMomentTrafo->snapToMiddle()) {
+        if(mCurrentTrafo->snapToMiddle()) {
             auto const textRect = QRect(mSize.width() / 2, 20, 140, 20);
             painter.fillRect(textRect, "#ddd");
             painter.setPen(Qt::black);
@@ -139,12 +138,12 @@ void FrameWidget::paintEvent(QPaintEvent*)
             painter.drawText(textRect, "Snap to middle");
             painter.setPen("#777");
         }
-        if(mMomentTrafo->xGuide()) {
-            auto const x = mMomentTrafo->xGuide().value();
+        if(mCurrentTrafo->xGuide()) {
+            auto const x = mCurrentTrafo->xGuide().value();
             painter.drawLine(x, 0, x, mSize.height());
         }
-        if(mMomentTrafo->yGuide()) {
-            auto const y = mMomentTrafo->yGuide().value();
+        if(mCurrentTrafo->yGuide()) {
+            auto const y = mCurrentTrafo->yGuide().value();
             painter.drawLine(0, y, mSize.width(), y);
         }
         painter.restore();
@@ -277,7 +276,7 @@ void FrameWidget::mousePressEvent(QMouseEvent *event)
     if(mPresentation->frameList().empty()){
         return;
     }
-    mMomentTrafo.reset();
+    mCurrentTrafo.reset();
     if (event->button() != Qt::LeftButton) {
         return;
     }
@@ -302,7 +301,7 @@ void FrameWidget::mouseMoveEvent(QMouseEvent *event)
         return;
     }
     auto boxInFocus = mPresentation->findBox(mActiveBoxId);
-    if(!mMomentTrafo){
+    if(!mCurrentTrafo){
         if(mActiveBoxId.isEmpty() || !boxInFocus->style().movable){
             return;
         }
@@ -312,7 +311,7 @@ void FrameWidget::mouseMoveEvent(QMouseEvent *event)
             mActiveBoxId = QString();
             return;
         }
-        mMomentTrafo = BoxTransformation(boxInFocus->geometry(), mTransform, classifiedMousePos, newPosition);
+        mCurrentTrafo = BoxTransformation(boxInFocus->geometry(), mTransform, classifiedMousePos, newPosition);
         if(mSnapping) {
             auto boxesWithoutActive = mPresentation->frameList().vector[mPageNumber]->boxes();
             std::erase_if(boxesWithoutActive, [this](auto a){return a->id() == mActiveBoxId;});
@@ -322,10 +321,10 @@ void FrameWidget::mouseMoveEvent(QMouseEvent *event)
             auto ySnapGuides = boxesToYGuides(boxesWithoutActive);
             ySnapGuides.push_back(0);
             ySnapGuides.push_back(mSize.height());
-            mMomentTrafo->setSnapping({xSnapGuides, ySnapGuides, {mSize.width() / 2}, mDiffToMouse});
+            mCurrentTrafo->setSnapping({xSnapGuides, ySnapGuides, {mSize.width() / 2}, mDiffToMouse});
         }
     }
-    auto transformedRect = mMomentTrafo->doTransformation(newPosition);
+    auto transformedRect = mCurrentTrafo->doTransformation(newPosition);
     mPresentation->setBoxGeometry(mActiveBoxId, transformedRect, mPageNumber);
     mCursorLastPosition = newPosition;
     update();
@@ -339,7 +338,7 @@ void FrameWidget::mouseReleaseEvent(QMouseEvent *event)
     if (event->button() != Qt::LeftButton) {
         return;
     }
-    if(mActiveBoxId.isEmpty() || !mMomentTrafo){
+    if(mActiveBoxId.isEmpty() || !mCurrentTrafo){
         determineBoxInFocus(ScaledMousePos(event));
         auto box = mPresentation->findBox(mActiveBoxId);
         if(box) {
@@ -350,7 +349,7 @@ void FrameWidget::mouseReleaseEvent(QMouseEvent *event)
         auto transform = new TransformBoxUndo(mPresentation, mLastConfigFile, mPresentation->configuration());
         mUndoStack.push(transform);
     }
-    mMomentTrafo.reset();
+    mCurrentTrafo.reset();
     update();
 }
 

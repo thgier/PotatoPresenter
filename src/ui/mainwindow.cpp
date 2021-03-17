@@ -244,6 +244,9 @@ void MainWindow::newDocument() {
     mViewTextDoc->deleteLater();
     mViewTextDoc = mDoc->createView(this);
     ui->editor->addWidget(mViewTextDoc);
+    connect(mDoc, &KTextEditor::Document::textChanged,
+                     this, &MainWindow::fileChanged);
+    setupFileActions();
     resetPresentation();
 }
 
@@ -289,10 +292,9 @@ void MainWindow::resetPresentation() {
     mPresentation = std::make_shared<Presentation>();
     mFrameWidget->setPresentation(mPresentation);
     mFrameModel->setPresentation(mPresentation);
-    mFrameWidget->update();
-    connect(mDoc, &KTextEditor::Document::textChanged,
-                     this, &MainWindow::fileChanged);
-}
+    connect(mPresentation.get(), &Presentation::rebuildNeeded,
+            this, &MainWindow::fileChanged);
+    }
 
 void MainWindow::exportPDF() {
     if(mPdfFile.isEmpty()) {

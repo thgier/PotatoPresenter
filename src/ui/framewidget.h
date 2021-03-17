@@ -102,7 +102,7 @@ private:
         QSize mFrameSize;
     } mGeometryDetail;
 
-    std::optional<BoxTransformation> mMomentTrafo;
+    std::optional<BoxTransformation> mCurrentTrafo;
     TransformationType mTransform = TransformationType::translate;
     QPoint mCursorLastPosition;
 
