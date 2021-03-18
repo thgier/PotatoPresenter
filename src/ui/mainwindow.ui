@@ -106,7 +106,7 @@
      <x>0</x>
      <y>0</y>
      <width>1239</width>
-     <height>20</height>
+     <height>36</height>
     </rect>
    </property>
    <widget class="QMenu" name="menufile">
@@ -115,6 +115,8 @@
     </property>
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSave_as"/>
     <addaction name="actionCreatePDF"/>
     <addaction name="actionExport_PDF_as"/>
    </widget>
@@ -150,6 +152,8 @@
    </attribute>
    <addaction name="actionNew"/>
    <addaction name="actionOpen"/>
+   <addaction name="actionSave"/>
+   <addaction name="actionSave_as"/>
    <addaction name="actionCreatePDF"/>
    <addaction name="separator"/>
    <addaction name="actionUndo"/>
@@ -283,6 +287,28 @@
    </property>
    <property name="text">
     <string>Redo</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="icon">
+    <iconset theme="document-save"/>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionSave_as">
+   <property name="icon">
+    <iconset theme="document-save-as"/>
+   </property>
+   <property name="text">
+    <string>Save as</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
    </property>
   </action>
  </widget>

@@ -34,8 +34,8 @@ private Q_SLOTS:
 
 private:
     void fileChanged();
-    void setupFileActions();
-    void openDocument();
+    void setupFileActionsFromKPart();
+    void openInputFile(QString filename);
     void newDocument();
     void resetPresentation();
     void readTemplate(QString filename);
@@ -47,13 +47,16 @@ private:
     void exportPDF();
     void exportPDFAs();
 
-    void writeToFile(QString filename) const;
     void writePDF() const;
     QString getConfigFilename(QUrl inputUrl);
     QString getPdfFilename();
-    QAction* importActionFromKDoc(const char* name, std::function<void()> method);
+    QAction* deleteShortcutOfKDocAction(const char* name);
+    QString jsonFileName() const;
+    void saveJson();
+    void openJson();
+    QString filename() const;
 
-    void updateCursor();
+    void updateCursorPosition();
 
 private:
     Ui::MainWindow *ui;
@@ -67,7 +70,6 @@ private:
     QListWidget *mListWidget;
     FrameListModel *mFrameModel;
 
-    QString mFilename;
     QString mPdfFile;
 
     Template mTemplate;
