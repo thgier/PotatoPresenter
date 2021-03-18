@@ -71,8 +71,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     // setup document
     newDocument();
-    fileChanged();
-    setupFileActions();
 
     connect(ui->actionClean_Configurations, &QAction::triggered,
             mPresentation.get(), &Presentation::deleteNotNeededConfigurations);
@@ -130,20 +128,16 @@ MainWindow::MainWindow(QWidget *parent)
     connect(mDoc, &KTextEditor::Document::textChanged,
             this,[this](){mCursorTimer.start(10);});
     connect(&mCursorTimer, &QTimer::timeout,
-            this, &MainWindow::updateCursor);
+            this, &MainWindow::updateCursorPosition);
 
     connect(ui->actionUndo, &QAction::triggered,
             mFrameWidget, &FrameWidget::undo);
     connect(ui->actionRedo, &QAction::triggered,
             mFrameWidget, &FrameWidget::redo);
 
-    connect(mPresentation.get(), &Presentation::rebuildNeeded,
-            this, &MainWindow::fileChanged);
 
     connect(mSnappingButton, &QToolButton::clicked,
             this, [this](){mFrameWidget->setSnapping(mSnappingButton->isChecked());});
-
-    mViewTextDoc->setFocus();
 }
 
 MainWindow::~MainWindow()
@@ -154,7 +148,8 @@ MainWindow::~MainWindow()
 void MainWindow::fileChanged() {
     auto iface = qobject_cast<KTextEditor::MarkInterface*>(mDoc);
     iface->clearMarks();
-    Parser parser{QFileInfo(mFilename).absolutePath()};
+    auto filename = QFileInfo(mFilename).absolutePath();
+    Parser parser{filename};
     parser.loadInput(mDoc->text().toUtf8());
     try {
         auto const preamble = parser.readPreamble();
@@ -248,6 +243,8 @@ void MainWindow::newDocument() {
                      this, &MainWindow::fileChanged);
     setupFileActions();
     resetPresentation();
+    fileChanged();
+    mViewTextDoc->setFocus();
 }
 
 void MainWindow::save() {
@@ -294,7 +291,7 @@ void MainWindow::resetPresentation() {
     mFrameModel->setPresentation(mPresentation);
     connect(mPresentation.get(), &Presentation::rebuildNeeded,
             this, &MainWindow::fileChanged);
-    }
+}
 
 void MainWindow::exportPDF() {
     if(mPdfFile.isEmpty()) {
@@ -342,7 +339,7 @@ QAction* MainWindow::importActionFromKDoc(const char* name, std::function<void()
     return action;
 }
 
-void MainWindow::updateCursor() {
+void MainWindow::updateCursorPosition() {
     if(!mCoupleButton->isChecked()) {
         return ;
     }

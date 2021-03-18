@@ -48,6 +48,7 @@ void FrameWidget::setPresentation(std::shared_ptr<Presentation> pres){
     mActiveBoxId = QString();
     mCurrentFrameId = QString();
     mUndoStack.clear();
+    update();
 }
 
 void FrameWidget::recalculateGeometry() {
