@@ -122,14 +122,6 @@ MainWindow::MainWindow(QWidget *parent)
                 mViewTextDoc->removeSelection();
             }});
 
-    mCursorTimer.setSingleShot(true);
-    connect(mViewTextDoc, &KTextEditor::View::cursorPositionChanged,
-            this, [this](KTextEditor::View *, const KTextEditor::Cursor &){mCursorTimer.start(10);});
-    connect(mDoc, &KTextEditor::Document::textChanged,
-            this,[this](){mCursorTimer.start(10);});
-    connect(&mCursorTimer, &QTimer::timeout,
-            this, &MainWindow::updateCursorPosition);
-
     connect(ui->actionUndo, &QAction::triggered,
             mFrameWidget, &FrameWidget::undo);
     connect(ui->actionRedo, &QAction::triggered,
@@ -156,8 +148,8 @@ MainWindow::~MainWindow()
 void MainWindow::fileChanged() {
     auto iface = qobject_cast<KTextEditor::MarkInterface*>(mDoc);
     iface->clearMarks();
-    auto filename = QFileInfo(mDoc->url().toString()).absolutePath();
-    Parser parser{filename};
+    auto file = QFileInfo(filename()).absolutePath();
+    Parser parser{file};
     parser.loadInput(mDoc->text().toUtf8());
     try {
         auto const preamble = parser.readPreamble();
@@ -217,8 +209,10 @@ void MainWindow::openFile() {
     if(newFile.isEmpty()){
         return;
     }
+    newDocument();
     openInputFile(newFile);
     openJson();
+    mPdfFile = "";
     fileChanged();
 }
 
@@ -233,6 +227,18 @@ void MainWindow::newDocument() {
     resetPresentation();
     fileChanged();
     mViewTextDoc->setFocus();
+    mDoc->setHighlightingMode("LaTeX");
+    mPdfFile = "";
+
+    // couple cursor position and box selection
+    mCursorTimer.setSingleShot(true);
+    connect(mViewTextDoc, &KTextEditor::View::cursorPositionChanged,
+            this, [this](KTextEditor::View *, const KTextEditor::Cursor &){mCursorTimer.start(10);});
+    connect(mDoc, &KTextEditor::Document::textChanged,
+            this,[this](){mCursorTimer.start(10);});
+    connect(&mCursorTimer, &QTimer::timeout,
+            this, &MainWindow::updateCursorPosition);
+
 }
 
 void MainWindow::save() {

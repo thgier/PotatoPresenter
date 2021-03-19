@@ -12,6 +12,5 @@
 - textbox with border, ellipse, rect
 
 bugs:
-- save
 - sometimes templates?
 - pause in template
