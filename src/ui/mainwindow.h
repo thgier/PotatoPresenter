@@ -12,10 +12,10 @@
 #include <QLabel>
 #include <QToolButton>
 #include <KXmlGuiWindow>
-#include "frame.h"
-#include "framewidget.h"
+#include "slide.h"
+#include "slidewidget.h"
 #include "configboxes.h"
-#include "framelistmodel.h"
+#include "slidelistmodel.h"
 #include "template.h"
 
 QT_BEGIN_NAMESPACE
@@ -64,11 +64,11 @@ private:
     KTextEditor::Document* mDoc;
     KTextEditor::View* mViewTextDoc = nullptr;
 
-    FrameWidget* mFrameWidget;
+    SlideWidget* mSlideWidget;
     std::shared_ptr<Presentation> mPresentation;
 
     QListWidget *mListWidget;
-    FrameListModel *mFrameModel;
+    SlideListModel *mSlideModel;
 
     QString mPdfFile;
 

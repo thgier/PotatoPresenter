@@ -87,7 +87,7 @@ void Box::endDraw(QPainter &painter) const{
     painter.restore();
 }
 
-void Box::drawManipulationFrame(QPainter &painter, int size){
+void Box::drawManipulationSlide(QPainter &painter, int size){
     PainterTransformScope scope(this, painter);
     auto pen = painter.pen();
     pen.setColor(Qt::black);

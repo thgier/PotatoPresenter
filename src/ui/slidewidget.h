@@ -9,7 +9,7 @@
 #include <QObject>
 #include <vector>
 #include <QUndoStack>
-#include "frame.h"
+#include "slide.h"
 #include "parser.h"
 #include "equationcachemanager.h"
 #include "presentation.h"
@@ -17,23 +17,23 @@
 #include "boxtransformation.h"
 #include "snapping.h"
 
-class FrameWidget : public QWidget
+class SlideWidget : public QWidget
 {
     Q_OBJECT
 public:
-    FrameWidget(QWidget*&);
+    SlideWidget(QWidget*&);
 
     void resizeEvent(QResizeEvent *) override;
     void contextMenuEvent(QContextMenuEvent *event) override;
 
     // Presentation that is shown
     void setPresentation(std::shared_ptr<Presentation> pres);
-    void updateFrames();
-    void updateFrameId();
+    void updateSlides();
+    void updateSlideId();
     void setCurrentPage(int);
-    void setCurrentPage(QString frameId);
+    void setCurrentPage(QString slideId);
     int pageNumber() const;
-    QString const& currentFrameId() const;
+    QString const& currentSlideId() const;
 
     // change cursor mode: scale or rotate
     void setTransformationType(TransformationType type);
@@ -43,14 +43,14 @@ public:
     // set the active Box on the position of a tool bar button
     void deleteBoxPosition();
 
-    void setActiveBox(QString boxId, QString frameId);
+    void setActiveBox(QString boxId, QString slideId);
 
     // trigger undo / redo actions
     void undo();
     void redo();
 
 Q_SIGNALS:
-    void selectionChanged(Frame::Ptr);
+    void selectionChanged(Slide::Ptr);
     void boxSelectionChanged(Box::Ptr);
 
 private:
@@ -84,7 +84,7 @@ private:
 private:
     std::shared_ptr<Presentation> mPresentation;
     QString mActiveBoxId;
-    QString mCurrentFrameId;
+    QString mCurrentSlideId;
     int mPageNumber = 0;
 
     int const mDiffToMouse = 15;
@@ -94,12 +94,12 @@ private:
     QFont mTitleFont;
 
     struct {
-        // Transform from widget to frame coordinates
-        QTransform mWidgetToFrameTransform;
-        // Top left corner of the painted frame, in widget coordinates
+        // Transform from widget to slide coordinates
+        QTransform mWidgetToSlideTransform;
+        // Top left corner of the painted slide, in widget coordinates
         QPoint mTopLeft;
-        // Frame size, in widget coordinates
-        QSize mFrameSize;
+        // Slide size, in widget coordinates
+        QSize mSlideSize;
     } mGeometryDetail;
 
     std::optional<BoxTransformation> mCurrentTrafo;

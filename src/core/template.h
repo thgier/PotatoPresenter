@@ -1,7 +1,7 @@
 # pragma once
 
 #include <QPainter>
-#include "frame.h"
+#include "slide.h"
 #include "configboxes.h"
 #include "presentation.h"
 
@@ -14,14 +14,14 @@ class Template
 public:
     using variablesMap = std::shared_ptr<std::map<QString, QString>>;
     Template();
-    void setFrames(FrameList frames);
+    void setSlides(SlideList slides);
     void readTemplateConfig(QString configFile);
-    void applyTemplate(FrameList& frameList);
+    void applyTemplate(SlideList& slideList);
     BoxGeometry getGeometry(QString id) const;
     BoxStyle getStyle(QString id) const;
     void declareVariable(QString name, QString value);
-    void drawTemplate(QString frameId);
-    Box::List getTemplateSlide(QString frameId) const;
+    void drawTemplate(QString slideId);
+    Box::List getTemplateSlide(QString slideId) const;
     void setVariables(std::map<QString, QString> variables);
     ConfigBoxes& Configuration();
 
@@ -31,5 +31,5 @@ private:
 private:
     Presentation mPresentation;
     std::map<QString, QString> mVariables;
-    std::map<QString, Frame> mTemplateSlides;
+    std::map<QString, Slide> mTemplateSlides;
 };

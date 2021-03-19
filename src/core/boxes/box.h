@@ -96,7 +96,7 @@ public:
 
     // Implement this in child classes to draw the box's contents given the passed @p variables
     virtual void drawContent(QPainter& painter, std::map<QString, QString> variables) = 0;
-    void drawManipulationFrame(QPainter& painter, int size);
+    void drawManipulationSlide(QPainter& painter, int size);
     // e.g. Border, background
     void drawGlobalBoxSettings(QPainter& painter);
 

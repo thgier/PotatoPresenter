@@ -12,7 +12,7 @@ void Template::readTemplateConfig(QString configFile) {
 }
 
 BoxGeometry Template::getGeometry(QString id) const {
-    auto const box = mPresentation.frameList().findBox(id);
+    auto const box = mPresentation.slideList().findBox(id);
     if(box){
         return box->geometry();
     }
@@ -20,7 +20,7 @@ BoxGeometry Template::getGeometry(QString id) const {
 }
 
 BoxStyle Template::getStyle(QString id) const {
-    auto const box = mPresentation.frameList().findBox(id);
+    auto const box = mPresentation.slideList().findBox(id);
     if(box){
         return box->style();
     }
@@ -35,13 +35,13 @@ void Template::setVariables(std::map<QString, QString> variables) {
     mVariables = variables;
 }
 
-Box::List Template::getTemplateSlide(QString frameId) const {
-    auto frame = mPresentation.frameList().findFrame(frameId);
-    if(!frame){
+Box::List Template::getTemplateSlide(QString slideId) const {
+    auto slide = mPresentation.slideList().findSlide(slideId);
+    if(!slide){
         return {};
     }
-    auto boxes = frame->boxes();
-    auto rm = [frameId](std::shared_ptr<Box> box) {return !box->id().startsWith("intern-");};
+    auto boxes = slide->boxes();
+    auto rm = [slideId](std::shared_ptr<Box> box) {return !box->id().startsWith("intern-");};
     boxes.erase(std::remove_if(boxes.begin(), boxes.end(), rm), boxes.end());
     return boxes;
 }
@@ -50,22 +50,22 @@ ConfigBoxes& Template::Configuration() {
     return mPresentation.configuration();
 }
 
-void Template::setFrames(FrameList frames) {
-    mPresentation.setFrames(frames);
+void Template::setSlides(SlideList slides) {
+    mPresentation.setSlides(slides);
 }
 
-void Template::applyTemplate(FrameList& frameList) {
-    for(auto const& frame: frameList.vector) {
-        auto const frameclass = frame->frameClass();
+void Template::applyTemplate(SlideList& slideList) {
+    for(auto const& slide: slideList.vector) {
+        auto const slideclass = slide->slideClass();
         Box::List boxlist;
-        if(!frameclass.isEmpty()) {
-            boxlist = getTemplateSlide(frameclass);
+        if(!slideclass.isEmpty()) {
+            boxlist = getTemplateSlide(slideclass);
         }
         else {
             boxlist = getTemplateSlide("default");
         }
-        frame->setTemplateBoxes(boxlist);
-        for(auto const& box: frame->boxes()) {
+        slide->setTemplateBoxes(boxlist);
+        for(auto const& box: slide->boxes()) {
             applyTemplateToBox(box);
         }
     }

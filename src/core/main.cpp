@@ -6,8 +6,8 @@
 #include <vector>
 #include "box.h"
 #include "parser.h"
-#include "frame.h"
-#include "framepainter.h"
+#include "slide.h"
+#include "sliderenderer.h"
 
 enum keywords{
     tile,

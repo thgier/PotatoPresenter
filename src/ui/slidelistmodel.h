@@ -3,17 +3,17 @@
 #include <QAbstractListModel>
 #include <vector>
 #include <memory>
-#include "frame.h"
+#include "slide.h"
 
 class Presentation;
 
-class FrameListModel : public QAbstractListModel
+class SlideListModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    FrameListModel(std::shared_ptr<Presentation> presentation, QObject *parent = nullptr)
+    SlideListModel(std::shared_ptr<Presentation> presentation, QObject *parent = nullptr)
         : QAbstractListModel(parent), mPresentation(presentation) {}
-    FrameListModel(QObject *parent = nullptr)
+    SlideListModel(QObject *parent = nullptr)
         : QAbstractListModel(parent){}
 
     void setPresentation(std::shared_ptr<Presentation> presentation);

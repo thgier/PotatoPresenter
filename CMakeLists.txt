@@ -38,8 +38,8 @@ add_executable(praes
     src/core/codehighlighter.cpp
     src/core/configboxes.cpp
     src/core/equationcachemanager.cpp
-    src/core/frame.cpp
-    src/core/framepainter.cpp
+    src/core/slide.cpp
+    src/core/sliderenderer.cpp
     src/core/main.cpp
     src/core/markdownformatvisitor.cpp
     src/core/parser.cpp
@@ -50,9 +50,9 @@ add_executable(praes
     src/core/transformboxundo.cpp
     src/files.qrc
     src/ui/boxtransformation.cpp
-    src/ui/framelistdelegate.cpp
-    src/ui/framelistmodel.cpp
-    src/ui/framewidget.cpp
+    src/ui/slidelistdelegate.cpp
+    src/ui/slidelistmodel.cpp
+    src/ui/slidewidget.cpp
     src/ui/mainwindow.cpp
     src/ui/mainwindow.ui
     src/ui/snapping.cpp

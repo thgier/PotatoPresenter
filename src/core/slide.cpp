@@ -1,41 +1,41 @@
-#include "frame.h"
+#include "slide.h"
 
-Frame::Frame()
+Slide::Slide()
     : mId{""}
 {
 
 }
 
-Frame::Frame(const QString &id, const std::map<QString, QString> &variables, int line)
+Slide::Slide(const QString &id, const std::map<QString, QString> &variables, int line)
     : mId{id}
     , mVariables{variables}
     , mLine{line}
 {
 }
 
-const Box::List &Frame::boxes() const
+const Box::List &Slide::boxes() const
 {
     return mBoxes;
 }
 
-void Frame::appendBox(std::shared_ptr<Box> box)
+void Slide::appendBox(std::shared_ptr<Box> box)
 {
     mBoxes.push_back(box);
 }
 
-void Frame::setBoxes(std::vector<std::shared_ptr<Box>> boxes){
+void Slide::setBoxes(std::vector<std::shared_ptr<Box>> boxes){
     mBoxes = boxes;
 }
 
-bool Frame::empty() {
+bool Slide::empty() {
     return (mBoxes.empty() && mTemplateBoxes.empty());
 }
 
-QString const& Frame::id() const {
+QString const& Slide::id() const {
     return mId;
 }
 
-Box::Ptr Frame::findBox(QString const& id) const{
+Box::Ptr Slide::findBox(QString const& id) const{
     for(auto const &box: boxes()){
         if(box->id() == id){
             return box;
@@ -44,7 +44,7 @@ Box::Ptr Frame::findBox(QString const& id) const{
     return {};
 }
 
-bool Frame::containsBox(const QString &id) const{
+bool Slide::containsBox(const QString &id) const{
     for(auto const &box: boxes()){
         if(box->id() == id){
             return true;
@@ -53,31 +53,31 @@ bool Frame::containsBox(const QString &id) const{
     return false;
 }
 
-void Frame::setTemplateBoxes(Box::List boxes){
+void Slide::setTemplateBoxes(Box::List boxes){
     mTemplateBoxes = boxes;
 }
 
-void Frame::appendTemplateBoxes(Box::Ptr box){
+void Slide::appendTemplateBoxes(Box::Ptr box){
     mTemplateBoxes.push_back(box);
 }
 
-Box::List Frame::templateBoxes() const{
+Box::List Slide::templateBoxes() const{
     return mTemplateBoxes;
 }
 
-void Frame::setVariables(Variables const& variables){
+void Slide::setVariables(Variables const& variables){
     mVariables = variables;
 }
 
-Variables const& Frame::variables() const{
+Variables const& Slide::variables() const{
     return mVariables;
 }
 
-void Frame::setVariable(QString const& name, QString const& value){
+void Slide::setVariable(QString const& name, QString const& value){
     mVariables[name] = value;
 }
 
-int Frame::numberPauses() const {
+int Slide::numberPauses() const {
     if(mBoxes.empty()) {
         return 1;
     }
@@ -85,14 +85,14 @@ int Frame::numberPauses() const {
     return maxBox->get()->pauseCounter().first + 1;
 }
 
-int Frame::line() const {
+int Slide::line() const {
     return mLine;
 }
 
-void Frame::setFrameClass(QString const& frameClass) {
-    mClass = frameClass;
+void Slide::setSlideClass(QString const& slideClass) {
+    mClass = slideClass;
 }
 
-const QString &Frame::frameClass() const {
+const QString &Slide::slideClass() const {
     return mClass;
 }

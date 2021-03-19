@@ -1,29 +1,29 @@
-#include "framelistdelegate.h"
-#include "frame.h"
-#include "framepainter.h"
-#include "framelistmodel.h"
+#include "slidelistdelegate.h"
+#include "slide.h"
+#include "sliderenderer.h"
+#include "slidelistmodel.h"
 
-FrameListDelegate::FrameListDelegate(QObject *parent)
+SlideListDelegate::SlideListDelegate(QObject *parent)
     : QAbstractItemDelegate(parent)
 {
 
 }
 
-void FrameListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const{
-    auto const frame = index.model()->data(index, Qt::DisplayRole).value<std::shared_ptr<Frame>>();
+void SlideListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const{
+    auto const slide = index.model()->data(index, Qt::DisplayRole).value<std::shared_ptr<Slide>>();
     painter->save();
     painter->setViewport(option.rect);
     auto const windowRect = QRect(-50, -50, 1700, 1200);
-    auto const frameRect = QRect(0, 0, 1600, 900);
+    auto const slideRect = QRect(0, 0, 1600, 900);
     painter->setWindow(windowRect);
     painter->save();
     if(option.state & QStyle::State_Selected){
         painter->fillRect(windowRect, option.palette.highlight());
     }
-    painter->fillRect(frameRect, Qt::white);
-    painter->setClipRect(frameRect);
-    FramePainter paint{*painter};
-    paint.paintFrame(frame);
+    painter->fillRect(slideRect, Qt::white);
+    painter->setClipRect(slideRect);
+    SlideRenderer paint{*painter};
+    paint.paintSlide(slide);
     painter->restore();
 
     QFont font = painter->font();
@@ -31,9 +31,9 @@ void FrameListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     painter->setFont(font);
     if(option.state & QStyle::State_Selected){
         painter->setPen(option.palette.HighlightedText);
-        painter->drawText(QRect(0, 900, 1700, 200), Qt::AlignCenter, frame->id());
+        painter->drawText(QRect(0, 900, 1700, 200), Qt::AlignCenter, slide->id());
     }else{
-        painter->drawText(QRect(0, 900, 1700, 200), Qt::AlignCenter, frame->id());
+        painter->drawText(QRect(0, 900, 1700, 200), Qt::AlignCenter, slide->id());
     }
 
     painter->setPen(Qt::blue);
@@ -42,7 +42,7 @@ void FrameListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
     painter->restore();
 }
 
-QSize FrameListDelegate::sizeHint(const QStyleOptionViewItem &option,
+QSize SlideListDelegate::sizeHint(const QStyleOptionViewItem &option,
                               const QModelIndex & /* index */) const
 {
     auto const height = option.rect.height();

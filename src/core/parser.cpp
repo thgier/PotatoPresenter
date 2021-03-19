@@ -9,7 +9,7 @@
 #include <QRegularExpression>
 
 #include "parser.h"
-#include "frame.h"
+#include "slide.h"
 #include "box.h"
 #include "imagebox.h"
 #include "markdowntextbox.h"
@@ -32,7 +32,7 @@ void Parser::loadInput(QByteArray input){
 }
 
 Preamble Parser::readPreamble() {
-    while(!(mTokenizer.peekNext().mKind == Token::Kind::Command && mTokenizer.peekNext().mText == "\\frame")
+    while(!(mTokenizer.peekNext().mKind == Token::Kind::Command && mTokenizer.peekNext().mText == "\\slide")
           || mTokenizer.peekNext().mKind == Token::Kind::EndOfFile) {
         auto token = mTokenizer.next();
         if (token.mKind == Token::Kind::Command) {
@@ -62,7 +62,7 @@ void Parser::preambleCommand(Token token) {
     }
 }
 
-FrameList Parser::readInput(){
+SlideList Parser::readInput(){
     auto token = mTokenizer.next();
     while(token.mKind != Token::Kind::EndOfFile) {
         if (token.mKind == Token::Kind::Command) {
@@ -73,15 +73,15 @@ FrameList Parser::readInput(){
         }
         token = mTokenizer.next();
     }
-    for(auto const& frame: mFrameList.vector){
-        frame->setVariable("%{totalpages}", QString::number(mFrameList.vector.size() - 1));
+    for(auto const& slide: mSlideList.vector){
+        slide->setVariable("%{totalpages}", QString::number(mSlideList.vector.size() - 1));
     }
-    return mFrameList;
+    return mSlideList;
 }
 
 void Parser::command(Token token){
-    if(token.mText == "\\frame"){
-        newFrame(token.mLine);
+    if(token.mText == "\\slide"){
+        newSlide(token.mLine);
     }
     else if(token.mText == "\\text"){
         newTextField(token.mLine);
@@ -121,13 +121,13 @@ void Parser::command(Token token){
     }
 }
 
-void Parser::newFrame(int line){
+void Parser::newSlide(int line){
     mPauseCount = 0;
     auto token = mTokenizer.next();
-    QString frameClass;
+    QString slideClass;
     if(token.mKind == Token::Kind::Argument){
         if(token.mText != "class"){
-            throw ParserError{QString("Invalid argument '%1' for \\frame").arg(QString(token.mText)), token.mLine};
+            throw ParserError{QString("Invalid argument '%1' for \\slide").arg(QString(token.mText)), token.mLine};
             return;
         }
         auto const tokenArgValue = mTokenizer.next();
@@ -135,33 +135,33 @@ void Parser::newFrame(int line){
             throw ParserError{"Missing value for argument", token.mLine};
             return;
         }
-        frameClass = tokenArgValue.mText;
+        slideClass = tokenArgValue.mText;
         token = mTokenizer.next();
     }
     if(token.mKind != Token::Kind::Text || token.mText.isEmpty()) {
-        throw ParserError{"Expecting frame id", line};
+        throw ParserError{"Expecting slide id", line};
         return;
     }
     auto const id = QString(token.mText);
-    for(auto const& frame: mFrameList.vector) {
-        if(frame->id() == id){
-            throw ParserError{QString("Duplicate frame ID '%1'").arg(id), line};
+    for(auto const& slide: mSlideList.vector) {
+        if(slide->id() == id){
+            throw ParserError{QString("Duplicate slide ID '%1'").arg(id), line};
         }
     }
-    mVariables["%{pagenumber}"] = QString::number(mFrameList.vector.size());
+    mVariables["%{pagenumber}"] = QString::number(mSlideList.vector.size());
     if(mVariables.find("%{date}") == mVariables.end()){
         mVariables["%{date}"] = QDate::currentDate().toString();
     }
     if(mVariables.find("%{resourcepath}") == mVariables.end()){
         mVariables["%{resourcepath}"] = mResourcepath;
     }
-    mFrameList.vector.push_back(std::make_shared<Frame>(id, mVariables, line));
-    mFrameList.vector.back()->setFrameClass(frameClass);
+    mSlideList.vector.push_back(std::make_shared<Slide>(id, mVariables, line));
+    mSlideList.vector.back()->setSlideClass(slideClass);
 }
 
 void Parser::newTextField(int line){
-    if(mFrameList.empty()){
-        throw ParserError{"Expecting \\frame", line};
+    if(mSlideList.empty()){
+        throw ParserError{"Expecting \\slide", line};
         return;
     }
     QString id;
@@ -179,12 +179,12 @@ void Parser::newTextField(int line){
     auto const textField = std::make_shared<MarkdownTextBox>(text, boxStyle, id, line);
     textField->setBoxStyle(boxStyle);
     textField->setPauseCounter(mPauseCount);
-    mFrameList.vector.back()->appendBox(textField);
+    mSlideList.vector.back()->appendBox(textField);
 }
 
 void Parser::newImage(int line) {
-    if(mFrameList.empty()){
-        throw ParserError{"Expecting \\frame", line};
+    if(mSlideList.empty()){
+        throw ParserError{"Expecting \\slide", line};
         return;
     }
     QString id;
@@ -201,12 +201,12 @@ void Parser::newImage(int line) {
     }
     auto const imageBox = std::make_shared<ImageBox>(text, boxStyle, id, line);
     imageBox->setPauseCounter(mPauseCount);
-    mFrameList.vector.back()->appendBox(imageBox);
+    mSlideList.vector.back()->appendBox(imageBox);
 }
 
 void Parser::newTitle(int line){
-    if(mFrameList.empty()){
-        throw ParserError{"Expecting \\frame", line};
+    if(mSlideList.empty()){
+        throw ParserError{"Expecting \\slide", line};
         return;
     }
     QString id;
@@ -216,20 +216,20 @@ void Parser::newTitle(int line){
         id = generateId("text", boxStyle.boxClass);
     }
 
-    auto const frameId = mFrameList.vector.back()->id();
-    QString text = frameId;
+    auto const slideId = mSlideList.vector.back()->id();
+    QString text = slideId;
     auto const nextToken = mTokenizer.peekNext();
     if(nextToken.mKind == Token::Kind::Text && !nextToken.mText.isEmpty()) {
         text = QString(mTokenizer.next().mText);
     }
     auto const textField = std::make_shared<MarkdownTextBox>(text, boxStyle, id, line);
     textField->setPauseCounter(mPauseCount);
-    mFrameList.vector.back()->appendBox(textField);
+    mSlideList.vector.back()->appendBox(textField);
 }
 
 void Parser::newBody(int line){
-    if(mFrameList.empty()){
-        throw ParserError{"Expecting \\frame", line};
+    if(mSlideList.empty()){
+        throw ParserError{"Expecting \\slide", line};
         return;
     }
     QString id;
@@ -246,12 +246,12 @@ void Parser::newBody(int line){
     }
     auto const textField = std::make_shared<MarkdownTextBox>(text, boxStyle, id, line);
     textField->setPauseCounter(mPauseCount);
-    mFrameList.vector.back()->appendBox(textField);
+    mSlideList.vector.back()->appendBox(textField);
 }
 
 void Parser::newArrow(int line){
-    if(mFrameList.empty()){
-        throw ParserError{"Expecting \\frame", line};
+    if(mSlideList.empty()){
+        throw ParserError{"Expecting \\slide", line};
         return;
     }
     QString id;
@@ -262,7 +262,7 @@ void Parser::newArrow(int line){
 
     auto const arrow = std::make_shared<ArrowBox>(boxStyle, id, line);
     arrow->setPauseCounter(mPauseCount);
-    mFrameList.vector.back()->appendBox(arrow);
+    mSlideList.vector.back()->appendBox(arrow);
 
     auto const nextToken = mTokenizer.peekNext();
     if(nextToken.mKind != Token::Kind::Command && nextToken.mKind != Token::Kind::EndOfFile){
@@ -272,8 +272,8 @@ void Parser::newArrow(int line){
 }
 
 void Parser::newLine(int line){
-    if(mFrameList.empty()){
-        throw ParserError{"Expecting \\frame", line};
+    if(mSlideList.empty()){
+        throw ParserError{"Expecting \\slide", line};
         return;
     }
 
@@ -285,7 +285,7 @@ void Parser::newLine(int line){
 
     auto const arrow = std::make_shared<LineBox>(boxStyle, id, line);
     arrow->setPauseCounter(mPauseCount);
-    mFrameList.vector.back()->appendBox(arrow);
+    mSlideList.vector.back()->appendBox(arrow);
 
     auto const nextToken = mTokenizer.peekNext();
     if(nextToken.mKind != Token::Kind::Command && nextToken.mKind != Token::Kind::EndOfFile){
@@ -295,8 +295,8 @@ void Parser::newLine(int line){
 }
 
 void Parser::newPlainText(int line) {
-    if(mFrameList.empty()){
-        throw ParserError{"Expecting \\frame", line};
+    if(mSlideList.empty()){
+        throw ParserError{"Expecting \\slide", line};
         return;
     }
 
@@ -317,12 +317,12 @@ void Parser::newPlainText(int line) {
     }
     auto const textField = std::make_shared<PlainTextBox>(text, boxStyle, id, line);
     textField->setPauseCounter(mPauseCount);
-    mFrameList.vector.back()->appendBox(textField);
+    mSlideList.vector.back()->appendBox(textField);
 }
 
 void Parser::newCodeBox(int line) {
-    if(mFrameList.empty()){
-        throw ParserError{"Expecting \\frame", line};
+    if(mSlideList.empty()){
+        throw ParserError{"Expecting \\slide", line};
         return;
     }
 
@@ -346,12 +346,12 @@ void Parser::newCodeBox(int line) {
     }
     auto const textField = std::make_shared<CodeBox>(text, boxStyle, id, line);
     textField->setPauseCounter(mPauseCount);
-    mFrameList.vector.back()->appendBox(textField);
+    mSlideList.vector.back()->appendBox(textField);
 }
 
 void Parser::newBlindText(int line) {
-    if(mFrameList.empty()){
-        throw ParserError{"Expecting \\frame", line};
+    if(mSlideList.empty()){
+        throw ParserError{"Expecting \\slide", line};
         return;
     }
 
@@ -374,7 +374,7 @@ void Parser::newBlindText(int line) {
     }
     auto const textField = std::make_shared<MarkdownTextBox>(text, boxStyle, id, line);
     textField->setPauseCounter(mPauseCount);
-    mFrameList.vector.back()->appendBox(textField);
+    mSlideList.vector.back()->appendBox(textField);
 }
 
 void Parser::setVariable(int line) {
@@ -395,7 +395,7 @@ void Parser::applyPause() {
         return;
     }
 
-    auto const lastTextBox = std::dynamic_pointer_cast<TextBox>(mFrameList.vector.back()->boxes().back());
+    auto const lastTextBox = std::dynamic_pointer_cast<TextBox>(mSlideList.vector.back()->boxes().back());
     if(!lastTextBox) {
         return;
     }
@@ -406,7 +406,7 @@ void Parser::applyPause() {
     auto box = lastTextBox->clone();
     box->appendText(text);
     box->setPauseCounter(mPauseCount);
-    mFrameList.vector.back()->appendBox(box);
+    mSlideList.vector.back()->appendBox(box);
 
     lastTextBox->setConfigId(lastTextBox->id());
     lastTextBox->setPauseMode(PauseDisplayMode::onlyInPause);
@@ -569,12 +569,12 @@ BoxStyle Parser::readArguments(QString &id) {
 }
 
 QString Parser::generateId(QString type, QString boxclass) {
-    auto const frameId = mFrameList.vector.back()->id();
+    auto const slideId = mSlideList.vector.back()->id();
     int boxCounter = 0;
-    auto id = "intern-" + frameId + "-" + type + "-" + boxclass + "-0";
+    auto id = "intern-" + slideId + "-" + type + "-" + boxclass + "-0";
     while(mBoxIds.find(id) != mBoxIds.end()) {
         boxCounter++;
-        id = "intern-" + frameId + "-" + type + "-" + boxclass + "-" + QString::number(boxCounter);
+        id = "intern-" + slideId + "-" + type + "-" + boxclass + "-" + QString::number(boxCounter);
     }
     mBoxIds.insert(id);
     return id;

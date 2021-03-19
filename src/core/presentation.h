@@ -3,19 +3,19 @@
 
 #include <QObject>
 #include <vector>
-#include "frame.h"
+#include "slide.h"
 #include "configboxes.h"
 
 class Template;
 
-struct FrameList {
-    std::vector<Frame::Ptr> vector;
+struct SlideList {
+    std::vector<Slide::Ptr> vector;
 
-    void appendFrame(Frame::Ptr frame) {
-        vector.push_back(frame);
+    void appendSlide(Slide::Ptr slide) {
+        vector.push_back(slide);
     }
 
-    Frame::Ptr frameAt(int pageNumber) const {
+    Slide::Ptr slideAt(int pageNumber) const {
         if(vector.empty() || pageNumber >= int(vector.size())) {
             return {};
         }
@@ -23,24 +23,24 @@ struct FrameList {
     };
 
     Box::Ptr findBox(QString const& id) {
-        for(auto const& frame: vector) {
-            if(frame->findBox(id)) {
-                return frame->findBox(id);
+        for(auto const& slide: vector) {
+            if(slide->findBox(id)) {
+                return slide->findBox(id);
             }
         }
         return {};
     };
 
-    Frame::Ptr findFrame(QString const& id) const {
-        for(auto const &frame: vector) {
-            if(id == frame->id()) {
-                return frame;
+    Slide::Ptr findSlide(QString const& id) const {
+        for(auto const &slide: vector) {
+            if(id == slide->id()) {
+                return slide;
             }
         }
         return {};
     };
 
-    int numberFrames() const {
+    int numberSlides() const {
         return int(vector.size());
     };
 
@@ -56,14 +56,14 @@ public:
     Presentation();
     void loadInput(QString configFilename);
 
-    // Access contained Frames
-    FrameList frameList() const;
+    // Access contained Slides
+    SlideList slideList() const;
     void setTemplate(Template *templateObject);
-    void setFrames(FrameList const& frames);
+    void setSlides(SlideList const& slides);
 
     // access to contained box
     Box::Ptr findBox(QString const& id) const;
-    std::pair<Frame::Ptr, Box::Ptr> findBoxForLine(int line) const;
+    std::pair<Slide::Ptr, Box::Ptr> findBoxForLine(int line) const;
 
     bool empty() const;
     QSize dimensions() const;
@@ -84,16 +84,16 @@ public:
 
 Q_SIGNALS:
     void presentationChanged();
-    void frameChanged(int pageNumber);
+    void slideChanged(int pageNumber);
     void rebuildNeeded();
 
 private:
-    // apply Configuration in json file to mFrames
+    // apply Configuration in json file to mSlides
     void applyConfiguration();
-    FrameList const& applyStandardTemplate(FrameList const& frames) const;
+    SlideList const& applyStandardTemplate(SlideList const& slides) const;
 
 private:
-    FrameList mFrames;
+    SlideList mSlides;
     QString mInputDir;
     ConfigBoxes mConfig;
     QSize mDimensions{1600, 900};

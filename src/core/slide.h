@@ -4,13 +4,13 @@
 #include <QVariant>
 #include "box.h"
 
-class Frame
+class Slide
 {
 public:
-    using Ptr = std::shared_ptr<Frame>;
+    using Ptr = std::shared_ptr<Slide>;
 
-    Frame();
-    Frame(QString const& id, std::map<QString, QString> const& variables, int line);
+    Slide();
+    Slide(QString const& id, std::map<QString, QString> const& variables, int line);
 
     // Access contained boxes
     void setBoxes(std::vector<std::shared_ptr<Box>> boxes);
@@ -23,25 +23,25 @@ public:
     // Returns the max PauseCounter of the boxes
     int numberPauses() const;
 
-    // line in which the "\frame" comment is written in the input file
+    // line in which the "\slide" comment is written in the input file
     int line() const;
 
-    // Template boxes are rendered in the background of the frame.
+    // Template boxes are rendered in the background of the slide.
     void setTemplateBoxes(Box::List boxes);
     void appendTemplateBoxes(Box::Ptr box);
     Box::List templateBoxes() const;
 
-    // The frame ID is the string after the "\frame" command, and is used to track
-    // the frame when the document changes.
+    // The slide ID is the string after the "\slide" command, and is used to track
+    // the slide when the document changes.
     QString const& id() const;
 
-    // Access to this frame's variables
+    // Access to this slide's variables
     void setVariables(Variables const& variables);
     void setVariable(QString const& name, QString const& value);
     Variables const& variables() const;
 
-    void setFrameClass(QString const& frameClass);
-    QString const& frameClass() const;
+    void setSlideClass(QString const& slideClass);
+    QString const& slideClass() const;
 
 private:
     Box::List mBoxes;
@@ -52,4 +52,4 @@ private:
     int mLine;
 };
 
-Q_DECLARE_METATYPE(Frame::Ptr)
+Q_DECLARE_METATYPE(Slide::Ptr)

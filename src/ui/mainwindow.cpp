@@ -17,8 +17,8 @@
 #include "parser.h"
 #include "equationcachemanager.h"
 #include "cachemanager.h"
-#include "framelistmodel.h"
-#include "framelistdelegate.h"
+#include "slidelistmodel.h"
+#include "slidelistdelegate.h"
 #include "pdfcreator.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -31,17 +31,17 @@ MainWindow::MainWindow(QWidget *parent)
     mDoc = mEditor->createDocument(this);
 
     mPresentation = std::make_shared<Presentation>();
-    mFrameWidget = ui->framewidget;
-    mFrameWidget->setPresentation(mPresentation);
+    mSlideWidget = ui->slidewidget;
+    mSlideWidget->setPresentation(mPresentation);
 
     mViewTextDoc = mDoc->createView(this);
     ui->editor->addWidget(mViewTextDoc);
 
     // setup Item model
-    mFrameModel = new FrameListModel(this);
-    mFrameModel->setPresentation(mPresentation);
-    ui->pagePreview->setModel(mFrameModel);
-    FrameListDelegate *delegate = new FrameListDelegate(this);
+    mSlideModel = new SlideListModel(this);
+    mSlideModel->setPresentation(mPresentation);
+    ui->pagePreview->setModel(mSlideModel);
+    SlideListDelegate *delegate = new SlideListDelegate(this);
     ui->pagePreview->setItemDelegate(delegate);
     ui->pagePreview->setViewMode(QListView::IconMode);
     QItemSelectionModel *selectionModel = ui->pagePreview->selectionModel();
@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent)
     mCoupleButton->setCheckable(true);
     mCoupleButton->setChecked(true);
     mCoupleButton->setIcon(QIcon::fromTheme("edit-link"));
-    mCoupleButton->setToolTip("Couple the Cursor in the Editor and the selection in Frame view");
+    mCoupleButton->setToolTip("Couple the Cursor in the Editor and the selection in Slide view");
 
     mSnappingButton = new QToolButton(this);
     mSnappingButton->setCheckable(true);
@@ -76,12 +76,12 @@ MainWindow::MainWindow(QWidget *parent)
             mPresentation.get(), &Presentation::deleteNotNeededConfigurations);
 
     connect(selectionModel, &QItemSelectionModel::currentChanged,
-            this, [this](const QModelIndex &current){mFrameWidget->setCurrentPage(current.row());});
+            this, [this](const QModelIndex &current){mSlideWidget->setCurrentPage(current.row());});
 
     connect(mDoc, &KTextEditor::Document::textChanged,
                      this, &MainWindow::fileChanged);
     connect(ui->actionReset_Position, &QAction::triggered,
-            this, [this](){mFrameWidget->deleteBoxPosition();
+            this, [this](){mSlideWidget->deleteBoxPosition();
                            fileChanged();});
     connect(ui->actionCreatePDF, &QAction::triggered,
                      this, &MainWindow::exportPDF);
@@ -89,10 +89,10 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::exportPDFAs);
 
     connect(&cacheManager(), &EquationCacheManager::conversionFinished,
-            mFrameWidget, QOverload<>::of(&FrameWidget::update));
+            mSlideWidget, QOverload<>::of(&SlideWidget::update));
 
-    CacheManager<QImage>::instance().setCallback([this](QString){mFrameWidget->update();});
-    CacheManager<QSvgRenderer>::instance().setCallback([this](QString){mFrameWidget->update();});
+    CacheManager<QImage>::instance().setCallback([this](QString){mSlideWidget->update();});
+    CacheManager<QSvgRenderer>::instance().setCallback([this](QString){mSlideWidget->update();});
 
     mErrorOutput->setWordWrap(true);
 
@@ -101,31 +101,31 @@ MainWindow::MainWindow(QWidget *parent)
     transformGroup->addAction(ui->actionTranslate);
     ui->actionTranslate->setChecked(true);
     connect(ui->actionRotate, &QAction::triggered,
-           this, [this](){mFrameWidget->setTransformationType(TransformationType::rotate);});
+           this, [this](){mSlideWidget->setTransformationType(TransformationType::rotate);});
     connect(ui->actionTranslate, &QAction::triggered,
-            this, [this](){mFrameWidget->setTransformationType(TransformationType::translate);});
+            this, [this](){mSlideWidget->setTransformationType(TransformationType::translate);});
 
-    connect(mFrameWidget, &FrameWidget::selectionChanged,
-            this, [this](Frame::Ptr frame){
+    connect(mSlideWidget, &SlideWidget::selectionChanged,
+            this, [this](Slide::Ptr slide){
             if(!mCoupleButton->isChecked()) {return ;}
-            auto [frameInLine, boxInLine] = mPresentation->findBoxForLine(mViewTextDoc->cursorPosition().line());
-            if(frameInLine != frame) {
-                mViewTextDoc->setCursorPosition(KTextEditor::Cursor(frame->line(), 0));
+            auto [slideInLine, boxInLine] = mPresentation->findBoxForLine(mViewTextDoc->cursorPosition().line());
+            if(slideInLine != slide) {
+                mViewTextDoc->setCursorPosition(KTextEditor::Cursor(slide->line(), 0));
                 mViewTextDoc->removeSelection();
             }});
-    connect(mFrameWidget, &FrameWidget::boxSelectionChanged,
+    connect(mSlideWidget, &SlideWidget::boxSelectionChanged,
             this, [this](Box::Ptr box){
             if(!mCoupleButton->isChecked()) {return ;}
-            auto [frameInLine, boxInLine] = mPresentation->findBoxForLine(mViewTextDoc->cursorPosition().line());
+            auto [slideInLine, boxInLine] = mPresentation->findBoxForLine(mViewTextDoc->cursorPosition().line());
             if(boxInLine != box) {
                 mViewTextDoc->setCursorPosition(KTextEditor::Cursor(box->line(), 0));
                 mViewTextDoc->removeSelection();
             }});
 
     connect(ui->actionUndo, &QAction::triggered,
-            mFrameWidget, &FrameWidget::undo);
+            mSlideWidget, &SlideWidget::undo);
     connect(ui->actionRedo, &QAction::triggered,
-            mFrameWidget, &FrameWidget::redo);
+            mSlideWidget, &SlideWidget::redo);
 
     connect(ui->actionSave, &QAction::triggered,
             this, &MainWindow::save);
@@ -137,7 +137,7 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::newDocument);
 
     connect(mSnappingButton, &QToolButton::clicked,
-            this, [this](){mFrameWidget->setSnapping(mSnappingButton->isChecked());});
+            this, [this](){mSlideWidget->setSnapping(mSnappingButton->isChecked());});
 }
 
 MainWindow::~MainWindow()
@@ -153,21 +153,21 @@ void MainWindow::fileChanged() {
     parser.loadInput(mDoc->text().toUtf8());
     try {
         auto const preamble = parser.readPreamble();
-        auto frames = parser.readInput();
+        auto slides = parser.readInput();
         if(!preamble.templateName.isEmpty()) {
             readTemplate(preamble.templateName);
             mPresentation->setTemplate(&mTemplate);
         }
-        mPresentation->setFrames(frames);
+        mPresentation->setSlides(slides);
         mErrorOutput->setText("Conversion succeeded \u2714");
     }  catch (ParserError& error) {
         mErrorOutput->setText("Line " + QString::number(error.line + 1) + ": " + error.message + " \u26A0");
         iface->addMark(error.line, KTextEditor::MarkInterface::MarkTypes::Error);
         return;
     }
-    mFrameWidget->updateFrameId();
-    mFrameWidget->update();
-    auto const index = mFrameModel->index(mFrameWidget->pageNumber());
+    mSlideWidget->updateSlideId();
+    mSlideWidget->update();
+    auto const index = mSlideModel->index(mSlideWidget->pageNumber());
     ui->pagePreview->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     ui->pagePreview->scrollTo(index);
 }
@@ -185,8 +185,8 @@ void MainWindow::readTemplate(QString filename) {
         throw ParserError{"Can't open file" + file.fileName(), 0};
     }
     templateParser.loadInput(file.readAll());
-    auto const templateFrames = templateParser.readInput();
-    mTemplate.setFrames(templateFrames);
+    auto const templateSlides = templateParser.readInput();
+    mTemplate.setSlides(templateSlides);
 }
 
 void MainWindow::setupFileActionsFromKPart() {
@@ -274,7 +274,7 @@ void MainWindow::openJson() {
         }
     }
     mPresentation->loadInput(jsonFileName());
-    mFrameWidget->setPresentation(mPresentation);
+    mSlideWidget->setPresentation(mPresentation);
 }
 
 QString MainWindow::filename() const {
@@ -283,8 +283,8 @@ QString MainWindow::filename() const {
 
 void MainWindow::resetPresentation() {
     mPresentation = std::make_shared<Presentation>();
-    mFrameWidget->setPresentation(mPresentation);
-    mFrameModel->setPresentation(mPresentation);
+    mSlideWidget->setPresentation(mPresentation);
+    mSlideModel->setPresentation(mPresentation);
     connect(mPresentation.get(), &Presentation::rebuildNeeded,
             this, &MainWindow::fileChanged);
 }
@@ -336,12 +336,12 @@ void MainWindow::updateCursorPosition() {
     if(!mCoupleButton->isChecked()) {
         return ;
     }
-    auto [frame, box] = mPresentation->findBoxForLine(mViewTextDoc->cursorPosition().line());
-    if(!frame) {
+    auto [slide, box] = mPresentation->findBoxForLine(mViewTextDoc->cursorPosition().line());
+    if(!slide) {
         return;
     }
-    mFrameWidget->setActiveBox(box ? box->id() : QString(), frame->id());
-    auto const index = mFrameModel->index(mFrameWidget->pageNumber());
+    mSlideWidget->setActiveBox(box ? box->id() : QString(), slide->id());
+    auto const index = mSlideModel->index(mSlideWidget->pageNumber());
     ui->pagePreview->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     ui->pagePreview->scrollTo(index);
 }

@@ -12,39 +12,39 @@ void Presentation::loadInput(QString configFilename) {
     mConfig.loadConfigurationFile(configFilename);
 }
 
-FrameList Presentation::frameList() const {
-    return mFrames;
+SlideList Presentation::slideList() const {
+    return mSlides;
 }
 
 void Presentation::setTemplate(Template *templateObject) {
     mTemplate = templateObject;
 }
 
-void Presentation::setFrames(const FrameList &frames) {
-    mFrames = frames;
+void Presentation::setSlides(const SlideList &slides) {
+    mSlides = slides;
     applyConfiguration();
     if(mTemplate) {
-        mTemplate->applyTemplate(mFrames);
+        mTemplate->applyTemplate(mSlides);
     }
     else {
-        mFrames = applyStandardTemplate(frames);
+        mSlides = applyStandardTemplate(slides);
     }
     Q_EMIT presentationChanged();
 }
 
 void Presentation::setBoxGeometry(const QString &boxId, BoxGeometry const& rect, int pageNumber) {
-    auto const& box = mFrames.findBox(boxId);
+    auto const& box = mSlides.findBox(boxId);
     if(!box) {
         return;
     }
     box->setGeometry(rect);
     mConfig.addRect(rect.toValue(), boxId);
-    Q_EMIT frameChanged(pageNumber);
+    Q_EMIT slideChanged(pageNumber);
 }
 
 void Presentation::deleteBoxGeometry(const QString &boxId, int pageNumber) {
     mConfig.deleteRect(boxId);
-    Q_EMIT frameChanged(pageNumber);
+    Q_EMIT slideChanged(pageNumber);
 }
 
 void Presentation::saveConfig(QString const& file) {
@@ -61,8 +61,8 @@ void Presentation::setConfig(ConfigBoxes config) {
 }
 
 void Presentation::applyConfiguration() {
-    for(auto const& frame: mFrames.vector) {
-        for(auto const& box: frame->boxes()) {
+    for(auto const& slide: mSlides.vector) {
+        for(auto const& box: slide->boxes()) {
             auto const config = mConfig.getRect(box->configId());
             if(config.empty()) {
                 continue;
@@ -76,14 +76,14 @@ void Presentation::applyConfiguration() {
     }
 }
 
-const FrameList &Presentation::applyStandardTemplate(const FrameList &frames) const {
+const SlideList &Presentation::applyStandardTemplate(const SlideList &slides) const {
     //TODO: Standard Template that makes sense
-    for(auto const& frame: frames.vector) {
-        for(auto const& box: frame->boxes()) {
+    for(auto const& slide: slides.vector) {
+        for(auto const& box: slide->boxes()) {
             applyStandardTemplateToBox(box);
         }
     }
-    return frames;
+    return slides;
 }
 
 QSize Presentation::dimensions() const {
@@ -92,9 +92,9 @@ QSize Presentation::dimensions() const {
 
 Box::Ptr Presentation::findBox(const QString &id) const {
     if(id.startsWith("intern")) {
-        for(auto const& frame: mFrames.vector) {
-            if(id.contains(frame->id())) {
-                for(auto const& box: frame->boxes()) {
+        for(auto const& slide: mSlides.vector) {
+            if(id.contains(slide->id())) {
+                for(auto const& box: slide->boxes()) {
                     if(box->id() == id) {
                         return box;
                     }
@@ -103,8 +103,8 @@ Box::Ptr Presentation::findBox(const QString &id) const {
         }
     }
     else{
-        for(auto const& frame: mFrames.vector) {
-            for(auto const& box: frame->boxes()) {
+        for(auto const& slide: mSlides.vector) {
+            for(auto const& box: slide->boxes()) {
                 if(box->id() == id) {
                     return box;
                 }
@@ -114,28 +114,28 @@ Box::Ptr Presentation::findBox(const QString &id) const {
     return {};
 }
 
-std::pair<Frame::Ptr, Box::Ptr> Presentation::findBoxForLine(int line) const {
-    if(mFrames.empty()) {
+std::pair<Slide::Ptr, Box::Ptr> Presentation::findBoxForLine(int line) const {
+    if(mSlides.empty()) {
         return {};
     }
     qInfo() << "lines;";
-    for(auto const& frame: mFrames.vector) {
-        qInfo() << frame->line();
+    for(auto const& slide: mSlides.vector) {
+        qInfo() << slide->line();
     }
     qInfo() << "line" << line;
-    auto frame = std::lower_bound(mFrames.vector.begin(), mFrames.vector.end(), line,
+    auto slide = std::lower_bound(mSlides.vector.begin(), mSlides.vector.end(), line,
                      [](auto const& a, auto b){return a->line() <= b;});
-    if(frame == mFrames.vector.begin()) {
+    if(slide == mSlides.vector.begin()) {
         return {};
     }
-    frame--;
-    auto box = std::lower_bound(frame->get()->boxes().begin(), frame->get()->boxes().end(), line,
+    slide--;
+    auto box = std::lower_bound(slide->get()->boxes().begin(), slide->get()->boxes().end(), line,
                                [](auto const& a, auto b){return a->line() <= b;});
-    if(box == frame->get()->boxes().begin()) {
-        return {*frame, nullptr};
+    if(box == slide->get()->boxes().begin()) {
+        return {*slide, nullptr};
     }
     box--;
-    return std::pair(*frame, *box);
+    return std::pair(*slide, *box);
 }
 
 void Presentation::applyStandardTemplateToBox(Box::Ptr box) const {
@@ -176,8 +176,8 @@ void Presentation::applyStandardTemplateToBox(Box::Ptr box) const {
 
 void Presentation::deleteNotNeededConfigurations() {
     std::vector<QString> ids;
-    for(auto const& frame: mFrames.vector) {
-        for(auto const& box: frame->boxes()) {
+    for(auto const& slide: mSlides.vector) {
+        for(auto const& box: slide->boxes()) {
             ids.push_back(box->id());
         }
     }

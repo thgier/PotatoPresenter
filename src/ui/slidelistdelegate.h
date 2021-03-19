@@ -3,11 +3,11 @@
 #include <qabstractitemdelegate.h>
 
 
-class FrameListDelegate : public QAbstractItemDelegate
+class SlideListDelegate : public QAbstractItemDelegate
 {
     Q_OBJECT
 public:
-    FrameListDelegate(QObject *parent = nullptr);
+    SlideListDelegate(QObject *parent = nullptr);
     void paint(QPainter *painter, const QStyleOptionViewItem &option,
                    const QModelIndex &index) const override;
 

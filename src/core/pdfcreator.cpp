@@ -1,5 +1,5 @@
 #include "pdfcreator.h"
-#include "framepainter.h"
+#include "sliderenderer.h"
 
 #include <QPdfWriter>
 
@@ -17,11 +17,11 @@ void PDFCreator::createPdf(QString filename, std::shared_ptr<Presentation> prese
     painter.setWindow(QRect(QPoint(0, 0), presentation->dimensions()));
 
     painter.begin(&pdfWriter);
-    auto paint = std::make_shared<FramePainter>(painter);
-    for(auto &frame: presentation->frameList().vector){
-        for( int i = 0; i < frame->numberPauses(); i++) {
-            paint->paintFrame(frame, i);
-            if(!(frame == presentation->frameList().vector.back() && i == frame->numberPauses() - 1)){
+    auto paint = std::make_shared<SlideRenderer>(painter);
+    for(auto &slide: presentation->slideList().vector){
+        for( int i = 0; i < slide->numberPauses(); i++) {
+            paint->paintSlide(slide, i);
+            if(!(slide == presentation->slideList().vector.back() && i == slide->numberPauses() - 1)){
                 pdfWriter.newPage();
             }
         }

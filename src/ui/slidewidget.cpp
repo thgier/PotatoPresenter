@@ -1,4 +1,4 @@
-#include "framewidget.h"
+#include "slidewidget.h"
 #include <KTextEditor/Document>
 #include <QMouseEvent>
 #include <QMenu>
@@ -6,7 +6,7 @@
 #include <QPainter>
 #include <QDir>
 #include <QShortcut>
-#include "framepainter.h"
+#include "sliderenderer.h"
 #include "imagebox.h"
 #include "cachemanager.h"
 #include "transformboxundo.h"
@@ -31,9 +31,9 @@ std::vector<int> boxesToYGuides(Box::List boxes) {
 }
 }
 
-auto constexpr frameTitleSpacing = 5;
+auto constexpr slideTitleSpacing = 5;
 
-FrameWidget::FrameWidget(QWidget*&)
+SlideWidget::SlideWidget(QWidget*&)
     : QWidget(), mPageNumber{0}, mWidth{frameSize().width()}
 {
     setMouseTracking(true);
@@ -43,20 +43,20 @@ FrameWidget::FrameWidget(QWidget*&)
     mTitleFont.setPixelSize(25);
 }
 
-void FrameWidget::setPresentation(std::shared_ptr<Presentation> pres){
+void SlideWidget::setPresentation(std::shared_ptr<Presentation> pres){
     mPresentation = pres;
     mActiveBoxId = QString();
-    mCurrentFrameId = QString();
+    mCurrentSlideId = QString();
     mUndoStack.clear();
     update();
 }
 
-void FrameWidget::recalculateGeometry() {
-    // Compute geometry of inner frame
+void SlideWidget::recalculateGeometry() {
+    // Compute geometry of inner slide
     QPoint marginLeft = {8, 8};
     QPoint const marginRight = {15, 15};
     auto const widthOffset = marginLeft.x() + marginRight.x();
-    auto const heightOffset = marginLeft.y() + marginRight.y() + QFontMetrics(mTitleFont).height() + frameTitleSpacing;
+    auto const heightOffset = marginLeft.y() + marginRight.y() + QFontMetrics(mTitleFont).height() + slideTitleSpacing;
 
     QSize innerSize;
     auto const usableHeight = height() - heightOffset;
@@ -73,17 +73,17 @@ void FrameWidget::recalculateGeometry() {
     }
 
     mGeometryDetail.mTopLeft = marginLeft;
-    mGeometryDetail.mFrameSize = innerSize;
+    mGeometryDetail.mSlideSize = innerSize;
 }
 
-void FrameWidget::paintEvent(QPaintEvent*)
+void SlideWidget::paintEvent(QPaintEvent*)
 {
     QPainter painter;
     painter.begin(this);
     painter.save();
 
     auto const marginLeft = mGeometryDetail.mTopLeft;
-    auto const innerSize = mGeometryDetail.mFrameSize;
+    auto const innerSize = mGeometryDetail.mSlideSize;
 
     // Draw drop shadow
     QPoint const shadowOffset = {3, 3};
@@ -108,12 +108,12 @@ void FrameWidget::paintEvent(QPaintEvent*)
     painter.setViewport(QRect(marginLeft, innerSize));
     painter.setWindow(QRect({0, 0}, mSize));
 
-    mGeometryDetail.mWidgetToFrameTransform = painter.combinedTransform().inverted();
+    mGeometryDetail.mWidgetToSlideTransform = painter.combinedTransform().inverted();
 
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
     painter.fillRect(QRect(QPoint(0, 0), mSize), Qt::white);
 
-    if (mPresentation->frameList().empty()) {
+    if (mPresentation->slideList().empty()) {
         painter.restore();
         painter.end();
         return;
@@ -122,10 +122,10 @@ void FrameWidget::paintEvent(QPaintEvent*)
     painter.setClipping(true);
     painter.setClipRect(QRect(QPoint(0, 0), mSize));
 
-    FramePainter paint(painter);
-    auto const frame = mPresentation->frameList().frameAt(mPageNumber);
-    paint.paintFrame(frame);
-    mCurrentFrameId = frame->id();
+    SlideRenderer paint(painter);
+    auto const slide = mPresentation->slideList().slideAt(mPageNumber);
+    paint.paintSlide(slide);
+    mCurrentSlideId = slide->id();
 
     // draw Guides for Snapping
     if(mCurrentTrafo) {
@@ -150,26 +150,26 @@ void FrameWidget::paintEvent(QPaintEvent*)
         painter.restore();
     }
 
-    auto const& box = mPresentation->frameList().findBox(mActiveBoxId);
-    if(box != nullptr && frame->containsBox(mActiveBoxId)){
-        box->drawManipulationFrame(painter, mDiffToMouse);
+    auto const& box = mPresentation->slideList().findBox(mActiveBoxId);
+    if(box != nullptr && slide->containsBox(mActiveBoxId)){
+        box->drawManipulationSlide(painter, mDiffToMouse);
     }
     else{
         mActiveBoxId = QString();
     }
 
-    // draw frame title
+    // draw slide title
     painter.restore();
     painter.setFont(mTitleFont);
-    auto const frameTitleRect = QRect(rect().translated(0, innerSize.height() + marginLeft.y() + frameTitleSpacing));
-    painter.drawText(frameTitleRect, frame->id(), QTextOption(Qt::AlignHCenter | Qt::AlignTop));
+    auto const slideTitleRect = QRect(rect().translated(0, innerSize.height() + marginLeft.y() + slideTitleSpacing));
+    painter.drawText(slideTitleRect, slide->id(), QTextOption(Qt::AlignHCenter | Qt::AlignTop));
 
     painter.end();
 }
 
-void FrameWidget::contextMenuEvent(QContextMenuEvent *event){
+void SlideWidget::contextMenuEvent(QContextMenuEvent *event){
     QMenu menu(this);
-    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->frameList().findBox(mActiveBoxId));
+    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->slideList().findBox(mActiveBoxId));
     if(image){
         auto const imagePath = absoluteImagePath(image->ImagePath());
         if(QFile::exists(imagePath)){
@@ -182,41 +182,41 @@ void FrameWidget::contextMenuEvent(QContextMenuEvent *event){
     menu.exec(event->globalPos());
 }
 
-void FrameWidget::updateFrames(){
-    setCurrentPage(mCurrentFrameId);
-    if(mPageNumber >= int(mPresentation->frameList().vector.size())) {
-        mPageNumber = int(mPresentation->frameList().vector.size()) - 1;
-        mCurrentFrameId = mPresentation->frameList().vector.back()->id();
+void SlideWidget::updateSlides(){
+    setCurrentPage(mCurrentSlideId);
+    if(mPageNumber >= int(mPresentation->slideList().vector.size())) {
+        mPageNumber = int(mPresentation->slideList().vector.size()) - 1;
+        mCurrentSlideId = mPresentation->slideList().vector.back()->id();
     }
     update();
 }
 
-void FrameWidget::updateFrameId() {
-    if(mPresentation->frameList().vector.empty()) {
-        mCurrentFrameId = "";
+void SlideWidget::updateSlideId() {
+    if(mPresentation->slideList().vector.empty()) {
+        mCurrentSlideId = "";
         return;
     }
-    if(mPageNumber >= int(mPresentation->frameList().vector.size())) {
-        mPageNumber = mPresentation->frameList().vector.size() - 1;
+    if(mPageNumber >= int(mPresentation->slideList().vector.size())) {
+        mPageNumber = mPresentation->slideList().vector.size() - 1;
     }
-    mCurrentFrameId = mPresentation->frameList().frameAt(mPageNumber)->id();
+    mCurrentSlideId = mPresentation->slideList().slideAt(mPageNumber)->id();
 }
 
-void FrameWidget::setCurrentPage(int page){
-    if(page >= int(mPresentation->frameList().numberFrames()) || page < 0) {
+void SlideWidget::setCurrentPage(int page){
+    if(page >= int(mPresentation->slideList().numberSlides()) || page < 0) {
         return;
     }
     mPageNumber = page;
-    mCurrentFrameId = mPresentation->frameList().frameAt(page)->id();
+    mCurrentSlideId = mPresentation->slideList().slideAt(page)->id();
     mActiveBoxId = QString();
-    Q_EMIT selectionChanged(mPresentation->frameList().frameAt(mPageNumber));
+    Q_EMIT selectionChanged(mPresentation->slideList().slideAt(mPageNumber));
     update();
 }
 
-void FrameWidget::setCurrentPage(QString frameId){
+void SlideWidget::setCurrentPage(QString slideId){
     int counter = 0;
-    for(auto const & frame: mPresentation->frameList().vector) {
-        if(frame->id() == frameId) {
+    for(auto const & slide: mPresentation->slideList().vector) {
+        if(slide->id() == slideId) {
             mPageNumber = counter;
             break;
         }
@@ -224,12 +224,12 @@ void FrameWidget::setCurrentPage(QString frameId){
     }
 }
 
-void FrameWidget::resizeEvent(QResizeEvent*) {
+void SlideWidget::resizeEvent(QResizeEvent*) {
     mWidth = frameSize().width();
     recalculateGeometry();
 }
 
-void FrameWidget::determineBoxInFocus(QPoint mousePos){
+void SlideWidget::determineBoxInFocus(QPoint mousePos){
     auto boxList = determineVisibleBoxesUnderMouse(mousePos);
     if(boxList.empty()) {
         boxList = determineBoxesUnderMouse(mousePos);
@@ -252,9 +252,9 @@ void FrameWidget::determineBoxInFocus(QPoint mousePos){
     }
 }
 
-std::vector<QString> FrameWidget::determineVisibleBoxesUnderMouse(QPoint mousePos){
+std::vector<QString> SlideWidget::determineVisibleBoxesUnderMouse(QPoint mousePos){
     std::vector<QString> boxesUnderMouse;
-    for(auto &box: mPresentation->frameList().frameAt(mPageNumber)->boxes()) {
+    for(auto &box: mPresentation->slideList().slideAt(mPageNumber)->boxes()) {
         if(box->containsPoint(mousePos, mDiffToMouse)) {
             boxesUnderMouse.push_back(box->id());
         }
@@ -262,9 +262,9 @@ std::vector<QString> FrameWidget::determineVisibleBoxesUnderMouse(QPoint mousePo
     return boxesUnderMouse;
 }
 
-std::vector<QString> FrameWidget::determineBoxesUnderMouse(QPoint mousePos){
+std::vector<QString> SlideWidget::determineBoxesUnderMouse(QPoint mousePos){
     std::vector<QString> boxesUnderMouse;
-    for(auto &box: mPresentation->frameList().frameAt(mPageNumber)->boxes()) {
+    for(auto &box: mPresentation->slideList().slideAt(mPageNumber)->boxes()) {
         if(box->geometry().contains(mousePos, mDiffToMouse)) {
             boxesUnderMouse.push_back(box->id());
         }
@@ -272,9 +272,9 @@ std::vector<QString> FrameWidget::determineBoxesUnderMouse(QPoint mousePos){
     return boxesUnderMouse;
 }
 
-void FrameWidget::mousePressEvent(QMouseEvent *event)
+void SlideWidget::mousePressEvent(QMouseEvent *event)
 {
-    if(mPresentation->frameList().empty()){
+    if(mPresentation->slideList().empty()){
         return;
     }
     mCurrentTrafo.reset();
@@ -287,9 +287,9 @@ void FrameWidget::mousePressEvent(QMouseEvent *event)
     update();
 }
 
-void FrameWidget::mouseMoveEvent(QMouseEvent *event)
+void SlideWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    if(mPresentation->frameList().empty()){
+    if(mPresentation->slideList().empty()){
         return;
     }
     auto const newPosition = ScaledMousePos(event);
@@ -314,7 +314,7 @@ void FrameWidget::mouseMoveEvent(QMouseEvent *event)
         }
         mCurrentTrafo = BoxTransformation(boxInFocus->geometry(), mTransform, classifiedMousePos, newPosition);
         if(mSnapping) {
-            auto boxesWithoutActive = mPresentation->frameList().vector[mPageNumber]->boxes();
+            auto boxesWithoutActive = mPresentation->slideList().vector[mPageNumber]->boxes();
             std::erase_if(boxesWithoutActive, [this](auto a){return a->id() == mActiveBoxId;});
             auto xSnapGuides = boxesToXGuides(boxesWithoutActive);
             xSnapGuides.push_back(0);
@@ -331,9 +331,9 @@ void FrameWidget::mouseMoveEvent(QMouseEvent *event)
     update();
 }
 
-void FrameWidget::mouseReleaseEvent(QMouseEvent *event)
+void SlideWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-    if(mPresentation->frameList().empty()){
+    if(mPresentation->slideList().empty()){
         return;
     }
     if (event->button() != Qt::LeftButton) {
@@ -355,9 +355,9 @@ void FrameWidget::mouseReleaseEvent(QMouseEvent *event)
 }
 
 
-void FrameWidget::cursorApperance(QPoint mousePosition){
+void SlideWidget::cursorApperance(QPoint mousePosition){
     auto cursor = QCursor();
-    auto const activeBox = mPresentation->frameList().findBox(mActiveBoxId);
+    auto const activeBox = mPresentation->slideList().findBox(mActiveBoxId);
     if(!activeBox){
         cursor.setShape(Qt::ArrowCursor);
         setCursor(cursor);
@@ -426,7 +426,7 @@ void FrameWidget::cursorApperance(QPoint mousePosition){
     setCursor(cursor);
 }
 
-void FrameWidget::deleteBoxPosition() {
+void SlideWidget::deleteBoxPosition() {
     if(mActiveBoxId.isEmpty()) {
         return;
     }
@@ -434,17 +434,17 @@ void FrameWidget::deleteBoxPosition() {
     update();
 }
 
-void FrameWidget::setActiveBox(QString boxId, QString frameId) {
+void SlideWidget::setActiveBox(QString boxId, QString slideId) {
     mActiveBoxId = boxId;
-    mCurrentFrameId = frameId;
-    updateFrames();
+    mCurrentSlideId = slideId;
+    updateSlides();
 }
 
-void FrameWidget::setTransformationType(TransformationType type){
+void SlideWidget::setTransformationType(TransformationType type){
     mTransform = type;
 }
 
-Qt::CursorShape FrameWidget::angleToCursor(qreal angle) const{
+Qt::CursorShape SlideWidget::angleToCursor(qreal angle) const{
     angle = int(angle) % 180;
     if(angle >= 157.5 || angle < 22.5){
         return Qt::SizeHorCursor;
@@ -463,25 +463,25 @@ Qt::CursorShape FrameWidget::angleToCursor(qreal angle) const{
     }
 }
 
-int FrameWidget::pageNumber() const{
+int SlideWidget::pageNumber() const{
     return mPageNumber;
 }
 
-QString const& FrameWidget::currentFrameId() const {
-    return mCurrentFrameId;
+QString const& SlideWidget::currentSlideId() const {
+    return mCurrentSlideId;
 }
 
-QPoint FrameWidget::ScaledMousePos(QMouseEvent *event) const{
-    return mGeometryDetail.mWidgetToFrameTransform.map(event->pos());
+QPoint SlideWidget::ScaledMousePos(QMouseEvent *event) const{
+    return mGeometryDetail.mWidgetToSlideTransform.map(event->pos());
 }
 
-void FrameWidget::createActions(){
+void SlideWidget::createActions(){
     openInkscape = new QAction(tr("&Open in Inkscape"), this);
     createAndOpenInkscape = new QAction(tr("&Create SVG and open in Inkscape"), this);
     connect(openInkscape, &QAction::triggered,
-            this, &FrameWidget::openInInkscape);
+            this, &SlideWidget::openInInkscape);
     connect(createAndOpenInkscape, &QAction::triggered,
-            this, &FrameWidget::createAndOpenSvg);
+            this, &SlideWidget::createAndOpenSvg);
 
     mUndo = mUndoStack.createUndoAction(this);
     mRedo = mUndoStack.createRedoAction(this);
@@ -493,8 +493,8 @@ void FrameWidget::createActions(){
     this->addAction(mRedo);
 }
 
-void FrameWidget::openInInkscape(){
-    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->frameList().findBox(mActiveBoxId));
+void SlideWidget::openInInkscape(){
+    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->slideList().findBox(mActiveBoxId));
     if(!image){
         return;
     }
@@ -505,8 +505,8 @@ void FrameWidget::openInInkscape(){
     inkscapeProcess->start(program, arguments);
 }
 
-void FrameWidget::createAndOpenSvg(){
-    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->frameList().findBox(mActiveBoxId));
+void SlideWidget::createAndOpenSvg(){
+    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->slideList().findBox(mActiveBoxId));
     if(!image){
         return;
     }
@@ -523,22 +523,22 @@ void FrameWidget::createAndOpenSvg(){
     openInInkscape();
 }
 
-void FrameWidget::undo() {
+void SlideWidget::undo() {
     mUndo->trigger();
     qInfo() << "undo";
 }
 
-void FrameWidget::redo() {
+void SlideWidget::redo() {
     mRedo->trigger();
 }
 
-void FrameWidget::setSnapping(bool snapping) {
+void SlideWidget::setSnapping(bool snapping) {
     mSnapping = snapping;
 }
 
-QString FrameWidget::absoluteImagePath(QString imagePath) const {
+QString SlideWidget::absoluteImagePath(QString imagePath) const {
     if(!imagePath.startsWith("/home")) {
-        auto variables = mPresentation->frameList().vector[mPageNumber]->variables();
+        auto variables = mPresentation->slideList().vector[mPageNumber]->variables();
         auto it = variables.find("%{resourcepath}");
         if(it != variables.end()) {
             imagePath = it->second + "/" + imagePath;

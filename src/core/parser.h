@@ -5,7 +5,7 @@
 #include <vector>
 #include <set>
 #include <QString>
-#include "frame.h"
+#include "slide.h"
 #include "configboxes.h"
 #include "tokenizer.h"
 #include "presentation.h"
@@ -26,14 +26,14 @@ public:
     void loadInput(QIODevice *input);
     void loadInput(QByteArray input);
     Preamble readPreamble();
-    FrameList readInput();
+    SlideList readInput();
     void setVariables(std::map<QString, QString> variables);
     std::map<QString, QString> Variables() const;
 
 private:
     void command(Token token);
     void preambleCommand(Token token);
-    void newFrame(int line);
+    void newSlide(int line);
     void newTextField(int line);
     void newImage(int line);
     void newTitle(int line);
@@ -50,7 +50,7 @@ private:
     QString generateId(QString type, QString boxclass);
 
     Tokenizer mTokenizer;
-    FrameList mFrameList;
+    SlideList mSlideList;
     std::map<QString, QString> mVariables;
     bool mParsingTemplate = false;
     int mPauseCount = 0;

@@ -1,36 +1,36 @@
-#include "framelistmodel.h"
+#include "slidelistmodel.h"
 #include "presentation.h"
 
-int FrameListModel::rowCount(const QModelIndex &) const {
-    return int(mPresentation->frameList().vector.size());
+int SlideListModel::rowCount(const QModelIndex &) const {
+    return int(mPresentation->slideList().vector.size());
 }
 
-QVariant FrameListModel::data(const QModelIndex &index, int role) const
+QVariant SlideListModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
         return QVariant();
 
-    if (index.row() >= int(mPresentation->frameList().vector.size()))
+    if (index.row() >= int(mPresentation->slideList().vector.size()))
         return QVariant();
 
     if (role == Qt::DisplayRole){
         QVariant var;
-        auto frame = mPresentation->frameList().vector[index.row()];
-        var.setValue(frame);
+        auto slide = mPresentation->slideList().vector[index.row()];
+        var.setValue(slide);
         return var;
     }
     else
         return QVariant();
 }
 
-void FrameListModel::setPresentation(std::shared_ptr<Presentation> presentation){
+void SlideListModel::setPresentation(std::shared_ptr<Presentation> presentation){
     if(mPresentation){
         mPresentation->disconnect(this);
     }
     beginResetModel();
     mPresentation = presentation;
     endResetModel();
-    connect(mPresentation.get(), &Presentation::frameChanged,
+    connect(mPresentation.get(), &Presentation::slideChanged,
             this, [this](int pageNumber){Q_EMIT dataChanged(index(pageNumber), index(pageNumber));});
     connect(mPresentation.get(), &Presentation::presentationChanged,
             this, [this](){
