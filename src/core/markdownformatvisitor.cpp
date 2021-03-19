@@ -5,9 +5,9 @@
 #include "textbox.h"
 
 namespace {
-void drawItemMarker(QPainter &painter, QPointF position, qreal size) {
+void drawItemMarker(QPainter &painter, QPointF position, qreal size, QColor color) {
     painter.save();
-    painter.setBrush(Qt::black);
+    painter.setBrush(color);
     painter.drawEllipse(position, size, size);
     painter.restore();
 }
@@ -167,7 +167,7 @@ void MarkdownFormatVisitor::enterItem(markdownParser::ItemContext *) {
     auto const markerSize = mPainter.fontMetrics().xHeight() * 0.3;
     auto middleItem = mStartOfLine;
     middleItem.setY(middleItem.y() + mPainter.fontMetrics().height() / 2);
-    drawItemMarker(mPainter, mRect.topLeft() + middleItem, markerSize);
+    drawItemMarker(mPainter, mRect.topLeft() + middleItem, markerSize, mBoxStyle.color());
     addXToPosition(2 * markerSize);
 }
 
