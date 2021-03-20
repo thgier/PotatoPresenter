@@ -73,6 +73,7 @@ void ConfigBoxes::saveConfig(QString filename)
     }
     auto doc = QJsonDocument(array);
     file.write(doc.toJson());
+    file.close();
 }
 
 void ConfigBoxes::addRect(MemberBoxGeometry const& rect, const QString &id) {

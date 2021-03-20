@@ -73,6 +73,7 @@ private:
     void drawFormulasInParagraph(QTextLayout &layout);
     MapSvg loadSvg(QString mathExpression, int start);
 
+private:
     QPainter& mPainter;
     QRect const mRect;
     struct {

@@ -27,13 +27,12 @@ void EquationCacheManager::startConversionProcess(QString mathExpression, QByteA
 
     auto standardFile = QFile(":/core/generaterLatex.tex");
     QDir(mFolder).mkpath(hash);
-    QString folder = mFolder + hash + "/";
-    standardFile.copy(folder+"a.tex");
+    standardFile.copy(pathAndFile(hash) + ".tex");
 
     QString program = "/usr/bin/latex";
     QStringList arguments;
-    QString string = QString("\\def\\myvar{") + mathExpression + QString("} \\input{" + folder + "a.tex}");
-    arguments << "-halt-on-error" << "-output-directory=" + folder << "-interaction=batchmode" << string;
+    QString string = "\\def\\myvar{" + mathExpression + "} \\input{" + pathAndFile(hash) + ".tex}";
+    arguments << "-halt-on-error" << "-output-directory=" + path(hash) << "-interaction=batchmode" << string;
     QProcess *myProcess = new QProcess(this);
 
     auto lambda = [hash, this, myProcess](){
@@ -60,7 +59,6 @@ SvgEntry EquationCacheManager::getCachedImage(QByteArray hash) const{
 }
 
 void EquationCacheManager::startSvgGeneration(QByteArray hash, QProcess* latex){
-    QString folder = mFolder + hash + "/";
     qWarning() << "latex exit code " << latex->exitCode();
     if(latex->exitCode() != 0){
         mCachedImages[hash].status = SvgStatus::Error;
@@ -71,20 +69,43 @@ void EquationCacheManager::startSvgGeneration(QByteArray hash, QProcess* latex){
     }
     QString programDvisvgm = "/usr/bin/dvisvgm";
     QStringList argumentsDvisvgm;
-    argumentsDvisvgm << "-n" << "-o " + folder + "a.svg" << folder + "a.dvi";
+    argumentsDvisvgm << "-n" << "-o " + pathAndFile(hash) + ".svg" << pathAndFile(hash) + ".dvi";
     QProcess *dvisvgm = new QProcess();
     dvisvgm->start(programDvisvgm, argumentsDvisvgm);
     auto lambda = [hash, this, dvisvgm](){
         dvisvgm->deleteLater();
-        writeSvgToMap(hash);
+
+        writeSvgToMap(hash, removeIntegral(hash));
     };
     QObject::connect(dvisvgm, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
                      this, lambda);
 }
 
-void EquationCacheManager::writeSvgToMap(QByteArray hash){
-    QString folder = mFolder + hash + "/";
-    mCachedImages[hash] = SvgEntry{SvgStatus::Success, std::make_shared<QSvgRenderer>(folder + "a.svg")};
+QByteArray EquationCacheManager::removeIntegral(QByteArray hash) {
+    auto file = QFile(pathAndFile(hash) + ".svg");
+    if(!file.open(QIODevice::ReadWrite)) {
+        return {};
+    }
+    QByteArray fileContent = "";
+    bool notIntegral = true;
+    while(!file.atEnd()) {
+        QByteArray line = file.readLine();
+        if(notIntegral) {
+            fileContent.append(line);
+        }
+        else if(line == QString("</g>\n").toUtf8()) {
+            notIntegral = true;
+        }
+        if(line == QString("<g id='page1'>\n").toUtf8()) {
+            notIntegral = false;
+        }
+    }
+    file.close();
+    return fileContent;
+}
+
+void EquationCacheManager::writeSvgToMap(QByteArray hash, QByteArray svg){
+    mCachedImages[hash] = SvgEntry{SvgStatus::Success, std::make_shared<QSvgRenderer>(svg)};
     qWarning() << "status when finished" << mCachedImages[hash].status;
     removeFiles(hash);
     mProcessCounter--;
@@ -92,10 +113,16 @@ void EquationCacheManager::writeSvgToMap(QByteArray hash){
 }
 
 void EquationCacheManager::removeFiles(QByteArray hash) {
-    QString folder = mFolder + hash + "/";
-    qWarning() << folder;
     for(auto &file : mRemoveFiles)  {
-        QFile().remove(folder + file);
+        QFile().remove(path(hash) + file);
     }
-    QDir().rmdir(folder);
+    QDir().rmdir(path(hash));
+}
+
+QString EquationCacheManager::pathAndFile(QByteArray hash) const {
+    return mFolder + hash + "/" + "a";
+}
+
+QString EquationCacheManager::path(QByteArray hash) const {
+    return mFolder + hash + "/";
 }

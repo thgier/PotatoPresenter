@@ -29,7 +29,7 @@
          <number>1</number>
         </property>
         <item>
-         <widget class="QWidget" name="slideWidget" native="true">
+         <widget class="SlideWidget" name="slideWidget" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
             <horstretch>0</horstretch>
@@ -314,6 +314,14 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>SlideWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">slidewidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

@@ -116,9 +116,13 @@ void MarkdownFormatVisitor::enterLatex_next_line(markdownParser::Latex_next_line
     case SvgStatus::Pending:
          break;
     case SvgStatus::Success:
+        addYToPosition(0.2 * mLineSpacing);
+
         auto position = mStartOfLine + mRect.topLeft();
-        position.setX(position.x() + 3 * mPainter.fontMetrics().xHeight());
+        position.setX(position.x() + 7 * mPainter.fontMetrics().xHeight());
         drawSvg(equation.svg, position, mPainter);
+
+        addYToPosition(0.4 * mLineSpacing);
         break;
     }
     mDrawPlainText = false;

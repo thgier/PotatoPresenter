@@ -25,15 +25,21 @@ public:
     void startConversionProcess(QString mathExpression, QByteArray hash);
     SvgEntry getCachedImage(QByteArray hash) const;
     void startSvgGeneration(QByteArray hash, QProcess* latex);
-    void writeSvgToMap(QByteArray hash);
+    void writeSvgToMap(QByteArray hash, QByteArray svg);
     void errorOccured(QByteArray hash, QProcess::ProcessError error);
 Q_SIGNALS:
     void conversionFinished();
+
+private:
+    QByteArray removeIntegral(QByteArray hash);
+    void removeFiles(QByteArray hash);
+    QString pathAndFile(QByteArray hash) const;
+    QString path(QByteArray hash) const;
+
 private:
     std::map<QByteArray, SvgEntry> mCachedImages;
     QString mFolder;
     QStringList mRemoveFiles;
-    void removeFiles(QByteArray hash);
     int mProcessCounter = 0;
 };
 

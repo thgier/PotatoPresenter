@@ -31,7 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
     mDoc = mEditor->createDocument(this);
 
     mPresentation = std::make_shared<Presentation>();
-    mSlideWidget = ui->slidewidget;
+    mSlideWidget = ui->slideWidget;
     mSlideWidget->setPresentation(mPresentation);
 
     mViewTextDoc = mDoc->createView(this);
