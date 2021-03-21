@@ -89,7 +89,7 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::exportPDFAs);
 
     connect(&cacheManager(), &EquationCacheManager::conversionFinished,
-            mSlideWidget, QOverload<>::of(&SlideWidget::update));
+            mPresentation.get(), &Presentation::presentationChanged);
 
     CacheManager<QImage>::instance().setCallback([this](QString){mSlideWidget->update();});
     CacheManager<QSvgRenderer>::instance().setCallback([this](QString){mSlideWidget->update();});

@@ -47,6 +47,8 @@ void SlideWidget::setPresentation(std::shared_ptr<Presentation> pres){
     mPresentation = pres;
     mActiveBoxId = QString();
     mCurrentSlideId = QString();
+    connect(mPresentation.get(), &Presentation::presentationChanged,
+            this, QOverload<>::of(&SlideWidget::update));
     mUndoStack.clear();
     update();
 }
