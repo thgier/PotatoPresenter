@@ -421,29 +421,33 @@ BoxStyle Parser::readArguments(QString &id) {
     BoxStyle boxStyle;
     auto argument = mTokenizer.peekNext();
     while(argument.mKind == Token::Kind::Argument){
+        bool numberOk = true;
         mTokenizer.next();
         auto argumentValue = mTokenizer.next();
         if(argumentValue.mKind != Token::Kind::ArgumentValue && !argumentValue.mText.isEmpty()){
             throw ParserError{"Expecting argument value", argument.mLine};
             return {};
         }
-        if(argument.mText == "color"){
+        else if(argument.mText == "color"){
             QColor color;
             color.setNamedColor(QString(argumentValue.mText));
+            if(!color.isValid()) {
+                throw ParserError{QString("Invalid color '%1'").arg(QString(argumentValue.mText)), argumentValue.mLine};
+            }
             boxStyle.mColor = color;
         }
-        if(argument.mText == "opacity"){
-            boxStyle.mOpacity = argumentValue.mText.toDouble();
+        else if(argument.mText == "opacity"){
+            boxStyle.mOpacity = argumentValue.mText.toDouble(&numberOk);
         }
-        if(argument.mText == "font-size"){
-            boxStyle.mFontSize = argumentValue.mText.toInt();
+        else if(argument.mText == "font-size"){
+            boxStyle.mFontSize = argumentValue.mText.toInt(&numberOk);
         }
-        if(argument.mText == "line-height"){
+        else if(argument.mText == "line-height"){
             if(argumentValue.mText.toDouble() != 0){
-                boxStyle.mLineSpacing = argumentValue.mText.toDouble();
+                boxStyle.mLineSpacing = argumentValue.mText.toDouble(&numberOk);
             }
         }
-        if(argument.mText == "font-weight"){
+        else if(argument.mText == "font-weight"){
             if(QString(argumentValue.mText) == "bold"){
                 boxStyle.mFontWeight = FontWeight::bold;
             }
@@ -454,10 +458,10 @@ BoxStyle Parser::readArguments(QString &id) {
                 throw ParserError{"Invalid value for 'font-weight' (possible values: bold, normal)", argumentValue.mLine};
             }
         }
-        if(argument.mText == "font"){
+        else if(argument.mText == "font"){
             boxStyle.mFont = QString(argumentValue.mText);
         }
-        if(argument.mText == "id"){
+        else if(argument.mText == "id"){
             id = QString(argumentValue.mText);
             if(id.startsWith("intern")) {
                 throw ParserError{"User defined box IDs must not start with \"intern\"", argumentValue.mLine};
@@ -467,38 +471,38 @@ BoxStyle Parser::readArguments(QString &id) {
             }
             mBoxIds.insert(id);
         }
-        if(argument.mText == "left"){
-            boxStyle.mGeometry.setLeft(argumentValue.mText.toInt());
+        else if(argument.mText == "left"){
+            boxStyle.mGeometry.setLeft(argumentValue.mText.toInt(&numberOk));
             boxStyle.movable = false;
         }
-        if(argument.mText == "top"){
-            boxStyle.mGeometry.setTop(argumentValue.mText.toInt());
+        else if(argument.mText == "top"){
+            boxStyle.mGeometry.setTop(argumentValue.mText.toInt(&numberOk));
             boxStyle.movable = false;
         }
-        if(argument.mText == "width"){
-            boxStyle.mGeometry.setWidth(argumentValue.mText.toInt());
+        else if(argument.mText == "width"){
+            boxStyle.mGeometry.setWidth(argumentValue.mText.toInt(&numberOk));
             boxStyle.movable = false;
         }
-        if(argument.mText == "height"){
-            boxStyle.mGeometry.setHeight(argumentValue.mText.toInt());
+        else if(argument.mText == "height"){
+            boxStyle.mGeometry.setHeight(argumentValue.mText.toInt(&numberOk));
             boxStyle.movable = false;
         }
-        if(argument.mText == "angle"){
-            boxStyle.mGeometry.setAngle(argumentValue.mText.toDouble());
+        else if(argument.mText == "angle"){
+            boxStyle.mGeometry.setAngle(argumentValue.mText.toDouble(&numberOk));
             boxStyle.movable = false;
         }
-        if(argument.mText == "movable"){
+        else if(argument.mText == "movable"){
             if(argumentValue.mText == "true") {
                 boxStyle.movable = true;
             }
-            else if(argumentValue.mText == "true") {
-                boxStyle.movable = true;
+            else if(argumentValue.mText == "false") {
+                boxStyle.movable = false;
             }
             else {
                 throw ParserError{"Invalid value for 'movable' (possible values: true, false)", argumentValue.mLine};
             }
         }
-        if(argument.mText == "text-align"){
+        else if(argument.mText == "text-align"){
             if(argumentValue.mText == "left") {
                 boxStyle.mAlignment = Qt::AlignLeft;
             }
@@ -515,13 +519,13 @@ BoxStyle Parser::readArguments(QString &id) {
                 throw ParserError{"Invalid value for 'text-align' (possible values: left, right, center, justify)", argumentValue.mLine};
             }
         }
-        if(argument.mText == "class"){
+        else if(argument.mText == "class"){
             boxStyle.boxClass = argumentValue.mText;
         }
-        if(argument.mText == "language"){
+        else if(argument.mText == "language"){
             boxStyle.language = QString(argumentValue.mText);
         }
-        if(argument.mText == "background"){
+        else if(argument.mText == "background"){
             QColor color;
             color.setNamedColor(argumentValue.mText);
             if(!color.isValid()) {
@@ -529,7 +533,7 @@ BoxStyle Parser::readArguments(QString &id) {
             }
             boxStyle.mBackgroundColor = color;
         }
-        if(argument.mText == "background-color"){
+        else if(argument.mText == "background-color"){
             QColor color;
             color.setNamedColor(argumentValue.mText);
             if(!color.isValid()) {
@@ -537,7 +541,10 @@ BoxStyle Parser::readArguments(QString &id) {
             }
             boxStyle.mBackgroundColor = color;
         }
-        if(argument.mText == "border"){
+        else if(argument.mText == "padding") {
+            boxStyle.mPadding = argumentValue.mText.toInt(&numberOk);
+        }
+        else if(argument.mText == "border"){
             auto values = QString(argumentValue.mText).split(" ");
             if(values.empty()) {
                 continue;
@@ -561,6 +568,12 @@ BoxStyle Parser::readArguments(QString &id) {
                     boxStyle.mBorder.color = QColor(QString(values[1]));
                 }
             }
+        }
+        else {
+            throw ParserError{QString("Invalid Argument '%1'").arg(QString(argument.mText)), argument.mLine};
+        }
+        if(!numberOk) {
+            throw ParserError{"Invalid number", argumentValue.mLine};
         }
 
         argument = mTokenizer.peekNext();

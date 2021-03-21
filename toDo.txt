@@ -2,6 +2,7 @@
 - highlighting
 - sections
 - assistant
+- user interaction while Parsing error?
 
 - maybe better pause
 - arrow buttons to move boxes
