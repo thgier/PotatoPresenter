@@ -170,6 +170,7 @@ void MainWindow::fileChanged() {
     auto const index = mSlideModel->index(mSlideWidget->pageNumber());
     ui->pagePreview->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     ui->pagePreview->scrollTo(index);
+    setWindowTitle("*" + completeBaseName());
 }
 
 void MainWindow::readTemplate(QString filename) {
@@ -214,6 +215,7 @@ void MainWindow::openFile() {
     openJson();
     mPdfFile = "";
     fileChanged();
+    setWindowTitle(completeBaseName());
 }
 
 void MainWindow::newDocument() {
@@ -238,13 +240,14 @@ void MainWindow::newDocument() {
             this,[this](){mCursorTimer.start(10);});
     connect(&mCursorTimer, &QTimer::timeout,
             this, &MainWindow::updateCursorPosition);
-
+    setWindowTitle(completeBaseName());
 }
 
 void MainWindow::save() {
     mDoc->documentSave();
     saveJson();
     ui->statusbar->showMessage(tr("Saved File to  \"%1\".").arg(mDoc->url().toString()), 10000);
+    setWindowTitle(completeBaseName());
 }
 
 void MainWindow::saveAs(){
@@ -252,6 +255,7 @@ void MainWindow::saveAs(){
     saveJson();
     fileChanged();
     ui->statusbar->showMessage(tr("Saved File to  \"%1\".").arg(mDoc->url().toString()), 10000);
+    setWindowTitle(completeBaseName());
 }
 
 QString MainWindow::jsonFileName() const {
@@ -279,6 +283,10 @@ void MainWindow::openJson() {
 
 QString MainWindow::filename() const {
     return mDoc->url().toString(QUrl::PreferLocalFile);
+}
+
+QString MainWindow::completeBaseName() const {
+    return QFileInfo(filename()).completeBaseName();
 }
 
 void MainWindow::resetPresentation() {

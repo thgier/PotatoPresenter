@@ -55,6 +55,7 @@ private:
     void saveJson();
     void openJson();
     QString filename() const;
+    QString completeBaseName() const;
 
     void updateCursorPosition();
 
