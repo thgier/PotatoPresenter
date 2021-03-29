@@ -1,3 +1,9 @@
+/*
+    SPDX-FileCopyrightText: 2020-2021 Theresa Gier <theresa@fam-gier.de>
+
+    SPDX-License-Identifier: LGPL-2.1-or-later
+*/
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
@@ -56,6 +62,9 @@ private:
     void openJson();
     QString filename() const;
     QString completeBaseName() const;
+    QString applicationName() const;
+    QString windowTitle() const;
+    QString windowTitleNotSaved() const;
 
     void updateCursorPosition();
 
