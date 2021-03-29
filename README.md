@@ -6,7 +6,7 @@ Content and appearance of slides is defined in a simple text format, similar to 
 This text is then converted into a set of slides.
 Additionally, elements' position and size can be interactively adjusted with the mouse.
 
-[Screenshot]! (/images/screenshot.png)
+<img src="/images/screenshot.png">
 
 ## Basic Usage
 
