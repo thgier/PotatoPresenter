@@ -152,6 +152,7 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::fileChanged() {
+    setWindowTitle(windowTitleNotSaved());
     auto iface = qobject_cast<KTextEditor::MarkInterface*>(mDoc);
     iface->clearMarks();
     auto file = QFileInfo(filename()).absolutePath();
@@ -176,7 +177,6 @@ void MainWindow::fileChanged() {
     auto const index = mSlideModel->index(mSlideWidget->pageNumber());
     ui->pagePreview->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     ui->pagePreview->scrollTo(index);
-    setWindowTitle("*" + completeBaseName());
 }
 
 void MainWindow::readTemplate(QString filename) {
@@ -221,7 +221,7 @@ void MainWindow::openFile() {
     openJson();
     mPdfFile = "";
     fileChanged();
-    setWindowTitle(completeBaseName());
+    setWindowTitle(windowTitle());
 }
 
 void MainWindow::newDocument() {
@@ -246,14 +246,14 @@ void MainWindow::newDocument() {
             this,[this](){mCursorTimer.start(10);});
     connect(&mCursorTimer, &QTimer::timeout,
             this, &MainWindow::updateCursorPosition);
-    setWindowTitle(completeBaseName());
+    setWindowTitle(windowTitle());
 }
 
 void MainWindow::save() {
     mDoc->documentSave();
     saveJson();
     ui->statusbar->showMessage(tr("Saved File to  \"%1\".").arg(mDoc->url().toString()), 10000);
-    setWindowTitle(completeBaseName());
+    setWindowTitle(windowTitle());
 }
 
 void MainWindow::saveAs(){
@@ -261,7 +261,7 @@ void MainWindow::saveAs(){
     saveJson();
     fileChanged();
     ui->statusbar->showMessage(tr("Saved File to  \"%1\".").arg(mDoc->url().toString()), 10000);
-    setWindowTitle(completeBaseName());
+    setWindowTitle(windowTitle());
 }
 
 QString MainWindow::jsonFileName() const {
@@ -292,7 +292,11 @@ QString MainWindow::filename() const {
 }
 
 QString MainWindow::completeBaseName() const {
-    return QFileInfo(filename()).completeBaseName();
+    auto name = QFileInfo(filename()).completeBaseName();
+    if(name.isEmpty()) {
+        return "Untitled";
+    }
+    return name;
 }
 
 void MainWindow::resetPresentation() {
@@ -358,4 +362,16 @@ void MainWindow::updateCursorPosition() {
     auto const index = mSlideModel->index(mSlideWidget->pageNumber());
     ui->pagePreview->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     ui->pagePreview->scrollTo(index);
+}
+
+QString MainWindow::applicationName() const {
+    return "Potato Presenter";
+}
+
+QString MainWindow::windowTitle() const {
+    return completeBaseName() + " \u2014 " + applicationName();
+}
+
+QString MainWindow::windowTitleNotSaved() const {
+    return completeBaseName() + " * \u2014 " + applicationName();
 }

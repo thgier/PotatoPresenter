@@ -62,6 +62,9 @@ private:
     void openJson();
     QString filename() const;
     QString completeBaseName() const;
+    QString applicationName() const;
+    QString windowTitle() const;
+    QString windowTitleNotSaved() const;
 
     void updateCursorPosition();
 
