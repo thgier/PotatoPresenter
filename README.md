@@ -10,7 +10,7 @@ Additionally, elements' position and size can be interactively adjusted with the
 
 ## Basic Usage
 
-Type your input in the editor on the left side.
+Type your input into the editor on the left side.
 A preview is shown immediately on the right.
 
 Commands always starts with a "\".  
@@ -21,9 +21,9 @@ Create an image with ```\image path_to_image```.
 
 You can move, rotate and scale your elements with the mouse on the panel on the right side.
 
-When you are finished click "Export PDF" to export your presentation as PDF and present it with your PDF Viewer.
+When you are finished, click "Export PDF" to export your presentation as PDF and present it with your PDF Viewer.
 
-If you save the document a second file (JSON) is generated containing the elements' positions.
+If you save the document, a second file (JSON) is generated containing the elements' positions.
 
 ## Advanced functionality
 
@@ -39,68 +39,69 @@ Type $ \pi $ to get a formula showing a Pi.
 Type $$ \pi $$ to get a formula in the next line.  
 
 
+### Commands
+
+Commands | Functionality
+------------ | -------------
+```\slide``` | Creates a new Slide.
+```\text``` | Creates a new text element.
+```\image``` | Creates an image from the given path.
+```\code``` | Creates a Code box with highlighting given by the argument "```language```".
+```\arrow``` | Creates an arrow.
+```\line``` | Creates a line.
+```\title``` | Same as ```\text[class: title]``` (see below).
+```\body``` | Same as ```\text[class: body]``` (see below).
+```\setvar``` | Sets variable.
+```\usetemplate``` | Sets template.
+```\pause``` | Generates an additional slide with only the content in front of the pause. (only in PDF)
+
+
 ### Arguments after Commands
 
-You can give arguments after a commands in square brackets, that are similar to the CSS Properties:
+You can give arguments in square brackets after a commands that are similar to the CSS Properties:
 
 e.g. ```\body[color: grey; text-align: right]```
 
 List of supported arguments:
 
-Argument | Functionality | Examples
+Argument | Functionality | Example Values
 ------------ | ------------------ | -------------
-color | Color of font, arrow, line | blue, #aa55ff
-font | Font name | Hack
-font-size | Font-size | 50
-text-align | Text alignment | left, right, center, justify
-line-height | Fraction of line height | 1.5
-font-weight | Font weight | bold, normal
-opacity | Opacitiy of whole element | 0.7
-id | ID of element | see section ID
-class | Class of element | see section Class
-background | Background color of element | red, #aa55ff
-border | Creates a border around the element | 2px solid blue
-left | Sets the position of the element left | 100
-top | Sets the position of the element top | 100
-width | Sets the position of the element width | 100
-height | Sets the position of the element height | 100
-angle | Sets the rotation angle in degree | 180
-movable | Element cannot manipulate with the mouse | false, true
-
-
-### Possible Commands
-
-Comands | Functionality
------------- | -------------
-```\slide``` | Creates a new Slide
-```\text``` | Creates a new text element
-```\image``` | Creates an image from the given path
-```\code``` | Creates a Code box with highlithing given by the argument "```language```"
-```\arrow``` | Creates an arrow
-```\line``` | Creates a line
-```\title``` | same as ```\text[class: title]```
-```\body``` | same as ```\text[class: body]```
-```\setvar``` | Sets variable
-```\usetemplate``` | Sets template
-
+color | Color of font, arrow, line. | blue, #aa55ff
+font | Font name. | Hack
+font-size | Font-size. | 50
+text-align | Text alignment. | left, right, center, justify
+line-height | Fraction of line height. | 1.5
+font-weight | Font weight. | bold, normal
+opacity | Opacity of whole element. | 0.7
+id | ID of element. | see section ID
+class | Class of element. | see section Class
+background | Background color of element. | red, #aa55ff
+border | Creates a border around the element. | 2px solid blue
+left | Sets the position of the element left. | 100
+top | Sets the position of the element top. | 100
+width | Sets the position of the element width. | 100
+height | Sets the position of the element height. | 100
+angle | Sets the rotation angle in degree. | 180
+movable | Element cannot manipulate with the mouse. | false, true
 
 
 ### Classes
 
 Elements can have a class given by the argument ```class```.
-Predefined Classes are:  
+Predefined classes are:  
 ```title, body, fullscreen, leftcolumn, rightcolumn```  
-A Class can specify a list of arguments which the element has by default, e.g. the position or the font-size.
-Nevertheless, arguments can also be given to an element and overrides the given by the class.
+A class can specify a list of arguments which the element has by default, e.g. the position or the font-size.
+Nevertheless, arguments can also be given to an element and override the given by the class.
 Elements with a class can also be manipulated on the right panel.
 
 
 ### ID 
 
-Every Box has an ID. The application save the position and the id of every Box.
-Usually the box ID is generated with the frame ID, the box type and the class.
-So if you rename your frame or swap some boxes the boxes' geometry may change.
-You can define an id to a Box with the argument ```id```.
+Every Box has an ID. The application saves the position and the ID of every Box.
+Usually, the box ID is generated by the application and contains the frame ID, the box type and class.
+If the ID is not unique, a counter is added.
+So, if you rename your frame or swap some boxes in the text file, the boxes' geometry may change.
+You can define an ID to a Box with the argument ```id```.
 
 
 ## Stuff
