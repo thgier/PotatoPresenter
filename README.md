@@ -13,7 +13,7 @@ Additionally, elements' position and size can be interactively adjusted with the
 Type your input into the editor on the left side.
 A preview is shown immediately on the right.
 
-Commands always starts with a "\".  
+Commands always starts with a "\\".  
 Create a new Slide with ```\slide title```.  
 Create a title on your slide with ```\title```.  
 Create a text with ```\body text```.  
@@ -46,7 +46,7 @@ Commands | Functionality
 ```\slide``` | Creates a new Slide.
 ```\text``` | Creates a new text element.
 ```\image``` | Creates an image from the given path.
-```\code``` | Creates a Code box with highlighting given by the argument "```language```".
+```\code``` | Creates a Code box with highlighting given by the argument ```language```.
 ```\arrow``` | Creates an arrow.
 ```\line``` | Creates a line.
 ```\title``` | Same as ```\text[class: title]``` (see below).
