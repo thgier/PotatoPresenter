@@ -246,6 +246,8 @@ void MainWindow::newDocument() {
             this,[this](){mCursorTimer.start(10);});
     connect(&mCursorTimer, &QTimer::timeout,
             this, &MainWindow::updateCursorPosition);
+    connect(mPresentation.get(), &Presentation::slideChanged,
+            mSlideWidget, [this](int){mSlideWidget->update();});
     setWindowTitle(windowTitle());
 }
 

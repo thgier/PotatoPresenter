@@ -5,7 +5,6 @@
 - user interaction while Parsing error?
 
 - maybe better pause
-- arrow buttons to move boxes
 - path to font
 - guides
 - color choser

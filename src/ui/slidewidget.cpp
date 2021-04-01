@@ -336,7 +336,6 @@ void SlideWidget::mouseMoveEvent(QMouseEvent *event)
     auto transformedRect = mCurrentTrafo->doTransformation(newPosition);
     mPresentation->setBoxGeometry(mActiveBoxId, transformedRect, mPageNumber);
     mCursorLastPosition = newPosition;
-    update();
 }
 
 void SlideWidget::mouseReleaseEvent(QMouseEvent *event)
@@ -362,8 +361,39 @@ void SlideWidget::mouseReleaseEvent(QMouseEvent *event)
     update();
 }
 
+void SlideWidget::keyPressEvent(QKeyEvent *event) {
+    if(mActiveBoxId.isEmpty()) {
+        return;
+    }
+    QPoint translation;
+    switch (event->key()) {
+        case Qt::Key_Left:
+        translation = QPoint(-1, 0);
+        break;
+        case Qt::Key_Right:
+        translation = QPoint(1, 0);
+        break;
+        case Qt::Key_Down:
+        translation = QPoint(0, 1);
+        break;
+        case Qt::Key_Up:
+        translation = QPoint(0, -1);
+        break;
+        case Qt::Key_Escape:
+        mActiveBoxId = "";
+        update();
+        return;
+    }
 
-void SlideWidget::cursorApperance(QPoint mousePosition){
+    auto geometry = mPresentation->findBox(mActiveBoxId)->geometry();
+    auto rect = geometry.rect();
+    rect.translate(translation * 2);
+    geometry.setRect(rect);
+    mPresentation->setBoxGeometry(mActiveBoxId, geometry, mPageNumber);
+}
+
+
+void SlideWidget::cursorApperance(QPoint mousePosition) {
     auto cursor = QCursor();
     auto const activeBox = mPresentation->slideList().findBox(mActiveBoxId);
     if(!activeBox){
