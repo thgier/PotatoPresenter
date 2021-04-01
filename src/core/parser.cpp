@@ -108,6 +108,9 @@ void Parser::command(Token token){
         newLine(token.mLine);
     }
     else if(token.mText == "\\pause"){
+        if(mParsingTemplate) {
+            throw ParserError{QString("Invalid command '%1' in template").arg(QString(token.mText)), token.mLine};
+        }
         applyPause();
     }
     else if(token.mText == "\\plaintext"){
@@ -605,4 +608,8 @@ void Parser::setVariables(std::map<QString, QString> variables) {
 
 std::map<QString, QString> Parser::Variables() const {
     return mVariables;
+}
+
+void Parser::setParseTemplate(bool isTemplate) {
+    mParsingTemplate = isTemplate;
 }

@@ -29,12 +29,17 @@ class Parser
 {
 public:
     Parser(QString resourcepath);
+
     void loadInput(QIODevice *input);
     void loadInput(QByteArray input);
+
     Preamble readPreamble();
     SlideList readInput();
+
     void setVariables(std::map<QString, QString> variables);
     std::map<QString, QString> Variables() const;
+
+    void setParseTemplate(bool isTemplate);
 
 private:
     void command(Token token);
@@ -57,12 +62,14 @@ private:
 
     Tokenizer mTokenizer;
     SlideList mSlideList;
+    std::set<QString> mBoxIds;
+
     std::map<QString, QString> mVariables;
+    QString mResourcepath;
+
     bool mParsingTemplate = false;
     int mPauseCount = 0;
     Preamble mPreamble;
-    QString mResourcepath;
-    std::set<QString> mBoxIds;
 };
 
 #endif // PARSER_H

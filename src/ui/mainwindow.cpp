@@ -181,6 +181,7 @@ void MainWindow::fileChanged() {
 
 void MainWindow::readTemplate(QString filename) {
     Parser templateParser{QFileInfo(filename).absolutePath()};
+    templateParser.setParseTemplate(true);
     try {
         mTemplate.readTemplateConfig(filename + ".json");
     }  catch (ConfigError& error) {
