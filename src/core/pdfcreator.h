@@ -17,7 +17,7 @@ class PDFCreator
 public:
     PDFCreator();
     void createPdf(QString filename, std::shared_ptr<Presentation> presentation) const;
-
+    void createPdfHandout(QString filename, std::shared_ptr<Presentation> presentation) const;
 };
 
 #endif // PDFCREATOR_H

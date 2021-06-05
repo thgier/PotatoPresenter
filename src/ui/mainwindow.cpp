@@ -93,6 +93,10 @@ MainWindow::MainWindow(QWidget *parent)
                      this, &MainWindow::exportPDF);
     connect(ui->actionExport_PDF_as, &QAction::triggered,
             this, &MainWindow::exportPDFAs);
+    connect(ui->actionExport_PDF_Handout, &QAction::triggered,
+            this, &MainWindow::exportPDFHandout);
+    connect(ui->actionExport_PDF_Handout_as, &QAction::triggered,
+            this, &MainWindow::exportPDFHandoutAs);
 
     connect(&cacheManager(), &EquationCacheManager::conversionFinished,
             mPresentation.get(), &Presentation::presentationChanged);
@@ -325,9 +329,29 @@ void MainWindow::exportPDFAs() {
     }
     dialog.selectFile(mPdfFile);
     mPdfFile = dialog.getSaveFileName(this, tr("Export PDF"),
-                               filename(),
+                               mPdfFile,
                                tr("pdf (*.pdf)"));
     writePDF();
+}
+
+void MainWindow::exportPDFHandout() {
+    if(mPdfFileHandout.isEmpty()) {
+        exportPDFHandoutAs();
+        return;
+    }
+    writePDFHandout();
+}
+
+void MainWindow::exportPDFHandoutAs() {
+    QFileDialog dialog;
+    if(mPdfFileHandout.isEmpty()) {
+        mPdfFileHandout = getPdfFilenameHandout();
+    }
+    dialog.selectFile(mPdfFileHandout);
+    mPdfFileHandout = dialog.getSaveFileName(this, tr("Export PDF Handout"),
+                               mPdfFileHandout,
+                               tr("pdf (*.pdf)"));
+    writePDFHandout();
 }
 
 void MainWindow::writePDF() const {
@@ -336,12 +360,22 @@ void MainWindow::writePDF() const {
     ui->statusbar->showMessage(tr("Saved PDF to \"%1\".").arg(mPdfFile), 10000);
 }
 
+void MainWindow::writePDFHandout() const {
+    PDFCreator creator;
+    creator.createPdfHandout(mPdfFileHandout, mPresentation);
+    ui->statusbar->showMessage(tr("Saved PDF to \"%1\".").arg(mPdfFileHandout), 10000);
+}
+
 QString MainWindow::getConfigFilename(QUrl inputUrl) {
     return inputUrl.toLocalFile().section('.', 0, -2) + ".json";
 }
 
 QString MainWindow::getPdfFilename() {
     return mDoc->url().toLocalFile().section('.', 0, -2) + ".pdf";
+}
+
+QString MainWindow::getPdfFilenameHandout() {
+    return mDoc->url().toLocalFile().section('.', 0, -2) + "_handout.pdf";
 }
 
 QAction* MainWindow::deleteShortcutOfKDocAction(const char* name){

@@ -119,6 +119,8 @@
     <addaction name="actionSave_as"/>
     <addaction name="actionCreatePDF"/>
     <addaction name="actionExport_PDF_as"/>
+    <addaction name="actionExport_PDF_Handout"/>
+    <addaction name="actionExport_PDF_Handout_as"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="font">
@@ -311,6 +313,16 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+S</string>
+   </property>
+  </action>
+  <action name="actionExport_PDF_Handout">
+   <property name="text">
+    <string>Export PDF Handout</string>
+   </property>
+  </action>
+  <action name="actionExport_PDF_Handout_as">
+   <property name="text">
+    <string>Export PDF Handout as</string>
    </property>
   </action>
  </widget>

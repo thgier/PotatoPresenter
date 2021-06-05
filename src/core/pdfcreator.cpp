@@ -34,3 +34,22 @@ void PDFCreator::createPdf(QString filename, std::shared_ptr<Presentation> prese
     }
     painter.end();
 }
+
+void PDFCreator::createPdfHandout(QString filename, std::shared_ptr<Presentation> presentation) const{
+    QPdfWriter pdfWriter(filename);
+    auto const pdfLayout = QPageLayout(QPageSize(QSize(160, 90)), QPageLayout::Portrait, QMarginsF(0, 0, 0, 0), QPageLayout::Millimeter);
+    pdfWriter.setPageLayout(pdfLayout);
+
+    QPainter painter(&pdfWriter);
+    painter.setWindow(QRect(QPoint(0, 0), presentation->dimensions()));
+
+    painter.begin(&pdfWriter);
+    auto paint = std::make_shared<SlideRenderer>(painter);
+    for(auto &slide: presentation->slideList().vector){
+        paint->paintSlide(slide);
+        if(slide != presentation->slideList().vector.back()){
+            pdfWriter.newPage();
+        }
+    }
+    painter.end();
+}

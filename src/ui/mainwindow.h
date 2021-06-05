@@ -52,10 +52,14 @@ private:
     void openFile();
     void exportPDF();
     void exportPDFAs();
+    void exportPDFHandout();
+    void exportPDFHandoutAs();
 
     void writePDF() const;
+    void writePDFHandout() const;
     QString getConfigFilename(QUrl inputUrl);
     QString getPdfFilename();
+    QString getPdfFilenameHandout();
     QAction* deleteShortcutOfKDocAction(const char* name);
     QString jsonFileName() const;
     void saveJson();
@@ -81,6 +85,7 @@ private:
     SlideListModel *mSlideModel;
 
     QString mPdfFile;
+    QString mPdfFileHandout;
 
     Template mTemplate;
 
