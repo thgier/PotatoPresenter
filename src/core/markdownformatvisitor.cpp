@@ -37,7 +37,6 @@ double drawSvg(std::shared_ptr<QSvgRenderer> image, QPointF position, QPainter& 
     auto const defaultSize = image->defaultSize();
     auto const height = 1.0 * defaultSize.height() / 8.5 * fontSize;
     auto const width = 1.0 * defaultSize.width() / defaultSize.height() * height;
-    image->setAspectRatioMode(Qt::KeepAspectRatio);
     position.setY(position.y() + descent);
     auto const paintRect = QRectF(position, QSize(width, height));
     image->render(&painter, paintRect);
@@ -267,7 +266,6 @@ MapSvg MarkdownFormatVisitor::loadSvg(QString mathExpression, int start) {
         auto const scale = mPainter.fontMetrics().ascent() / ascent;
         auto const height = 1.0 * defaultSize.height() * scale;
         auto const width = 1.0 * defaultSize.width() * scale;
-        equation.svg->setAspectRatioMode(Qt::KeepAspectRatio);
         return {start, equation.svg, QSizeF(width, height)};
     }
     return {};

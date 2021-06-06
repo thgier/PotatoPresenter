@@ -110,7 +110,10 @@ void SlideWidget::paintEvent(QPaintEvent*)
     else {
         painter.setPen(this->palette().mid().color());
     }
-    painter.drawRect(QRect(marginLeft - QPoint(1, 1), innerSize.grownBy({1, 1, 0, 0})));
+    auto grownSize = innerSize;
+    grownSize.rwidth() += 1;
+    grownSize.rheight() += 1;
+    painter.drawRect(QRect(marginLeft - QPoint(1, 1), grownSize));
 
     // Done drawing the surroundings -- draw slide content now
     painter.setViewport(QRect(marginLeft, innerSize));

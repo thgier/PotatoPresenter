@@ -9,6 +9,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QBuffer>
+#include <QDebug> 
 
 Presentation::Presentation() : QObject()
 {

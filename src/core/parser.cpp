@@ -13,6 +13,7 @@
 #include <charconv>
 #include <QDir>
 #include <QRegularExpression>
+#include <QDate>
 
 #include "parser.h"
 #include "slide.h"

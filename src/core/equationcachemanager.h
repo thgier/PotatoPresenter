@@ -10,6 +10,7 @@
 #include <QProcess>
 #include <QDebug>
 #include <QFile>
+#include <memory>
 
 enum SvgStatus{
     Success,

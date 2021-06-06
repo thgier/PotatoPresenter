@@ -8,6 +8,7 @@
 #include <vector>
 #include <math.h>
 #include <numbers>
+#include <QDebug>
 
 BoxTransformation::BoxTransformation(BoxGeometry geometry, TransformationType trafo, pointPosition classifiedMousePosition, QPoint mousePos)
     : mGeometry(geometry)

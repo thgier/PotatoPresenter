@@ -101,7 +101,6 @@ void ImageBox::drawSvg(std::shared_ptr<QSvgRenderer> svg, QPainter& painter) {
     if(!svg || !svg->isValid()){
         return;
     }
-    svg->setAspectRatioMode(Qt::KeepAspectRatio);
     svg->render(&painter, geometry().rect());
 
     auto const viewBox = svg->viewBox();
