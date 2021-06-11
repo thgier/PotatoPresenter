@@ -234,10 +234,10 @@ void MarkdownFormatVisitor::drawFormulasInParagraph(QTextLayout &layout) {
         }
         auto position = positions[0];
         position += mRect.topLeft();
-        auto const heightIntegral = formula.mSize.height();
-        auto const additionalSpace = (heightIntegral - mPainter.fontMetrics().ascent() - mPainter.fontMetrics().descent()) / 2;
+        auto const heightIntegral = 0.9 * formula.mSize.height();
+        auto const additionalSpace = 0.9 * (heightIntegral - mPainter.fontMetrics().ascent() - mPainter.fontMetrics().descent()) / 2;
         position.setY(position.y() - additionalSpace - mPainter.fontMetrics().ascent());
-        formula.mSvg->render(&mPainter, QRectF(position, formula.mSize));
+        formula.mSvg->render(&mPainter, QRectF(position, 0.9 * formula.mSize));
     }
     mMapSvgs.clear();
 }
