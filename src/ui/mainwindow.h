@@ -47,8 +47,8 @@ private:
     void readTemplate(QString filename);
 
     // functions connected to actions
-    void save();
-    void saveAs();
+    bool save();
+    bool saveAs();
     void openFile();
     void exportPDF();
     void exportPDFAs();
@@ -69,6 +69,8 @@ private:
     QString applicationName() const;
     QString windowTitle() const;
     QString windowTitleNotSaved() const;
+    bool closeDocument();
+    void closeEvent(QCloseEvent *event) override;
 
     void updateCursorPosition();
 
@@ -94,5 +96,7 @@ private:
     QLabel* mErrorOutput;
     QToolButton* mCoupleButton;
     QToolButton* mSnappingButton;
+
+    bool mIsModified = false;
 };
 #endif // MAINWINDOW_H

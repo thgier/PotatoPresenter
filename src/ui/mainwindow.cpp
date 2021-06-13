@@ -6,12 +6,14 @@
 
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
-#include <QFile>
-#include <QTextStream>
-#include <KTextEditor/View>
+
 #include <KParts/ReadOnlyPart>
+#include <KTextEditor/View>
 #include <KTextEditor/MarkInterface>
 #include <KActionCollection>
+
+#include <QFile>
+#include <QTextStream>
 #include <QProcess>
 #include <QDebug>
 #include <QObject>
@@ -19,7 +21,10 @@
 #include <QFileDialog>
 #include <QToolButton>
 #include <QMessageBox>
+#include <QCloseEvent>
+
 #include <functional>
+
 #include "parser.h"
 #include "equationcachemanager.h"
 #include "cachemanager.h"
@@ -152,11 +157,23 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+
     delete ui;
 }
 
+void MainWindow::closeEvent(QCloseEvent *event) {
+    if(!closeDocument()) {
+        event->ignore();
+        return;
+    }
+    QMainWindow::closeEvent(event);
+}
+
 void MainWindow::fileChanged() {
-    setWindowTitle(windowTitleNotSaved());
+    if(!mIsModified) {
+        setWindowTitle(windowTitleNotSaved());
+        mIsModified = true;
+    }
     auto iface = qobject_cast<KTextEditor::MarkInterface*>(mDoc);
     iface->clearMarks();
     auto file = QFileInfo(filename()).absolutePath();
@@ -216,8 +233,11 @@ void MainWindow::openInputFile(QString filename) {
 }
 
 void MainWindow::openFile() {
+    if(!closeDocument()) {
+        return;
+    }
     auto const newFile = QFileDialog::getOpenFileName(this,
-        tr("Open File"), filename(), tr("Input Files (*.txt)"));
+        tr("Open File"), filename(), tr("Input Files"));
     if(newFile.isEmpty()){
         return;
     }
@@ -227,9 +247,13 @@ void MainWindow::openFile() {
     mPdfFile = "";
     fileChanged();
     setWindowTitle(windowTitle());
+    mIsModified = false;
 }
 
 void MainWindow::newDocument() {
+    if(!closeDocument()) {
+        return;
+    }
     mDoc = mEditor->createDocument(this);
     mViewTextDoc->deleteLater();
     mViewTextDoc = mDoc->createView(this);
@@ -254,25 +278,37 @@ void MainWindow::newDocument() {
     connect(mPresentation.get(), &Presentation::slideChanged,
             mSlideWidget, [this](int){mSlideWidget->update();});
     setWindowTitle(windowTitle());
+    mIsModified = false;
 }
 
-void MainWindow::save() {
-    mDoc->documentSave();
+bool MainWindow::save() {
+    if(!mDoc->documentSave()) {
+        return false;
+    }
     saveJson();
     ui->statusbar->showMessage(tr("Saved File to  \"%1\".").arg(mDoc->url().toString()), 10000);
     setWindowTitle(windowTitle());
+    mIsModified = false;
+    return true;
 }
 
-void MainWindow::saveAs(){
-    mDoc->documentSaveAs();
+bool MainWindow::saveAs(){
+    if(!mDoc->documentSaveAs()) {
+        return false;
+    }
     saveJson();
     fileChanged();
     ui->statusbar->showMessage(tr("Saved File to  \"%1\".").arg(mDoc->url().toString()), 10000);
     setWindowTitle(windowTitle());
+    mIsModified = false;
+    return true;
 }
 
 QString MainWindow::jsonFileName() const {
-    return filename().section('.', 0, -2) + ".json";
+    if(filename().endsWith(".txt")) {
+        return filename().section('.', 0, -2) + ".json";
+    }
+    return filename() + ".json";
 }
 
 void MainWindow::saveJson() {
@@ -411,4 +447,27 @@ QString MainWindow::windowTitle() const {
 
 QString MainWindow::windowTitleNotSaved() const {
     return completeBaseName() + " * \u2014 " + applicationName();
+}
+
+bool MainWindow::closeDocument() {
+    if(!mIsModified) {
+        return true;
+    }
+    int ret = QMessageBox::information(this, tr("Unsaved changes"), tr("The document %1 has been modified. "
+                          "Do you want to save your changes or discard them?").arg(filename()),
+                          QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+    switch (ret) {
+    case QMessageBox::Save:
+        if(!save()) {
+            return false;
+        }
+        break;
+      case QMessageBox::Discard:
+        break;
+      case QMessageBox::Cancel:
+        return false;
+      default:
+        return false;
+    }
+    return true;
 }
