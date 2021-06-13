@@ -29,9 +29,6 @@ void ImageBox::drawContent(QPainter& painter, std::map<QString, QString> variabl
     if(fileInfo.suffix() == "svg"){
         drawSvg(loadSvg(path), painter);
     }
-    else if(fileInfo.suffix() == "pdf"){
-        drawSvg(loadPdf(path), painter);
-    }
     else{
         drawImage(loadImage(path), painter);
     }
