@@ -2,5 +2,20 @@
     <qresource prefix="/">
         <file>core/generaterLatex.tex</file>
         <file>potato_icon.png</file>
+        <file>icons/document-export.svg</file>
+        <file>icons/document-open.svg</file>
+        <file>icons/document-save-as.svg</file>
+        <file>icons/document-save.svg</file>
+        <file>icons/edit-redo.svg</file>
+        <file>icons/edit-reset.svg</file>
+        <file>icons/edit-undo.svg</file>
+        <file>icons/object-rotate-right.svg</file>
+        <file>icons/transform-move.svg</file>
+        <file>icons/document-new.svg</file>
+        <file>icons/edit-clear-all.svg</file>
+        <file>icons/edit-download.svg</file>
+        <file>icons/pdflatex.svg</file>
+        <file>icons/link.svg</file>
+        <file>icons/snap-nodes-cusp.svg</file>
     </qresource>
 </RCC>

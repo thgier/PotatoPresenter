@@ -65,13 +65,13 @@ MainWindow::MainWindow(QWidget *parent)
     mCoupleButton = new QToolButton(this);
     mCoupleButton->setCheckable(true);
     mCoupleButton->setChecked(true);
-    mCoupleButton->setIcon(QIcon::fromTheme("edit-link"));
+    mCoupleButton->setIcon(QIcon(":/icons/link.svg"));
     mCoupleButton->setToolTip("Couple the Cursor in the Editor and the selection in Slide view");
 
     mSnappingButton = new QToolButton(this);
     mSnappingButton->setCheckable(true);
     mSnappingButton->setChecked(true);
-    mSnappingButton->setIcon(QIcon::fromTheme("snap-nodes-cusp"));
+    mSnappingButton->setIcon(QIcon(":/icons/snap-nodes-cusp.svg"));
     mSnappingButton->setToolTip("Turn Snapping on/off during Box Geometry manipulation");
 
     mErrorOutput = new QLabel(this);

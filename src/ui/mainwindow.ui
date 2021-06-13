@@ -167,8 +167,8 @@
   </widget>
   <action name="actionCreatePDF">
    <property name="icon">
-    <iconset theme="pdflatex">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset resource="../files.qrc">
+     <normaloff>:/icons/pdflatex.svg</normaloff>:/icons/pdflatex.svg</iconset>
    </property>
    <property name="text">
     <string>Export PDF</string>
@@ -188,8 +188,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset theme="transform-move">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="transform-move" resource="../files.qrc">
+     <normaloff>:/icons/transform-move.svg</normaloff>:/icons/transform-move.svg</iconset>
    </property>
    <property name="text">
     <string>Scale</string>
@@ -203,8 +203,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset theme="object-rotate-right">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="object-rotate-right" resource="../files.qrc">
+     <normaloff>:/icons/object-rotate-right.svg</normaloff>:/icons/object-rotate-right.svg</iconset>
    </property>
    <property name="text">
     <string>Rotate</string>
@@ -212,8 +212,8 @@
   </action>
   <action name="actionNew">
    <property name="icon">
-    <iconset theme="document-new-symbolic">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="document-new" resource="../files.qrc">
+     <normaloff>:/icons/document-new.svg</normaloff>:/icons/document-new.svg</iconset>
    </property>
    <property name="text">
     <string>New</string>
@@ -224,8 +224,8 @@
   </action>
   <action name="actionOpen">
    <property name="icon">
-    <iconset theme="document-open">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="document-open" resource="../files.qrc">
+     <normaloff>:/icons/document-open.svg</normaloff>:/icons/document-open.svg</iconset>
    </property>
    <property name="text">
     <string>Open</string>
@@ -236,8 +236,8 @@
   </action>
   <action name="actionReload_Resources">
    <property name="icon">
-    <iconset theme="download">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="edit-download" resource="../files.qrc">
+     <normaloff>:/icons/edit-download.svg</normaloff>:/icons/edit-download.svg</iconset>
    </property>
    <property name="text">
     <string>Reload Resources</string>
@@ -245,8 +245,8 @@
   </action>
   <action name="actionExport_PDF_as">
    <property name="icon">
-    <iconset theme="document-export">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="document-export" resource="../files.qrc">
+     <normaloff>:/icons/document-export.svg</normaloff>:/icons/document-export.svg</iconset>
    </property>
    <property name="text">
     <string>Export PDF as</string>
@@ -257,8 +257,8 @@
   </action>
   <action name="actionReset_Position">
    <property name="icon">
-    <iconset theme="edit-reset">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="edit-reset" resource="../files.qrc">
+     <normaloff>:/icons/edit-reset.svg</normaloff>:/icons/edit-reset.svg</iconset>
    </property>
    <property name="text">
     <string>Reset Position</string>
@@ -266,8 +266,8 @@
   </action>
   <action name="actionClean_Configurations">
    <property name="icon">
-    <iconset theme="edit-clear-all">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="edit-clear-history" resource="../files.qrc">
+     <normaloff>:/icons/edit-clear-all.svg</normaloff>:/icons/edit-clear-all.svg</iconset>
    </property>
    <property name="text">
     <string>Clean Configurations</string>
@@ -275,8 +275,8 @@
   </action>
   <action name="actionUndo">
    <property name="icon">
-    <iconset theme="edit-undo">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="edit-undo" resource="../files.qrc">
+     <normaloff>:/icons/edit-undo.svg</normaloff>:/icons/edit-undo.svg</iconset>
    </property>
    <property name="text">
     <string>Undo</string>
@@ -284,8 +284,8 @@
   </action>
   <action name="actionRedo">
    <property name="icon">
-    <iconset theme="edit-redo">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="edit-redo" resource="../files.qrc">
+     <normaloff>:/icons/edit-redo.svg</normaloff>:/icons/edit-redo.svg</iconset>
    </property>
    <property name="text">
     <string>Redo</string>
@@ -293,8 +293,8 @@
   </action>
   <action name="actionSave">
    <property name="icon">
-    <iconset theme="document-save">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="document-save" resource="../files.qrc">
+     <normaloff>:/icons/document-save.svg</normaloff>:/icons/document-save.svg</iconset>
    </property>
    <property name="text">
     <string>Save</string>
@@ -305,8 +305,8 @@
   </action>
   <action name="actionSave_as">
    <property name="icon">
-    <iconset theme="document-save-as">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="document-save-as" resource="../files.qrc">
+     <normaloff>:/icons/document-save-as.svg</normaloff>:/icons/document-save-as.svg</iconset>
    </property>
    <property name="text">
     <string>Save as</string>
@@ -334,6 +334,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../files.qrc"/>
+ </resources>
  <connections/>
 </ui>
