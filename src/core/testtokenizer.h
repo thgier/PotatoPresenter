@@ -8,6 +8,7 @@
 #define TESTTOKENIZER_H
 
 #include <QtTest/QTest>
+#include <QVector>
 #include "tokenizer.h"
 
 class TestTokenizer: public QObject

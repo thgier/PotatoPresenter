@@ -5,6 +5,7 @@
 */
 
 #include <QBuffer>
+#include <QDebug>
 #include "testtokenizer.h"
 
 QTEST_MAIN(TestTokenizer)
