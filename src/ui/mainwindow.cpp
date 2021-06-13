@@ -37,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    setWindowIcon(QIcon(":/potato_icon.png"));
     ui->splitter->setSizes(QList<int>{10000, 10000});
     mEditor = KTextEditor::Editor::instance();
     mDoc = mEditor->createDocument(this);

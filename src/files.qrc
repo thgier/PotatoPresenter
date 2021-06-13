@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>core/generaterLatex.tex</file>
+        <file>potato_icon.png</file>
     </qresource>
 </RCC>
