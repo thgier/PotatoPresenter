@@ -123,11 +123,6 @@
     <addaction name="actionExport_PDF_Handout_as"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
-    <property name="font">
-     <font>
-      <pointsize>14</pointsize>
-     </font>
-    </property>
     <property name="title">
      <string>Edit</string>
     </property>
