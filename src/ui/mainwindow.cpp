@@ -238,7 +238,7 @@ void MainWindow::openFile() {
         return;
     }
     auto const newFile = QFileDialog::getOpenFileName(this,
-        tr("Open File"), filename(), tr("Input Files"));
+        tr("Open File"), filename());
     if(newFile.isEmpty()){
         return;
     }
