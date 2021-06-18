@@ -3,6 +3,7 @@
 - sections
 - assistant
 - user interaction while Parsing error?
+- message if inkscap is not installed
 
 - maybe better pause
 - path to font
