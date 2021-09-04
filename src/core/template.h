@@ -18,6 +18,8 @@ struct TemplateError{
 class Template
 {
 public:
+    using Ptr = std::shared_ptr<Template>;
+
     using variablesMap = std::shared_ptr<std::map<QString, QString>>;
     Template();
     void setSlides(SlideList slides);

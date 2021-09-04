@@ -22,6 +22,8 @@
 #include <QToolButton>
 #include <QMessageBox>
 #include <QCloseEvent>
+#include <QStandardPaths>
+#include <QDir>
 
 #include <functional>
 
@@ -30,7 +32,9 @@
 #include "cachemanager.h"
 #include "slidelistmodel.h"
 #include "slidelistdelegate.h"
+#include "templatelistdelegate.h"
 #include "pdfcreator.h"
+#include "utils.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -147,18 +151,44 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::save);
     connect(ui->actionSave_as, &QAction::triggered,
             this, &MainWindow::saveAs);
+
+
+    connect(mSnappingButton, &QToolButton::clicked,
+            this, [this](){mSlideWidget->setSnapping(mSnappingButton->isChecked());});
+    ui->mainWidget->setCurrentIndex(1);
+
     connect(ui->actionOpen, &QAction::triggered,
             this, &MainWindow::openFile);
     connect(ui->actionNew, &QAction::triggered,
             this, &MainWindow::newDocument);
 
-    connect(mSnappingButton, &QToolButton::clicked,
-            this, [this](){mSlideWidget->setSnapping(mSnappingButton->isChecked());});
+    connect(ui->pushButtonOpen, &QPushButton::pressed,
+            ui->actionOpen, &QAction::trigger);
+    connect(ui->pushButtonNew, &QPushButton::pressed,
+            ui->actionNew, &QAction::trigger);
+
+    connect(ui->actionNew_From_Template, &QAction::triggered,
+            this, [this](){ui->actionNew->trigger();
+                           ui->mainWidget->setCurrentIndex(1);});
+
+    // setup Item model template
+    auto const dirList = std::vector<QString>{"/home/theresa/Documents/praes/templates/blue_brown_template",
+                                                "/home/theresa/Documents/praes/templates/blue_line_template",
+                                                "/home/theresa/Documents/praes/templates/blue_brown_template",
+                                                "/home/theresa/Documents/praes/templates/blue_brown_template"};
+    auto const presentationList = generateTemplatePresentationList(dirList);
+    mTemplateModel = new TemplateListModel(this);
+    mTemplateModel->setPresentationList(presentationList);
+    ui->templateList->setModel(mTemplateModel);
+    TemplateListDelegate *delegateTemplate = new TemplateListDelegate(this);
+    ui->templateList->setItemDelegate(delegateTemplate);
+    connect(ui->templateList, &QListView::doubleClicked,
+            this, [this, dirList](QModelIndex index){openCreateProjectDialog(dirList[index.row()]);});
+
 }
 
 MainWindow::~MainWindow()
 {
-
     delete ui;
 }
 
@@ -184,8 +214,7 @@ void MainWindow::fileChanged() {
         auto const preamble = parser.readPreamble();
         auto slides = parser.readInput();
         if(!preamble.templateName.isEmpty()) {
-            readTemplate(preamble.templateName);
-            mPresentation->setTemplate(&mTemplate);
+            mPresentation->setTemplate(readTemplate(preamble.templateName));
         }
         mPresentation->setSlides(slides);
         mErrorOutput->setText("Conversion succeeded \u2714");
@@ -201,11 +230,12 @@ void MainWindow::fileChanged() {
     ui->pagePreview->scrollTo(index);
 }
 
-void MainWindow::readTemplate(QString filename) {
+std::shared_ptr<Template> MainWindow::readTemplate(QString filename) const {
+    auto thisTemplate = std::make_shared<Template>();
     Parser templateParser{QFileInfo(filename).absolutePath()};
     templateParser.setParseTemplate(true);
     try {
-        mTemplate.readTemplateConfig(filename + ".json");
+        thisTemplate->readTemplateConfig(filename + ".json");
     }  catch (ConfigError& error) {
         throw ParserError{error.errorMessage, 0};
     }
@@ -216,7 +246,8 @@ void MainWindow::readTemplate(QString filename) {
     }
     templateParser.loadInput(file.readAll());
     auto const templateSlides = templateParser.readInput();
-    mTemplate.setSlides(templateSlides);
+    thisTemplate->setSlides(templateSlides);
+    return thisTemplate;
 }
 
 void MainWindow::setupFileActionsFromKPart() {
@@ -242,8 +273,13 @@ void MainWindow::openFile() {
     if(newFile.isEmpty()){
         return;
     }
+    openProject(newFile);
+}
+
+void MainWindow::openProject(QString path) {
+    ui->mainWidget->setCurrentIndex(0);
     newDocument();
-    openInputFile(newFile);
+    openInputFile(path);
     openJson();
     mPdfFile = "";
     fileChanged();
@@ -252,6 +288,7 @@ void MainWindow::openFile() {
 }
 
 void MainWindow::newDocument() {
+    ui->mainWidget->setCurrentIndex(0);
     if(!closeDocument()) {
         return;
     }
@@ -471,4 +508,114 @@ bool MainWindow::closeDocument() {
         return false;
     }
     return true;
+}
+
+Presentation::Ptr MainWindow::generateTemplatePresentation(QString directory) const {
+    QFile file(directory + "/demo.txt");
+    if (!file.open(QIODevice::ReadOnly)) {
+        return {};
+    }
+    auto const val = file.readAll();
+    Parser parser{directory};
+    parser.loadInput(val);
+    auto presentation = std::make_shared<Presentation>();
+    try {
+        auto const preamble = parser.readPreamble();
+        auto slides = parser.readInput();
+        if(!preamble.templateName.isEmpty()) {
+            presentation->setTemplate(readTemplate(preamble.templateName));
+        }
+        presentation->setSlides(slides);
+        mErrorOutput->setText("Conversion succeeded \u2714");
+    }  catch (ParserError& error) {
+        return {};
+    }
+    return presentation;
+}
+
+Presentation::List MainWindow::generateTemplatePresentationList(std::vector<QString> directories) const {
+    Presentation::List list;
+    for(auto const& directory : directories) {
+        auto const presentation = generateTemplatePresentation(directory);
+        if (!presentation) {
+            continue;
+        }
+        list.push_back(presentation);
+    }
+    return list;
+}
+
+void MainWindow::insertTextInEditor(QString path) {
+    QFile file(path + "/demo.txt");
+    if (!file.open(QIODevice::ReadOnly)) {
+        return;
+    }
+    auto const val = file.readAll();
+    mDoc->setText(val);
+}
+
+void MainWindow::openCreateProjectDialog(QString pathToSelectedTemplate) {
+    ui->mainWidget->setCurrentIndex(2);
+    ui->label_folder->setText(guessSavingDirectory());
+    connect(ui->back_button, &QPushButton::clicked,
+            this, [this]{ui->mainWidget->setCurrentIndex(1);});
+    connect(ui->create_project_button, &QPushButton::clicked,
+            this, [this, pathToSelectedTemplate]{createProject(pathToSelectedTemplate);});
+    connect(ui->change_directory_button, &QPushButton::clicked,
+            this, [this]{ui->label_folder->setText(openDirectory());});
+}
+
+QString MainWindow::openDirectory() {
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
+                                                 ui->label_folder->text(),
+                                                 QFileDialog::ShowDirsOnly
+                                                 | QFileDialog::DontResolveSymlinks);
+    if(dir.isEmpty()){
+       return ui->label_folder->text();
+    }
+    return dir;
+}
+
+void MainWindow::createProject(QString pathToSelectedTemplate) {
+    if(ui->project_name_lineEdit->text().isEmpty()) {
+        ui->create_project_error_label->setText(tr("Please insert a project name."));
+        return;
+    }
+    if(!copyDirectory(pathToSelectedTemplate, assembleProjectDirectory())) {
+        QMessageBox::information(this, tr("Copy of template failed."), tr("Copy of template faield. Source directory: %1. Destination Directory: %2").arg(pathToSelectedTemplate, assembleProjectDirectory()),
+                                 QMessageBox::Ok);
+        return;
+    }
+    auto const projectName = ui->project_name_lineEdit->text();
+    auto inputFile = QFile(assembleProjectDirectory() + "/demo.txt");
+    auto jsonFile = QFile(assembleProjectDirectory() + "/demo.json");
+    qInfo() << inputFile.fileName() << inputFile.exists() << projectName;
+    if(!(inputFile.rename(assembleProjectPathInputFile()) && jsonFile.rename(assembleProjectPathJsonFile()))) {
+        QMessageBox::information(this, tr("Rename failed."), tr("Rename failed."),
+                                 QMessageBox::Ok);
+        return;
+    }
+    openProject(assembleProjectPathInputFile());
+}
+
+QString MainWindow::assembleProjectPathInputFile() const {
+    auto const projectName = ui->project_name_lineEdit->text();
+    return assembleProjectDirectory() + "/" + projectName + ".txt";
+}
+
+QString MainWindow::assembleProjectPathJsonFile() const {
+    auto const projectName = ui->project_name_lineEdit->text();
+    return assembleProjectDirectory() + "/" + projectName + ".json";
+}
+
+QString MainWindow::assembleProjectDirectory() const {
+    auto const projectName = ui->project_name_lineEdit->text();
+    return ui->label_folder->text() + "/" + projectName;
+}
+
+QString MainWindow::guessSavingDirectory() const {
+    if(!ui->project_name_lineEdit->text().isEmpty()) {
+        return ui->project_name_lineEdit->text();
+    }
+    return QDir::homePath() + "/" + QStandardPaths::displayName(QStandardPaths::DocumentsLocation);
 }

@@ -22,6 +22,7 @@
 #include "slidewidget.h"
 #include "configboxes.h"
 #include "slidelistmodel.h"
+#include "templatelistmodel.h"
 #include "template.h"
 
 QT_BEGIN_NAMESPACE
@@ -44,12 +45,13 @@ private:
     void openInputFile(QString filename);
     void newDocument();
     void resetPresentation();
-    void readTemplate(QString filename);
+    std::shared_ptr<Template> readTemplate(QString filename) const;
 
     // functions connected to actions
     bool save();
     bool saveAs();
     void openFile();
+    void openProject(QString path);
     void exportPDF();
     void exportPDFAs();
     void exportPDFHandout();
@@ -74,6 +76,20 @@ private:
 
     void updateCursorPosition();
 
+//    start window
+    Presentation::Ptr generateTemplatePresentation(QString directory) const;
+    Presentation::List generateTemplatePresentationList(std::vector<QString> directories) const;
+    void insertTextInEditor(QString path);
+//    open save project dialog
+    void openCreateProjectDialog(QString pathToSelectedTemplate);
+    void createProject(QString pathToSelectedTemplate);
+    QString assembleProjectDirectory() const;
+    QString assembleProjectPathInputFile() const;
+    QString assembleProjectPathJsonFile() const;
+    QString openDirectory();
+    QString guessSavingDirectory();
+
+
 private:
     Ui::MainWindow *ui;
     KTextEditor::Editor* mEditor;
@@ -81,15 +97,15 @@ private:
     KTextEditor::View* mViewTextDoc = nullptr;
 
     SlideWidget* mSlideWidget;
-    std::shared_ptr<Presentation> mPresentation;
+    Presentation::Ptr mPresentation;
 
     QListWidget *mListWidget;
     SlideListModel *mSlideModel;
 
+    TemplateListModel *mTemplateModel;
+
     QString mPdfFile;
     QString mPdfFileHandout;
-
-    Template mTemplate;
 
     QTimer mCursorTimer;
 

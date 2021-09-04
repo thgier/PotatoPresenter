@@ -8,6 +8,7 @@
 #define PRESENTATION_H
 
 #include <QObject>
+#include <QVariant>
 #include <vector>
 #include "slide.h"
 #include "configboxes.h"
@@ -59,12 +60,15 @@ class Presentation : public QObject
 {
     Q_OBJECT
 public:
+    using Ptr = std::shared_ptr<Presentation>;
+    using List = std::vector<Presentation::Ptr>;
+
     Presentation();
     void loadInput(QString configFilename);
 
     // Access contained Slides
     SlideList slideList() const;
-    void setTemplate(Template *templateObject);
+    void setTemplate(std::shared_ptr<Template> templateObject);
     void setSlides(SlideList const& slides);
 
     // access to contained box
@@ -73,6 +77,7 @@ public:
 
     bool empty() const;
     QSize dimensions() const;
+    int numberOfSlides() const;
 
     void applyStandardTemplateToBox(Box::Ptr box) const;
 
@@ -103,7 +108,9 @@ private:
     QString mInputDir;
     ConfigBoxes mConfig;
     QSize mDimensions{1600, 900};
-    Template *mTemplate = nullptr;
+    std::shared_ptr<Template> mTemplate = nullptr;
 };
+
+Q_DECLARE_METATYPE(Presentation::Ptr)
 
 #endif // PRESENTATION_H

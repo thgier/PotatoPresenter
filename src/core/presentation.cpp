@@ -23,7 +23,7 @@ SlideList Presentation::slideList() const {
     return mSlides;
 }
 
-void Presentation::setTemplate(Template *templateObject) {
+void Presentation::setTemplate(Template::Ptr templateObject) {
     mTemplate = templateObject;
 }
 
@@ -95,6 +95,10 @@ const SlideList &Presentation::applyStandardTemplate(const SlideList &slides) co
 
 QSize Presentation::dimensions() const {
     return mDimensions;
+}
+
+int Presentation::numberOfSlides() const {
+    return mSlides.numberSlides();
 }
 
 Box::Ptr Presentation::findBox(const QString &id) const {

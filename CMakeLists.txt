@@ -56,6 +56,9 @@ add_executable(praes
     src/ui/mainwindow.cpp
     src/ui/mainwindow.ui
     src/ui/snapping.cpp
+    src/ui/templatelistdelegate.cpp
+    src/ui/templatelistmodel.cpp
+    src/ui/utils.cpp
 )
 
 add_executable(testtokenizer

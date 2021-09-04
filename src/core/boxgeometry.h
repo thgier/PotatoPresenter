@@ -7,6 +7,7 @@
 #ifndef BOXRECT_H
 #define BOXRECT_H
 
+#include <optional>
 #include <QRect>
 #include <QTransform>
 

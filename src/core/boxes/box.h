@@ -9,6 +9,7 @@
 #include <QRect>
 #include <QPainter>
 #include <memory>
+#include <optional>
 #include "boxgeometry.h"
 
 using Variables = std::map<QString, QString>;

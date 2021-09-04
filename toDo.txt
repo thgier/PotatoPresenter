@@ -7,10 +7,10 @@
 
 - maybe better pause
 - path to font
-- guides
 - color choser
 - shrink to boundings
 - textbox with border, ellipse, rect
+- template specific guides
 
 bugs:
 - sometimes templates?

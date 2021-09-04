@@ -16,7 +16,7 @@ SlideListDelegate::SlideListDelegate(QObject *parent)
 }
 
 void SlideListDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const{
-    auto const slide = index.model()->data(index, Qt::DisplayRole).value<std::shared_ptr<Slide>>();
+    auto const slide = index.data(Qt::DisplayRole).value<std::shared_ptr<Slide>>();
     painter->save();
     painter->setViewport(option.rect);
     auto const windowRect = QRect(-50, -50, 1700, 1200);
