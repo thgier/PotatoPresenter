@@ -81,13 +81,13 @@ private:
     Presentation::List generateTemplatePresentationList(std::vector<QString> directories) const;
     void insertTextInEditor(QString path);
 //    open save project dialog
-    void openCreateProjectDialog(QString pathToSelectedTemplate);
     void createProject(QString pathToSelectedTemplate);
     QString assembleProjectDirectory() const;
     QString assembleProjectPathInputFile() const;
     QString assembleProjectPathJsonFile() const;
     QString openDirectory();
-    QString guessSavingDirectory();
+    QString guessSavingDirectory() const;
+
 
 
 private:

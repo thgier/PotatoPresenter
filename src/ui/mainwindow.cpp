@@ -183,7 +183,20 @@ MainWindow::MainWindow(QWidget *parent)
     TemplateListDelegate *delegateTemplate = new TemplateListDelegate(this);
     ui->templateList->setItemDelegate(delegateTemplate);
     connect(ui->templateList, &QListView::doubleClicked,
+<<<<<<< HEAD
             this, [this, dirList](QModelIndex index){openCreateProjectDialog(dirList[index.row()]);});
+=======
+            this, [this](){ui->mainWidget->setCurrentIndex(2);});
+
+//    setup create project dialog
+    ui->label_folder->setText(guessSavingDirectory());
+    connect(ui->back_button, &QPushButton::clicked,
+            this, [this]{ui->mainWidget->setCurrentIndex(1);});
+    connect(ui->create_project_button, &QPushButton::clicked,
+            this, [this, dirList]{createProject(dirList[ui->templateList->currentIndex().row()]);});
+    connect(ui->change_directory_button, &QPushButton::clicked,
+            this, [this]{ui->label_folder->setText(openDirectory());});
+>>>>>>> 283aafb (add create from template)
 
 }
 
@@ -554,6 +567,7 @@ void MainWindow::insertTextInEditor(QString path) {
     mDoc->setText(val);
 }
 
+<<<<<<< HEAD
 void MainWindow::openCreateProjectDialog(QString pathToSelectedTemplate) {
     ui->mainWidget->setCurrentIndex(2);
     ui->label_folder->setText(guessSavingDirectory());
@@ -564,6 +578,8 @@ void MainWindow::openCreateProjectDialog(QString pathToSelectedTemplate) {
     connect(ui->change_directory_button, &QPushButton::clicked,
             this, [this]{ui->label_folder->setText(openDirectory());});
 }
+=======
+>>>>>>> 283aafb (add create from template)
 
 QString MainWindow::openDirectory() {
     QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
@@ -615,7 +631,13 @@ QString MainWindow::assembleProjectDirectory() const {
 
 QString MainWindow::guessSavingDirectory() const {
     if(!ui->project_name_lineEdit->text().isEmpty()) {
+<<<<<<< HEAD
         return ui->project_name_lineEdit->text();
     }
     return QDir::homePath() + "/" + QStandardPaths::displayName(QStandardPaths::DocumentsLocation);
+=======
+        return ui->label_folder->text();
+    }
+    return QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+>>>>>>> 283aafb (add create from template)
 }
