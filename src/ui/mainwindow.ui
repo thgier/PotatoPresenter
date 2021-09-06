@@ -18,7 +18,7 @@
     <item>
      <widget class="QStackedWidget" name="mainWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="page">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -148,12 +148,12 @@
        </layout>
       </widget>
       <widget class="QWidget" name="create_project">
-       <widget class="QLabel" name="label_2">
+       <widget class="QLabel" name="create_project_label">
         <property name="geometry">
          <rect>
           <x>90</x>
           <y>60</y>
-          <width>231</width>
+          <width>461</width>
           <height>51</height>
          </rect>
         </property>
@@ -163,7 +163,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Create Project</string>
+         <string>Create Project from Template</string>
         </property>
        </widget>
        <widget class="QLabel" name="label_folder">
@@ -257,6 +257,261 @@
         <property name="text">
          <string/>
         </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="page_3">
+       <widget class="QStackedWidget" name="mainWidget_2">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>-10</y>
+          <width>1281</width>
+          <height>604</height>
+         </rect>
+        </property>
+        <property name="currentIndex">
+         <number>2</number>
+        </property>
+        <widget class="QWidget" name="page_4">
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="QSplitter" name="splitter_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <widget class="QWidget" name="layoutWidget_2">
+             <layout class="QHBoxLayout" name="editor_2"/>
+            </widget>
+            <widget class="QWidget" name="layoutWidget_3">
+             <layout class="QVBoxLayout" name="paint_2">
+              <property name="topMargin">
+               <number>1</number>
+              </property>
+              <item>
+               <widget class="SlideWidget" name="slideWidget_2" native="true">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>200</height>
+                 </size>
+                </property>
+                <property name="focusPolicy">
+                 <enum>Qt::StrongFocus</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="verticalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Preferred</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QListView" name="pagePreview_2">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>180</height>
+                 </size>
+                </property>
+                <property name="isWrapping" stdset="0">
+                 <bool>false</bool>
+                </property>
+                <property name="spacing">
+                 <number>0</number>
+                </property>
+                <property name="gridSize">
+                 <size>
+                  <width>213</width>
+                  <height>150</height>
+                 </size>
+                </property>
+                <property name="viewMode">
+                 <enum>QListView::IconMode</enum>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="page_5">
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_5">
+              <item>
+               <widget class="QPushButton" name="pushButtonNew_2">
+                <property name="text">
+                 <string>New</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButtonOpen_2">
+                <property name="text">
+                 <string>Open</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_6">
+              <item>
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string>Open New from Template</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QListView" name="templateList_2"/>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="create_new_project">
+         <widget class="QLabel" name="create_new_project_label">
+          <property name="geometry">
+           <rect>
+            <x>90</x>
+            <y>60</y>
+            <width>461</width>
+            <height>51</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>20</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Create New Empty Project</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_folder_new">
+          <property name="geometry">
+           <rect>
+            <x>90</x>
+            <y>130</y>
+            <width>371</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>TextLabel</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="back_button_new">
+          <property name="geometry">
+           <rect>
+            <x>90</x>
+            <y>330</y>
+            <width>110</width>
+            <height>40</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Back</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="create_new_project_button">
+          <property name="geometry">
+           <rect>
+            <x>410</x>
+            <y>330</y>
+            <width>110</width>
+            <height>40</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Create</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_4">
+          <property name="geometry">
+           <rect>
+            <x>90</x>
+            <y>190</y>
+            <width>121</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Project Name:</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="change_directory_button_new">
+          <property name="geometry">
+           <rect>
+            <x>490</x>
+            <y>120</y>
+            <width>51</width>
+            <height>40</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="../files.qrc">
+            <normaloff>:/icons/document-open.svg</normaloff>:/icons/document-open.svg</iconset>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="new_project_name_lineEdit">
+          <property name="geometry">
+           <rect>
+            <x>90</x>
+            <y>240</y>
+            <width>421</width>
+            <height>38</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QLabel" name="create_new_project_error_label">
+          <property name="geometry">
+           <rect>
+            <x>530</x>
+            <y>243</y>
+            <width>231</width>
+            <height>31</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="page_6"/>
        </widget>
       </widget>
      </widget>

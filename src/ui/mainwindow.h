@@ -80,14 +80,15 @@ private:
     Presentation::Ptr generateTemplatePresentation(QString directory) const;
     Presentation::List generateTemplatePresentationList(std::vector<QString> directories) const;
     void insertTextInEditor(QString path);
+
 //    open save project dialog
-    void createProject(QString pathToSelectedTemplate);
-    QString assembleProjectDirectory() const;
-    QString assembleProjectPathInputFile() const;
-    QString assembleProjectPathJsonFile() const;
+    void createProjectFromTemplate(QString pathToSelectedTemplate);
+    void createEmptyProject();
+    QString assembleProjectDirectory(QString projectname) const;
+    QString assembleProjectPathInputFile(QString projectname) const;
+    QString assembleProjectPathJsonFile(QString projectname) const;
     QString openDirectory();
     QString guessSavingDirectory() const;
-
 
 
 private:

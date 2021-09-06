@@ -160,7 +160,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionOpen, &QAction::triggered,
             this, &MainWindow::openFile);
     connect(ui->actionNew, &QAction::triggered,
-            this, &MainWindow::newDocument);
+            this, [this]{ui->mainWidget->setCurrentIndex(3);});
 
     connect(ui->pushButtonOpen, &QPushButton::pressed,
             ui->actionOpen, &QAction::trigger);
@@ -172,9 +172,7 @@ MainWindow::MainWindow(QWidget *parent)
                            ui->mainWidget->setCurrentIndex(1);});
 
     // setup Item model template
-    auto const dirList = std::vector<QString>{"/home/theresa/Documents/praes/templates/blue_brown_template",
-                                                "/home/theresa/Documents/praes/templates/blue_line_template",
-                                                "/home/theresa/Documents/praes/templates/blue_brown_template",
+    auto const dirList = std::vector<QString>{"/home/theresa/Documents/praes/templates/blue_line_template",
                                                 "/home/theresa/Documents/praes/templates/blue_brown_template"};
     auto const presentationList = generateTemplatePresentationList(dirList);
     mTemplateModel = new TemplateListModel(this);
@@ -185,12 +183,21 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->templateList, &QListView::doubleClicked,
             this, [this](){ui->mainWidget->setCurrentIndex(2);});
 
-//    setup create project dialog
+//    setup create project from dialog
     ui->label_folder->setText(guessSavingDirectory());
     connect(ui->back_button, &QPushButton::clicked,
             this, [this]{ui->mainWidget->setCurrentIndex(1);});
     connect(ui->create_project_button, &QPushButton::clicked,
-            this, [this, dirList]{createProject(dirList[ui->templateList->currentIndex().row()]);});
+            this, [this, dirList]{createProjectFromTemplate(dirList[ui->templateList->currentIndex().row()]);});
+    connect(ui->change_directory_button, &QPushButton::clicked,
+            this, [this]{ui->label_folder->setText(openDirectory());});
+
+//    setup create new project
+    ui->label_folder->setText(guessSavingDirectory());
+    connect(ui->back_button_new, &QPushButton::clicked,
+            this, [this]{ui->mainWidget->setCurrentIndex(1);});
+    connect(ui->create_new_project_button, &QPushButton::clicked,
+            this, &MainWindow::createEmptyProject);
     connect(ui->change_directory_button, &QPushButton::clicked,
             this, [this]{ui->label_folder->setText(openDirectory());});
 
@@ -575,41 +582,66 @@ QString MainWindow::openDirectory() {
     return dir;
 }
 
-void MainWindow::createProject(QString pathToSelectedTemplate) {
-    if(ui->project_name_lineEdit->text().isEmpty()) {
+void MainWindow::createProjectFromTemplate(QString pathToSelectedTemplate) {
+    auto const projectname = ui->project_name_lineEdit->text();
+    if(projectname.isEmpty()) {
         ui->create_project_error_label->setText(tr("Please insert a project name."));
         return;
     }
-    if(!copyDirectory(pathToSelectedTemplate, assembleProjectDirectory())) {
-        QMessageBox::information(this, tr("Copy of template failed."), tr("Copy of template faield. Source directory: %1. Destination Directory: %2").arg(pathToSelectedTemplate, assembleProjectDirectory()),
+
+//    copy template and demo into project folder and rename it
+    if(!copyDirectory(pathToSelectedTemplate, assembleProjectDirectory(projectname))) {
+        QMessageBox::information(this, tr("Copy of template failed."), tr("Copy of template faield. Source directory: %1. Destination Directory: %2").arg(pathToSelectedTemplate, assembleProjectDirectory(projectname)),
                                  QMessageBox::Ok);
         return;
     }
     auto const projectName = ui->project_name_lineEdit->text();
-    auto inputFile = QFile(assembleProjectDirectory() + "/demo.txt");
-    auto jsonFile = QFile(assembleProjectDirectory() + "/demo.json");
+    auto inputFile = QFile(assembleProjectDirectory(projectname) + "/demo.txt");
+    auto jsonFile = QFile(assembleProjectDirectory(projectname) + "/demo.json");
     qInfo() << inputFile.fileName() << inputFile.exists() << projectName;
-    if(!(inputFile.rename(assembleProjectPathInputFile()) && jsonFile.rename(assembleProjectPathJsonFile()))) {
+    if(!(inputFile.rename(assembleProjectPathInputFile(projectname)) && jsonFile.rename(assembleProjectPathJsonFile(projectname)))) {
         QMessageBox::information(this, tr("Rename failed."), tr("Rename failed."),
                                  QMessageBox::Ok);
         return;
     }
-    openProject(assembleProjectPathInputFile());
+    openProject(assembleProjectPathInputFile(projectname));
 }
 
-QString MainWindow::assembleProjectPathInputFile() const {
-    auto const projectName = ui->project_name_lineEdit->text();
-    return assembleProjectDirectory() + "/" + projectName + ".txt";
+void MainWindow::createEmptyProject() {
+    auto const projectname = ui->new_project_name_lineEdit->text();
+    QDir destDir(assembleProjectDirectory(projectname));
+    if(destDir.exists()) {
+        QMessageBox::information(this, tr("Folder already exists."),
+                                 tr("Folder %1 already exists. Please select another project name.").arg(assembleProjectDirectory(projectname)),
+                                 QMessageBox::Ok);
+        return;
+    }
+    destDir.mkdir(assembleProjectDirectory(projectname));
+    if(!QFile(assembleProjectPathInputFile(projectname)).open(QIODevice::NewOnly)) {
+        QMessageBox::information(this, tr("File already exists."),
+                                 tr("File %1 already exists. Please select another project name.").arg(assembleProjectPathInputFile(projectname)),
+                                 QMessageBox::Ok);
+        return;
+    }
+    if(!QFile(assembleProjectPathJsonFile(projectname)).open(QIODevice::NewOnly)) {
+        QMessageBox::information(this, tr("File already exists."),
+                                 tr("File %1 already exists. Please select another project name.").arg(assembleProjectPathJsonFile(projectname)),
+                                 QMessageBox::Ok);
+        return;
+    }
+    openProject(assembleProjectPathInputFile(projectname));
 }
 
-QString MainWindow::assembleProjectPathJsonFile() const {
-    auto const projectName = ui->project_name_lineEdit->text();
-    return assembleProjectDirectory() + "/" + projectName + ".json";
+QString MainWindow::assembleProjectPathInputFile(QString projectname) const {
+    return assembleProjectDirectory(projectname) + "/" + projectname + ".txt";
 }
 
-QString MainWindow::assembleProjectDirectory() const {
-    auto const projectName = ui->project_name_lineEdit->text();
-    return ui->label_folder->text() + "/" + projectName;
+QString MainWindow::assembleProjectPathJsonFile(QString projectname) const {
+    return assembleProjectDirectory(projectname) + "/" + projectname + ".json";
+}
+
+QString MainWindow::assembleProjectDirectory(QString projectname) const {
+    return ui->label_folder->text() + "/" + projectname;
 }
 
 QString MainWindow::guessSavingDirectory() const {
