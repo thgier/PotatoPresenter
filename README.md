@@ -106,7 +106,7 @@ You can define an ID to a Box with the argument ```id```.
 
 ## Stuff
 
-Implemented with C++, the Qt Framework and the KTextEditor.  
+Implemented with C++ and the Qt5 Framework. Uses the KTextEditor, Antlr4 and the Breeze icons.  
 
 Work in progress, application is not finished yet.  
-Formula support only works on Linux, needs: LaTeX, dvisvgm.
+Formula support needs: LaTeX, dvisvgm.
