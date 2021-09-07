@@ -18,7 +18,7 @@
     <item>
      <widget class="QStackedWidget" name="mainWidget">
       <property name="currentIndex">
-       <number>3</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="page">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -126,6 +126,9 @@
                <string>Open</string>
               </property>
              </widget>
+            </item>
+            <item>
+             <widget class="QListWidget" name="openRecent_listWidget"/>
             </item>
            </layout>
           </item>

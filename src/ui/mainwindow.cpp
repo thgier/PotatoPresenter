@@ -116,8 +116,8 @@ MainWindow::MainWindow(QWidget *parent)
 //    open Recent
     QSettings settings("Potato", "Potato Presenter");
     updateOpenRecent();
-
-
+    connect(ui->openRecent_listWidget, &QListWidget::itemDoubleClicked,
+            this, [this](QListWidgetItem *item){openProject(item->data(Qt::ToolTipRole).toString());});
 
 //    setup CacheManager
     connect(&cacheManager(), &EquationCacheManager::conversionFinished,
@@ -682,11 +682,8 @@ void MainWindow::addFileToOpenRecent(QString path) {
     QCoreApplication::setApplicationName("Potato Presenter");
     QSettings settings;
     auto list = readOpenRecentArrayFromSettings(settings);
-<<<<<<< HEAD
-=======
     auto const rm = std::ranges::remove(list, path);
     list.erase(rm.begin(), rm.end());
->>>>>>> 0689c07 (open recent)
     list.insert(list.begin(), path);
     if (list.size() > maxEntries) {
         list.pop_back();
@@ -701,9 +698,18 @@ void MainWindow::updateOpenRecent() {
     auto const openRecentList = readOpenRecentArrayFromSettings(settings);
     ui->menuOpen_Recent->clear();
     for (auto const& entry : openRecentList) {
+//        add to toolbar
         QAction *openAct = new QAction(entry, this);
         connect(openAct, &QAction::triggered,
                 this, [this, entry]{openProject(entry);});
         ui->menuOpen_Recent->addAction(openAct);
+
+//        add to new from template dialog
+        auto const filename = QFileInfo(entry).baseName();
+        qInfo() << "open recent filename" << filename;
+        QListWidgetItem *newItem = new QListWidgetItem;
+        newItem->setText(filename);
+        newItem->setData(Qt::ToolTipRole, entry);
+        ui->openRecent_listWidget->addItem(newItem);
     }
 }
