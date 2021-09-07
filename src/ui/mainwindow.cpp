@@ -43,17 +43,22 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     setWindowIcon(QIcon(":/potato_icon.png"));
     ui->splitter->setSizes(QList<int>{10000, 10000});
+
+
+//    setup Editor
     mEditor = KTextEditor::Editor::instance();
     mDoc = mEditor->createDocument(this);
+    mViewTextDoc = mDoc->createView(this);
+    ui->editor->addWidget(mViewTextDoc);
 
+
+//    setup Presentation, Slide Widget
     mPresentation = std::make_shared<Presentation>();
     mSlideWidget = ui->slideWidget;
     mSlideWidget->setPresentation(mPresentation);
 
-    mViewTextDoc = mDoc->createView(this);
-    ui->editor->addWidget(mViewTextDoc);
 
-    // setup Item model
+//    setup Item model
     mSlideModel = new SlideListModel(this);
     mSlideModel->setPresentation(mPresentation);
     ui->pagePreview->setModel(mSlideModel);
@@ -61,8 +66,64 @@ MainWindow::MainWindow(QWidget *parent)
     ui->pagePreview->setItemDelegate(delegate);
     ui->pagePreview->setViewMode(QListView::IconMode);
     QItemSelectionModel *selectionModel = ui->pagePreview->selectionModel();
+    connect(selectionModel, &QItemSelectionModel::currentChanged,
+            this, [this](const QModelIndex &current){mSlideWidget->setCurrentPage(current.row());});
 
-    // setup bar with error messages and couple button
+
+//    setup Actions
+    connect(ui->actionNew, &QAction::triggered,
+            this, [this]{ui->mainWidget->setCurrentIndex(3);});
+    connect(ui->actionNew_From_Template, &QAction::triggered,
+            this, [this](){ui->actionNew->trigger();
+                           ui->mainWidget->setCurrentIndex(1);});
+    connect(ui->actionOpen, &QAction::triggered,
+            this, &MainWindow::openFile);
+    connect(ui->actionSave, &QAction::triggered,
+            this, &MainWindow::save);
+    connect(ui->actionSave_as, &QAction::triggered,
+            this, &MainWindow::saveAs);
+    connect(ui->actionCreatePDF, &QAction::triggered,
+                     this, &MainWindow::exportPDF);
+    connect(ui->actionExport_PDF_as, &QAction::triggered,
+            this, &MainWindow::exportPDFAs);
+    connect(ui->actionExport_PDF_Handout, &QAction::triggered,
+            this, &MainWindow::exportPDFHandout);
+    connect(ui->actionExport_PDF_Handout_as, &QAction::triggered,
+            this, &MainWindow::exportPDFHandoutAs);
+
+    connect(ui->actionUndo, &QAction::triggered,
+            mSlideWidget, &SlideWidget::undo);
+    connect(ui->actionRedo, &QAction::triggered,
+            mSlideWidget, &SlideWidget::redo);
+    connect(ui->actionReset_Position, &QAction::triggered,
+            this, [this](){mSlideWidget->deleteBoxPosition();
+                           fileChanged();});
+
+    auto transformGroup = new QActionGroup(this);
+    transformGroup->addAction(ui->actionRotate);
+    transformGroup->addAction(ui->actionTranslate);
+    ui->actionTranslate->setChecked(true);
+    connect(ui->actionRotate, &QAction::triggered,
+           this, [this](){mSlideWidget->setTransformationType(TransformationType::rotate);});
+    connect(ui->actionTranslate, &QAction::triggered,
+            this, [this](){mSlideWidget->setTransformationType(TransformationType::translate);});
+
+    connect(ui->actionClean_Configurations, &QAction::triggered,
+            mPresentation.get(), &Presentation::deleteNotNeededConfigurations);
+
+
+//    setup CacheManager
+    connect(&cacheManager(), &EquationCacheManager::conversionFinished,
+            mPresentation.get(), &Presentation::presentationChanged);
+
+    CacheManager<QImage>::instance().setCallback([this](QString){mSlideWidget->update();});
+    CacheManager<QSvgRenderer>::instance().setCallback([this](QString){mSlideWidget->update();});
+
+
+//    setup bar with error messages, snapping and couple button
+    mErrorOutput = new QLabel(this);
+    mErrorOutput->setWordWrap(true);
+
     auto *barTop = new QHBoxLayout(this);
     ui->paint->insertLayout(0, barTop);
 
@@ -78,53 +139,15 @@ MainWindow::MainWindow(QWidget *parent)
     mSnappingButton->setIcon(QIcon(":/icons/snap-nodes-cusp.svg"));
     mSnappingButton->setToolTip("Turn Snapping on/off during Box Geometry manipulation");
 
-    mErrorOutput = new QLabel(this);
-
     barTop->addWidget(mCoupleButton);
     barTop->addWidget(mSnappingButton);
     barTop->addWidget(mErrorOutput);
 
+    connect(mSnappingButton, &QToolButton::clicked,
+            this, [this](){mSlideWidget->setSnapping(mSnappingButton->isChecked());});
 
-    // setup document
-    newDocument();
 
-    connect(ui->actionClean_Configurations, &QAction::triggered,
-            mPresentation.get(), &Presentation::deleteNotNeededConfigurations);
-
-    connect(selectionModel, &QItemSelectionModel::currentChanged,
-            this, [this](const QModelIndex &current){mSlideWidget->setCurrentPage(current.row());});
-
-    connect(mDoc, &KTextEditor::Document::textChanged,
-                     this, &MainWindow::fileChanged);
-    connect(ui->actionReset_Position, &QAction::triggered,
-            this, [this](){mSlideWidget->deleteBoxPosition();
-                           fileChanged();});
-    connect(ui->actionCreatePDF, &QAction::triggered,
-                     this, &MainWindow::exportPDF);
-    connect(ui->actionExport_PDF_as, &QAction::triggered,
-            this, &MainWindow::exportPDFAs);
-    connect(ui->actionExport_PDF_Handout, &QAction::triggered,
-            this, &MainWindow::exportPDFHandout);
-    connect(ui->actionExport_PDF_Handout_as, &QAction::triggered,
-            this, &MainWindow::exportPDFHandoutAs);
-
-    connect(&cacheManager(), &EquationCacheManager::conversionFinished,
-            mPresentation.get(), &Presentation::presentationChanged);
-
-    CacheManager<QImage>::instance().setCallback([this](QString){mSlideWidget->update();});
-    CacheManager<QSvgRenderer>::instance().setCallback([this](QString){mSlideWidget->update();});
-
-    mErrorOutput->setWordWrap(true);
-
-    auto transformGroup = new QActionGroup(this);
-    transformGroup->addAction(ui->actionRotate);
-    transformGroup->addAction(ui->actionTranslate);
-    ui->actionTranslate->setChecked(true);
-    connect(ui->actionRotate, &QAction::triggered,
-           this, [this](){mSlideWidget->setTransformationType(TransformationType::rotate);});
-    connect(ui->actionTranslate, &QAction::triggered,
-            this, [this](){mSlideWidget->setTransformationType(TransformationType::translate);});
-
+//    coupling between document and slide widget selection
     connect(mSlideWidget, &SlideWidget::selectionChanged,
             this, [this](Slide::Ptr slide){
             if(!mCoupleButton->isChecked()) {return ;}
@@ -142,36 +165,15 @@ MainWindow::MainWindow(QWidget *parent)
                 mViewTextDoc->removeSelection();
             }});
 
-    connect(ui->actionUndo, &QAction::triggered,
-            mSlideWidget, &SlideWidget::undo);
-    connect(ui->actionRedo, &QAction::triggered,
-            mSlideWidget, &SlideWidget::redo);
 
-    connect(ui->actionSave, &QAction::triggered,
-            this, &MainWindow::save);
-    connect(ui->actionSave_as, &QAction::triggered,
-            this, &MainWindow::saveAs);
-
-
-    connect(mSnappingButton, &QToolButton::clicked,
-            this, [this](){mSlideWidget->setSnapping(mSnappingButton->isChecked());});
-    ui->mainWidget->setCurrentIndex(1);
-
-    connect(ui->actionOpen, &QAction::triggered,
-            this, &MainWindow::openFile);
-    connect(ui->actionNew, &QAction::triggered,
-            this, [this]{ui->mainWidget->setCurrentIndex(3);});
-
+//    setup left column of the new from template dialog
     connect(ui->pushButtonOpen, &QPushButton::pressed,
             ui->actionOpen, &QAction::trigger);
     connect(ui->pushButtonNew, &QPushButton::pressed,
             ui->actionNew, &QAction::trigger);
 
-    connect(ui->actionNew_From_Template, &QAction::triggered,
-            this, [this](){ui->actionNew->trigger();
-                           ui->mainWidget->setCurrentIndex(1);});
 
-    // setup Item model template
+//    setup Item model templates in create new from template dialog
     auto const dirList = std::vector<QString>{"/home/theresa/Documents/praes/templates/blue_line_template",
                                                 "/home/theresa/Documents/praes/templates/blue_brown_template"};
     auto const presentationList = generateTemplatePresentationList(dirList);
@@ -183,7 +185,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->templateList, &QListView::doubleClicked,
             this, [this](){ui->mainWidget->setCurrentIndex(2);});
 
-//    setup create project from dialog
+
+//    setup create project from template dialog
     ui->label_folder->setText(guessSavingDirectory());
     connect(ui->back_button, &QPushButton::clicked,
             this, [this]{ui->mainWidget->setCurrentIndex(1);});
@@ -191,8 +194,11 @@ MainWindow::MainWindow(QWidget *parent)
             this, [this, dirList]{createProjectFromTemplate(dirList[ui->templateList->currentIndex().row()]);});
     connect(ui->change_directory_button, &QPushButton::clicked,
             this, [this]{ui->label_folder->setText(openDirectory());});
+    connect(ui->project_name_lineEdit, &QLineEdit::returnPressed,
+            ui->create_project_button, &QPushButton::click);
 
-//    setup create new project
+
+//    setup create new project dialog
     ui->label_folder->setText(guessSavingDirectory());
     connect(ui->back_button_new, &QPushButton::clicked,
             this, [this]{ui->mainWidget->setCurrentIndex(1);});
@@ -200,7 +206,17 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::createEmptyProject);
     connect(ui->change_directory_button, &QPushButton::clicked,
             this, [this]{ui->label_folder->setText(openDirectory());});
+    connect(ui->new_project_name_lineEdit, &QLineEdit::returnPressed,
+            ui->create_new_project_button, &QPushButton::click);
 
+
+//    setup document
+    connect(mDoc, &KTextEditor::Document::textChanged,
+                     this, &MainWindow::fileChanged);
+    newDocument();
+
+//    open create new from template dialog
+    ui->mainWidget->setCurrentIndex(1);
 }
 
 MainWindow::~MainWindow()
