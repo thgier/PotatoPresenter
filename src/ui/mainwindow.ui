@@ -538,6 +538,9 @@
      <property name="title">
       <string>Open Recent</string>
      </property>
+     <property name="icon">
+      <iconset theme="document-open-recent"/>
+     </property>
     </widget>
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
@@ -761,8 +764,14 @@
    </property>
   </action>
   <action name="actionopenRecent">
+   <property name="icon">
+    <iconset theme="document-open-recent"/>
+   </property>
    <property name="text">
-    <string>openRecent</string>
+    <string>open recent</string>
+   </property>
+   <property name="toolTip">
+    <string>open recent</string>
    </property>
   </action>
  </widget>
