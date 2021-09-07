@@ -24,6 +24,7 @@
 #include <QCloseEvent>
 #include <QStandardPaths>
 #include <QDir>
+#include <QSettings>
 
 #include <functional>
 
@@ -110,6 +111,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->actionClean_Configurations, &QAction::triggered,
             mPresentation.get(), &Presentation::deleteNotNeededConfigurations);
+
+//    open Recent
+    QSettings settings("Potato", "Potato Presenter");
+    updateOpenRecent();
+
 
 
 //    setup CacheManager
@@ -317,6 +323,8 @@ void MainWindow::openProject(QString path) {
     fileChanged();
     setWindowTitle(windowTitle());
     mIsModified = false;
+    addFileToOpenRecent(path);
+    updateOpenRecent();
 }
 
 void MainWindow::newDocument() {
@@ -665,4 +673,31 @@ QString MainWindow::guessSavingDirectory() const {
         return ui->label_folder->text();
     }
     return QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+}
+
+void MainWindow::addFileToOpenRecent(QString path) {
+    auto const maxEntries = 8;
+    QCoreApplication::setOrganizationName("Potato");
+    QCoreApplication::setApplicationName("Potato Presenter");
+    QSettings settings;
+    auto list = readOpenRecentArrayFromSettings(settings);
+    list.insert(list.begin(), path);
+    if (list.size() > maxEntries) {
+        list.pop_back();
+    }
+    writeOpenRecentArrayToSettings(list, settings);
+}
+
+void MainWindow::updateOpenRecent() {
+    QCoreApplication::setOrganizationName("Potato");
+    QCoreApplication::setApplicationName("Potato Presenter");
+    QSettings settings;
+    auto const openRecentList = readOpenRecentArrayFromSettings(settings);
+    ui->menuOpen_Recent->clear();
+    for (auto const& entry : openRecentList) {
+        QAction *openAct = new QAction(entry, this);
+        connect(openAct, &QAction::triggered,
+                this, [this, entry]{openProject(entry);});
+        ui->menuOpen_Recent->addAction(openAct);
+    }
 }

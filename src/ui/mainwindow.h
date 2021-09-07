@@ -11,13 +11,16 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QGraphicsItem>
-#include <KTextEditor/Document>
-#include <KTextEditor/Editor>
 #include <QListWidget>
 #include <QTimer>
 #include <QLabel>
 #include <QToolButton>
+#include <QSettings>
+
+#include <KTextEditor/Document>
+#include <KTextEditor/Editor>
 #include <KXmlGuiWindow>
+
 #include "slide.h"
 #include "slidewidget.h"
 #include "configboxes.h"
@@ -90,6 +93,8 @@ private:
     QString openDirectory();
     QString guessSavingDirectory() const;
 
+    void addFileToOpenRecent(QString path);
+    void updateOpenRecent();
 
 private:
     Ui::MainWindow *ui;

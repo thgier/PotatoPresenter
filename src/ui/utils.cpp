@@ -39,3 +39,24 @@ bool copyDirectory(QString sourceFolder, QString destFolder) {
     return true;
 }
 
+void writeOpenRecentArrayToSettings(std::vector<QString> list, QSettings &settings) {
+    settings.beginWriteArray("openRecent");
+    for (int i = 0; i < list.size(); ++i) {
+        settings.setArrayIndex(i);
+        settings.setValue("entry", list.at(i));
+    }
+    settings.endArray();
+}
+
+std::vector<QString> readOpenRecentArrayFromSettings(QSettings &settings) {
+    std::vector<QString> list;
+    int size = settings.beginReadArray("openRecent");
+    for (int i = 0; i < size; ++i) {
+        settings.setArrayIndex(i);
+        list.push_back(settings.value("entry").toString());
+    }
+    settings.endArray();
+    return list;
+}
+
+
