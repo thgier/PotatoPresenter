@@ -697,6 +697,7 @@ void MainWindow::updateOpenRecent() {
     QSettings settings;
     auto const openRecentList = readOpenRecentArrayFromSettings(settings);
     ui->menuOpen_Recent->clear();
+    ui->openRecent_listWidget->clear();
     for (auto const& entry : openRecentList) {
 //        add to toolbar
         QAction *openAct = new QAction(entry, this);
