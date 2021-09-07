@@ -27,6 +27,7 @@
 #include <QSettings>
 
 #include <functional>
+#include <algorithm>
 
 #include "parser.h"
 #include "equationcachemanager.h"
@@ -681,6 +682,11 @@ void MainWindow::addFileToOpenRecent(QString path) {
     QCoreApplication::setApplicationName("Potato Presenter");
     QSettings settings;
     auto list = readOpenRecentArrayFromSettings(settings);
+<<<<<<< HEAD
+=======
+    auto const rm = std::ranges::remove(list, path);
+    list.erase(rm.begin(), rm.end());
+>>>>>>> 0689c07 (open recent)
     list.insert(list.begin(), path);
     if (list.size() > maxEntries) {
         list.pop_back();
