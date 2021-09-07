@@ -74,7 +74,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 //    setup Actions
     connect(ui->actionNew, &QAction::triggered,
-            this, [this]{ui->mainWidget->setCurrentIndex(3);});
+            this, &MainWindow::openCreateNewProjectDialog);
     connect(ui->actionNew_From_Template, &QAction::triggered,
             this, [this](){ui->actionNew->trigger();
                            ui->mainWidget->setCurrentIndex(1);});
@@ -190,11 +190,10 @@ MainWindow::MainWindow(QWidget *parent)
     TemplateListDelegate *delegateTemplate = new TemplateListDelegate(this);
     ui->templateList->setItemDelegate(delegateTemplate);
     connect(ui->templateList, &QListView::doubleClicked,
-            this, [this](){ui->mainWidget->setCurrentIndex(2);});
+            this, &MainWindow::openCreateProjectFromTemplateDialog);
 
 
 //    setup create project from template dialog
-    ui->label_folder->setText(guessSavingDirectory());
     connect(ui->back_button, &QPushButton::clicked,
             this, [this]{ui->mainWidget->setCurrentIndex(1);});
     connect(ui->create_project_button, &QPushButton::clicked,
@@ -206,13 +205,12 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 //    setup create new project dialog
-    ui->label_folder->setText(guessSavingDirectory());
     connect(ui->back_button_new, &QPushButton::clicked,
             this, [this]{ui->mainWidget->setCurrentIndex(1);});
     connect(ui->create_new_project_button, &QPushButton::clicked,
             this, &MainWindow::createEmptyProject);
-    connect(ui->change_directory_button, &QPushButton::clicked,
-            this, [this]{ui->label_folder->setText(openDirectory());});
+    connect(ui->change_directory_button_new, &QPushButton::clicked,
+            this, [this]{ui->label_folder_new->setText(openDirectory());});
     connect(ui->new_project_name_lineEdit, &QLineEdit::returnPressed,
             ui->create_new_project_button, &QPushButton::click);
 
@@ -326,6 +324,7 @@ void MainWindow::openProject(QString path) {
     mIsModified = false;
     addFileToOpenRecent(path);
     updateOpenRecent();
+    addDirectoryToSettings(QFileInfo(filename()).path());
 }
 
 void MainWindow::newDocument() {
@@ -598,12 +597,13 @@ void MainWindow::insertTextInEditor(QString path) {
 
 QString MainWindow::openDirectory() {
     QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"),
-                                                 ui->label_folder->text(),
+                                                 guessSavingDirectory(),
                                                  QFileDialog::ShowDirsOnly
                                                  | QFileDialog::DontResolveSymlinks);
     if(dir.isEmpty()){
-       return ui->label_folder->text();
+       return guessSavingDirectory();
     }
+    addDirectoryToSettings(dir);
     return dir;
 }
 
@@ -666,14 +666,18 @@ QString MainWindow::assembleProjectPathJsonFile(QString projectname) const {
 }
 
 QString MainWindow::assembleProjectDirectory(QString projectname) const {
-    return ui->label_folder->text() + "/" + projectname;
+    return guessSavingDirectory() + "/" + projectname;
 }
 
 QString MainWindow::guessSavingDirectory() const {
-    if(!ui->project_name_lineEdit->text().isEmpty()) {
-        return ui->label_folder->text();
+    QCoreApplication::setOrganizationName("Potato");
+    QCoreApplication::setApplicationName("Potato Presenter");
+    QSettings settings;
+    auto const dir = settings.value("directory").toString();
+    if(dir.isEmpty()) {
+        return QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
     }
-    return QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    return dir;
 }
 
 void MainWindow::addFileToOpenRecent(QString path) {
@@ -713,4 +717,23 @@ void MainWindow::updateOpenRecent() {
         newItem->setData(Qt::ToolTipRole, entry);
         ui->openRecent_listWidget->addItem(newItem);
     }
+}
+
+void MainWindow::addDirectoryToSettings(QString directory) const {
+    QCoreApplication::setOrganizationName("Potato");
+    QCoreApplication::setApplicationName("Potato Presenter");
+    QSettings settings;
+    auto dir = QDir(directory);
+    dir.cdUp();
+    settings.setValue("directory", dir.path());
+}
+
+void MainWindow::openCreateProjectFromTemplateDialog() {
+    ui->mainWidget->setCurrentIndex(2);
+    ui->label_folder->setText(guessSavingDirectory());
+}
+
+void MainWindow::openCreateNewProjectDialog() {
+    ui->mainWidget->setCurrentIndex(3);
+    ui->label_folder_new->setText(guessSavingDirectory());
 }

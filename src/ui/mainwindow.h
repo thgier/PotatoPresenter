@@ -96,6 +96,10 @@ private:
     void addFileToOpenRecent(QString path);
     void updateOpenRecent();
 
+    void addDirectoryToSettings(QString directory) const;
+    void openCreateProjectFromTemplateDialog();
+    void openCreateNewProjectDialog();
+
 private:
     Ui::MainWindow *ui;
     KTextEditor::Editor* mEditor;
