@@ -85,20 +85,21 @@ private:
     void insertTextInEditor(QString path);
 
 //    open save project dialog
-    void createProjectFromTemplate(QString pathToSelectedTemplate);
-    void createEmptyProject();
+    void openCreatePresentationDialog();
+    void createProjectFromTemplate();
+
+//    path management
     QString assembleProjectDirectory(QString projectname) const;
     QString assembleProjectPathInputFile(QString projectname) const;
     QString assembleProjectPathJsonFile(QString projectname) const;
-    QString openDirectory();
+    void addDirectoryToSettings(QString directory) const;
     QString guessSavingDirectory() const;
+    QString openDirectory();
 
+//    open Recent
     void addFileToOpenRecent(QString path);
     void updateOpenRecent();
 
-    void addDirectoryToSettings(QString directory) const;
-    void openCreateProjectFromTemplateDialog();
-    void openCreateNewProjectDialog();
 
 private:
     Ui::MainWindow *ui;
@@ -113,6 +114,7 @@ private:
     SlideListModel *mSlideModel;
 
     TemplateListModel *mTemplateModel;
+    QString mTemplatePath;
 
     QString mPdfFile;
     QString mPdfFileHandout;

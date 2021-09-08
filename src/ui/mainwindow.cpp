@@ -72,12 +72,11 @@ MainWindow::MainWindow(QWidget *parent)
             this, [this](const QModelIndex &current){mSlideWidget->setCurrentPage(current.row());});
 
 
-//    setup Actions
+//    setup Action
     connect(ui->actionNew, &QAction::triggered,
-            this, &MainWindow::openCreateNewProjectDialog);
-    connect(ui->actionNew_From_Template, &QAction::triggered,
-            this, [this](){ui->actionNew->trigger();
-                           ui->mainWidget->setCurrentIndex(1);});
+            this, [this](){
+                if(!closeDocument()) return;
+                ui->mainWidget->setCurrentIndex(1);});
     connect(ui->actionOpen, &QAction::triggered,
             this, &MainWindow::openFile);
     connect(ui->actionSave, &QAction::triggered,
@@ -98,8 +97,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionRedo, &QAction::triggered,
             mSlideWidget, &SlideWidget::redo);
     connect(ui->actionReset_Position, &QAction::triggered,
-            this, [this](){mSlideWidget->deleteBoxPosition();
-                           fileChanged();});
+            this, [this]() {
+                mSlideWidget->deleteBoxPosition();
+                fileChanged();
+            });
 
     auto transformGroup = new QActionGroup(this);
     transformGroup->addAction(ui->actionRotate);
@@ -116,7 +117,7 @@ MainWindow::MainWindow(QWidget *parent)
 //    open Recent
     QSettings settings("Potato", "Potato Presenter");
     updateOpenRecent();
-    connect(ui->openRecent_listWidget, &QListWidget::itemDoubleClicked,
+    connect(ui->openRecent_listWidget, &QListWidget::itemClicked,
             this, [this](QListWidgetItem *item){openProject(item->data(Qt::ToolTipRole).toString());});
 
 //    setup CacheManager
@@ -174,10 +175,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 //    setup left column of the new from template dialog
-    connect(ui->pushButtonOpen, &QPushButton::pressed,
+    connect(ui->toolButtonOpen, &QPushButton::clicked,
             ui->actionOpen, &QAction::trigger);
-    connect(ui->pushButtonNew, &QPushButton::pressed,
-            ui->actionNew, &QAction::trigger);
 
 
 //    setup Item model templates in create new from template dialog
@@ -189,30 +188,27 @@ MainWindow::MainWindow(QWidget *parent)
     ui->templateList->setModel(mTemplateModel);
     TemplateListDelegate *delegateTemplate = new TemplateListDelegate(this);
     ui->templateList->setItemDelegate(delegateTemplate);
-    connect(ui->templateList, &QListView::doubleClicked,
-            this, &MainWindow::openCreateProjectFromTemplateDialog);
+    connect(ui->templateList, &QListView::clicked,
+            this, [this, dirList]{
+                mTemplatePath = dirList[ui->templateList->currentIndex().row()];
+                openCreatePresentationDialog();
+            });
+    connect(ui->emptPresentationButton, &QPushButton::clicked,
+            this, [this]{
+                mTemplatePath = "/home/theresa/Documents/praes/templates/empty";
+                openCreatePresentationDialog();
+            });
 
 
 //    setup create project from template dialog
     connect(ui->back_button, &QPushButton::clicked,
             this, [this]{ui->mainWidget->setCurrentIndex(1);});
     connect(ui->create_project_button, &QPushButton::clicked,
-            this, [this, dirList]{createProjectFromTemplate(dirList[ui->templateList->currentIndex().row()]);});
+            this, [this, dirList]{createProjectFromTemplate();});
     connect(ui->change_directory_button, &QPushButton::clicked,
             this, [this]{ui->label_folder->setText(openDirectory());});
     connect(ui->project_name_lineEdit, &QLineEdit::returnPressed,
             ui->create_project_button, &QPushButton::click);
-
-
-//    setup create new project dialog
-    connect(ui->back_button_new, &QPushButton::clicked,
-            this, [this]{ui->mainWidget->setCurrentIndex(1);});
-    connect(ui->create_new_project_button, &QPushButton::clicked,
-            this, &MainWindow::createEmptyProject);
-    connect(ui->change_directory_button_new, &QPushButton::clicked,
-            this, [this]{ui->label_folder_new->setText(openDirectory());});
-    connect(ui->new_project_name_lineEdit, &QLineEdit::returnPressed,
-            ui->create_new_project_button, &QPushButton::click);
 
 
 //    setup document
@@ -314,6 +310,11 @@ void MainWindow::openFile() {
 }
 
 void MainWindow::openProject(QString path) {
+    if(!QFile(path).exists()) {
+        QMessageBox::information(this, tr("File does not exist"), tr("File does not exist"),
+                                         QMessageBox::Ok);
+        return;
+    }
     ui->mainWidget->setCurrentIndex(0);
     newDocument();
     openInputFile(path);
@@ -329,9 +330,6 @@ void MainWindow::openProject(QString path) {
 
 void MainWindow::newDocument() {
     ui->mainWidget->setCurrentIndex(0);
-    if(!closeDocument()) {
-        return;
-    }
     mDoc = mEditor->createDocument(this);
     mViewTextDoc->deleteLater();
     mViewTextDoc = mDoc->createView(this);
@@ -607,16 +605,17 @@ QString MainWindow::openDirectory() {
     return dir;
 }
 
-void MainWindow::createProjectFromTemplate(QString pathToSelectedTemplate) {
+void MainWindow::createProjectFromTemplate() {
     auto const projectname = ui->project_name_lineEdit->text();
     if(projectname.isEmpty()) {
-        ui->create_project_error_label->setText(tr("Please insert a project name."));
+        QMessageBox::information(this, tr("Please insert Project name."), tr("Please insert Project name."),
+                                 QMessageBox::Ok);
         return;
     }
 
 //    copy template and demo into project folder and rename it
-    if(!copyDirectory(pathToSelectedTemplate, assembleProjectDirectory(projectname))) {
-        QMessageBox::information(this, tr("Copy of template failed."), tr("Copy of template faield. Source directory: %1. Destination Directory: %2").arg(pathToSelectedTemplate, assembleProjectDirectory(projectname)),
+    if(!copyDirectory(mTemplatePath, assembleProjectDirectory(projectname))) {
+        QMessageBox::information(this, tr("Copy of template failed."), tr("Copy of template faield. Source directory: %1. Destination Directory: %2").arg(mTemplatePath, assembleProjectDirectory(projectname)),
                                  QMessageBox::Ok);
         return;
     }
@@ -632,31 +631,6 @@ void MainWindow::createProjectFromTemplate(QString pathToSelectedTemplate) {
     openProject(assembleProjectPathInputFile(projectname));
 }
 
-void MainWindow::createEmptyProject() {
-    auto const projectname = ui->new_project_name_lineEdit->text();
-    QDir destDir(assembleProjectDirectory(projectname));
-    if(destDir.exists()) {
-        QMessageBox::information(this, tr("Folder already exists."),
-                                 tr("Folder %1 already exists. Please select another project name.").arg(assembleProjectDirectory(projectname)),
-                                 QMessageBox::Ok);
-        return;
-    }
-    destDir.mkdir(assembleProjectDirectory(projectname));
-    if(!QFile(assembleProjectPathInputFile(projectname)).open(QIODevice::NewOnly)) {
-        QMessageBox::information(this, tr("File already exists."),
-                                 tr("File %1 already exists. Please select another project name.").arg(assembleProjectPathInputFile(projectname)),
-                                 QMessageBox::Ok);
-        return;
-    }
-    if(!QFile(assembleProjectPathJsonFile(projectname)).open(QIODevice::NewOnly)) {
-        QMessageBox::information(this, tr("File already exists."),
-                                 tr("File %1 already exists. Please select another project name.").arg(assembleProjectPathJsonFile(projectname)),
-                                 QMessageBox::Ok);
-        return;
-    }
-    openProject(assembleProjectPathInputFile(projectname));
-}
-
 QString MainWindow::assembleProjectPathInputFile(QString projectname) const {
     return assembleProjectDirectory(projectname) + "/" + projectname + ".txt";
 }
@@ -666,7 +640,7 @@ QString MainWindow::assembleProjectPathJsonFile(QString projectname) const {
 }
 
 QString MainWindow::assembleProjectDirectory(QString projectname) const {
-    return guessSavingDirectory() + "/" + projectname;
+    return ui->label_folder->text() + "/" + projectname;
 }
 
 QString MainWindow::guessSavingDirectory() const {
@@ -728,12 +702,11 @@ void MainWindow::addDirectoryToSettings(QString directory) const {
     settings.setValue("directory", dir.path());
 }
 
-void MainWindow::openCreateProjectFromTemplateDialog() {
+void MainWindow::openCreatePresentationDialog() {
     ui->mainWidget->setCurrentIndex(2);
-    ui->label_folder->setText(guessSavingDirectory());
-}
-
-void MainWindow::openCreateNewProjectDialog() {
-    ui->mainWidget->setCurrentIndex(3);
-    ui->label_folder_new->setText(guessSavingDirectory());
+    if(ui->label_folder->text().isEmpty()) {
+        ui->label_folder->setText(guessSavingDirectory());
+    }
+    ui->project_name_lineEdit->clear();
+    ui->project_name_lineEdit->setFocus();
 }
