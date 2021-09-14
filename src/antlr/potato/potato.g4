@@ -12,9 +12,10 @@ property_entry : text_colon value;
 
 value: (TEXT | ' ')*;
 
-text : (TEXT | ' ' | text_colon | ';' | BACKSLASH) | (NEWLINE (TEXT | ' ' | text_colon | ';'))*;
-
 paragraph: text NEWLINE;
+
+text : (TEXT | ' ' | text_colon | ';' | BACKSLASH) | (NEWLINE (TEXT | ' ' | text_colon | ';'))*
+    | '{' (TEXT | ' ' | text_colon | ';' | BACKSLASH)* '}';
 
 text_colon: TEXT ' '? ':' ' '?;
 
@@ -22,4 +23,4 @@ BACKSLASH : [\\];
 
 NEWLINE : '\n'+ ; 
 
-TEXT : ~([\][] | [\\] | [\n] | [ :;])*;
+TEXT : ~([\][] | [\\] | [\n] | [ :;{}])*;

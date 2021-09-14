@@ -19,12 +19,6 @@ Qt::PenStyle CSSToPenStyle(QString cssStyle) {
 }
 }
 
-Box::Box(const BoxStyle &boxStyle, const QString &id, int line)
-    : mStyle{boxStyle}
-    , mId{id}
-    , mLine{line}
-{
-}
 
 BoxStyle const& Box::style() const{
     return mStyle;
@@ -42,24 +36,24 @@ BoxGeometry &Box::geometry()  {
     return mStyle.mGeometry;
 }
 
-const QString &Box::id() const {
-    return mId;
+const QString Box::id() const {
+    return style().id();
 }
 
 void Box::setId(QString const& id) {
-    mId = id;
+    mStyle.mId = id;
 }
 
 QString Box::configId() const {
-    return mConfigId.value_or(mId);
+    return style().configId();
 }
 
 void Box::setConfigId(QString configId) {
-    mConfigId = configId;
+    mStyle.mConfigId = configId;
 }
 
 int Box::line() const {
-    return mLine;
+    return style().line();
 }
 
 void Box::startDraw(QPainter &painter) {

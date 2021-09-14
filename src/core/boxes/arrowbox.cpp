@@ -6,11 +6,6 @@
 
 #include "arrowbox.h"
 
-ArrowBox::ArrowBox(BoxStyle style, QString id, int line)
-    : Box(style, id, line)
-{
-}
-
 void ArrowBox::drawContent(QPainter& painter, std::map<QString, QString>){
     PainterTransformScope scope(this, painter);
     drawGlobalBoxSettings(painter);

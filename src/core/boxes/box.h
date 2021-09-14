@@ -25,7 +25,10 @@ enum PauseDisplayMode {
 };
 
 struct BoxStyle{
-    QString boxClass;
+    QString mId = "";
+    std::optional<QString> mClass;
+    int mLine = 0;
+    std::optional<QString> mConfigId;
     QString language;
     bool movable = true;
     std::optional<QColor> mColor;
@@ -72,18 +75,30 @@ struct BoxStyle{
         return !(mColor.has_value() || mFontSize.has_value() || mLineSpacing.has_value() || mFontWeight.has_value()
                 || mFont.has_value() || mAlignment.has_value() || mOpacity.has_value()) && mGeometry.empty();
     }
-    bool hasBorder() {
+    bool hasBorder() const {
         // CSS standard says style has to be given
         return mBorder.style.has_value();
     }
-    int borderWidth() {
+    int borderWidth() const {
         return mBorder.width.value_or(5);
     }
-    QColor borderColor() {
+    QColor borderColor() const {
         return mBorder.color.value_or(Qt::black);
     }
-    QString borderStyle() {
+    QString borderStyle() const {
         return mBorder.style.value_or("solid");
+    }
+    QString getClass() const {
+        return mClass.value_or("default");
+    }
+    QString id() const {
+        return mId;
+    }
+    int line() const {
+        return mLine;
+    }
+    QString configId() const {
+        return mConfigId.value_or(mId);
     }
 };
 
@@ -98,9 +113,6 @@ class Box
 public:
     using Ptr = std::shared_ptr<Box>;
     using List = std::vector<Ptr>;
-
-    Box();
-    Box(BoxStyle const& boxStyle, QString const& id, int line);
 
     // Implement this in child classes to draw the box's contents given the passed @p variables
     virtual void drawContent(QPainter& painter, std::map<QString, QString> variables) = 0;
@@ -120,7 +132,7 @@ public:
     void setGeometry(BoxGeometry const& geometry);
     void setGeometry(MemberBoxGeometry const& geometry);
 
-    QString const& id() const;
+    const QString id() const;
     void setId(QString const& id);
 
     // line in input file where box is defined
@@ -128,8 +140,9 @@ public:
 
     // pause comment construct several boxes with different content and different
     // read configuration from another box if this is the case
-    void setConfigId(QString configId);
+//    void setConfigId(QString configId);
     QString configId() const;
+    void setConfigId(QString configId);
 
     // box is only shown on one pause counter or on different
     void setPauseMode(PauseDisplayMode mode);
@@ -163,9 +176,6 @@ private:
     void endDraw(QPainter& painter) const;
 
 private:
-    QString mId;
     int mPauseCounter = 0;
-    int mLine;
-    std::optional<QString> mConfigId;
     PauseDisplayMode mPauseMode = PauseDisplayMode::fromPauseOn;
 };

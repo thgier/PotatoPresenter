@@ -22,11 +22,9 @@
 #include "markdownParser.h"
 #include "markdownformatvisitor.h"
 
-MarkdownTextBox::MarkdownTextBox(QString text, BoxStyle style, QString id, int line)
-    : TextBox(text, style, id, line)
-{
-
-}
+MarkdownTextBox::MarkdownTextBox(QString text)
+    : TextBox(text)
+{}
 
 std::shared_ptr<TextBox> MarkdownTextBox::clone() {
     return std::make_shared<MarkdownTextBox>(*this);

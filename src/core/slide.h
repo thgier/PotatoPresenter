@@ -16,6 +16,7 @@ public:
     using Ptr = std::shared_ptr<Slide>;
 
     Slide();
+    Slide(QString const& id, int line);
     Slide(QString const& id, std::map<QString, QString> const& variables, int line);
 
     // Access contained boxes

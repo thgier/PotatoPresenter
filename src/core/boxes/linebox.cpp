@@ -8,11 +8,6 @@
 
 #include <QPainterPath>
 
-LineBox::LineBox(BoxStyle style, QString id, int line)
-    : Box(style, id, line)
-{
-}
-
 void LineBox::drawContent(QPainter& painter, std::map<QString, QString>){
     PainterTransformScope scope(this, painter);
     drawGlobalBoxSettings(painter);

@@ -6,9 +6,8 @@
 
 #include "textbox.h"
 
-TextBox::TextBox(QString text, BoxStyle style, QString id, int line)
-    : Box(style, id, line)
-    , mText(text)
+TextBox::TextBox(QString text)
+    : mText(text)
 {
 }
 

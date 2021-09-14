@@ -29,7 +29,6 @@
 #include <functional>
 #include <algorithm>
 
-#include "parser.h"
 #include "equationcachemanager.h"
 #include "cachemanager.h"
 #include "slidelistmodel.h"
@@ -37,6 +36,7 @@
 #include "templatelistdelegate.h"
 #include "pdfcreator.h"
 #include "utils.h"
+#include "potatoformatvisitor.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -241,21 +241,24 @@ void MainWindow::fileChanged() {
     auto iface = qobject_cast<KTextEditor::MarkInterface*>(mDoc);
     iface->clearMarks();
     auto file = QFileInfo(filename()).absolutePath();
-    Parser parser{file};
-    parser.loadInput(mDoc->text().toUtf8());
-    try {
-        auto const preamble = parser.readPreamble();
-        auto slides = parser.readInput();
+    auto const text = mDoc->text().toUtf8().toStdString();
+    auto const parserOutput = generateSlides(text, file);
+    if(parserOutput.successfull()) {
+        auto const slides = parserOutput.slideList();
+        auto const preamble = parserOutput.preamble();
         if(!preamble.templateName.isEmpty()) {
             mPresentation->setTemplate(readTemplate(preamble.templateName));
         }
         mPresentation->setSlides(slides);
         mErrorOutput->setText("Conversion succeeded \u2714");
-    }  catch (ParserError& error) {
+    }
+    else {
+        auto const error = parserOutput.parserError();
         mErrorOutput->setText("Line " + QString::number(error.line + 1) + ": " + error.message + " \u26A0");
         iface->addMark(error.line, KTextEditor::MarkInterface::MarkTypes::Error);
         return;
     }
+
     mSlideWidget->updateSlideId();
     mSlideWidget->update();
     auto const index = mSlideModel->index(mSlideWidget->pageNumber());
@@ -265,22 +268,24 @@ void MainWindow::fileChanged() {
 
 std::shared_ptr<Template> MainWindow::readTemplate(QString filename) const {
     auto thisTemplate = std::make_shared<Template>();
-    Parser templateParser{QFileInfo(filename).absolutePath()};
-    templateParser.setParseTemplate(true);
-    try {
-        thisTemplate->readTemplateConfig(filename + ".json");
-    }  catch (ConfigError& error) {
-        throw ParserError{error.errorMessage, 0};
-    }
-
+    thisTemplate->readTemplateConfig(filename + ".json");
     auto file = QFile(filename + ".txt");
     if(!file.open(QIODevice::ReadOnly)){
-        throw ParserError{"Can't open file" + file.fileName(), 0};
+        mErrorOutput->setText(tr("Cannot load template %1.").arg(file.fileName()));
     }
-    templateParser.loadInput(file.readAll());
-    auto const templateSlides = templateParser.readInput();
-    thisTemplate->setSlides(templateSlides);
-    return thisTemplate;
+    auto const directoryPath = QFileInfo(filename).absolutePath();
+    auto const parserOutput = generateSlides(file.readAll().toStdString(), directoryPath, true);
+
+    if(parserOutput.successfull()) {
+        auto const slides = parserOutput.slideList();
+        thisTemplate->setSlides(slides);
+        return thisTemplate;
+    }
+    else {
+        auto const error = parserOutput.parserError();
+        mErrorOutput->setText("Cannot load template \u26A0");
+        return {};
+    }
 }
 
 void MainWindow::setupFileActionsFromKPart() {
@@ -554,21 +559,17 @@ Presentation::Ptr MainWindow::generateTemplatePresentation(QString directory) co
         return {};
     }
     auto const val = file.readAll();
-    Parser parser{directory};
-    parser.loadInput(val);
-    auto presentation = std::make_shared<Presentation>();
-    try {
-        auto const preamble = parser.readPreamble();
-        auto slides = parser.readInput();
-        if(!preamble.templateName.isEmpty()) {
-            presentation->setTemplate(readTemplate(preamble.templateName));
-        }
+
+    auto const parserOutput = generateSlides(val.toStdString(), directory);
+    if(parserOutput.successfull()) {
+        auto presentation = std::make_shared<Presentation>();
+        auto const slides = parserOutput.slideList();
         presentation->setSlides(slides);
-        mErrorOutput->setText("Conversion succeeded \u2714");
-    }  catch (ParserError& error) {
-        return {};
+        return presentation;
     }
-    return presentation;
+    else {
+        return{};
+    }
 }
 
 Presentation::List MainWindow::generateTemplatePresentationList(std::vector<QString> directories) const {

@@ -21,10 +21,14 @@ find_package(Qt5Test REQUIRED)
 enable_testing(true)
 
 add_executable(praes
-    src/antlr/generated/markdownBaseListener.cpp
-    src/antlr/generated/markdownLexer.cpp
-    src/antlr/generated/markdownListener.cpp
-    src/antlr/generated/markdownParser.cpp
+    src/antlr/markdown/generated/markdownBaseListener.cpp
+    src/antlr/markdown/generated/markdownLexer.cpp
+    src/antlr/markdown/generated/markdownListener.cpp
+    src/antlr/markdown/generated/markdownParser.cpp
+    src/antlr/potato/generated/potatoBaseListener.cpp
+    src/antlr/potato/generated/potatoLexer.cpp
+    src/antlr/potato/generated/potatoListener.cpp
+    src/antlr/potato/generated/potatoParser.cpp
     src/core/boxes/arrowbox.cpp
     src/core/boxes/box.cpp
     src/core/boxes/codebox.cpp
@@ -44,6 +48,7 @@ add_executable(praes
     src/core/markdownformatvisitor.cpp
     src/core/parser.cpp
     src/core/pdfcreator.cpp
+    src/core/potatoformatvisitor.cpp
     src/core/presentation.cpp
     src/core/template.cpp
     src/core/tokenizer.cpp
@@ -66,14 +71,27 @@ add_executable(testtokenizer
     src/core/tokenizer.cpp)
 add_test(NAME testtokenizer COMMAND testtokenizer)
 
+add_executable(grammartest
+    src/core/grammartest.cpp
+    src/antlr/potato/generated/potatoBaseListener.cpp
+    src/antlr/potato/generated/potatoLexer.cpp
+    src/antlr/potato/generated/potatoListener.cpp
+    src/antlr/potato/generated/potatoParser.cpp)
+add_test(NAME grammartest COMMAND grammartest)
+
 target_link_libraries(praes PRIVATE Qt5::Widgets KF5::TextEditor KF5::SyntaxHighlighting)
 target_link_libraries(praes PRIVATE Qt5::PrintSupport)
 target_link_libraries(praes PRIVATE Qt5::Svg)
-target_link_libraries(testtokenizer PRIVATE Qt5::Test)
 target_link_libraries(praes PRIVATE antlr4-runtime)
+target_link_libraries(testtokenizer PRIVATE Qt5::Test)
+target_link_libraries(grammartest PRIVATE Qt5::Test)
+target_link_libraries(grammartest PRIVATE antlr4-runtime)
 
-target_include_directories(praes PRIVATE src/ui/ src/core/ src/core/boxes/ src/core/antlr src/antlr/generated)
+target_include_directories(praes PRIVATE src/ui/ src/core/ src/core/boxes/ src/core/antlr src/antlr/markdown/generated src/antlr/potato/generated)
 target_include_directories(praes SYSTEM PRIVATE /usr/include/antlr4-runtime)
 target_include_directories(testtokenizer PRIVATE src/ui/ src/core/ src/core/boxes/)
+target_include_directories(grammartest PRIVATE src/antlr/potato/generated/ src/core/antlr)
+target_include_directories(grammartest SYSTEM PRIVATE /usr/include/antlr4-runtime)
 
 target_compile_definitions(praes PRIVATE -DQT_NO_KEYWORDS)
+target_compile_definitions(grammartest PRIVATE -DQT_NO_KEYWORDS)

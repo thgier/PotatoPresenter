@@ -22,6 +22,7 @@ public:
 
     using variablesMap = std::shared_ptr<std::map<QString, QString>>;
     Template();
+    Template(SlideList slides);
     void setSlides(SlideList slides);
     void readTemplateConfig(QString configFile);
     void applyTemplate(SlideList& slideList);

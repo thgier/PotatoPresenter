@@ -152,7 +152,7 @@ std::pair<Slide::Ptr, Box::Ptr> Presentation::findBoxForLine(int line) const {
 void Presentation::applyStandardTemplateToBox(Box::Ptr box) const {
     QRect rect;
     auto style = box->style();
-    if(style.boxClass == "title") {
+    if(style.getClass() == "title") {
         rect = QRect(50, 40, 1500, 100);
         if(!style.mFontWeight.has_value()) {
             style.mFontWeight = FontWeight::bold;
@@ -161,16 +161,16 @@ void Presentation::applyStandardTemplateToBox(Box::Ptr box) const {
             style.mFontSize = 80;
         }
     }
-    else if(style.boxClass == "body") {
+    else if(style.getClass() == "body") {
         rect = QRect(50, 150, 1500, 650);
     }
-    else if(style.boxClass == "right_column") {
+    else if(style.getClass() == "right_column") {
         rect = QRect(830, 150, 720, 650);
     }
-    else if(style.boxClass == "left_column") {
+    else if(style.getClass() == "left_column") {
         rect = QRect(50, 150, 720, 650);
     }
-    else if(style.boxClass == "fullscreen") {
+    else if(style.getClass() == "fullscreen") {
         rect = QRect(0, 0, 1600, 900);
     }
     else {

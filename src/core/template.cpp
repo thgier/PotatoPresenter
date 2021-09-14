@@ -13,6 +13,11 @@ Template::Template()
 
 }
 
+Template::Template(SlideList slides)
+{
+    setSlides(slides);
+}
+
 void Template::readTemplateConfig(QString configFile) {
     mPresentation.loadInput(configFile);
 }
@@ -64,12 +69,7 @@ void Template::applyTemplate(SlideList& slideList) {
     for(auto const& slide: slideList.vector) {
         auto const slideclass = slide->slideClass();
         Box::List boxlist;
-        if(!slideclass.isEmpty()) {
-            boxlist = getTemplateSlide(slideclass);
-        }
-        else {
-            boxlist = getTemplateSlide("default");
-        }
+        boxlist = getTemplateSlide(slideclass);
         slide->setTemplateBoxes(boxlist);
         for(auto const& box: slide->boxes()) {
             applyTemplateToBox(box);
@@ -79,10 +79,10 @@ void Template::applyTemplate(SlideList& slideList) {
 
 void Template::applyTemplateToBox(Box::Ptr box) const {
     auto boxStyle = box->style();
-    if(boxStyle.boxClass.isEmpty()) {
+    if(!boxStyle.mClass.has_value()) {
         return;
     }
-    auto boxStyleTemplate = getStyle(boxStyle.boxClass);
+    auto boxStyleTemplate = getStyle(boxStyle.getClass());
     if(boxStyleTemplate.empty()) {
         mPresentation.applyStandardTemplateToBox(box);
         return;

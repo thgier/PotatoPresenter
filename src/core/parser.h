@@ -7,69 +7,42 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include <QFile>
-#include <vector>
-#include <set>
-#include <QString>
-#include "slide.h"
-#include "configboxes.h"
-#include "tokenizer.h"
 #include "presentation.h"
+#include "potatoformatvisitor.h"
 
-struct ParserError{
-    QString message;
-    int line;
+#include <QFile>
+#include <QString>
+
+
+struct ParserOutput {
+    std::optional<ParserError> mParserError;
+    std::optional<SlideList> mSlideList;
+    std::optional<Preamble> mPreamble;
+
+    ParserOutput(ParserError error) {
+        mParserError = error;
+    }
+    ParserOutput(SlideList slideList, Preamble preamble) {
+        mSlideList = slideList;
+        mPreamble = preamble;
+    }
+
+    bool successfull() const {
+        return !mParserError.has_value();
+    }
+    ParserError parserError() const {
+        return mParserError.value_or(ParserError{"", 0});
+    }
+    SlideList slideList() const {
+        return mSlideList.value_or(SlideList());
+    }
+    Preamble preamble() const {
+        return mPreamble.value_or(Preamble{""});
+    }
 };
 
-struct Preamble {
-    QString templateName;
-};
 
-class Parser
-{
-public:
-    Parser(QString resourcepath);
+ParserOutput generateSlides(std::string text, QString directory, bool isTemplate=false);
 
-    void loadInput(QIODevice *input);
-    void loadInput(QByteArray input);
-
-    Preamble readPreamble();
-    SlideList readInput();
-
-    void setVariables(std::map<QString, QString> variables);
-    std::map<QString, QString> Variables() const;
-
-    void setParseTemplate(bool isTemplate);
-
-private:
-    void command(Token token);
-    void preambleCommand(Token token);
-    void newSlide(int line);
-    void newTextField(int line);
-    void newImage(int line);
-    void newTitle(int line);
-    void newBody(int line);
-    void newArrow(int line);
-    void newLine(int line);
-    void newPlainText(int line);
-    void newCodeBox(int line);
-    void newBlindText(int line);
-    void setVariable(int line);
-    void applyPause();
-    QString addBracketsToVariable(QString variable) const;
-    BoxStyle readArguments(QString &id);
-    QString generateId(QString type, QString boxclass);
-
-    Tokenizer mTokenizer;
-    SlideList mSlideList;
-    std::set<QString> mBoxIds;
-
-    std::map<QString, QString> mVariables;
-    QString mResourcepath;
-
-    bool mParsingTemplate = false;
-    int mPauseCount = 0;
-    Preamble mPreamble;
-};
 
 #endif // PARSER_H

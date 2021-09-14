@@ -9,6 +9,9 @@
 #include <QTextLayout>
 #include <QTextDocument>
 
+PlainTextBox::PlainTextBox(QString text)
+    : TextBox(text)
+{}
 
 std::shared_ptr<TextBox> PlainTextBox::clone() {
     return std::make_shared<PlainTextBox>(*this);

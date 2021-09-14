@@ -12,6 +12,12 @@ Slide::Slide()
 
 }
 
+Slide::Slide(const QString &id, int line)
+    : mId{id}
+    , mLine{line}
+{
+}
+
 Slide::Slide(const QString &id, const std::map<QString, QString> &variables, int line)
     : mId{id}
     , mVariables{variables}

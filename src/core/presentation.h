@@ -47,6 +47,13 @@ struct SlideList {
         return {};
     };
 
+    Slide::Ptr lastSlide() const {
+        if(vector.empty()) {
+            return {};
+        }
+        return vector.back();
+    }
+
     int numberSlides() const {
         return int(vector.size());
     };

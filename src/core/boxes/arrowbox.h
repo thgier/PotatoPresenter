@@ -13,8 +13,6 @@
 class ArrowBox : public Box
 {
 public:
-    ArrowBox(BoxStyle style, QString id, int line);
-
     void drawContent(QPainter& painter, std::map<QString, QString> variables) override;
     bool containsPoint(QPoint point, int) const override;
 
