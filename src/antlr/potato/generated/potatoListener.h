@@ -23,9 +23,6 @@ public:
   virtual void enterCommand(potatoParser::CommandContext *ctx) = 0;
   virtual void exitCommand(potatoParser::CommandContext *ctx) = 0;
 
-  virtual void enterProperty(potatoParser::PropertyContext *ctx) = 0;
-  virtual void exitProperty(potatoParser::PropertyContext *ctx) = 0;
-
   virtual void enterProperty_entry(potatoParser::Property_entryContext *ctx) = 0;
   virtual void exitProperty_entry(potatoParser::Property_entryContext *ctx) = 0;
 
@@ -37,6 +34,9 @@ public:
 
   virtual void enterText(potatoParser::TextContext *ctx) = 0;
   virtual void exitText(potatoParser::TextContext *ctx) = 0;
+
+  virtual void enterOneline_text(potatoParser::Oneline_textContext *ctx) = 0;
+  virtual void exitOneline_text(potatoParser::Oneline_textContext *ctx) = 0;
 
   virtual void enterText_colon(potatoParser::Text_colonContext *ctx) = 0;
   virtual void exitText_colon(potatoParser::Text_colonContext *ctx) = 0;

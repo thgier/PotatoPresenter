@@ -21,6 +21,7 @@ class PotatoFormatVisitor : public potatoBaseListener
 public:
     PotatoFormatVisitor();
 
+    void enterText(potatoParser::TextContext * ctx) override;
     void exitProperty_entry(potatoParser::Property_entryContext * ctx) override;
     void exitBox(potatoParser::BoxContext * /*ctx*/) override;
     void exitPotato(potatoParser::PotatoContext * /*ctx*/) override;
@@ -44,7 +45,6 @@ private:
     void createNewBox(QString command, QString text, int line);
 
     void setVariable(QString text, int line);
-//    void applyPause();
     QString generateId(QString type, QString boxclass);
 
 private:
@@ -60,6 +60,7 @@ private:
     bool mInProbertyList = false;
     bool mLastCommandSetVariable = false;
     bool mInPreamble = true;
+    QString mText = "";
 
     BoxStyle mCurrentBoxStyle;
     std::map<QString, QString> mVariables;

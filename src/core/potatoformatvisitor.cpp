@@ -20,10 +20,15 @@ PotatoFormatVisitor::PotatoFormatVisitor()
 
 }
 
+void PotatoFormatVisitor::enterText(potatoParser::TextContext * ctx) {
+    mText = QString::fromStdString(ctx->getText());
+}
+
 void PotatoFormatVisitor::PotatoFormatVisitor::exitBox(potatoParser::BoxContext * ctx) {
     // read out values
     auto const command = QString::fromStdString(ctx->command()->TEXT()->getText());
-    auto const text = QString::fromStdString(ctx->paragraph()->text()->getText());
+    auto const text = mText;
+    mText = "";
     // editor start at line 0, antlr starts at line 1
     auto const line = int(ctx->getStart()->getLine()) - 1;
 
@@ -45,7 +50,7 @@ void PotatoFormatVisitor::PotatoFormatVisitor::exitBox(potatoParser::BoxContext 
         return;
     }
 
-    if(command == "\\setvar"){
+    if(command == "setvar"){
         mLastCommandSetVariable = true;
         setVariable(text, line);
         return;
@@ -373,8 +378,8 @@ void PotatoFormatVisitor::applyPause(QString text) {
         return;
     }
 
-    text.insert(0, '\n');
     auto box = lastTextBox->clone();
+    text.insert(0, '\n');
     box->appendText(text);
     box->setPauseCounter(mPauseCount);
     mSlideList.vector.back()->appendBox(box);

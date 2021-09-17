@@ -25,9 +25,6 @@ public:
   virtual void enterCommand(potatoParser::CommandContext * /*ctx*/) override { }
   virtual void exitCommand(potatoParser::CommandContext * /*ctx*/) override { }
 
-  virtual void enterProperty(potatoParser::PropertyContext * /*ctx*/) override { }
-  virtual void exitProperty(potatoParser::PropertyContext * /*ctx*/) override { }
-
   virtual void enterProperty_entry(potatoParser::Property_entryContext * /*ctx*/) override { }
   virtual void exitProperty_entry(potatoParser::Property_entryContext * /*ctx*/) override { }
 
@@ -39,6 +36,9 @@ public:
 
   virtual void enterText(potatoParser::TextContext * /*ctx*/) override { }
   virtual void exitText(potatoParser::TextContext * /*ctx*/) override { }
+
+  virtual void enterOneline_text(potatoParser::Oneline_textContext * /*ctx*/) override { }
+  virtual void exitOneline_text(potatoParser::Oneline_textContext * /*ctx*/) override { }
 
   virtual void enterText_colon(potatoParser::Text_colonContext * /*ctx*/) override { }
   virtual void exitText_colon(potatoParser::Text_colonContext * /*ctx*/) override { }

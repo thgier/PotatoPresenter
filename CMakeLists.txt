@@ -72,11 +72,13 @@ add_executable(testtokenizer
 add_test(NAME testtokenizer COMMAND testtokenizer)
 
 add_executable(grammartest
-    src/core/grammartest.cpp
     src/antlr/potato/generated/potatoBaseListener.cpp
     src/antlr/potato/generated/potatoLexer.cpp
     src/antlr/potato/generated/potatoListener.cpp
-    src/antlr/potato/generated/potatoParser.cpp)
+    src/antlr/potato/generated/potatoParser.cpp
+    src/core/grammartest.cpp
+    src/core/potatoerrorlistener.cpp
+)
 add_test(NAME grammartest COMMAND grammartest)
 
 target_link_libraries(praes PRIVATE Qt5::Widgets KF5::TextEditor KF5::SyntaxHighlighting)
@@ -90,7 +92,7 @@ target_link_libraries(grammartest PRIVATE antlr4-runtime)
 target_include_directories(praes PRIVATE src/ui/ src/core/ src/core/boxes/ src/core/antlr src/antlr/markdown/generated src/antlr/potato/generated)
 target_include_directories(praes SYSTEM PRIVATE /usr/include/antlr4-runtime)
 target_include_directories(testtokenizer PRIVATE src/ui/ src/core/ src/core/boxes/)
-target_include_directories(grammartest PRIVATE src/antlr/potato/generated/ src/core/antlr)
+target_include_directories(grammartest PRIVATE src/core/ src/core/antlr src/antlr/potato/generated)
 target_include_directories(grammartest SYSTEM PRIVATE /usr/include/antlr4-runtime)
 
 target_compile_definitions(praes PRIVATE -DQT_NO_KEYWORDS)

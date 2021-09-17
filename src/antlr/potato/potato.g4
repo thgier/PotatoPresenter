@@ -1,21 +1,20 @@
 grammar potato;
 
-potato: box* EOF;
+potato: box*;
 
 box : command paragraph;
 
-command : BACKSLASH TEXT property? ' '?;
-
-property : '[' property_entry (';' ' '? property_entry)* ']';
+command : BACKSLASH TEXT ('[' property_entry (';' ' '? property_entry)* ']')? ' '?;
 
 property_entry : text_colon value;
 
 value: (TEXT | ' ')*;
 
-paragraph: text NEWLINE;
+paragraph: (NEWLINE? text)? (NEWLINE | NEWLINE? EOF) ;
 
-text : (TEXT | ' ' | text_colon | ';' | BACKSLASH) | (NEWLINE (TEXT | ' ' | text_colon | ';'))*
-    | '{' (TEXT | ' ' | text_colon | ';' | BACKSLASH)* '}';
+text : oneline_text (NEWLINE oneline_text)*;
+
+oneline_text: (TEXT | ' ' | text_colon | ';' | '[' | ']')+ (TEXT | ' ' | text_colon | ';' | '[' | ']' | BACKSLASH)*;
 
 text_colon: TEXT ' '? ':' ' '?;
 
@@ -23,4 +22,4 @@ BACKSLASH : [\\];
 
 NEWLINE : '\n'+ ; 
 
-TEXT : ~([\][] | [\\] | [\n] | [ :;{}])*;
+TEXT : ~([\][] | [\\] | [\n] | [ :;])+;

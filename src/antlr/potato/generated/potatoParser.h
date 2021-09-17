@@ -12,13 +12,14 @@
 class  potatoParser : public antlr4::Parser {
 public:
   enum {
-    T__0 = 1, T__1 = 2, T__2 = 3, T__3 = 4, T__4 = 5, T__5 = 6, T__6 = 7, 
-    BACKSLASH = 8, NEWLINE = 9, TEXT = 10
+    T__0 = 1, T__1 = 2, T__2 = 3, T__3 = 4, T__4 = 5, BACKSLASH = 6, NEWLINE = 7, 
+    TEXT = 8
   };
 
   enum {
-    RulePotato = 0, RuleBox = 1, RuleCommand = 2, RuleProperty = 3, RuleProperty_entry = 4, 
-    RuleValue = 5, RuleParagraph = 6, RuleText = 7, RuleText_colon = 8
+    RulePotato = 0, RuleBox = 1, RuleCommand = 2, RuleProperty_entry = 3, 
+    RuleValue = 4, RuleParagraph = 5, RuleText = 6, RuleOneline_text = 7, 
+    RuleText_colon = 8
   };
 
   explicit potatoParser(antlr4::TokenStream *input);
@@ -34,18 +35,17 @@ public:
   class PotatoContext;
   class BoxContext;
   class CommandContext;
-  class PropertyContext;
   class Property_entryContext;
   class ValueContext;
   class ParagraphContext;
   class TextContext;
+  class Oneline_textContext;
   class Text_colonContext; 
 
   class  PotatoContext : public antlr4::ParserRuleContext {
   public:
     PotatoContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *EOF();
     std::vector<BoxContext *> box();
     BoxContext* box(size_t i);
 
@@ -76,19 +76,6 @@ public:
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *BACKSLASH();
     antlr4::tree::TerminalNode *TEXT();
-    PropertyContext *property();
-
-    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
-    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
-   
-  };
-
-  CommandContext* command();
-
-  class  PropertyContext : public antlr4::ParserRuleContext {
-  public:
-    PropertyContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
     std::vector<Property_entryContext *> property_entry();
     Property_entryContext* property_entry(size_t i);
 
@@ -97,7 +84,7 @@ public:
    
   };
 
-  PropertyContext* property();
+  CommandContext* command();
 
   class  Property_entryContext : public antlr4::ParserRuleContext {
   public:
@@ -131,8 +118,10 @@ public:
   public:
     ParagraphContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
+    std::vector<antlr4::tree::TerminalNode *> NEWLINE();
+    antlr4::tree::TerminalNode* NEWLINE(size_t i);
+    antlr4::tree::TerminalNode *EOF();
     TextContext *text();
-    antlr4::tree::TerminalNode *NEWLINE();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -145,12 +134,8 @@ public:
   public:
     TextContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
-    std::vector<antlr4::tree::TerminalNode *> TEXT();
-    antlr4::tree::TerminalNode* TEXT(size_t i);
-    std::vector<Text_colonContext *> text_colon();
-    Text_colonContext* text_colon(size_t i);
-    std::vector<antlr4::tree::TerminalNode *> BACKSLASH();
-    antlr4::tree::TerminalNode* BACKSLASH(size_t i);
+    std::vector<Oneline_textContext *> oneline_text();
+    Oneline_textContext* oneline_text(size_t i);
     std::vector<antlr4::tree::TerminalNode *> NEWLINE();
     antlr4::tree::TerminalNode* NEWLINE(size_t i);
 
@@ -160,6 +145,24 @@ public:
   };
 
   TextContext* text();
+
+  class  Oneline_textContext : public antlr4::ParserRuleContext {
+  public:
+    Oneline_textContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    std::vector<antlr4::tree::TerminalNode *> TEXT();
+    antlr4::tree::TerminalNode* TEXT(size_t i);
+    std::vector<Text_colonContext *> text_colon();
+    Text_colonContext* text_colon(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> BACKSLASH();
+    antlr4::tree::TerminalNode* BACKSLASH(size_t i);
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+   
+  };
+
+  Oneline_textContext* oneline_text();
 
   class  Text_colonContext : public antlr4::ParserRuleContext {
   public:
