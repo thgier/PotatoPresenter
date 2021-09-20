@@ -39,6 +39,7 @@ struct BoxStyle{
     std::optional<QString> mFont;
     std::optional<Qt::Alignment> mAlignment;
     std::optional<double> mOpacity;
+    std::optional<QString> mDefineclass;
     BoxGeometry mGeometry;
     std::optional<int> mPadding;
     struct {

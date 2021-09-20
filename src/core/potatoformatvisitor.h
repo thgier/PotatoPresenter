@@ -22,12 +22,14 @@ public:
     PotatoFormatVisitor();
 
     void enterText(potatoParser::TextContext * ctx) override;
+    void enterText_in_bracket(potatoParser::Text_in_bracketContext * ctx) override;
     void exitProperty_entry(potatoParser::Property_entryContext * ctx) override;
     void exitBox(potatoParser::BoxContext * /*ctx*/) override;
     void exitPotato(potatoParser::PotatoContext * /*ctx*/) override;
 
     void setDirectory(QString directory);
     void applyPause(QString text);
+    BoxStyle applyProperty(BoxStyle &boxstyle, QString property, QString value, int line);
 
 //    acess varibles
     SlideList slides() const;
@@ -63,6 +65,7 @@ private:
     QString mText = "";
 
     BoxStyle mCurrentBoxStyle;
+    BoxStyle mStandardBoxStyle;
     std::map<QString, QString> mVariables;
 };
 

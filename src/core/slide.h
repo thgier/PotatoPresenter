@@ -25,6 +25,7 @@ public:
     Box::List const& boxes() const;
     bool empty();
     Box::Ptr findBox(QString const& id) const;
+    Box::Ptr findDefineBoxClass(QString const& boxclass) const;
     bool containsBox(QString const& id) const;
 
     // Returns the max PauseCounter of the boxes
@@ -47,8 +48,14 @@ public:
     void setVariable(QString const& name, QString const& value);
     Variables const& variables() const;
 
+    void setStandardBoxStyle(BoxStyle &boxstyle);
+    const BoxStyle &standartBoxStyle() const;
+
     void setSlideClass(QString const& slideClass);
     QString const& slideClass() const;
+
+    void setDefinesClass(QString definesClass);
+    QString definesClass() const;
 
 private:
     Box::List mBoxes;
@@ -57,6 +64,8 @@ private:
     Variables mVariables;
     QString mClass;
     int mLine;
+    BoxStyle mStandardStyle;
+    QString mDefinesClass;
 };
 
 Q_DECLARE_METATYPE(Slide::Ptr)

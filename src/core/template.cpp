@@ -30,8 +30,12 @@ BoxGeometry Template::getGeometry(QString id) const {
     return {};
 }
 
-BoxStyle Template::getStyle(QString id) const {
-    auto const box = mPresentation.slideList().findBox(id);
+BoxStyle Template::getStyle(QString id, QString slideClass) const {
+    auto const slide = mPresentation.slideList().findSlide(slideClass);
+    if(!slide) {
+        return {};
+    }
+    auto const box = slide->findDefineBoxClass(id);
     if(box){
         return box->style();
     }
@@ -47,12 +51,12 @@ void Template::setVariables(std::map<QString, QString> variables) {
 }
 
 Box::List Template::getTemplateSlide(QString slideId) const {
-    auto slide = mPresentation.slideList().findSlide(slideId);
+    auto slide = mPresentation.slideList().findDefiningSlide(slideId);
     if(!slide){
         return {};
     }
     auto boxes = slide->boxes();
-    auto rm = [slideId](std::shared_ptr<Box> box) {return !box->id().startsWith("intern-");};
+    auto rm = [slideId](std::shared_ptr<Box> box) {return box->style().mDefineclass;};
     boxes.erase(std::remove_if(boxes.begin(), boxes.end(), rm), boxes.end());
     return boxes;
 }
@@ -66,25 +70,23 @@ void Template::setSlides(SlideList slides) {
 }
 
 void Template::applyTemplate(SlideList& slideList) {
+    mPresentation.applyDefinedClass(slideList);
     for(auto const& slide: slideList.vector) {
         auto const slideclass = slide->slideClass();
         Box::List boxlist;
         boxlist = getTemplateSlide(slideclass);
         slide->setTemplateBoxes(boxlist);
-        for(auto const& box: slide->boxes()) {
-            applyTemplateToBox(box);
-        }
     }
 }
 
-void Template::applyTemplateToBox(Box::Ptr box) const {
+void Template::applyTemplateToBox(Box::Ptr box, QString slideClass) const {
     auto boxStyle = box->style();
     if(!boxStyle.mClass.has_value()) {
         return;
     }
-    auto boxStyleTemplate = getStyle(boxStyle.getClass());
+    auto const boxStyleTemplate = getStyle(boxStyle.getClass(), slideClass);
     if(boxStyleTemplate.empty()) {
-        mPresentation.applyStandardTemplateToBox(box);
+        mPresentation.applyStandardTemplateToBox(box, boxStyleTemplate);
         return;
     }
     if(!boxStyle.mAlignment) {

@@ -24,6 +24,10 @@ void PotatoFormatVisitor::enterText(potatoParser::TextContext * ctx) {
     mText = QString::fromStdString(ctx->getText());
 }
 
+void PotatoFormatVisitor::enterText_in_bracket(potatoParser::Text_in_bracketContext * ctx) {
+    mText = QString::fromStdString(ctx->getText());
+}
+
 void PotatoFormatVisitor::PotatoFormatVisitor::exitBox(potatoParser::BoxContext * ctx) {
     // read out values
     auto const command = QString::fromStdString(ctx->command()->TEXT()->getText());
@@ -84,15 +88,21 @@ void PotatoFormatVisitor::PotatoFormatVisitor::exitBox(potatoParser::BoxContext 
 }
 
 void PotatoFormatVisitor::exitProperty_entry(potatoParser::Property_entryContext * ctx) {
-    auto const property = QString::fromStdString(ctx->text_colon()->TEXT()->toString());
+    auto const property = QString::fromStdString(ctx->proberty()->getText());
     auto const value = QString::fromStdString(ctx->value()->getText());
     auto const line = int(ctx->getStart()->getLine());
+    mCurrentBoxStyle = applyProperty(mCurrentBoxStyle, property, value, line);
+}
 
+BoxStyle PotatoFormatVisitor::applyProperty(BoxStyle &boxstyle, QString property, QString value, int line) {
     bool numberOk;
 
     if(value.isEmpty()){
         throw ParserError{"Expecting argument value", line};
-        return;
+        return {};
+    }
+    else if(property == "defineclass") {
+        boxstyle.mDefineclass = value;
     }
     else if(property == "color"){
         QColor color;
@@ -100,35 +110,35 @@ void PotatoFormatVisitor::exitProperty_entry(potatoParser::Property_entryContext
         if(!color.isValid()) {
             throw ParserError{QString("Invalid color '%1'").arg(QString(value)), line};
         }
-        mCurrentBoxStyle.mColor = color;
+        boxstyle.mColor = color;
     }
     else if(property == "opacity"){
-        mCurrentBoxStyle.mOpacity = value.toDouble(&numberOk);
+        boxstyle.mOpacity = value.toDouble(&numberOk);
     }
     else if(property == "font-size"){
-        mCurrentBoxStyle.mFontSize = value.toInt(&numberOk);
+        boxstyle.mFontSize = value.toInt(&numberOk);
     }
     else if(property == "line-height"){
         if(value.toDouble() != 0){
-            mCurrentBoxStyle.mLineSpacing = value.toDouble(&numberOk);
+            boxstyle.mLineSpacing = value.toDouble(&numberOk);
         }
     }
     else if(property == "font-weight"){
         if(QString(value) == "bold"){
-            mCurrentBoxStyle.mFontWeight = FontWeight::bold;
+            boxstyle.mFontWeight = FontWeight::bold;
         }
         else if(QString(value) == "normal"){
-            mCurrentBoxStyle.mFontWeight = FontWeight::normal;
+            boxstyle.mFontWeight = FontWeight::normal;
         }
         else{
             throw ParserError{"Invalid value for 'font-weight' (possible values: bold, normal)", line};
         }
     }
     else if(property == "font"){
-        mCurrentBoxStyle.mFont = QString(value);
+        boxstyle.mFont = QString(value);
     }
     else if(property == "id"){
-        mCurrentBoxStyle.mId = value;
+        boxstyle.mId = value;
         if(value.startsWith("intern")) {
             throw ParserError{"User defined box IDs must not start with \"intern\"", line};
         }
@@ -138,31 +148,31 @@ void PotatoFormatVisitor::exitProperty_entry(potatoParser::Property_entryContext
         mBoxIds.insert(value);
     }
     else if(property == "left"){
-        mCurrentBoxStyle.mGeometry.setLeft(value.toInt(&numberOk));
-        mCurrentBoxStyle.movable = false;
+        boxstyle.mGeometry.setLeft(value.toInt(&numberOk));
+        boxstyle.movable = false;
     }
     else if(property == "top"){
-        mCurrentBoxStyle.mGeometry.setTop(value.toInt(&numberOk));
-        mCurrentBoxStyle.movable = false;
+        boxstyle.mGeometry.setTop(value.toInt(&numberOk));
+        boxstyle.movable = false;
     }
     else if(property == "width"){
-        mCurrentBoxStyle.mGeometry.setWidth(value.toInt(&numberOk));
-        mCurrentBoxStyle.movable = false;
+        boxstyle.mGeometry.setWidth(value.toInt(&numberOk));
+        boxstyle.movable = false;
     }
     else if(property == "height"){
-        mCurrentBoxStyle.mGeometry.setHeight(value.toInt(&numberOk));
-        mCurrentBoxStyle.movable = false;
+        boxstyle.mGeometry.setHeight(value.toInt(&numberOk));
+        boxstyle.movable = false;
     }
     else if(property == "angle"){
-        mCurrentBoxStyle.mGeometry.setAngle(value.toDouble(&numberOk));
-        mCurrentBoxStyle.movable = false;
+        boxstyle.mGeometry.setAngle(value.toDouble(&numberOk));
+        boxstyle.movable = false;
     }
     else if(property == "movable"){
         if(value == "true") {
-            mCurrentBoxStyle.movable = true;
+            boxstyle.movable = true;
         }
         else if(value == "false") {
-            mCurrentBoxStyle.movable = false;
+            boxstyle.movable = false;
         }
         else {
             throw ParserError{"Invalid value for 'movable' (possible values: true, false)", line};
@@ -170,26 +180,26 @@ void PotatoFormatVisitor::exitProperty_entry(potatoParser::Property_entryContext
     }
     else if(property == "text-align"){
         if(value == "left") {
-            mCurrentBoxStyle.mAlignment = Qt::AlignLeft;
+            boxstyle.mAlignment = Qt::AlignLeft;
         }
         else if(value == "right") {
-            mCurrentBoxStyle.mAlignment = Qt::AlignRight;
+            boxstyle.mAlignment = Qt::AlignRight;
         }
         else if(value == "center") {
-            mCurrentBoxStyle.mAlignment = Qt::AlignCenter;
+            boxstyle.mAlignment = Qt::AlignCenter;
         }
         else if(value == "justify") {
-            mCurrentBoxStyle.mAlignment = Qt::AlignJustify;
+            boxstyle.mAlignment = Qt::AlignJustify;
         }
         else {
             throw ParserError{"Invalid value for 'text-align' (possible values: left, right, center, justify)", line};
         }
     }
     else if(property == "class"){
-        mCurrentBoxStyle.mClass = value;
+        boxstyle.mClass = value;
     }
     else if(property == "language"){
-        mCurrentBoxStyle.language = QString(value);
+        boxstyle.language = QString(value);
     }
     else if(property == "background"){
         QColor color;
@@ -197,7 +207,7 @@ void PotatoFormatVisitor::exitProperty_entry(potatoParser::Property_entryContext
         if(!color.isValid()) {
             throw ParserError{"Invalid color", line};
         }
-        mCurrentBoxStyle.mBackgroundColor = color;
+        boxstyle.mBackgroundColor = color;
     }
     else if(property == "background-color"){
         QColor color;
@@ -205,39 +215,40 @@ void PotatoFormatVisitor::exitProperty_entry(potatoParser::Property_entryContext
         if(!color.isValid()) {
             throw ParserError{"Invalid color", line};
         }
-        mCurrentBoxStyle.mBackgroundColor = color;
+        boxstyle.mBackgroundColor = color;
     }
     else if(property == "padding") {
-        mCurrentBoxStyle.mPadding = value.toInt(&numberOk);
+        boxstyle.mPadding = value.toInt(&numberOk);
     }
     else if(property == "border"){
         auto values = QString(value).split(" ");
         if(values.empty()) {
-            return;;
+            return {};
         }
         if(values[0].endsWith("px") && values.length() >= 2) {
             auto value = values[0];
             value.chop(2);
             bool ok;
-            mCurrentBoxStyle.mBorder.width = value.toInt(&ok);
+            boxstyle.mBorder.width = value.toInt(&ok);
             if(!ok) {
                 throw ParserError{"Invalid width value for 'border'", line};
             }
-            mCurrentBoxStyle.mBorder.style = values[1];
+            boxstyle.mBorder.style = values[1];
             if(values.length() >= 3) {
-                mCurrentBoxStyle.mBorder.color = QColor(QString(values[2]));
+                boxstyle.mBorder.color = QColor(QString(values[2]));
             }
         }
         else {
-            mCurrentBoxStyle.mBorder.style = values[0];
+            boxstyle.mBorder.style = values[0];
             if(values.length() >= 2) {
-                mCurrentBoxStyle.mBorder.color = QColor(QString(values[1]));
+                boxstyle.mBorder.color = QColor(QString(values[1]));
             }
         }
     }
     else {
         throw ParserError{QString("Invalid Argument %1.").arg(property), line};
     }
+    return boxstyle;
 //    if(!numberOk) {
 //        throw ParserError{"Invalid number", line};
 //    }
@@ -270,13 +281,18 @@ void PotatoFormatVisitor::readPreambleCommand(QString command, QString text, int
 void PotatoFormatVisitor::newSlide(QString id, int line) {
 //  reset and create new slide
     mPauseCount = 0;
+    if(mSlideList.findSlide(id)) {
+        throw ParserError{QString("Slide id %1 already exists.").arg(id), line};
+    }
     mSlideList.appendSlide(std::make_shared<Slide>(id, line));
     mSlideList.lastSlide()->setSlideClass(mCurrentBoxStyle.getClass());
 
+    mSlideList.lastSlide()->setDefinesClass(mCurrentBoxStyle.mDefineclass.value_or(""));
+
     // set variables
     mSlideList.lastSlide()->setVariables(mVariables);
+    mSlideList.lastSlide()->setStandardBoxStyle(mStandardBoxStyle);
     mSlideList.lastSlide()->setVariable("%{pagenumber}", QString::number(mSlideList.vector.size()));
-//        TODO: is this the right place for this?
     if(mVariables.find("%{date}") == mVariables.end()){
         mSlideList.lastSlide()->setVariable("%{date}", QDate::currentDate().toString());
     }
@@ -286,9 +302,16 @@ void PotatoFormatVisitor::newSlide(QString id, int line) {
 }
 
 void PotatoFormatVisitor::setVariable(QString text, int line) {
-    auto list = text.split(QRegularExpression("\\s+"));
-    auto variable = list[0];
-    mVariables[addBracketsToVariable(variable)] = text.right(text.size() - variable.size() - 1);
+    auto const list = text.split(QRegularExpression("\\s+"));
+    auto const variable = list[0];
+    auto const value = text.right(text.size() - variable.size() - 1);
+    // try if the value is a property if not a Parser error get thrown, in this case append to variables
+    try {
+        mStandardBoxStyle = applyProperty(mStandardBoxStyle, variable, value, line);
+    }  catch (ParserError) {
+        mVariables[addBracketsToVariable(variable)] = value;
+    }
+
 }
 
 void PotatoFormatVisitor::createNewBox(QString command, QString text, int line) {

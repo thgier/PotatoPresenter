@@ -47,6 +47,15 @@ struct SlideList {
         return {};
     };
 
+    Slide::Ptr findDefiningSlide(QString const& definition) const {
+        for(auto const &slide: vector) {
+            if(slide->definesClass() == definition) {
+                return slide;
+            }
+        }
+        return {};
+    };
+
     Slide::Ptr lastSlide() const {
         if(vector.empty()) {
             return {};
@@ -86,7 +95,7 @@ public:
     QSize dimensions() const;
     int numberOfSlides() const;
 
-    void applyStandardTemplateToBox(Box::Ptr box) const;
+    void applyStandardTemplateToBox(Box::Ptr box, BoxStyle const& standardBoxStyle) const;
 
     // Change Geometry of Box only through the presentation in order to
     // save it in the Configuration
@@ -100,6 +109,9 @@ public:
 
     void deleteNotNeededConfigurations();
 
+    std::map<QString, BoxStyle> definedClasses() const;
+    void applyDefinedClass(SlideList const& slides);
+
 Q_SIGNALS:
     void presentationChanged();
     void slideChanged(int pageNumber);
@@ -110,12 +122,18 @@ private:
     void applyConfiguration();
     SlideList const& applyStandardTemplate(SlideList const& slides) const;
 
+    void createMapDefinesClass();
+
+    BoxStyle setStyleIfNotSet(BoxStyle &appliedStyle, BoxStyle const& modelStyle) const;
+    void applyGeometryIfNotSet(BoxStyle &appliedStyle, BoxGeometry const& rect) const;
+
 private:
     SlideList mSlides;
     QString mInputDir;
     ConfigBoxes mConfig;
     QSize mDimensions{1600, 900};
     std::shared_ptr<Template> mTemplate = nullptr;
+    std::map<QString, BoxStyle> mDefinedStyles;
 };
 
 Q_DECLARE_METATYPE(Presentation::Ptr)

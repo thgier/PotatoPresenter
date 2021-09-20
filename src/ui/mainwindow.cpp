@@ -560,10 +560,16 @@ Presentation::Ptr MainWindow::generateTemplatePresentation(QString directory) co
     }
     auto const val = file.readAll();
 
+    auto presentation = std::make_shared<Presentation>();
+    presentation->loadInput(directory + "/demo.json");
+
     auto const parserOutput = generateSlides(val.toStdString(), directory);
     if(parserOutput.successfull()) {
-        auto presentation = std::make_shared<Presentation>();
+        auto const preamble = parserOutput.preamble();
         auto const slides = parserOutput.slideList();
+        if(!preamble.templateName.isEmpty()) {
+            presentation->setTemplate(readTemplate(preamble.templateName));
+        }
         presentation->setSlides(slides);
         return presentation;
     }

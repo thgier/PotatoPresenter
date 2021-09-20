@@ -30,6 +30,8 @@ void Presentation::setTemplate(Template::Ptr templateObject) {
 void Presentation::setSlides(const SlideList &slides) {
     mSlides = slides;
     applyConfiguration();
+    createMapDefinesClass();
+    applyDefinedClass(mSlides);
     if(mTemplate) {
         mTemplate->applyTemplate(mSlides);
     }
@@ -83,11 +85,39 @@ void Presentation::applyConfiguration() {
     }
 }
 
-const SlideList &Presentation::applyStandardTemplate(const SlideList &slides) const {
-    //TODO: Standard Template that makes sense
+void Presentation::applyDefinedClass(const SlideList &slides) {
     for(auto const& slide: slides.vector) {
+        auto const keySlide = slide->slideClass();
+        for (auto const& box: slide->boxes()) {
+            if(box->style().mClass){
+                BoxStyle definedClassStyle;
+                if(mDefinedStyles.find("-" + box->style().mClass.value()) != mDefinedStyles.end()) {
+                    definedClassStyle = mDefinedStyles.find("-" + box->style().mClass.value())->second;
+                }
+                else if(mDefinedStyles.find(keySlide + "-" + box->style().mClass.value()) != mDefinedStyles.end()) {
+                    definedClassStyle = mDefinedStyles.find(keySlide + "-" + box->style().mClass.value())->second;
+                }
+                else {
+                    continue;
+                }
+                auto style = box->style();
+                applyGeometryIfNotSet(style, definedClassStyle.mGeometry);
+                style = setStyleIfNotSet(style, definedClassStyle);
+                box->setBoxStyle(style);
+            }
+        }
+    }
+}
+
+std::map<QString, BoxStyle> Presentation::definedClasses() const {
+    return mDefinedStyles;
+}
+
+const SlideList &Presentation::applyStandardTemplate(const SlideList &slides) const {
+    for(auto const& slide: slides.vector) {
+        auto const standartBoxStyle = slide->standartBoxStyle();
         for(auto const& box: slide->boxes()) {
-            applyStandardTemplateToBox(box);
+            applyStandardTemplateToBox(box, standartBoxStyle);
         }
     }
     return slides;
@@ -149,17 +179,15 @@ std::pair<Slide::Ptr, Box::Ptr> Presentation::findBoxForLine(int line) const {
     return std::pair(*slide, *box);
 }
 
-void Presentation::applyStandardTemplateToBox(Box::Ptr box) const {
+void Presentation::applyStandardTemplateToBox(Box::Ptr box, BoxStyle const& standardBoxStyle) const {
     QRect rect;
     auto style = box->style();
+
+    box->setBoxStyle(setStyleIfNotSet(box->style(), standardBoxStyle));
+
+    // set standart geometry
     if(style.getClass() == "title") {
         rect = QRect(50, 40, 1500, 100);
-        if(!style.mFontWeight.has_value()) {
-            style.mFontWeight = FontWeight::bold;
-        }
-        if(!style.mFontSize.has_value()) {
-            style.mFontSize = 80;
-        }
     }
     else if(style.getClass() == "body") {
         rect = QRect(50, 150, 1500, 650);
@@ -176,12 +204,8 @@ void Presentation::applyStandardTemplateToBox(Box::Ptr box) const {
     else {
         rect = QRect(50, 200, 300, 100);
     }
-    style.mGeometry.setLeftIfNotSet(rect.left());
-    style.mGeometry.setTopIfNotSet(rect.top());
-    style.mGeometry.setWidthIfNotSet(rect.width());
-    style.mGeometry.setHeightIfNotSet(rect.height());
-    style.mGeometry.setAngleIfNotSet(0);
 
+    applyGeometryIfNotSet(style, BoxGeometry(rect, 0));
     box->setBoxStyle(style);
 }
 
@@ -193,4 +217,44 @@ void Presentation::deleteNotNeededConfigurations() {
         }
     }
     mConfig.deleteAllRectsExcept(ids);
+}
+
+BoxStyle Presentation::setStyleIfNotSet(BoxStyle & appliedStyle, BoxStyle const& modelStyle) const {
+    auto const assignIfUnset = [](auto& value, auto const& standard) {
+        if(!value) {
+            value = standard;
+        }
+    };
+
+    // set style to standartstyle if not set by property
+    assignIfUnset(appliedStyle.mFont, modelStyle.font());
+    assignIfUnset(appliedStyle.mFontSize, modelStyle.fontSize());
+    assignIfUnset(appliedStyle.mFontWeight, modelStyle.fontWeight());
+    assignIfUnset(appliedStyle.mColor, modelStyle.color());
+    assignIfUnset(appliedStyle.mBackgroundColor, modelStyle.mBackgroundColor);
+    assignIfUnset(appliedStyle.mAlignment, modelStyle.alignment());
+    assignIfUnset(appliedStyle.mLineSpacing, modelStyle.linespacing());
+    assignIfUnset(appliedStyle.mOpacity, modelStyle.opacity());
+
+    return appliedStyle;
+}
+
+void Presentation::applyGeometryIfNotSet(BoxStyle &appliedStyle, const BoxGeometry &rect) const {
+    appliedStyle.mGeometry.setLeftIfNotSet(rect.left());
+    appliedStyle.mGeometry.setTopIfNotSet(rect.top());
+    appliedStyle.mGeometry.setWidthIfNotSet(rect.width());
+    appliedStyle.mGeometry.setHeightIfNotSet(rect.height());
+    appliedStyle.mGeometry.setAngleIfNotSet(rect.angle());
+}
+
+void Presentation::createMapDefinesClass() {
+    for (auto const& slide: mSlides.vector) {
+        auto const definitionKeySlide = slide->definesClass();
+        for (auto const& box: slide->boxes()) {
+            if(box->style().mDefineclass) {
+                auto const definitionKey = definitionKeySlide + "-" + box->style().mDefineclass.value();
+                mDefinedStyles[definitionKey] = box->style();
+            }
+        }
+    }
 }

@@ -34,6 +34,8 @@ void GrammarTest::testGrammar_data(){
     QTest::addColumn<QString>("inputText");
     QTest::newRow("only slide") << "\\slide first page";
     QTest::newRow("proberty") << "\\slide[class:titlepage] first page";
+    QTest::newRow("proberty list") << "\\text[class:body; font-size: 60; opacity:0.8] first page";
+    QTest::newRow("proberty list with space") << "\\body[id:body2; font-size: 60; font: Linux Biolinum; color: #444; line-height: 1.5] first page";
     QTest::newRow("slide with newline") << "\\slide first page\n";
     QTest::newRow("more newline") << "\\slide first page\n\n\n \\image toll";
     QTest::newRow("backslash inline") << "\\slide first \\page\n";
@@ -42,10 +44,14 @@ void GrammarTest::testGrammar_data(){
     QTest::newRow("more line text") << "\\slide _first_ page\n*dsds*";
     QTest::newRow("title with empty text") << "\\slide hello\n\\title";
     QTest::newRow("empty text") << "\\slide hello \\title\n\body";
-    QTest::newRow("colon") << "\\slide hello: \title";
+    QTest::newRow("colon") << "\\slide hello: \\title";
     QTest::newRow("itemization") << "\\slide hello \body\n  * dsds\n    *dog";
     QTest::newRow("Latex at new line") << "\\slide _first_ page\n\\text\n$\\Rightarrow$";
     QTest::newRow("Code") << "\\code[language: Python]\ndef fibonacci(x):\nif x[-1] < 1000:\n";
+    QTest::newRow("brackets") << "\\body \\{text\\}";
+    QTest::newRow("brackets new line") << "\\body\n\\{\ntext\n\\}";
+    QTest::newRow("brackets new line secons") << "\\body\\{\ntext\n\\}";
+    QTest::newRow("space") << "\\body[value: 30]\n * Cool";
 }
 
 

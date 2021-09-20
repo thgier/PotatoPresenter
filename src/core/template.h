@@ -27,7 +27,7 @@ public:
     void readTemplateConfig(QString configFile);
     void applyTemplate(SlideList& slideList);
     BoxGeometry getGeometry(QString id) const;
-    BoxStyle getStyle(QString id) const;
+    BoxStyle getStyle(QString id, QString slideClass) const;
     void declareVariable(QString name, QString value);
     void drawTemplate(QString slideId);
     Box::List getTemplateSlide(QString slideId) const;
@@ -35,7 +35,7 @@ public:
     ConfigBoxes& Configuration();
 
 private:
-    void applyTemplateToBox(Box::Ptr box) const;
+    void applyTemplateToBox(Box::Ptr box, QString slideClass) const;
 
 private:
     Presentation mPresentation;

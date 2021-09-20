@@ -38,6 +38,7 @@ struct BoxGeometry
 public:
     BoxGeometry();
     BoxGeometry(int x, int y, int width, int height, double angle);
+    BoxGeometry(QRect rect, double angle);
     BoxGeometry(MemberBoxGeometry memberboxgeometry);
 
     // return value when it is set otherwise some standard value

@@ -1,25 +1,41 @@
 grammar potato;
 
-potato: box*;
+potato: NEWLINE? box*;
 
 box : command paragraph;
 
-command : BACKSLASH TEXT ('[' property_entry (';' ' '? property_entry)* ']')? ' '?;
+command : BACKSLASH TEXT ('[' property_entry (';' SPACE? property_entry)* ']')? SPACE?;
 
-property_entry : text_colon value;
+property_entry : proberty SPACE? ':' SPACE? value;
 
-value: (TEXT | ' ')*;
+proberty: (TEXT | SPACE)+;
 
-paragraph: (NEWLINE? text)? (NEWLINE | NEWLINE? EOF) ;
+value: (TEXT | SPACE)+;
 
-text : oneline_text (NEWLINE oneline_text)*;
+paragraph: paragraph_bracket | paragraph_without_bracket;
 
-oneline_text: (TEXT | ' ' | text_colon | ';' | '[' | ']')+ (TEXT | ' ' | text_colon | ';' | '[' | ']' | BACKSLASH)*;
+paragraph_without_bracket: (SPACE? NEWLINE? text)? (NEWLINE | NEWLINE? EOF);
 
-text_colon: TEXT ' '? ':' ' '?;
+paragraph_bracket: SPACE? NEWLINE? BACKSLASH_CURLED_BRACKET_OPEN SPACE? NEWLINE? text_in_bracket SPACE? NEWLINE? BACKSLASH_CURLED_BRACKET_CLOSE (NEWLINE | NEWLINE? EOF);
+
+text : (oneline_text_first (NEWLINE oneline_text)*);
+
+oneline_text_first:  (text_sign| '{' | '}' | SPACE)+ (text_sign | BACKSLASH | '{' | '}' | SPACE)*;
+
+oneline_text: (text_sign | '{' | '}' | SPACE)+ (text_sign | BACKSLASH | '{' | '}' | SPACE)*;
+
+text_in_bracket: (text_sign | BACKSLASH | NEWLINE | '{' | '}' | SPACE)+;
+
+text_sign: (TEXT | ';' | '[' | ']' | ':')+;
 
 BACKSLASH : [\\];
 
+BACKSLASH_CURLED_BRACKET_OPEN : BACKSLASH '{';
+
+BACKSLASH_CURLED_BRACKET_CLOSE : BACKSLASH '}';
+
 NEWLINE : '\n'+ ; 
 
-TEXT : ~([\][] | [\\] | [\n] | [ :;])+;
+SPACE : ' '+;
+
+TEXT : ~([\][] | [\\] | [\n] | [:;}{] | ' ')+;

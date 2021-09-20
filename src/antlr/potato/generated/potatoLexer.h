@@ -12,8 +12,9 @@
 class  potatoLexer : public antlr4::Lexer {
 public:
   enum {
-    T__0 = 1, T__1 = 2, T__2 = 3, T__3 = 4, T__4 = 5, BACKSLASH = 6, NEWLINE = 7, 
-    TEXT = 8
+    T__0 = 1, T__1 = 2, T__2 = 3, T__3 = 4, T__4 = 5, T__5 = 6, BACKSLASH = 7, 
+    BACKSLASH_CURLED_BRACKET_OPEN = 8, BACKSLASH_CURLED_BRACKET_CLOSE = 9, 
+    NEWLINE = 10, SPACE = 11, TEXT = 12
   };
 
   explicit potatoLexer(antlr4::CharStream *input);

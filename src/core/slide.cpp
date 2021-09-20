@@ -56,6 +56,16 @@ Box::Ptr Slide::findBox(QString const& id) const{
     return {};
 }
 
+Box::Ptr Slide::findDefineBoxClass(QString const& boxclass) const{
+    for(auto const &box: boxes()){
+        auto const boxclassFromList = box->style().mDefineclass;
+        if( boxclassFromList && boxclassFromList == boxclass){
+            return box;
+        }
+    }
+    return {};
+}
+
 bool Slide::containsBox(const QString &id) const{
     for(auto const &box: boxes()){
         if(box->id() == id){
@@ -107,4 +117,20 @@ void Slide::setSlideClass(QString const& slideClass) {
 
 const QString &Slide::slideClass() const {
     return mClass;
+}
+
+void Slide::setStandardBoxStyle(BoxStyle &boxstyle) {
+    mStandardStyle = boxstyle;
+}
+
+BoxStyle const& Slide::standartBoxStyle() const {
+    return mStandardStyle;
+}
+
+void Slide::setDefinesClass(QString definesClass) {
+    mDefinesClass = definesClass;
+}
+
+QString Slide::definesClass() const {
+    return mDefinesClass;
 }

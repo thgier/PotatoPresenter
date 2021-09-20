@@ -21,6 +21,14 @@ BoxGeometry::BoxGeometry(int x, int y, int width, int height, double angle)
     , mAngle(angle)
 {}
 
+BoxGeometry::BoxGeometry(QRect rect, double angle)
+    : mLeft(rect.left())
+    , mTop(rect.top())
+    , mWidth(rect.width())
+    , mHeight(rect.height())
+    , mAngle(angle)
+{}
+
 BoxGeometry::BoxGeometry(MemberBoxGeometry memberboxgeometry)
     : mLeft(memberboxgeometry.rect.left())
     , mTop(memberboxgeometry.rect.top())
