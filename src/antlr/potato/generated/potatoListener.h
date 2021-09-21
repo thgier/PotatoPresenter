@@ -23,6 +23,9 @@ public:
   virtual void enterCommand(potatoParser::CommandContext *ctx) = 0;
   virtual void exitCommand(potatoParser::CommandContext *ctx) = 0;
 
+  virtual void enterProperty_list(potatoParser::Property_listContext *ctx) = 0;
+  virtual void exitProperty_list(potatoParser::Property_listContext *ctx) = 0;
+
   virtual void enterProperty_entry(potatoParser::Property_entryContext *ctx) = 0;
   virtual void exitProperty_entry(potatoParser::Property_entryContext *ctx) = 0;
 

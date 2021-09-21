@@ -18,10 +18,11 @@ public:
   };
 
   enum {
-    RulePotato = 0, RuleBox = 1, RuleCommand = 2, RuleProperty_entry = 3, 
-    RuleProperty = 4, RuleValue = 5, RuleParagraph = 6, RuleParagraph_without_bracket = 7, 
-    RuleParagraph_bracket = 8, RuleText = 9, RuleOneline_text_first = 10, 
-    RuleOneline_text = 11, RuleText_in_bracket = 12, RuleText_sign = 13
+    RulePotato = 0, RuleBox = 1, RuleCommand = 2, RuleProperty_list = 3, 
+    RuleProperty_entry = 4, RuleProperty = 5, RuleValue = 6, RuleParagraph = 7, 
+    RuleParagraph_without_bracket = 8, RuleParagraph_bracket = 9, RuleText = 10, 
+    RuleOneline_text_first = 11, RuleOneline_text = 12, RuleText_in_bracket = 13, 
+    RuleText_sign = 14
   };
 
   explicit potatoParser(antlr4::TokenStream *input);
@@ -37,6 +38,7 @@ public:
   class PotatoContext;
   class BoxContext;
   class CommandContext;
+  class Property_listContext;
   class Property_entryContext;
   class PropertyContext;
   class ValueContext;
@@ -84,6 +86,20 @@ public:
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *BACKSLASH();
     antlr4::tree::TerminalNode *TEXT();
+    antlr4::tree::TerminalNode *SPACE();
+    Property_listContext *property_list();
+
+    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
+    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
+   
+  };
+
+  CommandContext* command();
+
+  class  Property_listContext : public antlr4::ParserRuleContext {
+  public:
+    Property_listContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
     std::vector<Property_entryContext *> property_entry();
     Property_entryContext* property_entry(size_t i);
     std::vector<antlr4::tree::TerminalNode *> SPACE();
@@ -94,7 +110,7 @@ public:
    
   };
 
-  CommandContext* command();
+  Property_listContext* property_list();
 
   class  Property_entryContext : public antlr4::ParserRuleContext {
   public:

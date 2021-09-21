@@ -29,6 +29,7 @@ ParserOutput generateSlides(std::string text, QString directory, bool isTemplate
 
     tokens.fill();
     potatoParser parser(&tokens);
+    parser.getInterpreter<antlr4::atn::ParserATNSimulator>()->setPredictionMode(antlr4::atn::PredictionMode::SLL);
     antlr4::tree::ParseTree *tree = parser.potato();
 
     auto listener = PotatoFormatVisitor();

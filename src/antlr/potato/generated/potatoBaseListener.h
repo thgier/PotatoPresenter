@@ -25,6 +25,9 @@ public:
   virtual void enterCommand(potatoParser::CommandContext * /*ctx*/) override { }
   virtual void exitCommand(potatoParser::CommandContext * /*ctx*/) override { }
 
+  virtual void enterProperty_list(potatoParser::Property_listContext * /*ctx*/) override { }
+  virtual void exitProperty_list(potatoParser::Property_listContext * /*ctx*/) override { }
+
   virtual void enterProperty_entry(potatoParser::Property_entryContext * /*ctx*/) override { }
   virtual void exitProperty_entry(potatoParser::Property_entryContext * /*ctx*/) override { }
 

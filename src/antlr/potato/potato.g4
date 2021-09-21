@@ -4,13 +4,15 @@ potato: NEWLINE? box*;
 
 box : command paragraph;
 
-command : BACKSLASH TEXT ('[' property_entry (';' SPACE? property_entry?)* ']')? SPACE?;
+command : BACKSLASH TEXT SPACE? ('[' property_list ']')?;
 
-property_entry : property SPACE? (':' SPACE? value?)?;
+property_list: property_entry (';' SPACE? property_entry)*;
 
-property: (TEXT | SPACE)+;
+property_entry : property SPACE? (':' SPACE? value)?;
 
-value: (TEXT | SPACE)+;
+property: (TEXT | SPACE)*;
+
+value: (TEXT | SPACE)*;
 
 paragraph: paragraph_bracket | paragraph_without_bracket;
 
@@ -20,9 +22,9 @@ paragraph_bracket: SPACE? NEWLINE? BACKSLASH_CURLED_BRACKET_OPEN SPACE? NEWLINE?
 
 text : (oneline_text_first (NEWLINE oneline_text)*);
 
-oneline_text_first:  (text_sign| '{' | '}' | SPACE)+ (text_sign | BACKSLASH | '{' | '}' | SPACE)*;
+oneline_text_first:  (text_sign| '{' | '}' | SPACE) (text_sign | BACKSLASH | '{' | '}' | SPACE)*;
 
-oneline_text: (text_sign | '{' | '}' | SPACE)+ (text_sign | BACKSLASH | '{' | '}' | SPACE)*;
+oneline_text: (text_sign | '{' | '}' | SPACE) (text_sign | BACKSLASH | '{' | '}' | SPACE)*;
 
 text_in_bracket: (text_sign | BACKSLASH | NEWLINE | '{' | '}' | SPACE)+;
 

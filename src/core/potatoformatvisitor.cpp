@@ -20,6 +20,10 @@ PotatoFormatVisitor::PotatoFormatVisitor()
 
 }
 
+void PotatoFormatVisitor::enterCommand(potatoParser::CommandContext *ctx) {
+    mCommand = QString::fromStdString(ctx->TEXT()->getText());
+}
+
 void PotatoFormatVisitor::enterText(potatoParser::TextContext * ctx) {
     mText = QString::fromStdString(ctx->getText());
 }
@@ -30,11 +34,16 @@ void PotatoFormatVisitor::enterText_in_bracket(potatoParser::Text_in_bracketCont
 
 void PotatoFormatVisitor::PotatoFormatVisitor::exitBox(potatoParser::BoxContext * ctx) {
     // read out values
-    auto const command = QString::fromStdString(ctx->command()->TEXT()->getText());
+    auto const command = mCommand;
     auto const text = mText;
+    mCommand = "";
     mText = "";
     // editor start at line 0, antlr starts at line 1
     auto const line = int(ctx->getStart()->getLine()) - 1;
+
+    if(command.isEmpty()) {
+        throw ParserError{"Expected command.", line};
+    }
 
     if(command == "slide"){
         newSlide(text, line);
@@ -50,7 +59,7 @@ void PotatoFormatVisitor::PotatoFormatVisitor::exitBox(potatoParser::BoxContext 
     }
 
     if(mSlideList.empty()){
-        throw ParserError{"Expecting \\slide", line};
+        throw ParserError{"Expected \\slide", line};
         return;
     }
 
@@ -98,7 +107,7 @@ void PotatoFormatVisitor::enterValue(potatoParser::ValueContext *ctx) {
 void PotatoFormatVisitor::exitProperty_entry(potatoParser::Property_entryContext * ctx) {
     auto const line = int(ctx->getStart()->getLine()) - 1;
     if(mProperty.isEmpty()) {
-        throw ParserError{"Expecting property.", line};
+        throw ParserError{"Expected property.", line};
     }
 
     mCurrentBoxStyle = applyProperty(mCurrentBoxStyle, mProperty, mValue, line);
