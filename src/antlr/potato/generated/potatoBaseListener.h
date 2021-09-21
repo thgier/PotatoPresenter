@@ -28,8 +28,8 @@ public:
   virtual void enterProperty_entry(potatoParser::Property_entryContext * /*ctx*/) override { }
   virtual void exitProperty_entry(potatoParser::Property_entryContext * /*ctx*/) override { }
 
-  virtual void enterProberty(potatoParser::ProbertyContext * /*ctx*/) override { }
-  virtual void exitProberty(potatoParser::ProbertyContext * /*ctx*/) override { }
+  virtual void enterProperty(potatoParser::PropertyContext * /*ctx*/) override { }
+  virtual void exitProperty(potatoParser::PropertyContext * /*ctx*/) override { }
 
   virtual void enterValue(potatoParser::ValueContext * /*ctx*/) override { }
   virtual void exitValue(potatoParser::ValueContext * /*ctx*/) override { }

@@ -26,8 +26,8 @@ public:
   virtual void enterProperty_entry(potatoParser::Property_entryContext *ctx) = 0;
   virtual void exitProperty_entry(potatoParser::Property_entryContext *ctx) = 0;
 
-  virtual void enterProberty(potatoParser::ProbertyContext *ctx) = 0;
-  virtual void exitProberty(potatoParser::ProbertyContext *ctx) = 0;
+  virtual void enterProperty(potatoParser::PropertyContext *ctx) = 0;
+  virtual void exitProperty(potatoParser::PropertyContext *ctx) = 0;
 
   virtual void enterValue(potatoParser::ValueContext *ctx) = 0;
   virtual void exitValue(potatoParser::ValueContext *ctx) = 0;

@@ -87,21 +87,29 @@ void PotatoFormatVisitor::PotatoFormatVisitor::exitBox(potatoParser::BoxContext 
     throw ParserError{QString("Invalid command '%1'").arg(command), line};
 }
 
+void PotatoFormatVisitor::enterProperty(potatoParser::PropertyContext *ctx) {
+    mProperty = QString::fromStdString(ctx->getText());
+}
+
+void PotatoFormatVisitor::enterValue(potatoParser::ValueContext *ctx) {
+    mValue = QString::fromStdString(ctx->getText());
+}
+
 void PotatoFormatVisitor::exitProperty_entry(potatoParser::Property_entryContext * ctx) {
-    auto const property = QString::fromStdString(ctx->proberty()->getText());
-    auto const value = QString::fromStdString(ctx->value()->getText());
-    auto const line = int(ctx->getStart()->getLine());
-    mCurrentBoxStyle = applyProperty(mCurrentBoxStyle, property, value, line);
+    auto const line = int(ctx->getStart()->getLine()) - 1;
+    if(mProperty.isEmpty()) {
+        throw ParserError{"Expecting property.", line};
+    }
+
+    mCurrentBoxStyle = applyProperty(mCurrentBoxStyle, mProperty, mValue, line);
+    mValue = "";
+    mProperty = "";
 }
 
 BoxStyle PotatoFormatVisitor::applyProperty(BoxStyle &boxstyle, QString property, QString value, int line) {
-    bool numberOk;
+    bool numberOk = true;
 
-    if(value.isEmpty()){
-        throw ParserError{"Expecting argument value", line};
-        return {};
-    }
-    else if(property == "defineclass") {
+    if(property == "defineclass") {
         boxstyle.mDefineclass = value;
     }
     else if(property == "color"){
@@ -248,10 +256,10 @@ BoxStyle PotatoFormatVisitor::applyProperty(BoxStyle &boxstyle, QString property
     else {
         throw ParserError{QString("Invalid Argument %1.").arg(property), line};
     }
+    if(!numberOk) {
+        throw ParserError{"Invalid number", line};
+    }
     return boxstyle;
-//    if(!numberOk) {
-//        throw ParserError{"Invalid number", line};
-//    }
 }
 
 void PotatoFormatVisitor::exitPotato(potatoParser::PotatoContext * /*ctx*/) {
@@ -281,6 +289,9 @@ void PotatoFormatVisitor::readPreambleCommand(QString command, QString text, int
 void PotatoFormatVisitor::newSlide(QString id, int line) {
 //  reset and create new slide
     mPauseCount = 0;
+    if(id.isEmpty()) {
+        throw ParserError{QString("Slide id is missing.").arg(id), line};
+    }
     if(mSlideList.findSlide(id)) {
         throw ParserError{QString("Slide id %1 already exists.").arg(id), line};
     }

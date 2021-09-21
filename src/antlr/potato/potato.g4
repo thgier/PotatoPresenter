@@ -4,11 +4,11 @@ potato: NEWLINE? box*;
 
 box : command paragraph;
 
-command : BACKSLASH TEXT ('[' property_entry (';' SPACE? property_entry)* ']')? SPACE?;
+command : BACKSLASH TEXT ('[' property_entry (';' SPACE? property_entry?)* ']')? SPACE?;
 
-property_entry : proberty SPACE? ':' SPACE? value;
+property_entry : property SPACE? (':' SPACE? value?)?;
 
-proberty: (TEXT | SPACE)+;
+property: (TEXT | SPACE)+;
 
 value: (TEXT | SPACE)+;
 

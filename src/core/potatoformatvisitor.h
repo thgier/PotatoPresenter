@@ -24,6 +24,8 @@ public:
     void enterText(potatoParser::TextContext * ctx) override;
     void enterText_in_bracket(potatoParser::Text_in_bracketContext * ctx) override;
     void exitProperty_entry(potatoParser::Property_entryContext * ctx) override;
+    void enterProperty(potatoParser::PropertyContext * /*ctx*/) override;
+    void enterValue(potatoParser::ValueContext * /*ctx*/) override;
     void exitBox(potatoParser::BoxContext * /*ctx*/) override;
     void exitPotato(potatoParser::PotatoContext * /*ctx*/) override;
 
@@ -62,7 +64,10 @@ private:
     bool mInProbertyList = false;
     bool mLastCommandSetVariable = false;
     bool mInPreamble = true;
-    QString mText = "";
+
+    QString mText;
+    QString mProperty;
+    QString mValue;
 
     BoxStyle mCurrentBoxStyle;
     BoxStyle mStandardBoxStyle;
