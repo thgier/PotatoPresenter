@@ -53,7 +53,7 @@ void SlideWidget::setPresentation(std::shared_ptr<Presentation> pres){
     mPresentation = pres;
     mActiveBoxId = QString();
     mCurrentSlideId = QString();
-    connect(mPresentation.get(), &Presentation::presentationChanged,
+    connect(mPresentation.get(), &Presentation::slideChanged,
             this, QOverload<>::of(&SlideWidget::update));
     mUndoStack.clear();
     update();
@@ -161,7 +161,7 @@ void SlideWidget::paintEvent(QPaintEvent*)
         painter.restore();
     }
 
-    auto const& box = mPresentation->slideList().findBox(mActiveBoxId);
+    auto const& box = mPresentation->findBox(mActiveBoxId);
     if(box != nullptr && slide->containsBox(mActiveBoxId)){
         box->drawManipulationSlide(painter, mDiffToMouse);
     }
@@ -180,7 +180,7 @@ void SlideWidget::paintEvent(QPaintEvent*)
 
 void SlideWidget::contextMenuEvent(QContextMenuEvent *event){
     QMenu menu(this);
-    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->slideList().findBox(mActiveBoxId));
+    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->findBox(mActiveBoxId));
     if(image){
         auto const imagePath = absoluteImagePath(image->ImagePath());
         if(QFile::exists(imagePath)){
@@ -398,7 +398,7 @@ void SlideWidget::keyPressEvent(QKeyEvent *event) {
 
 void SlideWidget::cursorApperance(QPoint mousePosition) {
     auto cursor = QCursor();
-    auto const activeBox = mPresentation->slideList().findBox(mActiveBoxId);
+    auto const activeBox = mPresentation->findBox(mActiveBoxId);
     if(!activeBox){
         cursor.setShape(Qt::ArrowCursor);
         setCursor(cursor);
@@ -535,7 +535,7 @@ void SlideWidget::createActions(){
 }
 
 void SlideWidget::openInInkscape(){
-    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->slideList().findBox(mActiveBoxId));
+    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->findBox(mActiveBoxId));
     if(!image){
         return;
     }
@@ -547,7 +547,7 @@ void SlideWidget::openInInkscape(){
 }
 
 void SlideWidget::createAndOpenSvg(){
-    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->slideList().findBox(mActiveBoxId));
+    auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->findBox(mActiveBoxId));
     if(!image){
         return;
     }

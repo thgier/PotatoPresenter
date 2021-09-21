@@ -123,7 +123,7 @@ void Slide::setStandardBoxStyle(BoxStyle &boxstyle) {
     mStandardStyle = boxstyle;
 }
 
-BoxStyle const& Slide::standartBoxStyle() const {
+BoxStyle const& Slide::standardBoxStyle() const {
     return mStandardStyle;
 }
 

@@ -19,23 +19,20 @@ class Template
 {
 public:
     using Ptr = std::shared_ptr<Template>;
-
     using variablesMap = std::shared_ptr<std::map<QString, QString>>;
+
     Template();
     Template(SlideList slides);
+
+    // set data
     void setSlides(SlideList slides);
-    void readTemplateConfig(QString configFile);
+    void setConfig(ConfigBoxes config);
+
+    // apply template to a slide list
     void applyTemplate(SlideList& slideList);
-    BoxGeometry getGeometry(QString id) const;
-    BoxStyle getStyle(QString id, QString slideClass) const;
-    void declareVariable(QString name, QString value);
-    void drawTemplate(QString slideId);
-    Box::List getTemplateSlide(QString slideId) const;
-    void setVariables(std::map<QString, QString> variables);
-    ConfigBoxes& Configuration();
 
 private:
-    void applyTemplateToBox(Box::Ptr box, QString slideClass) const;
+    Box::List getTemplateSlide(QString slideId) const;
 
 private:
     Presentation mPresentation;

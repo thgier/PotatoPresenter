@@ -122,7 +122,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 //    setup CacheManager
     connect(&cacheManager(), &EquationCacheManager::conversionFinished,
-            mPresentation.get(), &Presentation::presentationChanged);
+            this, &MainWindow::fileChanged);
 
     CacheManager<QImage>::instance().setCallback([this](QString){mSlideWidget->update();});
     CacheManager<QSvgRenderer>::instance().setCallback([this](QString){mSlideWidget->update();});
@@ -246,10 +246,8 @@ void MainWindow::fileChanged() {
     if(parserOutput.successfull()) {
         auto const slides = parserOutput.slideList();
         auto const preamble = parserOutput.preamble();
-        if(!preamble.templateName.isEmpty()) {
-            mPresentation->setTemplate(readTemplate(preamble.templateName));
-        }
-        mPresentation->setSlides(slides);
+        auto const presentationTemplate = readTemplate(preamble.templateName);
+        mPresentation->setData({slides, presentationTemplate});
         mErrorOutput->setText("Conversion succeeded \u2714");
     }
     else {
@@ -267,8 +265,11 @@ void MainWindow::fileChanged() {
 }
 
 std::shared_ptr<Template> MainWindow::readTemplate(QString filename) const {
+    if(filename.isEmpty()) {
+        return {};
+    }
     auto thisTemplate = std::make_shared<Template>();
-    thisTemplate->readTemplateConfig(filename + ".json");
+    thisTemplate->setConfig(filename + ".json");
     auto file = QFile(filename + ".txt");
     if(!file.open(QIODevice::ReadOnly)){
         mErrorOutput->setText(tr("Cannot load template %1.").arg(file.fileName()));
@@ -393,7 +394,7 @@ QString MainWindow::jsonFileName() const {
 }
 
 void MainWindow::saveJson() {
-    mPresentation->saveConfig(jsonFileName());
+    mPresentation->configuration().saveConfig(jsonFileName());
 }
 
 void MainWindow::openJson() {
@@ -403,11 +404,11 @@ void MainWindow::openJson() {
         switch (ret) {
         case QMessageBox::Ok:
             resetPresentation();
-            mPresentation->saveConfig(jsonFileName());
+            mPresentation->configuration().saveConfig(jsonFileName());
             break;
         }
     }
-    mPresentation->loadInput(jsonFileName());
+    mPresentation->setConfig({jsonFileName()});
     mSlideWidget->setPresentation(mPresentation);
 }
 
@@ -427,8 +428,6 @@ void MainWindow::resetPresentation() {
     mPresentation = std::make_shared<Presentation>();
     mSlideWidget->setPresentation(mPresentation);
     mSlideModel->setPresentation(mPresentation);
-    connect(mPresentation.get(), &Presentation::rebuildNeeded,
-            this, &MainWindow::fileChanged);
 }
 
 void MainWindow::exportPDF() {
@@ -561,16 +560,14 @@ Presentation::Ptr MainWindow::generateTemplatePresentation(QString directory) co
     auto const val = file.readAll();
 
     auto presentation = std::make_shared<Presentation>();
-    presentation->loadInput(directory + "/demo.json");
+    presentation->setConfig({directory + "/demo.json"});
 
     auto const parserOutput = generateSlides(val.toStdString(), directory);
     if(parserOutput.successfull()) {
-        auto const preamble = parserOutput.preamble();
         auto const slides = parserOutput.slideList();
-        if(!preamble.templateName.isEmpty()) {
-            presentation->setTemplate(readTemplate(preamble.templateName));
-        }
-        presentation->setSlides(slides);
+        auto const preamble = parserOutput.preamble();
+        auto const presentationTemplate = readTemplate(preamble.templateName);
+        presentation->setData({slides, presentationTemplate});
         return presentation;
     }
     else {

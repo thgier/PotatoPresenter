@@ -37,12 +37,8 @@ void SlideListModel::setPresentation(std::shared_ptr<Presentation> presentation)
     mPresentation = presentation;
     endResetModel();
     connect(mPresentation.get(), &Presentation::slideChanged,
-            this, [this](int pageNumber){Q_EMIT dataChanged(index(pageNumber), index(pageNumber));});
-    connect(mPresentation.get(), &Presentation::presentationChanged,
-            this, [this](){
-            beginResetModel();
-            endResetModel();
+            this, [this](int pageNumberFront, int pageNumerBack){
+                Q_EMIT dataChanged(index(pageNumberFront), index(pageNumerBack));
             });
-
 }
 

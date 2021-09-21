@@ -10,12 +10,8 @@
 #include <QDir>
 #include <set>
 
-ConfigBoxes::ConfigBoxes()
+ConfigBoxes::ConfigBoxes(QString filename)
 {
-
-}
-
-void ConfigBoxes::loadConfigurationFile(QString filename){
     QFile file(filename);
     if (!file.open(QIODevice::ReadOnly)) {
         throw ConfigError{"Cannot open file", filename};
@@ -28,7 +24,7 @@ void ConfigBoxes::loadConfigurationFile(QString filename){
     mPath = filename;
 }
 
-void ConfigBoxes::saveJsonConfigurations(QJsonObject &json, const JsonConfig config){
+void ConfigBoxes::saveJsonConfigurations(QJsonObject &json, const JsonConfig config) const {
     QJsonObject jsonRect;
     auto const boxrect = config.geometry;
     jsonRect["xPosition"] = boxrect.rect.left();
@@ -63,7 +59,7 @@ void ConfigBoxes::loadConfigFromJson(QJsonDocument doc){
     }
 }
 
-void ConfigBoxes::saveConfig(QString filename)
+void ConfigBoxes::saveConfig(QString filename) const
 {
     QFile file(filename);
     if (!file.open(QIODevice::WriteOnly)) {

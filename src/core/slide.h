@@ -49,7 +49,7 @@ public:
     Variables const& variables() const;
 
     void setStandardBoxStyle(BoxStyle &boxstyle);
-    const BoxStyle &standartBoxStyle() const;
+    const BoxStyle &standardBoxStyle() const;
 
     void setSlideClass(QString const& slideClass);
     QString const& slideClass() const;

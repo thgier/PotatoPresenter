@@ -72,6 +72,11 @@ struct SlideList {
     }
 };
 
+struct PresentationData {
+    SlideList mSlideList;
+    std::shared_ptr<Template> mTemplate = nullptr;
+};
+
 class Presentation : public QObject
 {
     Q_OBJECT
@@ -80,22 +85,21 @@ public:
     using List = std::vector<Presentation::Ptr>;
 
     Presentation();
-    void loadInput(QString configFilename);
+
+    // set data
+    void setData(PresentationData data);
 
     // Access contained Slides
-    SlideList slideList() const;
-    void setTemplate(std::shared_ptr<Template> templateObject);
-    void setSlides(SlideList const& slides);
+    SlideList const& slideList() const;
 
     // access to contained box
     Box::Ptr findBox(QString const& id) const;
     std::pair<Slide::Ptr, Box::Ptr> findBoxForLine(int line) const;
 
+    // getter
     bool empty() const;
     QSize dimensions() const;
     int numberOfSlides() const;
-
-    void applyStandardTemplateToBox(Box::Ptr box, BoxStyle const& standardBoxStyle) const;
 
     // Change Geometry of Box only through the presentation in order to
     // save it in the Configuration
@@ -103,37 +107,37 @@ public:
     void deleteBoxGeometry(QString const& boxId, int pageNumber);
 
     // Configuration Class to follow and save the Geometry of the boxes
-    void saveConfig(QString const& file);
-    ConfigBoxes& configuration();
     void setConfig(ConfigBoxes config);
+    ConfigBoxes const& configuration() const;
 
-    void deleteNotNeededConfigurations();
-
-    std::map<QString, BoxStyle> definedClasses() const;
+    // creating and applying of a map of the boxes that defines
+    // a class e.g. has the argument defineclass
+    const std::map<QString, BoxStyle> createMapDefinesClass() const;
     void applyDefinedClass(SlideList const& slides);
 
+    // applys first the values that are given by the variables
+    // e.g. \setvar font Hack
+    // then apply standard values for the geometry
+    void applyStandardTemplate(SlideList &slides) const;
+
+    // deletes the configuration entries from boxes that do not exist
+    // in the presentation at the moment
+    void deleteNotNeededConfigurations();
+
 Q_SIGNALS:
-    void presentationChanged();
-    void slideChanged(int pageNumber);
-    void rebuildNeeded();
+    // emited if the position of a box on a slide is changed
+    void slideChanged(int pageNumberFront, int pageNumberBack);
 
 private:
     // apply Configuration in json file to mSlides
     void applyConfiguration();
-    SlideList const& applyStandardTemplate(SlideList const& slides) const;
-
-    void createMapDefinesClass();
-
-    BoxStyle setStyleIfNotSet(BoxStyle &appliedStyle, BoxStyle const& modelStyle) const;
-    void applyGeometryIfNotSet(BoxStyle &appliedStyle, BoxGeometry const& rect) const;
 
 private:
     SlideList mSlides;
-    QString mInputDir;
     ConfigBoxes mConfig;
-    QSize mDimensions{1600, 900};
     std::shared_ptr<Template> mTemplate = nullptr;
-    std::map<QString, BoxStyle> mDefinedStyles;
+
+    QSize mDimensions{1600, 900};
 };
 
 Q_DECLARE_METATYPE(Presentation::Ptr)

@@ -26,10 +26,10 @@ struct ConfigError{
 class ConfigBoxes
 {
 public:
-    ConfigBoxes();
+    ConfigBoxes() = default;
+    ConfigBoxes(QString filename);
 
-    void loadConfigurationFile(QString filename);
-    void saveConfig(QString filename);
+    void saveConfig(QString filename) const;
 
     void addRect(const MemberBoxGeometry &rect, QString const& id);
     void deleteRect(QString id);
@@ -39,7 +39,7 @@ public:
     MemberBoxGeometry getRect(QString id) const;
 
 private:
-    void saveJsonConfigurations(QJsonObject &json, const JsonConfig config);
+    void saveJsonConfigurations(QJsonObject &json, const JsonConfig config) const;
     JsonConfig readJsonConfigurations(const QJsonObject &json);
     void loadConfigFromJson(QJsonDocument doc);
 
