@@ -26,7 +26,9 @@ void ImageBox::drawContent(QPainter& painter, std::map<QString, QString> variabl
     }
     auto const fileInfo = QFileInfo(path);
     if(fileInfo.suffix() == "svg"){
-        drawSvg(loadSvg(path), painter);
+        auto const transform = painter.combinedTransform();
+        auto const size = transform.mapRect(geometry().rect()).size();
+        drawPixmap(loadSvg(path, size), painter);
     }
     else{
         drawImage(loadImage(path), painter);
@@ -46,17 +48,40 @@ std::shared_ptr<QImage> ImageBox::loadImage(QString path) const{
     return image;
 }
 
-std::shared_ptr<QSvgRenderer> ImageBox::loadSvg(QString path) const{
-    auto const svgEntry = CacheManager<QSvgRenderer>::instance().getData(path);
-    if(svgEntry.data && svgEntry.data->isValid()){
-        return svgEntry.data;
+std::shared_ptr<QPixmap> ImageBox::loadSvg(QString path, QSize size) {
+    auto const pixmap = CacheManager<QPixmap>::instance().getData(path);
+    if(pixmap.data && pixmap.data->size() == size) {
+        return pixmap.data;
     }
-    if(svgEntry.status == FileLoadStatus::failed){
+    if(pixmap.status == FileLoadStatus::failed){
         return {};
     }
-    auto const svg = std::make_shared<QSvgRenderer>(path);
-    CacheManager<QSvgRenderer>::instance().setData(path, svg);
-    return svg;
+
+    auto newPixMap = std::make_shared<QPixmap>(size);
+    newPixMap->fill(Qt::transparent);
+    QPainter painter(newPixMap.get());
+    auto svg = QSvgRenderer(path);
+    svg.setAspectRatioMode(Qt::KeepAspectRatio);
+    svg.render(&painter, {{0, 0}, size});
+
+    auto const viewBox = svg.viewBox();
+    if(viewBox.isEmpty()) {
+        return {};
+    }
+    mBoundingBox = geometry().rect();
+    if(geometry().width() / geometry().height() > viewBox.width() / viewBox.height()) {
+        auto const svgWidth = viewBox.width()  * geometry().height() / (1.0 * viewBox.height());
+        mBoundingBox.setLeft(geometry().left() + (geometry().width() - svgWidth) / 2);
+        mBoundingBox.setWidth(svgWidth);
+    }
+    else {
+        auto const svgHeight = viewBox.height()  * geometry().width() / (1.0 * viewBox.width());
+        mBoundingBox.setTop(geometry().top() + (geometry().height() - svgHeight) / 2);
+        mBoundingBox.setHeight(svgHeight);
+    }
+
+    CacheManager<QPixmap>::instance().setData(path, newPixMap);
+    return newPixMap;
 }
 
 std::shared_ptr<QSvgRenderer> ImageBox::loadPdf(QString path) const{
@@ -93,25 +118,13 @@ void ImageBox::drawImage(std::shared_ptr<QImage> image, QPainter& painter) {
     painter.drawImage(mBoundingBox, paintImage);
 }
 
-void ImageBox::drawSvg(std::shared_ptr<QSvgRenderer> svg, QPainter& painter) {
-    if(!svg || !svg->isValid()){
+void ImageBox::drawPixmap(std::shared_ptr<QPixmap> pixmap, QPainter& painter) {
+    PainterTransformScope scope(this, painter);
+    drawGlobalBoxSettings(painter);
+    if(!pixmap){
         return;
     }
-    svg->setAspectRatioMode(Qt::KeepAspectRatio);
-    svg->render(&painter, geometry().rect());
-
-    auto const viewBox = svg->viewBox();
-    mBoundingBox = geometry().rect();
-    if(geometry().width() / geometry().height() > viewBox.width() / viewBox.height()) {
-        auto const svgWidth = viewBox.width()  * geometry().height() / (1.0 * viewBox.height());
-        mBoundingBox.setLeft(geometry().left() + (geometry().width() - svgWidth) / 2);
-        mBoundingBox.setWidth(svgWidth);
-    }
-    else {
-        auto const svgHeight = viewBox.height()  * geometry().width() / (1.0 * viewBox.width());
-        mBoundingBox.setTop(geometry().top() + (geometry().height() - svgHeight) / 2);
-        mBoundingBox.setHeight(svgHeight);
-    }
+    painter.drawPixmap(geometry().rect(), *pixmap, {{0, 0}, pixmap->size()});
 }
 
 bool ImageBox::containsPoint(QPoint point, int) const {

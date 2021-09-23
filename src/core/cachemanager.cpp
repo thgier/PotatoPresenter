@@ -110,3 +110,4 @@ void CacheManager<T>::deleteAllResources(){
 
 template class CacheManager<QImage>;
 template class CacheManager<QSvgRenderer>;
+template class CacheManager<QPixmap>;

@@ -1,7 +1,5 @@
-- parser refractor
 - highlighting
 - sections
-- assistant
 - user interaction while Parsing error?
 - message if inkscap is not installed
 
@@ -15,3 +13,5 @@
 bugs:
 - sometimes templates?
 - pause in template
+- unsaved changes messages when opening and closing the application
+- unsaved changes message missing when just moving stuff
