@@ -36,9 +36,19 @@ void SlideListModel::setPresentation(std::shared_ptr<Presentation> presentation)
     beginResetModel();
     mPresentation = presentation;
     endResetModel();
+    mNumberOfSlides = rowCount();
     connect(mPresentation.get(), &Presentation::slideChanged,
-            this, [this](int pageNumberFront, int pageNumerBack){
-                Q_EMIT dataChanged(index(pageNumberFront), index(pageNumerBack));
-            });
+            this, &SlideListModel::slidesChanged);
 }
+
+void SlideListModel::slidesChanged(int firstSlide, int lastSlide) {
+    if (mPresentation->numberOfSlides() == mNumberOfSlides) {
+        Q_EMIT dataChanged(index(firstSlide), index(lastSlide));
+        return;
+    }
+    beginResetModel();
+    endResetModel();
+    mNumberOfSlides = rowCount();
+}
+
 

@@ -25,8 +25,13 @@ public:
     void setPresentation(std::shared_ptr<Presentation> presentation);
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role) const override;
+
+private:
+    void slidesChanged(int firstSlide, int lastSlide);
+
 private:
     std::shared_ptr<Presentation> mPresentation = nullptr;
+    int mNumberOfSlides = 0;
 };
 
 #endif // FRAMELISTMODEL_H
