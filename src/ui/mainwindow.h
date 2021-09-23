@@ -48,7 +48,7 @@ private:
     void openInputFile(QString filename);
     void newDocument();
     void resetPresentation();
-    std::shared_ptr<Template> readTemplate(QString filename) const;
+    std::shared_ptr<Template> readTemplate(QString templateName) const;
 
     // functions connected to actions
     bool save();

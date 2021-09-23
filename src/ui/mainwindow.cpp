@@ -246,7 +246,17 @@ void MainWindow::fileChanged() {
     if(parserOutput.successfull()) {
         auto const slides = parserOutput.slideList();
         auto const preamble = parserOutput.preamble();
-        auto const presentationTemplate = readTemplate(preamble.templateName);
+        auto templateName = preamble.templateName;
+        Template::Ptr presentationTemplate = nullptr;
+        if(!templateName.isEmpty()) {
+            if (!templateName.startsWith("/home")) {
+                templateName = file + "/" + templateName;
+            }
+            presentationTemplate = readTemplate(templateName);
+            if (!presentationTemplate) {
+                return;
+            }
+        }
         mPresentation->setData({slides, presentationTemplate});
         mErrorOutput->setText("Conversion succeeded \u2714");
     }
@@ -264,17 +274,23 @@ void MainWindow::fileChanged() {
     ui->pagePreview->scrollTo(index);
 }
 
-std::shared_ptr<Template> MainWindow::readTemplate(QString filename) const {
-    if(filename.isEmpty()) {
+std::shared_ptr<Template> MainWindow::readTemplate(QString templateName) const {
+    if(templateName.isEmpty()) {
+        return {};
+    }
+    auto file = QFile(templateName + ".txt");
+    if(!file.open(QIODevice::ReadOnly)){
+        mErrorOutput->setText(tr("Cannot load template %1.").arg(file.fileName()));
         return {};
     }
     auto thisTemplate = std::make_shared<Template>();
-    thisTemplate->setConfig(filename + ".json");
-    auto file = QFile(filename + ".txt");
-    if(!file.open(QIODevice::ReadOnly)){
-        mErrorOutput->setText(tr("Cannot load template %1.").arg(file.fileName()));
+    try {
+        thisTemplate->setConfig(templateName + ".json");
+    }  catch (ConfigError error) {
+        mErrorOutput->setText(tr("Cannot load template %1.").arg(error.filename));
+        return {};
     }
-    auto const directoryPath = QFileInfo(filename).absolutePath();
+    auto const directoryPath = QFileInfo(templateName).absolutePath();
     auto const parserOutput = generateSlides(file.readAll().toStdString(), directoryPath, true);
 
     if(parserOutput.successfull()) {
@@ -404,7 +420,7 @@ void MainWindow::openJson() {
         switch (ret) {
         case QMessageBox::Ok:
             resetPresentation();
-            mPresentation->configuration().saveConfig(jsonFileName());
+            mPresentation->setConfig({jsonFileName()});
             break;
         }
     }
@@ -566,7 +582,11 @@ Presentation::Ptr MainWindow::generateTemplatePresentation(QString directory) co
     if(parserOutput.successfull()) {
         auto const slides = parserOutput.slideList();
         auto const preamble = parserOutput.preamble();
-        auto const presentationTemplate = readTemplate(preamble.templateName);
+        auto templateName = preamble.templateName;
+        if (!templateName.startsWith("/home")) {
+            templateName = directory + "/" + templateName;
+        }
+        auto const presentationTemplate = readTemplate(templateName);
         presentation->setData({slides, presentationTemplate});
         return presentation;
     }
