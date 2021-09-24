@@ -13,6 +13,10 @@ namespace  {
         return "%{" + variable + "}";
     }
 
+    bool multilineText(QString text) {
+        return text.contains("\n");
+    }
+
 }
 
 PotatoFormatVisitor::PotatoFormatVisitor()
@@ -296,6 +300,9 @@ void PotatoFormatVisitor::readPreambleCommand(QString command, QString text, int
 }
 
 void PotatoFormatVisitor::newSlide(QString id, int line) {
+    if(multilineText(id)) {
+        throw ParserError {"One line text expected.", line};
+    }
 //  reset and create new slide
     mPauseCount = 0;
     if(id.isEmpty()) {
@@ -344,6 +351,9 @@ void PotatoFormatVisitor::createNewBox(QString command, QString text, int line) 
         box = std::make_shared<MarkdownTextBox>(text);
     }
     else if(command == "image"){
+        if(multilineText(text)) {
+            throw ParserError {"One line text expected.", line};
+        }
         box = std::make_shared<ImageBox>(text);
         if(!mCurrentBoxStyle.mClass.has_value()) {
             mCurrentBoxStyle.mClass = "body";
