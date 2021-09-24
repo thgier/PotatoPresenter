@@ -70,6 +70,7 @@ private:
     void saveJson();
     void openJson();
     QString filename() const;
+    QString filenameWithoutSuffix() const;
     QString completeBaseName() const;
     QString applicationName() const;
     QString windowTitle() const;

@@ -234,10 +234,6 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 }
 
 void MainWindow::fileChanged() {
-    if(!mIsModified) {
-        setWindowTitle(windowTitleNotSaved());
-        mIsModified = true;
-    }
     auto iface = qobject_cast<KTextEditor::MarkInterface*>(mDoc);
     iface->clearMarks();
     auto file = QFileInfo(filename()).absolutePath();
@@ -345,6 +341,11 @@ void MainWindow::openProject(QString path) {
     fileChanged();
     setWindowTitle(windowTitle());
     mIsModified = false;
+    connect(mPresentation.get(), &Presentation::slideChanged,
+            this, [this]{if(!mIsModified) {
+            setWindowTitle(windowTitleNotSaved());
+            mIsModified = true;
+        }});
     addFileToOpenRecent(path);
     updateOpenRecent();
     addDirectoryToSettings(QFileInfo(filename()).path());
@@ -430,6 +431,11 @@ void MainWindow::openJson() {
 
 QString MainWindow::filename() const {
     return mDoc->url().toString(QUrl::PreferLocalFile);
+}
+
+QString MainWindow::filenameWithoutSuffix() const {
+    auto const file = QFileInfo(mDoc->url().toString(QUrl::PreferLocalFile));
+    return file.absolutePath() + "/" + file.baseName();
 }
 
 QString MainWindow::completeBaseName() const {
@@ -550,7 +556,7 @@ bool MainWindow::closeDocument() {
         return true;
     }
     int ret = QMessageBox::information(this, tr("Unsaved changes"), tr("The document %1 has been modified. "
-                          "Do you want to save your changes or discard them?").arg(filename()),
+                          "Do you want to save your changes or discard them?").arg(filenameWithoutSuffix()),
                           QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
     switch (ret) {
     case QMessageBox::Save:
