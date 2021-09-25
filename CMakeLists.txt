@@ -51,6 +51,7 @@ add_executable(praes
     src/core/potatoformatvisitor.cpp
     src/core/presentation.cpp
     src/core/template.cpp
+    src/core/templatecache.cpp
     src/core/tokenizer.cpp
     src/core/transformboxundo.cpp
     src/files.qrc

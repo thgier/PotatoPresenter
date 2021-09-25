@@ -58,6 +58,8 @@ MainWindow::MainWindow(QWidget *parent)
     mPresentation = std::make_shared<Presentation>();
     mSlideWidget = ui->slideWidget;
     mSlideWidget->setPresentation(mPresentation);
+    connect(&mTemplateCache, &TemplateCache::templateChanged,
+            this, &MainWindow::fileChanged);
 
 
 //    setup Item model
@@ -248,9 +250,15 @@ void MainWindow::fileChanged() {
             if (!templateName.startsWith("/home")) {
                 templateName = file + "/" + templateName;
             }
-            presentationTemplate = readTemplate(templateName);
+            presentationTemplate = mTemplateCache.getTemplate(templateName);
             if (!presentationTemplate) {
-                return;
+                presentationTemplate = readTemplate(templateName);
+                if(!presentationTemplate) {
+                    mErrorOutput->setText("Line " + QString::number(0) + ": Cannot load template" + " \u26A0");
+                    iface->addMark(0, KTextEditor::MarkInterface::MarkTypes::Error);
+                    return;
+                }
+                mTemplateCache.setTemplate(presentationTemplate, templateName);
             }
         }
         mPresentation->setData({slides, presentationTemplate});

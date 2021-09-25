@@ -27,6 +27,7 @@
 #include "slidelistmodel.h"
 #include "templatelistmodel.h"
 #include "template.h"
+#include "templatecache.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -110,12 +111,13 @@ private:
 
     SlideWidget* mSlideWidget;
     Presentation::Ptr mPresentation;
+    QString mTemplatePath;
+    TemplateCache mTemplateCache;
 
     QListWidget *mListWidget;
     SlideListModel *mSlideModel;
 
     TemplateListModel *mTemplateModel;
-    QString mTemplatePath;
 
     QString mPdfFile;
     QString mPdfFileHandout;

@@ -23,7 +23,7 @@ CacheManager<T>::CacheManager()
     mDirTimer.setSingleShot(true);
     QObject::connect(mWatcher, &QFileSystemWatcher::directoryChanged,
             [this](QString path){mDirTimer.start(200);
-                                       mLastPathDir = path;});
+                                mLastPathDir = path;});
     QObject::connect(&mDirTimer, &QTimer::timeout,
             [this](){removeFailed(mLastPathDir);});
 
@@ -110,4 +110,4 @@ void CacheManager<T>::deleteAllResources(){
 
 template class CacheManager<QImage>;
 template class CacheManager<QSvgRenderer>;
-template class CacheManager<QPixmap>;
+template class CacheManager<PixMapVector>;

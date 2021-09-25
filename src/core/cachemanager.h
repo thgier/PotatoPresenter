@@ -6,19 +6,42 @@
 
 #ifndef IMAGECACHEMANAGER_H
 #define IMAGECACHEMANAGER_H
+
 #include <QString>
 #include <QImage>
 #include <QFileInfo>
-#include <map>
-#include <memory>
 #include <QFileSystemWatcher>
 #include <QTimer>
-#include <vector>
 #include <QSvgRenderer>
+#include <QPixmap>
+
+#include <map>
+#include <memory>
+#include <vector>
 
 enum FileLoadStatus{
     ok,
     failed
+};
+
+struct PixMapVector {
+    std::vector<std::shared_ptr<QPixmap>> mPixmaps;
+
+    void insertPixmap(std::shared_ptr<QPixmap> pixmap) {
+        mPixmaps.insert(mPixmaps.begin(), pixmap);
+        if(mPixmaps.size() > 2) {
+            mPixmaps.pop_back();
+        }
+    };
+
+    std::shared_ptr<QPixmap> findPixMap(QSize size) {
+        for (auto const& pixmap : mPixmaps) {
+            if(pixmap->size() == size) {
+                return pixmap;
+            }
+        }
+        return {};
+    }
 };
 
 template <class T>

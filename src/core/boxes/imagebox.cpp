@@ -49,11 +49,11 @@ std::shared_ptr<QImage> ImageBox::loadImage(QString path) const{
 }
 
 std::shared_ptr<QPixmap> ImageBox::loadSvg(QString path, QSize size) {
-    auto const pixmap = CacheManager<QPixmap>::instance().getData(path);
-    if(pixmap.data && pixmap.data->size() == size) {
-        return pixmap.data;
+    auto pixmapVector = CacheManager<PixMapVector>::instance().getData(path);
+    if(pixmapVector.data && pixmapVector.data->findPixMap(size)) {
+        return pixmapVector.data->findPixMap(size);
     }
-    if(pixmap.status == FileLoadStatus::failed){
+    if(pixmapVector.status == FileLoadStatus::failed){
         return {};
     }
 
@@ -69,6 +69,9 @@ std::shared_ptr<QPixmap> ImageBox::loadSvg(QString path, QSize size) {
         return {};
     }
     mBoundingBox = geometry().rect();
+    if(geometry().height() == 0) {
+        return {};
+    }
     if(geometry().width() / geometry().height() > viewBox.width() / viewBox.height()) {
         auto const svgWidth = viewBox.width()  * geometry().height() / (1.0 * viewBox.height());
         mBoundingBox.setLeft(geometry().left() + (geometry().width() - svgWidth) / 2);
@@ -79,8 +82,12 @@ std::shared_ptr<QPixmap> ImageBox::loadSvg(QString path, QSize size) {
         mBoundingBox.setTop(geometry().top() + (geometry().height() - svgHeight) / 2);
         mBoundingBox.setHeight(svgHeight);
     }
-
-    CacheManager<QPixmap>::instance().setData(path, newPixMap);
+    auto newPixMapVector = std::make_shared<PixMapVector>();
+    if(pixmapVector.data) {
+        newPixMapVector = pixmapVector.data;
+    }
+    newPixMapVector->insertPixmap(newPixMap);
+    CacheManager<PixMapVector>::instance().setData(path, newPixMapVector);
     return newPixMap;
 }
 
