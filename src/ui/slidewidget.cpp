@@ -12,6 +12,7 @@
 #include <QPainter>
 #include <QDir>
 #include <QShortcut>
+#include <QMessageBox>
 #include "sliderenderer.h"
 #include "imagebox.h"
 #include "cachemanager.h"
@@ -544,6 +545,11 @@ void SlideWidget::openInInkscape(){
     arguments << absoluteImagePath(image->ImagePath());
     QProcess *inkscapeProcess = new QProcess(this);
     inkscapeProcess->start(program, arguments);
+    connect(inkscapeProcess, &QProcess::errorOccurred,
+            this, [this](){
+        QMessageBox::information(this, tr("Cannot open Inkscape."), tr("Cannot open Inkscape. Make sure Inkscape is installed."),
+                                         QMessageBox::Ok);
+    });
 }
 
 void SlideWidget::createAndOpenSvg(){
