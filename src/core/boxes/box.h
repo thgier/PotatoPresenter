@@ -103,11 +103,6 @@ struct BoxStyle{
     }
 };
 
-struct VariableSubstitution{
-    int begin;
-    int end;
-    QString word;
-};
 
 class Box
 {

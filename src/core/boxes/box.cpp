@@ -151,29 +151,21 @@ QString Box::substituteVariables(QString text, std::map<QString, QString> variab
     if(variables.empty()){
         return text;
     }
-    std::vector<VariableSubstitution> variableSubstituions;
-    for(auto const &variable: variables){
-        QRegularExpression re(variable.first);
-        QRegularExpressionMatchIterator i = re.globalMatch(text);
-        while(i.hasNext()){
-            QRegularExpressionMatch match = i.next();
-            VariableSubstitution sub;
-            sub.begin = match.capturedStart();
-            sub.end = match.capturedEnd();
-            sub.word = variable.second;
-            variableSubstituions.push_back(sub);
-        }
-    }
-    if(variableSubstituions.empty()){
-        return text;
-    }
-    std::sort(variableSubstituions.begin(), variableSubstituions.end(), [](auto a, auto b){return a.begin < b.begin;});
+    QRegularExpression re("%{[^}]*}");
+    QRegularExpressionMatchIterator i = re.globalMatch(text);
     QString newText = "";
     int position = 0;
-    for(auto &sub: variableSubstituions){
-        newText.append(text.midRef(position, sub.begin - position));
-        newText.append(sub.word);
-        position = sub.end;
+    while(i.hasNext()){
+        QRegularExpressionMatch match = i.next();
+        auto const begin = match.capturedStart();
+        auto const end = match.capturedEnd();
+        newText.append(text.midRef(position, begin - position));
+        auto const foundExpression = text.mid(begin, end - begin);
+        if( variables.find(foundExpression) != variables.end() ) {
+            auto const value = variables.find(foundExpression)->second;
+            newText.append(value);
+            position = end;
+        }
     }
     newText.append(text.midRef(position, text.size() - position));
     return newText;
