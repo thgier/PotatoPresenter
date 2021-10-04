@@ -765,6 +765,7 @@
    <addaction name="actionUndo"/>
    <addaction name="actionRedo"/>
    <addaction name="actionReset_Position"/>
+   <addaction name="actionReset_Angle"/>
    <addaction name="separator"/>
    <addaction name="actionTranslate"/>
    <addaction name="actionRotate"/>
@@ -867,6 +868,9 @@
    <property name="text">
     <string>Reset Position</string>
    </property>
+   <property name="toolTip">
+    <string>Reset position of an element</string>
+   </property>
   </action>
   <action name="actionClean_Configurations">
    <property name="icon">
@@ -951,6 +955,18 @@
    </property>
    <property name="toolTip">
     <string>open recent</string>
+   </property>
+  </action>
+  <action name="actionReset_Angle">
+   <property name="icon">
+    <iconset theme="chronometer-reset">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>Reset Rotation</string>
+   </property>
+   <property name="toolTip">
+    <string>Reset rotation of an element</string>
    </property>
   </action>
  </widget>

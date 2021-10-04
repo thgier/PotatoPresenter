@@ -181,14 +181,18 @@ void SlideWidget::paintEvent(QPaintEvent*)
 
 void SlideWidget::contextMenuEvent(QContextMenuEvent *event){
     QMenu menu(this);
+    menu.addAction(mUndo);
+    menu.addAction(mRedo);
+    menu.addAction(mResetBox);
+    menu.addAction(mResetAngle);
     auto const image = std::dynamic_pointer_cast<ImageBox>(mPresentation->findBox(mActiveBoxId));
     if(image){
         auto const imagePath = absoluteImagePath(image->ImagePath());
         if(QFile::exists(imagePath)){
-            menu.addAction(openInkscape);
+            menu.addAction(mOpenInkscape);
         }
         else{
-            menu.addAction(createAndOpenInkscape);
+            menu.addAction(mCreateAndOpenInkscape);
         }
     }
     menu.exec(event->globalPos());
@@ -472,8 +476,20 @@ void SlideWidget::deleteBoxPosition() {
     if(mActiveBoxId.isEmpty()) {
         return;
     }
+    auto const lastConfig = mPresentation->configuration();
     mPresentation->deleteBoxGeometry(mActiveBoxId, mPageNumber);
-    update();
+    auto transform = new TransformBoxUndo(mPresentation, lastConfig, mPresentation->configuration());
+    mUndoStack.push(transform);
+}
+
+void SlideWidget::deleteBoxAngle() {
+    if(mActiveBoxId.isEmpty()) {
+        return;
+    }
+    auto const lastConfig = mPresentation->configuration();
+    mPresentation->deleteBoxAngle(mActiveBoxId, mPageNumber);
+    auto transform = new TransformBoxUndo(mPresentation, lastConfig, mPresentation->configuration());
+    mUndoStack.push(transform);
 }
 
 void SlideWidget::setActiveBox(QString boxId, QString slideId) {
@@ -518,13 +534,7 @@ QPoint SlideWidget::ScaledMousePos(QMouseEvent *event) const{
 }
 
 void SlideWidget::createActions(){
-    openInkscape = new QAction(tr("&Open in Inkscape"), this);
-    createAndOpenInkscape = new QAction(tr("&Create SVG and open in Inkscape"), this);
-    connect(openInkscape, &QAction::triggered,
-            this, &SlideWidget::openInInkscape);
-    connect(createAndOpenInkscape, &QAction::triggered,
-            this, &SlideWidget::createAndOpenSvg);
-
+    // Undo, Redo
     mUndo = mUndoStack.createUndoAction(this);
     mRedo = mUndoStack.createRedoAction(this);
     mUndo->setShortcut(QKeySequence("Ctrl+Z"));
@@ -533,6 +543,25 @@ void SlideWidget::createActions(){
     mRedo->setShortcutContext(Qt::WidgetShortcut);
     this->addAction(mUndo);
     this->addAction(mRedo);
+
+    // reset Box position
+    mResetBox = new QAction(tr("Reset Position"), this);
+    mResetBox->setIcon(QIcon::fromTheme("edit-reset"));
+    connect(mResetBox, &QAction::triggered,
+            this, &SlideWidget::deleteBoxPosition);
+    mResetAngle = new QAction(tr("Reset Rotation"), this);
+    mResetAngle->setIcon(QIcon::fromTheme("chronometer-reset"));
+    connect(mResetAngle, &QAction::triggered,
+            this, &SlideWidget::deleteBoxAngle);
+
+    // open in inkscape
+    mOpenInkscape = new QAction(tr("&Open in Inkscape"), this);
+    mCreateAndOpenInkscape = new QAction(tr("&Create SVG and open in Inkscape"), this);
+    connect(mOpenInkscape, &QAction::triggered,
+            this, &SlideWidget::openInInkscape);
+    connect(mCreateAndOpenInkscape, &QAction::triggered,
+            this, &SlideWidget::createAndOpenSvg);
+
 }
 
 void SlideWidget::openInInkscape(){

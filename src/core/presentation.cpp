@@ -93,6 +93,11 @@ Presentation::Presentation() : QObject()
 void Presentation::setData(PresentationData data) {
     mSlides = data.mSlideList;
     mTemplate = data.mTemplate;
+    applyConfigurationTemplate();
+    Q_EMIT slideChanged(0, mSlides.numberSlides());
+}
+
+void Presentation::applyConfigurationTemplate() {
     applyConfiguration();
     createMapDefinesClass();
     applyDefinedClass(mSlides);
@@ -102,7 +107,6 @@ void Presentation::setData(PresentationData data) {
     else {
         applyStandardTemplate(mSlides);
     }
-    Q_EMIT slideChanged(0, mSlides.numberSlides());
 }
 
 const SlideList &Presentation::slideList() const {
@@ -121,6 +125,17 @@ void Presentation::setBoxGeometry(const QString &boxId, BoxGeometry const& rect,
 
 void Presentation::deleteBoxGeometry(const QString &boxId, int pageNumber) {
     mConfig.deleteRect(boxId);
+    findBox(boxId)->setGeometry(BoxGeometry());
+    applyConfigurationTemplate();
+    Q_EMIT slideChanged(pageNumber, pageNumber);
+}
+
+void Presentation::deleteBoxAngle(const QString &boxId, int pageNumber) {
+    mConfig.deleteAngle(boxId);
+    auto const box = findBox(boxId);
+    auto const rect = box->geometry().rect();
+    findBox(boxId)->setGeometry(BoxGeometry(rect, 0));
+    applyConfigurationTemplate();
     Q_EMIT slideChanged(pageNumber, pageNumber);
 }
 
@@ -130,6 +145,7 @@ const ConfigBoxes &Presentation::configuration() const {
 
 void Presentation::setConfig(ConfigBoxes config) {
     mConfig = config;
+    Q_EMIT rebuildNeeded();
 }
 
 void Presentation::applyConfiguration() {

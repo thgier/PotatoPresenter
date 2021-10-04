@@ -48,6 +48,7 @@ public:
 
     // set the active Box on the position of a tool bar button
     void deleteBoxPosition();
+    void deleteBoxAngle();
 
     void setActiveBox(QString boxId, QString slideId);
 
@@ -113,10 +114,12 @@ private:
     TransformationType mTransform = TransformationType::translate;
     QPoint mCursorLastPosition;
 
-    QAction* openInkscape;
-    QAction* createAndOpenInkscape;
+    QAction* mOpenInkscape;
+    QAction* mCreateAndOpenInkscape;
     QAction* mUndo;
     QAction* mRedo;
+    QAction* mResetBox;
+    QAction* mResetAngle;
 
     QUndoStack mUndoStack;
     ConfigBoxes mLastConfigFile;

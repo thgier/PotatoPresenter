@@ -105,6 +105,7 @@ public:
     // save it in the Configuration
     void setBoxGeometry(QString const& boxId, const BoxGeometry &rect, int pageNumber);
     void deleteBoxGeometry(QString const& boxId, int pageNumber);
+    void deleteBoxAngle(QString const& boxId, int pageNumber);
 
     // Configuration Class to follow and save the Geometry of the boxes
     void setConfig(ConfigBoxes config);
@@ -127,10 +128,14 @@ public:
 Q_SIGNALS:
     // emited if the position of a box on a slide is changed
     void slideChanged(int pageNumberFront, int pageNumberBack);
+    void rebuildNeeded();
 
 private:
     // apply Configuration in json file to mSlides
     void applyConfiguration();
+
+    // call to apply all configuration, template etc. to mSlides
+    void applyConfigurationTemplate();
 
 private:
     SlideList mSlides;

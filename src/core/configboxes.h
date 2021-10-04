@@ -33,6 +33,7 @@ public:
 
     void addRect(const MemberBoxGeometry &rect, QString const& id);
     void deleteRect(QString id);
+    void deleteAngle(QString id);
 
     void deleteAllRectsExcept(std::vector<QString> const& boxIds);
 

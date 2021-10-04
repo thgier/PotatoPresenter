@@ -89,6 +89,14 @@ void ConfigBoxes::deleteRect(QString id) {
     }
 }
 
+void ConfigBoxes::deleteAngle(QString id) {
+    if (auto it = mConfigMap.find(id); it != mConfigMap.end()) {
+        auto const rect = it->second.geometry.rect;
+        mConfigMap.erase(it);
+        mConfigMap[id] = {{0, rect}};
+    }
+}
+
 void ConfigBoxes::deleteAllRectsExcept(std::vector<QString> const& boxIds) {
     std::set<QString> keepItems;
     std::ranges::copy(boxIds, std::inserter(keepItems, keepItems.begin()));
