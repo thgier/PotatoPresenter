@@ -1,7 +1,7 @@
 - highlighting
 - sections
 - user interaction while Parsing error?
-- message if inkscap is not installed
+- add actions in context menu
 
 - maybe better pause
 - path to font

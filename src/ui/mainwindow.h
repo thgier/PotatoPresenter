@@ -68,6 +68,7 @@ private:
     QString getPdfFilenameHandout();
     QAction* deleteShortcutOfKDocAction(const char* name);
     QString jsonFileName() const;
+    QString jsonFileName(QString textPath) const;
     void saveJson();
     void openJson();
     QString filename() const;
@@ -78,6 +79,13 @@ private:
     QString windowTitleNotSaved() const;
     bool closeDocument();
     void closeEvent(QCloseEvent *event) override;
+
+    void autosave();
+    void recoverAutosave(QString path);
+    QString autosaveTextFile() const;
+    QString autosaveTextFile(QString inputFile) const;
+    QString autosaveJsonFile() const;
+    QString autosaveJsonFile(QString jsonFile) const;
 
     void updateCursorPosition();
 
@@ -129,5 +137,6 @@ private:
     QToolButton* mSnappingButton;
 
     bool mIsModified = false;
+    QDateTime mLastAutosave;
 };
 #endif // MAINWINDOW_H

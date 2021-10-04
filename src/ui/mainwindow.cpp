@@ -11,6 +11,7 @@
 #include <KTextEditor/View>
 #include <KTextEditor/MarkInterface>
 #include <KActionCollection>
+#include <KTextEditor/ConfigInterface>
 
 #include <QFile>
 #include <QTextStream>
@@ -41,6 +42,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , mLastAutosave(QDateTime::currentDateTime())
 {
     ui->setupUi(this);
     setWindowIcon(QIcon(":/potato_icon.png"));
@@ -101,8 +103,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionReset_Position, &QAction::triggered,
             this, [this]() {
                 mSlideWidget->deleteBoxPosition();
-                fileChanged();
             });
+    connect(ui->actionReset_Angle, &QAction::triggered,
+            this, [this]() {
+        mSlideWidget->deleteBoxAngle();
+    });
 
     auto transformGroup = new QActionGroup(this);
     transformGroup->addAction(ui->actionRotate);
@@ -276,6 +281,7 @@ void MainWindow::fileChanged() {
     auto const index = mSlideModel->index(mSlideWidget->pageNumber());
     ui->pagePreview->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     ui->pagePreview->scrollTo(index);
+    autosave();
 }
 
 std::shared_ptr<Template> MainWindow::readTemplate(QString templateName) const {
@@ -320,7 +326,16 @@ void MainWindow::openInputFile(QString filename) {
     if (!mDoc->openUrl(url)){
         qWarning() << "file not found";
     }
+    mDoc->discardDataRecovery();
     mDoc->setHighlightingMode("LaTeX");
+}
+
+void MainWindow::recoverAutosave(QString path) {
+    QFile::remove(path);
+    QFile::rename(autosaveTextFile(path), path);
+    auto const jsonname = jsonFileName(path);
+    QFile::remove(jsonname);
+    QFile::rename(autosaveJsonFile(jsonname), jsonname);
 }
 
 void MainWindow::openFile() {
@@ -336,12 +351,29 @@ void MainWindow::openFile() {
 }
 
 void MainWindow::openProject(QString path) {
+    // check if file exists
     if(!QFile(path).exists()) {
         QMessageBox::information(this, tr("File does not exist"), tr("File does not exist"),
                                          QMessageBox::Ok);
         return;
     }
     ui->mainWidget->setCurrentIndex(0);
+
+    // recover if file was not probably closed and autosave still exists
+    if(QFile::exists(autosaveTextFile(path)) || QFile::exists(autosaveJsonFile(path))) {
+        auto const ret = QMessageBox::information(this, tr("File was not probably closed."),
+                        tr("File was not probably closed. Do you want to recover?"),
+                        QMessageBox::Ok, QMessageBox::Cancel);
+        switch(ret) {
+        case QMessageBox::Cancel:
+            break;
+        case QMessageBox::Ok:
+            recoverAutosave(path);
+            break;
+        default:
+            break;
+        }
+    }
     newDocument();
     openInputFile(path);
     openJson();
@@ -383,7 +415,8 @@ void MainWindow::newDocument() {
     connect(&mCursorTimer, &QTimer::timeout,
             this, &MainWindow::updateCursorPosition);
     connect(mPresentation.get(), &Presentation::slideChanged,
-            mSlideWidget, [this](int){mSlideWidget->update();});
+            this, [this](int){mSlideWidget->update();
+            autosave();});
     setWindowTitle(windowTitle());
     mIsModified = false;
 }
@@ -392,6 +425,7 @@ bool MainWindow::save() {
     if(!mDoc->documentSave()) {
         return false;
     }
+    QFile::remove(autosaveTextFile());
     saveJson();
     ui->statusbar->showMessage(tr("Saved File to  \"%1\".").arg(mDoc->url().toString()), 10000);
     setWindowTitle(windowTitle());
@@ -403,6 +437,7 @@ bool MainWindow::saveAs(){
     if(!mDoc->documentSaveAs()) {
         return false;
     }
+    QFile::remove(autosaveTextFile());
     saveJson();
     fileChanged();
     ui->statusbar->showMessage(tr("Saved File to  \"%1\".").arg(mDoc->url().toString()), 10000);
@@ -412,14 +447,19 @@ bool MainWindow::saveAs(){
 }
 
 QString MainWindow::jsonFileName() const {
-    if(filename().endsWith(".txt")) {
-        return filename().section('.', 0, -2) + ".json";
+    return jsonFileName(filename());
+}
+
+QString MainWindow::jsonFileName(QString textPath) const {
+    if(textPath.endsWith(".txt")) {
+        return textPath.section('.', 0, -2) + ".json";
     }
-    return filename() + ".json";
+    return textPath + ".json";
 }
 
 void MainWindow::saveJson() {
     mPresentation->configuration().saveConfig(jsonFileName());
+    QFile::remove(autosaveJsonFile());
 }
 
 void MainWindow::openJson() {
@@ -458,6 +498,8 @@ void MainWindow::resetPresentation() {
     mPresentation = std::make_shared<Presentation>();
     mSlideWidget->setPresentation(mPresentation);
     mSlideModel->setPresentation(mPresentation);
+    connect(mPresentation.get(), &Presentation::rebuildNeeded,
+            this, &MainWindow::fileChanged);
 }
 
 void MainWindow::exportPDF() {
@@ -579,6 +621,8 @@ bool MainWindow::closeDocument() {
       default:
         return false;
     }
+    QFile::remove(autosaveTextFile());
+    QFile::remove(autosaveJsonFile());
     return true;
 }
 
@@ -747,4 +791,41 @@ void MainWindow::openCreatePresentationDialog() {
     }
     ui->project_name_lineEdit->clear();
     ui->project_name_lineEdit->setFocus();
+}
+
+void MainWindow::autosave() {
+    // look up if the last autosave is more than 15s ago
+    auto const currentTime = QDateTime::currentDateTime();
+    if(mLastAutosave.addSecs(15) > currentTime) {
+        return;
+    }
+    mLastAutosave = currentTime;
+
+    // save txt file
+    QFile file(autosaveTextFile());
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+        return;
+    QTextStream out(&file);
+    out << mDoc->text();
+
+    // save json file
+    mPresentation->configuration().saveConfig(autosaveJsonFile());
+}
+
+QString MainWindow::autosaveTextFile(QString inputFile) const {
+    auto const fileInfo = QFileInfo(inputFile);
+    return fileInfo.absolutePath() + "/." + fileInfo.fileName() + ".autosave";
+}
+
+QString MainWindow::autosaveTextFile() const {
+    return autosaveTextFile(filename());
+}
+
+QString MainWindow::autosaveJsonFile(QString jsonFile) const {
+    auto const jsonInfo = QFileInfo(jsonFile);
+    return jsonInfo.absolutePath() + "/." + jsonInfo.fileName() + ".autosave";
+}
+
+QString MainWindow::autosaveJsonFile() const {
+    return autosaveJsonFile(jsonFileName());
 }
