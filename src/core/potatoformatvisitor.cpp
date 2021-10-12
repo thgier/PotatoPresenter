@@ -356,7 +356,7 @@ void PotatoFormatVisitor::createNewBox(QString command, QString text, int line) 
         }
         box = std::make_shared<ImageBox>(text);
         if(!mCurrentBoxStyle.mClass.has_value()) {
-            mCurrentBoxStyle.mClass = "body";
+            mCurrentBoxStyle.mClass = "image";
         }
     }
     else if(command == "code"){

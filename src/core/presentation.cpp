@@ -59,6 +59,9 @@ void applyStandardTemplateToBox(Box::Ptr box, BoxStyle const& standardBoxStyle) 
     else if(style.getClass() == "body") {
         rect = QRect(50, 150, 1500, 650);
     }
+    else if(style.getClass() == "image") {
+        rect = QRect(50, 150, 1500, 650);
+    }
     else if(style.getClass() == "right_column") {
         rect = QRect(830, 150, 720, 650);
     }
