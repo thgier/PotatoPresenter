@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>core/generaterLatex.tex</file>
-        <file>potato_icon.png</file>
         <file>icons/document-export.svg</file>
         <file>icons/document-open.svg</file>
         <file>icons/document-save-as.svg</file>
@@ -17,5 +16,7 @@
         <file>icons/pdflatex.svg</file>
         <file>icons/link.svg</file>
         <file>icons/snap-nodes-cusp.svg</file>
+        <file>potato_logo.svg</file>
+        <file>potato_logo.png</file>
     </qresource>
 </RCC>

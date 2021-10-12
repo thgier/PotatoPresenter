@@ -45,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent)
     , mLastAutosave(QDateTime::currentDateTime())
 {
     ui->setupUi(this);
-    setWindowIcon(QIcon(":/potato_icon.png"));
+    setWindowIcon(QIcon(":/potato_logo.png"));
     ui->splitter->setSizes(QList<int>{10000, 10000});
 
 
