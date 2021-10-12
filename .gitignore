@@ -8,6 +8,12 @@ CMakeLists.txt.user
 templates/*
 presentation_seminar/*
 ssh_*
+images/*
+website/*
+*.AppImage
+presentation_seminar/*
+presentation_seminar
+website
 *.kate-swp
 *~
 *.autosave
