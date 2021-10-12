@@ -73,8 +73,6 @@ text-align | Text alignment. | left, right, center, justify
 line-height | Fraction of line height. | 1.5
 font-weight | Font weight. | bold, normal
 opacity | Opacity of whole element. | 0.7
-id | ID of element. | see section ID
-class | Class of element. | see section Class
 background | Background color of element. | red, #aa55ff
 border | Creates a border around the element. | 2px solid blue
 left | Sets the position of the element left. | 100
@@ -83,6 +81,9 @@ width | Sets the position of the element width. | 100
 height | Sets the position of the element height. | 100
 angle | Sets the rotation angle in degree. | 180
 movable | Element cannot manipulate with the mouse. | false, true
+id | ID of element. | see section ID
+class | Class of element. | see section Class
+defineclass | Defines a class. | see section Class
 
 
 ### Classes
@@ -93,6 +94,12 @@ Predefined classes are:
 A class can specify a list of arguments which the element has by default, e.g. the position or the font-size.
 Nevertheless, arguments can also be given to an element and override the given by the class.
 Elements with a class can also be manipulated on the right panel.
+When using templates, elements with the same class on different slides can have different properties.  
+With the argument ```defineclass``` you can define the properties and position of an element as a new class and use it later on.  
+Have a look at the example:  
+```\text[defineclass: myClass; color: green] Hello ```  
+```\text[class: myClass] I am green.```  
+Here the second element would have the color green and will be rendered at the same position as the first element.
 
 
 ### ID 
