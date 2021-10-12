@@ -294,49 +294,19 @@ void BoxTransformation::setSnapping(Snapping snapping) {
 
 QRect BoxTransformation::makeSnappingTranslating(QRect rect) {
     auto const leftSnap = mSnapping.value().snapX(rect.left());
-    auto const rightSnap = mSnapping.value().snapX(rect.right());
-    if(!leftSnap.has_value() && !rightSnap.has_value()) {
-    }
-    else if(leftSnap.has_value() && !rightSnap.has_value()) {
+    if(leftSnap.has_value()) {
         rect.moveLeft(leftSnap.value());
         mXGuide = leftSnap.value();
-    }
-    else if(!leftSnap.has_value() && rightSnap.has_value()) {
-        rect.moveRight(rightSnap.value());
-        mXGuide = rightSnap.value();
-    }
-    else if(std::abs(leftSnap.value() - rect.left()) < std::abs(rightSnap.value() - rect.right())) {
-        rect.moveLeft(leftSnap.value());
-        mXGuide = leftSnap.value();
-    }
-    else {
-        rect.moveRight(rightSnap.value());
-        mXGuide = rightSnap.value();
     }
 
     auto const topSnap = mSnapping.value().snapY(rect.top());
-    auto const bottomSnap = mSnapping.value().snapY(rect.bottom());
-    if(!topSnap.has_value() && !bottomSnap.has_value()) {
-    }
-    else if(topSnap.has_value() && !bottomSnap.has_value()) {
+    if(topSnap.has_value()) {
         rect.moveTop(topSnap.value());
         mYGuide = topSnap.value();
-    }
-    else if(!topSnap.has_value() && bottomSnap.has_value()) {
-        rect.moveBottom(bottomSnap.value());
-        mYGuide = bottomSnap.value();
-    }
-    else if(std::abs(topSnap.value() - rect.top()) < std::abs(bottomSnap.value() - rect.bottom())) {
-        rect.moveTop(topSnap.value());
-        mYGuide = topSnap.value();
-    }
-    else {
-        rect.moveBottom(bottomSnap.value());
-        mYGuide = bottomSnap.value();
     }
 
     auto const middleSnapping = mSnapping->snapYMiddle(rect.center().x());
-    if(!leftSnap && !rightSnap && middleSnapping) {
+    if(middleSnapping) {
         auto center = rect.center();
         center.setX(middleSnapping.value());
         rect.moveCenter(center);

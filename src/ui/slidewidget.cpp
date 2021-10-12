@@ -23,7 +23,6 @@ std::vector<int> boxesToXGuides(Box::List boxes) {
     std::vector<int> guides;
     for(auto const& box: boxes) {
         guides.push_back(box->geometry().left());
-        guides.push_back(box->geometry().rect().right());
     }
     return guides;
 }
@@ -32,7 +31,6 @@ std::vector<int> boxesToYGuides(Box::List boxes) {
     std::vector<int> guides;
     for(auto const& box: boxes) {
         guides.push_back(box->geometry().top());
-        guides.push_back(box->geometry().rect().bottom());
     }
     return guides;
 }
