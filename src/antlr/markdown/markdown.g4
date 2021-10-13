@@ -1,7 +1,7 @@
 grammar markdown;
 
 markdown
-    : (list | paragraph)+
+    : (paragraph | list)+
     ;
     
 list
@@ -33,35 +33,43 @@ enum_item_second
     ;
     
 paragraph
-    : ((text_plain | text_decorated | latex)+ | latex_next_line) (new_line+ | EOF)
+    : ((text_decorated | text_plain | latex | '_' | '*')+ | latex_next_line) (new_line+ | EOF)
     ;
     
 text_decorated
-    : text_bold | text_italic
+    : text_bold | text_italic | text_marked
     ;
     
 text_bold
-    : '**' (text_plain | text_italic)+ '**'
+    : '**' (text_plain | text_italic | text_marked)+ '**'
+    ;
+    
+text_marked
+    : '*' (text_plain | text_italic | text_bold)+ '*'
     ;
     
 text_italic
-    : '__' (text_plain | text_bold)+ '__'
+    : '__' (text_plain | text_bold | text_marked)+ '__'
     ;
 
 latex
-    : '$' text_plain '$'
+    : '$' text '$'
     ;
     
 latex_next_line
-    : '$$' text_plain '$$'
+    : '$$'  text '$$'
     ;
     
 new_line
     : '\n'
     ;
+    
+text
+    : (text_plain | '_' | '*')+
+    ;
 
 text_plain
-    : (TEXT | INT | '.' | '_' | '*')+
+    : (TEXT | INT | '.')+
     ;
     
 UNDERSCORE
@@ -71,7 +79,6 @@ UNDERSCORE
 INT   
     : ('0'..'9')+ 
     ;
-   
 TEXT
     : ~[*$_\n.0123456789]+
     ;

@@ -265,6 +265,29 @@ BoxStyle PotatoFormatVisitor::applyProperty(BoxStyle &boxstyle, QString property
             }
         }
     }
+    else if (property == "highlight") {
+        auto values = QString(value).split(" ");
+        if(values.empty()) {
+            return {};
+        }
+        if(values[0] == "bold") {
+            boxstyle.mTextMarker.fontWeight = FontWeight::bold;
+        }
+        else if(values[0] == "normal") {
+            boxstyle.mTextMarker.fontWeight = FontWeight::normal;
+        }
+        else {
+            boxstyle.mTextMarker.color = QColor(QString(values[0]));
+            if(values.length() > 1) {
+                if(values[1] == "bold") {
+                    boxstyle.mTextMarker.fontWeight = FontWeight::bold;
+                }
+                else if(values[1] == "normal") {
+                    boxstyle.mTextMarker.fontWeight = FontWeight::normal;
+                }
+            }
+        }
+    }
     else {
         throw ParserError{QString("Invalid Argument %1.").arg(property), line};
     }

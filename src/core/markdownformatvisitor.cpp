@@ -76,6 +76,19 @@ void MarkdownFormatVisitor::exitText_italic(markdownParser::Text_italicContext *
     mCurrentParagraph.mStack.pop(mCurrentParagraph.mText.length());
 }
 
+void MarkdownFormatVisitor::enterText_marked(markdownParser::Text_markedContext *) {
+    QTextCharFormat format;
+    format.setForeground(mBoxStyle.markerColor());
+    if(mBoxStyle.markerFontWeight() == FontWeight::bold) {
+        format.setFontWeight(QFont::Weight::Bold);
+    }
+    mCurrentParagraph.mStack.push(mCurrentParagraph.mText.length(), format);
+}
+
+void MarkdownFormatVisitor::exitText_marked(markdownParser::Text_markedContext *) {
+    mCurrentParagraph.mStack.pop(mCurrentParagraph.mText.length());
+}
+
 void MarkdownFormatVisitor::enterText_plain(markdownParser::Text_plainContext *ctx) {
     if(mDrawPlainText) {
         mCurrentParagraph.mText.append(QString::fromStdString(ctx->getText()));
@@ -84,7 +97,7 @@ void MarkdownFormatVisitor::enterText_plain(markdownParser::Text_plainContext *c
 
 void MarkdownFormatVisitor::enterLatex(markdownParser::LatexContext *ctx) {
     int start = mCurrentParagraph.mText.length();
-    auto const svgEntry = loadSvg(QString::fromStdString(ctx->text_plain()->getText()), start);
+    auto const svgEntry = loadSvg(QString::fromStdString(ctx->text()->getText()), start);
     if (!svgEntry.mSvg) {
         return;
     }
@@ -103,7 +116,7 @@ void MarkdownFormatVisitor::exitLatex(markdownParser::LatexContext *) {
 }
 
 void MarkdownFormatVisitor::enterLatex_next_line(markdownParser::Latex_next_lineContext *ctx) {
-    auto const mathExpression = ctx->text_plain()->getText();
+    auto const mathExpression = ctx->text()->getText();
     auto const hash = QCryptographicHash::hash(QByteArray::fromStdString(mathExpression), QCryptographicHash::Sha1).toHex().left(8);
     auto const equation = cacheManager().getCachedImage(hash);
     switch(equation.status){

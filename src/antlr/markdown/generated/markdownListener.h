@@ -1,5 +1,5 @@
 
-// Generated from markdown.g4 by ANTLR 4.9.1
+// Generated from markdown.g4 by ANTLR 4.9.2
 
 #pragma once
 
@@ -47,6 +47,9 @@ public:
   virtual void enterText_bold(markdownParser::Text_boldContext *ctx) = 0;
   virtual void exitText_bold(markdownParser::Text_boldContext *ctx) = 0;
 
+  virtual void enterText_marked(markdownParser::Text_markedContext *ctx) = 0;
+  virtual void exitText_marked(markdownParser::Text_markedContext *ctx) = 0;
+
   virtual void enterText_italic(markdownParser::Text_italicContext *ctx) = 0;
   virtual void exitText_italic(markdownParser::Text_italicContext *ctx) = 0;
 
@@ -58,6 +61,9 @@ public:
 
   virtual void enterNew_line(markdownParser::New_lineContext *ctx) = 0;
   virtual void exitNew_line(markdownParser::New_lineContext *ctx) = 0;
+
+  virtual void enterText(markdownParser::TextContext *ctx) = 0;
+  virtual void exitText(markdownParser::TextContext *ctx) = 0;
 
   virtual void enterText_plain(markdownParser::Text_plainContext *ctx) = 0;
   virtual void exitText_plain(markdownParser::Text_plainContext *ctx) = 0;

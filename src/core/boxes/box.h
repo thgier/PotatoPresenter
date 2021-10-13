@@ -47,6 +47,10 @@ struct BoxStyle{
         std::optional<QString> style;
         std::optional<QColor> color;
     } mBorder;
+    struct {
+        std::optional<QColor> color;
+        std::optional<FontWeight> fontWeight;
+    } mTextMarker;
 
     QColor color() const {
         return mColor.value_or(Qt::black);
@@ -88,6 +92,12 @@ struct BoxStyle{
     }
     QString borderStyle() const {
         return mBorder.style.value_or("solid");
+    }
+    QColor markerColor() const {
+        return mTextMarker.color.value_or(color());
+    }
+    FontWeight markerFontWeight() const {
+        return mTextMarker.fontWeight.value_or(fontWeight());
     }
     QString getClass() const {
         return mClass.value_or("default");

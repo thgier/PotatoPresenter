@@ -55,6 +55,9 @@ public:
     void enterText_italic(markdownParser::Text_italicContext * ctx) override;
     void exitText_italic(markdownParser::Text_italicContext * /*ctx*/) override;
 
+    void enterText_marked(markdownParser::Text_markedContext * /*ctx*/) override;
+    void exitText_marked(markdownParser::Text_markedContext * /*ctx*/) override;
+
     void enterLatex(markdownParser::LatexContext *ctx) override;
     void exitLatex(markdownParser::LatexContext *ctx) override;
     void enterLatex_next_line(markdownParser::Latex_next_lineContext *ctx) override;
