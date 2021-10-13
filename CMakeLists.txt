@@ -33,11 +33,10 @@ add_executable(praes
     src/antlr/potato/generated/potatoLexer.cpp
     src/antlr/potato/generated/potatoListener.cpp
     src/antlr/potato/generated/potatoParser.cpp
-    src/core/boxes/arrowbox.cpp
     src/core/boxes/box.cpp
     src/core/boxes/codebox.cpp
     src/core/boxes/imagebox.cpp
-    src/core/boxes/linebox.cpp
+    src/core/boxes/geometrybox.cpp
     src/core/boxes/markdowntextbox.cpp
     src/core/boxes/plaintextbox.cpp
     src/core/boxes/textbox.cpp

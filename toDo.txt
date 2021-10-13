@@ -1,7 +1,7 @@
 - highlighting
 - sections
-- user interaction while Parsing error?
-- add actions in context menu
+- markercolor
+- latex box
 
 - maybe better pause
 - path to font

@@ -2,10 +2,9 @@
 #include "box.h"
 #include "imagebox.h"
 #include "markdowntextbox.h"
-#include "arrowbox.h"
 #include "plaintextbox.h"
-#include "linebox.h"
 #include "codebox.h"
+#include "geometrybox.h"
 
 namespace  {
 
@@ -76,7 +75,7 @@ void PotatoFormatVisitor::PotatoFormatVisitor::exitBox(potatoParser::BoxContext 
         mLastCommandSetVariable = false;
     }
     qInfo() << "command" << command;
-    auto const boxInstructions = std::set<QString>{"text", "image", "body", "title", "arrow", "line", "blindtext", "plaintext", "code"};
+    auto const boxInstructions = std::set<QString>{"text", "image", "body", "title", "blindtext", "plaintext", "code", "geometry"};
     if(boxInstructions.find(command) != boxInstructions.end()) {
         if(mLastCommandSetVariable) {
             throw ParserError{"Command \\setvar only valid outside a slide.", line};
@@ -376,18 +375,15 @@ void PotatoFormatVisitor::createNewBox(QString command, QString text, int line) 
         box = std::make_shared<MarkdownTextBox>(text);
         mCurrentBoxStyle.mClass = "title";
     }
-    else if(command == "arrow"){
-        box = std::make_shared<ArrowBox>();
-    }
-    else if(command == "line"){
-        box = std::make_shared<LineBox>();
-    }
     else if (command == "blindtext") {
         text = "Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
         box = std::make_shared<MarkdownTextBox>(text);
     }
     else if (command == "plaintext") {
         box = std::make_shared<PlainTextBox>(text);
+    }
+    else if (command == "geometry") {
+        box = std::make_shared<GeometryBox>(text);
     }
     mCurrentBoxStyle.mLine = line;
     box->setBoxStyle(mCurrentBoxStyle);
