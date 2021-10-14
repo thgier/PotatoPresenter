@@ -46,11 +46,9 @@ void applyGeometryIfNotSet(BoxStyle &appliedStyle, const BoxGeometry &rect) {
     appliedStyle.mGeometry.setAngleIfNotSet(rect.angle());
 }
 
-void applyStandardTemplateToBox(Box::Ptr box, BoxStyle const& standardBoxStyle) {
+void applyStandardTemplateToBox(Box::Ptr box) {
     QRect rect;
     auto style = box->style();
-
-    box->setBoxStyle(setStyleIfNotSet(box->style(), standardBoxStyle));
 
     // set standart geometry
     if(style.getClass() == "title") {
@@ -193,8 +191,7 @@ void Presentation::applyDefinedClass(const SlideList &slides) {
 
 void Presentation::applyStandardTemplate(SlideList &slides) const {
     forEachBox(slides, [](Slide::Ptr slide, Box::Ptr box){
-        auto const standardBoxStyle = slide->standardBoxStyle();
-        applyStandardTemplateToBox(box, standardBoxStyle);
+        applyStandardTemplateToBox(box);
     });
 }
 

@@ -119,14 +119,6 @@ const QString &Slide::slideClass() const {
     return mClass;
 }
 
-void Slide::setStandardBoxStyle(BoxStyle &boxstyle) {
-    mStandardStyle = boxstyle;
-}
-
-BoxStyle const& Slide::standardBoxStyle() const {
-    return mStandardStyle;
-}
-
 void Slide::setDefinesClass(QString definesClass) {
     mDefinesClass = definesClass;
 }

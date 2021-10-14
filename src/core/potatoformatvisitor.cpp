@@ -52,7 +52,7 @@ void PotatoFormatVisitor::PotatoFormatVisitor::exitBox(potatoParser::BoxContext 
         newSlide(text, line);
         mLastCommandSetVariable = false;
         mInPreamble = false;
-        mCurrentBoxStyle = BoxStyle();
+        mCurrentBoxStyle = mStandardBoxStyle;
         return;
     }
 
@@ -82,7 +82,7 @@ void PotatoFormatVisitor::PotatoFormatVisitor::exitBox(potatoParser::BoxContext 
         }
 
         createNewBox(command, text, line);
-        mCurrentBoxStyle = BoxStyle();
+        mCurrentBoxStyle = mStandardBoxStyle;
         return;
     }
 
@@ -340,7 +340,6 @@ void PotatoFormatVisitor::newSlide(QString id, int line) {
 
     // set variables
     mSlideList.lastSlide()->setVariables(mVariables);
-    mSlideList.lastSlide()->setStandardBoxStyle(mStandardBoxStyle);
     mSlideList.lastSlide()->setVariable("%{pagenumber}", QString::number(mSlideList.vector.size()));
     if(mVariables.find("%{date}") == mVariables.end()){
         mSlideList.lastSlide()->setVariable("%{date}", QDate::currentDate().toString());
@@ -351,9 +350,10 @@ void PotatoFormatVisitor::newSlide(QString id, int line) {
 }
 
 void PotatoFormatVisitor::setVariable(QString text, int line) {
-    auto const list = text.split(QRegularExpression("\\s+"));
+    auto list = QString(text).split(" ");
     auto const variable = list[0];
-    auto const value = text.right(text.size() - variable.size() - 1);
+    list.removeFirst();
+    auto const value = list.join(" ");
     // try if the value is a property if not a Parser error get thrown, in this case append to variables
     try {
         mStandardBoxStyle = applyProperty(mStandardBoxStyle, variable, value, line);
