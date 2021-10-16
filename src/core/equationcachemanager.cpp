@@ -22,22 +22,22 @@ EquationCacheManager& cacheManager()
     return instance;
 }
 
-void EquationCacheManager::startConversionProcess(QString mathExpression, QByteArray hash) {
+void EquationCacheManager::startConversionProcess(QString latexInput) {
     if(mProcessCounter > QThread::idealThreadCount()){
-        mCachedImages[hash] = SvgEntry{SvgStatus::NotStarted, nullptr};
+        mCachedImages[latexInput] = SvgEntry{SvgStatus::NotStarted, nullptr};
         return;
     }
-    mCachedImages[hash] = SvgEntry{SvgStatus::Pending, nullptr};
+    mCachedImages[latexInput] = SvgEntry{SvgStatus::Pending, nullptr};
     qWarning() << "process counter" << mProcessCounter;
     mProcessCounter++;
 
     auto standardFile = QFile(":/core/generaterLatex.tex");
-    QDir(mFolder).mkpath(hash);
+    QDir(mFolder).mkpath(latexInput);
     standardFile.copy(pathAndFile(hash) + ".tex");
 
     QString program = "/usr/bin/latex";
     QStringList arguments;
-    QString string = "\\def\\myvar{" + mathExpression + "} \\input{" + pathAndFile(hash) + ".tex}";
+    QString string = "\\def\\myvar{" + latexInput + "} \\input{" + pathAndFile(hash) + ".tex}";
     arguments << "-halt-on-error" << "-output-directory=" + path(hash) << "-interaction=batchmode" << string;
     QProcess *myProcess = new QProcess(this);
 

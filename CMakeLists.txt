@@ -37,6 +37,7 @@ add_executable(praes
     src/core/boxes/codebox.cpp
     src/core/boxes/imagebox.cpp
     src/core/boxes/geometrybox.cpp
+    src/core/boxes/latexbox.cpp
     src/core/boxes/markdowntextbox.cpp
     src/core/boxes/plaintextbox.cpp
     src/core/boxes/textbox.cpp
