@@ -30,7 +30,7 @@
 #include <functional>
 #include <algorithm>
 
-#include "equationcachemanager.h"
+#include "latexcachemanager.h"
 #include "cachemanager.h"
 #include "slidelistmodel.h"
 #include "slidelistdelegate.h"
@@ -128,7 +128,7 @@ MainWindow::MainWindow(QWidget *parent)
             this, [this](QListWidgetItem *item){openProject(item->data(Qt::ToolTipRole).toString());});
 
 //    setup CacheManager
-    connect(&cacheManager(), &EquationCacheManager::conversionFinished,
+    connect(&cacheManager(), &LatexCacheManager::conversionFinished,
             this, &MainWindow::fileChanged);
 
     CacheManager<QImage>::instance().setCallback([this](QString){mSlideWidget->update();});

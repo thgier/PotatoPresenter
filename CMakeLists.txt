@@ -45,7 +45,7 @@ add_executable(praes
     src/core/cachemanager.cpp
     src/core/codehighlighter.cpp
     src/core/configboxes.cpp
-    src/core/equationcachemanager.cpp
+    src/core/latexcachemanager.cpp
     src/core/slide.cpp
     src/core/sliderenderer.cpp
     src/core/main.cpp

@@ -4,21 +4,21 @@
     SPDX-License-Identifier: LGPL-2.1-or-later
 */
 
-#include "equationcachemanager.h"
+#include "latexcachemanager.h"
 #include <QDir>
 #include <QThread>
 
-EquationCacheManager::EquationCacheManager()
+LatexCacheManager::LatexCacheManager()
 {
 }
 
-EquationCacheManager& cacheManager()
+LatexCacheManager& cacheManager()
 {
-    static EquationCacheManager instance;
+    static LatexCacheManager instance;
     return instance;
 }
 
-void EquationCacheManager::startConversionProcess(QString latexInput) {
+void LatexCacheManager::startConversionProcess(QString latexInput) {
     if(mProcessCounter > QThread::idealThreadCount()){
         mCachedImages[latexInput] = SvgEntry{SvgStatus::NotStarted, nullptr};
         return;
@@ -53,7 +53,7 @@ void EquationCacheManager::startConversionProcess(QString latexInput) {
 }
 
 
-SvgEntry EquationCacheManager::getCachedImage(QByteArray hash) const{
+SvgEntry LatexCacheManager::getCachedImage(QByteArray hash) const{
     const auto it = mCachedImages.find(hash);
     if(it == mCachedImages.end()){
         return SvgEntry{SvgStatus::NotStarted, nullptr};
@@ -63,7 +63,7 @@ SvgEntry EquationCacheManager::getCachedImage(QByteArray hash) const{
     }
 }
 
-void EquationCacheManager::startSvgGeneration(QString latexInput, QProcess* latex, std::unique_ptr<QTemporaryDir> tempDir){
+void LatexCacheManager::startSvgGeneration(QString latexInput, QProcess* latex, std::unique_ptr<QTemporaryDir> tempDir){
     qWarning() << "latex exit code " << latex->errorString();
     if(latex->exitCode() != 0){
         qWarning() << "latex error " << latex->readAllStandardError();
@@ -82,7 +82,7 @@ void EquationCacheManager::startSvgGeneration(QString latexInput, QProcess* late
                     writeSvgToMap(latexInput, dir);});
 }
 
-void EquationCacheManager::writeSvgToMap(QString input, std::unique_ptr<QTemporaryDir> const& tempDir){
+void LatexCacheManager::writeSvgToMap(QString input, std::unique_ptr<QTemporaryDir> const& tempDir){
     auto file = QFile(tempDir->path() + "/texput.svg");
     if(!file.open(QIODevice::ReadOnly)) {
         return;

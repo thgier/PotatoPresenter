@@ -7,7 +7,7 @@
 #include "markdownformatvisitor.h"
 #include <algorithm>
 #include <QCryptographicHash>
-#include "equationcachemanager.h"
+#include "latexcachemanager.h"
 #include "textbox.h"
 
 namespace {

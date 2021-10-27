@@ -4,8 +4,8 @@
     SPDX-License-Identifier: LGPL-2.1-or-later
 */
 
-#ifndef EQUATIONCACHEMANAGER_H
-#define EQUATIONCACHEMANAGER_H
+#pragma once
+
 #include <QSvgRenderer>
 #include <QProcess>
 #include <QDebug>
@@ -26,11 +26,11 @@ struct SvgEntry{
     std::shared_ptr<QSvgRenderer> svg;
 };
 
-class EquationCacheManager : public QObject
+class LatexCacheManager : public QObject
 {
     Q_OBJECT
 public:
-    EquationCacheManager();    
+    LatexCacheManager();
     void startConversionProcess(QString latexInput);
     SvgEntry getCachedImage(QByteArray hash) const;
     void startSvgGeneration(QString latexInput, QProcess* latex, std::unique_ptr<QTemporaryDir> tempDir);
@@ -44,6 +44,5 @@ private:
     int mProcessCounter = 0;
 };
 
-EquationCacheManager& cacheManager();
+LatexCacheManager& cacheManager();
 
-#endif

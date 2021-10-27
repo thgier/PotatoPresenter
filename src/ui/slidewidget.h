@@ -17,7 +17,7 @@
 #include <QUndoStack>
 #include "slide.h"
 #include "parser.h"
-#include "equationcachemanager.h"
+#include "latexcachemanager.h"
 #include "presentation.h"
 #include "boxgeometry.h"
 #include "boxtransformation.h"
