@@ -43,6 +43,17 @@ double drawSvg(std::shared_ptr<QSvgRenderer> image, QPointF position, QPainter& 
     return width;
 }
 
+QString latexInput(QString const& formula) {
+    return "\\documentclass{standalone}\\usepackage{DejaVuSans}\\usepackage[T1]{fontenc}\\usepackage{xcolor}\\usepackage{siunitx}\\usepackage{mathabx}\\usepackage{braket}\\begin{document}$"
+    + formula +
+    "$\\end{document}";
+}
+
+void startLatexConversionProcess(std::string const& formula) {
+    auto const input = latexInput(QString::fromStdString(formula));
+    cacheManager().startConversionProcess(input);
+}
+
 }
 
 MarkdownFormatVisitor::MarkdownFormatVisitor(QPainter &painter, QRect rect, BoxStyle style)
@@ -129,7 +140,7 @@ void MarkdownFormatVisitor::enterLatex_next_line(markdownParser::Latex_next_line
         break;
     }
     case SvgStatus::NotStarted:
-        cacheManager().startConversionProcess(QString::fromStdString(mathExpression), hash);
+        startLatexConversionProcess(mathExpression);
         break;
     case SvgStatus::Pending:
          break;
@@ -256,8 +267,8 @@ void MarkdownFormatVisitor::drawFormulasInParagraph(QTextLayout &layout) {
 }
 
 MapSvg MarkdownFormatVisitor::loadSvg(QString mathExpression, int start) {
-    auto const hash = QCryptographicHash::hash(mathExpression.toUtf8(), QCryptographicHash::Sha1).toHex().left(8);
-    auto const equation = cacheManager().getCachedImage(hash);
+    auto const input = latexInput(mathExpression).toUtf8();
+    auto const equation = cacheManager().getCachedImage(input);
     switch(equation.status){
     case SvgStatus::Error: {
         QTextCharFormat format;
@@ -268,7 +279,7 @@ MapSvg MarkdownFormatVisitor::loadSvg(QString mathExpression, int start) {
         return {};
     }
     case SvgStatus::NotStarted:
-        cacheManager().startConversionProcess(mathExpression, hash);
+        startLatexConversionProcess(mathExpression.toStdString());
         return {};
     case SvgStatus::Pending:
         return {};

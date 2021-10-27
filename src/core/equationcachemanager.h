@@ -10,6 +10,8 @@
 #include <QProcess>
 #include <QDebug>
 #include <QFile>
+#include <QTemporaryDir>
+
 #include <memory>
 
 enum SvgStatus{
@@ -29,24 +31,16 @@ class EquationCacheManager : public QObject
     Q_OBJECT
 public:
     EquationCacheManager();    
-    void startConversionProcess(QString mathExpression, QByteArray hash);
+    void startConversionProcess(QString latexInput);
     SvgEntry getCachedImage(QByteArray hash) const;
-    void startSvgGeneration(QByteArray hash, QProcess* latex);
-    void writeSvgToMap(QByteArray hash, QByteArray svg);
-    void errorOccured(QByteArray hash, QProcess::ProcessError error);
+    void startSvgGeneration(QString latexInput, QProcess* latex, std::unique_ptr<QTemporaryDir> tempDir);
+    void writeSvgToMap(QString input, const std::unique_ptr<QTemporaryDir> &tempDir);
+
 Q_SIGNALS:
     void conversionFinished();
 
 private:
-    QByteArray removeIntegral(QByteArray hash);
-    void removeFiles(QByteArray hash);
-    QString pathAndFile(QByteArray hash) const;
-    QString path(QByteArray hash) const;
-
-private:
-    std::map<QByteArray, SvgEntry> mCachedImages;
-    QString mFolder;
-    QStringList mRemoveFiles;
+    std::unordered_map<QString, SvgEntry> mCachedImages;
     int mProcessCounter = 0;
 };
 
