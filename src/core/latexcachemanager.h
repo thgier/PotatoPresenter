@@ -32,7 +32,7 @@ class LatexCacheManager : public QObject
 public:
     LatexCacheManager();
     void startConversionProcess(QString latexInput);
-    SvgEntry getCachedImage(QByteArray hash) const;
+    SvgEntry getCachedImage(QString latexInput) const;
     void startSvgGeneration(QString latexInput, QProcess* latex, std::unique_ptr<QTemporaryDir> tempDir);
     void writeSvgToMap(QString input, const std::unique_ptr<QTemporaryDir> &tempDir);
 

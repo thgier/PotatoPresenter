@@ -77,9 +77,10 @@ void Box::startDraw(QPainter &painter) {
         painter.setFont(font);
     }
     font.setFamily(mStyle.font());
-    font.setPixelSize(mStyle.fontSize());
+    // font size is in pt, factor to get pixel 2.8
+    font.setPixelSize(mStyle.fontSize() * 2.8);
     painter.setFont(font);
-    painter.setPen(mStyle.color());
+    painter.setPen(style().color());
     painter.setOpacity(mStyle.opacity());
 }
 

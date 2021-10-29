@@ -31,30 +31,29 @@ void LatexCacheManager::startConversionProcess(QString latexInput) {
     if (!tempDir->isValid()) {
         return;
     }
+    auto inputFile = QFile(tempDir->path() + "/input.tex");
+    if(!inputFile.open(QIODevice::WriteOnly)) {
+        return;
+    }
+    inputFile.write(latexInput.toUtf8());
 
-    QString program = "/usr/bin/latex";
+    QString program = "/usr/bin/pdflatex";
     QStringList arguments;
-    arguments << "-halt-on-error" << "-output-directory=" + tempDir->path() << "-interaction=batchmode";
+    arguments << "-halt-on-error" << "-interaction=nonstopmode" << "-output-directory=" + tempDir->path() << inputFile.fileName();
     QProcess *myProcess = new QProcess(this);
 
     connect(myProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
                      this, [latexInput, dir=std::move(tempDir), myProcess, this]() mutable {
         startSvgGeneration(latexInput, myProcess, std::move(dir));
     });
-    connect(myProcess, &QProcess::readyReadStandardOutput,
-            [myProcess](){qWarning() << "got output: " << myProcess->readAllStandardOutput();});
-
-    connect(myProcess, &QProcess::started,
-            this, [myProcess, latexInput](){myProcess->write(latexInput.toUtf8());
-            myProcess->closeWriteChannel();});
 
     myProcess->start(program, arguments);
 
 }
 
 
-SvgEntry LatexCacheManager::getCachedImage(QByteArray hash) const{
-    const auto it = mCachedImages.find(hash);
+SvgEntry LatexCacheManager::getCachedImage(QString latexInput) const{
+    const auto it = mCachedImages.find(latexInput);
     if(it == mCachedImages.end()){
         return SvgEntry{SvgStatus::NotStarted, nullptr};
     }
@@ -66,7 +65,10 @@ SvgEntry LatexCacheManager::getCachedImage(QByteArray hash) const{
 void LatexCacheManager::startSvgGeneration(QString latexInput, QProcess* latex, std::unique_ptr<QTemporaryDir> tempDir){
     qWarning() << "latex exit code " << latex->errorString();
     if(latex->exitCode() != 0){
-        qWarning() << "latex error " << latex->readAllStandardError();
+        auto exitCode = latex->exitCode();
+        auto error = latex->readAllStandardError();
+        auto out = latex->readAllStandardOutput();
+        qWarning() << "latex error " << error << exitCode << out;
         mCachedImages[latexInput].status = SvgStatus::Error;
         mProcessCounter--;
         Q_EMIT conversionFinished();
@@ -74,7 +76,7 @@ void LatexCacheManager::startSvgGeneration(QString latexInput, QProcess* latex, 
     }
     QString programDvisvgm = "/usr/bin/dvisvgm";
     QStringList argumentsDvisvgm;
-    argumentsDvisvgm << "-n" << "-o " + tempDir->path() + "/texput.svg " << tempDir->path() + "/texput.dvi";
+    argumentsDvisvgm << "--pdf" << "-o " + tempDir->path() + "/input.svg" << tempDir->path() + "/input.pdf";
     QProcess *dvisvgm = new QProcess();
     dvisvgm->start(programDvisvgm, argumentsDvisvgm);
     QObject::connect(dvisvgm, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
@@ -83,7 +85,7 @@ void LatexCacheManager::startSvgGeneration(QString latexInput, QProcess* latex, 
 }
 
 void LatexCacheManager::writeSvgToMap(QString input, std::unique_ptr<QTemporaryDir> const& tempDir){
-    auto file = QFile(tempDir->path() + "/texput.svg");
+    auto file = QFile(tempDir->path() + "/input.svg");
     if(!file.open(QIODevice::ReadOnly)) {
         return;
     }

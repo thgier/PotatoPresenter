@@ -59,7 +59,7 @@ struct BoxStyle{
         return mBackgroundColor.value_or(Qt::white);
     }
     int fontSize() const {
-        return mFontSize.value_or(50);
+        return mFontSize.value_or(18);
     }
     double linespacing() const {
         return mLineSpacing.value_or(1.15);
@@ -68,7 +68,7 @@ struct BoxStyle{
         return mFontWeight.value_or(FontWeight::normal);
     }
     QString font() const {
-        return mFont.value_or("sans-serif");
+        return mFont.value_or("DejaVu Sans");
     }
     Qt::Alignment alignment() const {
         return mAlignment.value_or(Qt::AlignLeft);

@@ -5,6 +5,7 @@
 #include "plaintextbox.h"
 #include "codebox.h"
 #include "geometrybox.h"
+#include "latexbox.h"
 
 namespace  {
 
@@ -75,7 +76,7 @@ void PotatoFormatVisitor::PotatoFormatVisitor::exitBox(potatoParser::BoxContext 
         mLastCommandSetVariable = false;
     }
     qInfo() << "command" << command;
-    auto const boxInstructions = std::set<QString>{"text", "image", "body", "title", "blindtext", "plaintext", "code", "geometry"};
+    auto const boxInstructions = std::set<QString>{"text", "image", "body", "title", "blindtext", "plaintext", "code", "geometry", "latex"};
     if(boxInstructions.find(command) != boxInstructions.end()) {
         if(mLastCommandSetVariable) {
             throw ParserError{"Command \\setvar only valid outside a slide.", line};
@@ -407,6 +408,12 @@ void PotatoFormatVisitor::createNewBox(QString command, QString text, int line) 
     }
     else if (command == "geometry") {
         box = std::make_shared<GeometryBox>(text);
+    }
+    else if (command == "latex") {
+        box = std::make_shared<LaTeXBox>(text);
+        if(!mCurrentBoxStyle.mClass.has_value()) {
+            mCurrentBoxStyle.mClass = "body";
+        }
     }
     mCurrentBoxStyle.mLine = line;
     box->setBoxStyle(mCurrentBoxStyle);
