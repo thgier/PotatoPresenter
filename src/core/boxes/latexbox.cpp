@@ -24,9 +24,15 @@ void LaTeXBox::drawContent(QPainter &painter, std::map<QString, QString> variabl
         font = "DejaVuSans";
         additionalPreamble += "\\renewcommand*\\familydefault{\\sfdefault}";
     }
+    // scale factor for geometry of the box
+    // physical length of document: 20cm, number of pixels: 1600
+    // 10pt diveded by the font size gives the scale factor
+    // (Hack in the font-size because latex does not support arbitary font-sizes)
+    auto const scaleFactor = 29.7 / 1600 * 10 / style().fontSize();
+
     auto const latexInput = "\\documentclass[10pt]{article}\\usepackage{geometry}\\usepackage[T1]{fontenc}\\geometry{paperwidth="
-            + QString::number(20. * geometry().width() / 1600. / style().fontSize() * 10) + "cm, paperheight="
-            + QString::number(20. * geometry().height() / 1600. / style().fontSize() * 10) +
+            + QString::number(geometry().width() * scaleFactor) + "cm, paperheight="
+            + QString::number(geometry().height() * scaleFactor) +
             "cm, margin=0cm}\\pagestyle{empty}\\setlength\\parindent{0pt}\\usepackage{xcolor}\\definecolor{fontColor}{RGB}{"
             + QString::number(style().color().red()) + ", "
             + QString::number(style().color().green()) + ", "

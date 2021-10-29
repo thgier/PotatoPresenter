@@ -19,13 +19,11 @@ LatexCacheManager& cacheManager()
 }
 
 void LatexCacheManager::startConversionProcess(QString latexInput) {
-    if(mProcessCounter > QThread::idealThreadCount()){
+    if(mRunningLatexJobs.size() + mRunningDviJobs.size() > QThread::idealThreadCount()){
         mCachedImages[latexInput] = SvgEntry{SvgStatus::NotStarted, nullptr};
         return;
     }
     mCachedImages[latexInput] = SvgEntry{SvgStatus::Pending, nullptr};
-    qWarning() << "process counter" << mProcessCounter;
-    mProcessCounter++;
 
     auto tempDir = std::make_unique<QTemporaryDir>();
     if (!tempDir->isValid()) {
@@ -40,15 +38,16 @@ void LatexCacheManager::startConversionProcess(QString latexInput) {
     QString program = "/usr/bin/pdflatex";
     QStringList arguments;
     arguments << "-halt-on-error" << "-interaction=nonstopmode" << "-output-directory=" + tempDir->path() << inputFile.fileName();
-    QProcess *myProcess = new QProcess(this);
 
-    connect(myProcess, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-                     this, [latexInput, dir=std::move(tempDir), myProcess, this]() mutable {
-        startSvgGeneration(latexInput, myProcess, std::move(dir));
-    });
+    auto& job = mRunningLatexJobs.emplace_back();
+    job.mProcess = std::make_unique<QProcess>();
+    job.mTempDir = std::move(tempDir);
+    job.mInput = latexInput;
 
-    myProcess->start(program, arguments);
+    connect(job.mProcess.get(), QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+            this, &LatexCacheManager::startSvgGeneration);
 
+    job.mProcess->start(program, arguments);
 }
 
 
@@ -62,35 +61,63 @@ SvgEntry LatexCacheManager::getCachedImage(QString latexInput) const{
     }
 }
 
-void LatexCacheManager::startSvgGeneration(QString latexInput, QProcess* latex, std::unique_ptr<QTemporaryDir> tempDir){
-    qWarning() << "latex exit code " << latex->errorString();
-    if(latex->exitCode() != 0){
-        auto exitCode = latex->exitCode();
-        auto error = latex->readAllStandardError();
-        auto out = latex->readAllStandardOutput();
+std::optional<Job> LatexCacheManager::takeOneFinishedJob(std::vector<Job>& jobs) {
+    auto const latexJob = std::find_if(jobs.begin(), jobs.end(),
+                                  [](auto const& job){return job.mProcess->state() == QProcess::NotRunning;});
+    if(latexJob == jobs.end()) {
+        return std::nullopt;
+    }
+    auto ret = std::move(*latexJob);
+    jobs.erase(latexJob);
+    return ret;
+}
+
+void LatexCacheManager::startSvgGeneration(){
+    // find finished Latex job
+    auto latexJob = takeOneFinishedJob(mRunningLatexJobs);
+    if(!latexJob) {
+        return;
+    }
+
+    // latex process failed
+    qWarning() << "latex exit code " << latexJob->mProcess->errorString();
+    if(latexJob->mProcess->exitCode() != 0){
+        auto exitCode = latexJob->mProcess->exitCode();
+        auto error = latexJob->mProcess->readAllStandardError();
+        auto out = latexJob->mProcess->readAllStandardOutput();
         qWarning() << "latex error " << error << exitCode << out;
-        mCachedImages[latexInput].status = SvgStatus::Error;
-        mProcessCounter--;
+        mCachedImages[latexJob->mInput].status = SvgStatus::Error;
         Q_EMIT conversionFinished();
         return;
     }
+
+    auto& job = mRunningDviJobs.emplace_back();
+    job.mProcess = std::make_unique<QProcess>();
+    job.mTempDir = std::move(latexJob->mTempDir);
+    job.mInput = latexJob->mInput;
+
     QString programDvisvgm = "/usr/bin/dvisvgm";
     QStringList argumentsDvisvgm;
-    argumentsDvisvgm << "--pdf" << "-o " + tempDir->path() + "/input.svg" << tempDir->path() + "/input.pdf";
-    QProcess *dvisvgm = new QProcess();
-    dvisvgm->start(programDvisvgm, argumentsDvisvgm);
-    QObject::connect(dvisvgm, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
-                     this, [this, dir=std::move(tempDir), latexInput](){
-                    writeSvgToMap(latexInput, dir);});
+
+    argumentsDvisvgm << "--pdf" << "-o " + job.mTempDir->path() + "/input.svg" << job.mTempDir->path() + "/input.pdf";
+
+    QObject::connect(job.mProcess.get(), QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+                     this, &LatexCacheManager::writeSvgToMap);
+    job.mProcess->start(programDvisvgm, argumentsDvisvgm);
 }
 
-void LatexCacheManager::writeSvgToMap(QString input, std::unique_ptr<QTemporaryDir> const& tempDir){
-    auto file = QFile(tempDir->path() + "/input.svg");
+void LatexCacheManager::writeSvgToMap(){
+    // find finished Latex job
+    auto dviJob = takeOneFinishedJob(mRunningDviJobs);
+    if(!dviJob) {
+        return;
+    }
+
+    auto file = QFile(dviJob->mTempDir->path() + "/input.svg");
     if(!file.open(QIODevice::ReadOnly)) {
         return;
     }
-    mCachedImages[input] = SvgEntry{SvgStatus::Success, std::make_shared<QSvgRenderer>(file.readAll())};
-    qWarning() << "status when finished" << mCachedImages[input].status;
-    mProcessCounter--;
+    mCachedImages[dviJob->mInput] = SvgEntry{SvgStatus::Success, std::make_shared<QSvgRenderer>(file.readAll())};
+    qWarning() << "status when finished" << mCachedImages[dviJob->mInput].status;
     Q_EMIT conversionFinished();
 }

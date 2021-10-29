@@ -59,7 +59,7 @@ struct BoxStyle{
         return mBackgroundColor.value_or(Qt::white);
     }
     int fontSize() const {
-        return mFontSize.value_or(18);
+        return mFontSize.value_or(26);
     }
     double linespacing() const {
         return mLineSpacing.value_or(1.15);

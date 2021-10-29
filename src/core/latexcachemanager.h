@@ -13,6 +13,7 @@
 #include <QTemporaryDir>
 
 #include <memory>
+#include <optional>
 
 enum SvgStatus{
     Success,
@@ -26,6 +27,12 @@ struct SvgEntry{
     std::shared_ptr<QSvgRenderer> svg;
 };
 
+struct Job {
+    std::unique_ptr<QProcess> mProcess;
+    std::unique_ptr<QTemporaryDir> mTempDir;
+    QString mInput;
+};
+
 class LatexCacheManager : public QObject
 {
     Q_OBJECT
@@ -33,15 +40,19 @@ public:
     LatexCacheManager();
     void startConversionProcess(QString latexInput);
     SvgEntry getCachedImage(QString latexInput) const;
-    void startSvgGeneration(QString latexInput, QProcess* latex, std::unique_ptr<QTemporaryDir> tempDir);
-    void writeSvgToMap(QString input, const std::unique_ptr<QTemporaryDir> &tempDir);
+    void startSvgGeneration();
+    void writeSvgToMap();
 
 Q_SIGNALS:
     void conversionFinished();
 
 private:
+    std::optional<Job> takeOneFinishedJob(std::vector<Job>& jobs);
+
+private:
     std::unordered_map<QString, SvgEntry> mCachedImages;
-    int mProcessCounter = 0;
+    std::vector<Job> mRunningLatexJobs;
+    std::vector<Job> mRunningDviJobs;
 };
 
 LatexCacheManager& cacheManager();
