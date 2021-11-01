@@ -369,48 +369,48 @@ void PotatoFormatVisitor::createNewBox(QString command, QString text, int line) 
     if(id.isEmpty()) {
         mCurrentBoxStyle.mId = generateId("text", mCurrentBoxStyle.getClass());
     }
+    if(!text.isEmpty()) {
+        mCurrentBoxStyle.mText = text;
+    }
     std::shared_ptr<Box> box;
     if(command == "text"){
-        box = std::make_shared<MarkdownTextBox>(text);
+        box = std::make_shared<MarkdownTextBox>();
     }
     else if(command == "image"){
         if(multilineText(text)) {
             throw ParserError {"One line text expected.", line};
         }
-        box = std::make_shared<ImageBox>(text);
+        box = std::make_shared<ImageBox>();
         if(!mCurrentBoxStyle.mClass.has_value()) {
             mCurrentBoxStyle.mClass = "image";
         }
     }
     else if(command == "code"){
-        box = std::make_shared<CodeBox>(text);
+        box = std::make_shared<CodeBox>();
         if(!mCurrentBoxStyle.mClass.has_value()) {
             mCurrentBoxStyle.mClass = "body";
         }
     }
     else if(command == "body"){
-        box = std::make_shared<MarkdownTextBox>(text);
+        box = std::make_shared<MarkdownTextBox>();
         mCurrentBoxStyle.mClass = "body";
     }
     else if(command == "title"){
-        if(text.isEmpty()) {
-            text = mSlideList.lastSlide()->id();
-        }
-        box = std::make_shared<MarkdownTextBox>(text);
+        box = std::make_shared<MarkdownTextBox>();
         mCurrentBoxStyle.mClass = "title";
     }
     else if (command == "blindtext") {
         text = "Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
-        box = std::make_shared<MarkdownTextBox>(text);
+        box = std::make_shared<MarkdownTextBox>();
     }
     else if (command == "plaintext") {
-        box = std::make_shared<PlainTextBox>(text);
+        box = std::make_shared<PlainTextBox>();
     }
     else if (command == "geometry") {
-        box = std::make_shared<GeometryBox>(text);
+        box = std::make_shared<GeometryBox>();
     }
     else if (command == "latex") {
-        box = std::make_shared<LaTeXBox>(text);
+        box = std::make_shared<LaTeXBox>();
         if(!mCurrentBoxStyle.mClass.has_value()) {
             mCurrentBoxStyle.mClass = "body";
         }

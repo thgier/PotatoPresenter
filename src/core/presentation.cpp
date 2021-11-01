@@ -34,6 +34,7 @@ BoxStyle& setStyleIfNotSet(BoxStyle & appliedStyle, BoxStyle const& modelStyle) 
     assignIfUnset(appliedStyle.mAlignment, modelStyle.alignment());
     assignIfUnset(appliedStyle.mLineSpacing, modelStyle.linespacing());
     assignIfUnset(appliedStyle.mOpacity, modelStyle.opacity());
+    assignIfUnset(appliedStyle.mText, modelStyle.text());
 
     return appliedStyle;
 }
@@ -108,6 +109,7 @@ void Presentation::applyConfigurationTemplate() {
     else {
         applyStandardTemplate(mSlides);
     }
+    setTitleIfTextUnset(mSlides);
 }
 
 const SlideList &Presentation::slideList() const {
@@ -185,6 +187,16 @@ void Presentation::applyDefinedClass(const SlideList &slides) {
         applyGeometryIfNotSet(style, definedClassStyle.mGeometry);
         style = setStyleIfNotSet(style, definedClassStyle);
         box->setBoxStyle(style);
+    });
+}
+
+void Presentation::setTitleIfTextUnset(const SlideList &slides) {
+    forEachBox(slides, [](Slide::Ptr slide, Box::Ptr box){
+        if(box->style().mClass == "title" && box->style().text().isEmpty()) {
+            auto style = box->style();
+            style.mText = slide->id();
+            box->setBoxStyle(style);
+        }
     });
 }
 

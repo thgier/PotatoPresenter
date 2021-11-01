@@ -14,7 +14,7 @@
 class MarkdownTextBox: public TextBox
 {
 public:
-    MarkdownTextBox(QString text);
+    MarkdownTextBox() = default;
 
     std::shared_ptr<TextBox> clone() override;
     void drawContent(QPainter& painter, std::map<QString, QString> variables) override;

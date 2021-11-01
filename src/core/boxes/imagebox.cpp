@@ -12,15 +12,11 @@
 #include <QTemporaryFile>
 #include "cachemanager.h"
 
-ImageBox::ImageBox(QString imagePath)
-    : mImagePath(imagePath)
-{
-}
 
 void ImageBox::drawContent(QPainter& painter, std::map<QString, QString> variables){
     PainterTransformScope scope(this, painter);
     drawGlobalBoxSettings(painter);
-    auto path = substituteVariables(mImagePath, variables);
+    auto path = substituteVariables(style().text(), variables);
     if(!path.startsWith("/home") && variables.find("%{resourcepath}") != variables.end()) {
         path = variables["%{resourcepath}"] + "/" + path;
     }

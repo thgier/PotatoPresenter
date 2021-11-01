@@ -14,7 +14,7 @@ class PlainTextBox : public TextBox
 public:
     using TextBox::TextBox;
 
-    PlainTextBox(QString text);
+    PlainTextBox() = default;
 
     std::shared_ptr<TextBox> clone() override;
     void drawContent(QPainter& painter, std::map<QString, QString> variables) override;

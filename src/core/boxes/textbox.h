@@ -29,16 +29,14 @@ struct TextBoundings {
 class TextBox : public Box
 {
 public:
-    TextBox(QString text);
     virtual std::shared_ptr<TextBox> clone() = 0;
 
     bool containsPoint(QPoint point, int margin) const override;
 
     void appendText(QString const& text);
-    QString const& text() const;
+    const QString text() const;
 
 protected:
-    QString mText;
     TextBoundings mTextBoundings;
 };
 

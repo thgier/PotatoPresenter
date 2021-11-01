@@ -8,10 +8,6 @@
 #include <QTextLayout>
 #include "codehighlighter.h"
 
-CodeBox::CodeBox(QString text)
-    : TextBox(text)
-{}
-
 std::shared_ptr<TextBox> CodeBox::clone() {
     return std::make_shared<CodeBox>(*this);
 }
@@ -20,7 +16,7 @@ void CodeBox::drawContent(QPainter& painter, std::map<QString, QString> variable
     PainterTransformScope scope(this, painter);
     drawGlobalBoxSettings(painter);
 
-    auto const text = substituteVariables(mText, variables);
+    auto const text = substituteVariables(style().text(), variables);
     auto const paragraphs = text.split("\n");
     painter.setPen(mStyle.color());
     auto const linespacing = painter.fontMetrics().leading() + style().linespacing() * painter.fontMetrics().lineSpacing();

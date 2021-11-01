@@ -75,14 +75,9 @@ QPainterPath painterPath(QString shape, QRect rect) {
 }
 }
 
-GeometryBox::GeometryBox(QString shape)
-    : mShape(shape)
-{
-}
-
 void GeometryBox::drawContent(QPainter& painter, std::map<QString, QString>){
     auto const rect = geometry().rect();
-    mPainterPath = painterPath(mShape, rect);
+    mPainterPath = painterPath(style().text(), rect);
     PainterTransformScope scope(this, painter);
     drawGlobalBoxSettings(painter);
     painter.setRenderHint(QPainter::Antialiasing);

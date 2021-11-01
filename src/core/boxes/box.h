@@ -40,6 +40,7 @@ struct BoxStyle{
     std::optional<Qt::Alignment> mAlignment;
     std::optional<double> mOpacity;
     std::optional<QString> mDefineclass;
+    std::optional<QString> mText;
     BoxGeometry mGeometry;
     std::optional<int> mPadding;
     struct {
@@ -110,6 +111,9 @@ struct BoxStyle{
     }
     QString configId() const {
         return mConfigId.value_or(mId);
+    }
+    QString text() const {
+        return mText.value_or("");
     }
 };
 

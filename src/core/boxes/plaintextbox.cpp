@@ -9,10 +9,6 @@
 #include <QTextLayout>
 #include <QTextDocument>
 
-PlainTextBox::PlainTextBox(QString text)
-    : TextBox(text)
-{}
-
 std::shared_ptr<TextBox> PlainTextBox::clone() {
     return std::make_shared<PlainTextBox>(*this);
 }
@@ -21,7 +17,7 @@ void PlainTextBox::drawContent(QPainter& painter, std::map<QString, QString> var
     PainterTransformScope scope(this, painter);
     drawGlobalBoxSettings(painter);
 
-    auto const text = substituteVariables(mText, variables);
+    auto const text = substituteVariables(style().text(), variables);
     auto const paragraphs = text.split("\n");
 
     auto const linespacing = painter.fontMetrics().leading() + mStyle.linespacing() * painter.fontMetrics().lineSpacing();

@@ -13,7 +13,7 @@
 class ImageBox: public Box
 {
 public:
-    ImageBox(QString imagePath);
+    ImageBox() = default;
 
     void drawContent(QPainter& painter, std::map<QString, QString> variables) override;
     bool containsPoint(QPoint point, int) const override;

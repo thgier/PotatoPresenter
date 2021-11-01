@@ -22,10 +22,6 @@
 #include "markdownParser.h"
 #include "markdownformatvisitor.h"
 
-MarkdownTextBox::MarkdownTextBox(QString text)
-    : TextBox(text)
-{}
-
 std::shared_ptr<TextBox> MarkdownTextBox::clone() {
     return std::make_shared<MarkdownTextBox>(*this);
 }
@@ -33,7 +29,7 @@ std::shared_ptr<TextBox> MarkdownTextBox::clone() {
 void MarkdownTextBox::drawContent(QPainter& painter, std::map<QString, QString> variables) {
     PainterTransformScope scope(this, painter);
     drawGlobalBoxSettings(painter);
-    auto const text = substituteVariables(mText, variables);
+    auto const text = substituteVariables(style().text(), variables);
 
     std::istringstream str(text.toStdString());
     antlr4::ANTLRInputStream input(str);

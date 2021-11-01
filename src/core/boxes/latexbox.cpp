@@ -2,21 +2,6 @@
 #include "latexcachemanager.h"
 #include <QSvgRenderer>
 
-LaTeXBox::LaTeXBox(QString text)
-{
-//    text.replace("\n", " ");
-    mText = text;
-//    mLatexInput = "\\documentclass{standalone}\\usepackage{"
-//            + style().font() +
-//            "}\\usepackage[T1]{fontenc}\\usepackage[dvipsnames]{xcolor}\\definecolor{myColor}{RGB}{"
-//            + style().color().red() + ","
-//            + style().color().green() + ","
-//            + style().color().blue() + "}\\usepackage{transparent}\\usepackage{tikz}\\usepackage[]{siunitx}\\usepackage{mathabx}\\usepackage{braket}\\begin{document}\\color{myColor}\\transparent{"
-//            + style().opacity() + "}"
-//            + text +
-//            "\\end{document}";
-}
-
 void LaTeXBox::drawContent(QPainter &painter, std::map<QString, QString> variables) {
     auto additionalPreamble = QString();
     auto  font = style().font();
@@ -41,7 +26,7 @@ void LaTeXBox::drawContent(QPainter &painter, std::map<QString, QString> variabl
             + font +
             "}" + additionalPreamble +
             "\\begin{document}\\textcolor{fontColor}{"
-            + mText +
+            + style().text() +
             "}\\end{document}";
     QFile f("/tmp/test.tex");
     f.open(QIODevice::WriteOnly);

@@ -116,6 +116,7 @@ public:
     // a class e.g. has the argument defineclass
     const std::map<QString, BoxStyle> createMapDefinesClass() const;
     void applyDefinedClass(SlideList const& slides);
+    void setTitleIfTextUnset(SlideList const& slides);
 
     // applys first the values that are given by the variables
     // e.g. \setvar font Hack
