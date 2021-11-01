@@ -16,13 +16,15 @@ PDFCreator::PDFCreator()
 
 void PDFCreator::createPdf(QString filename, std::shared_ptr<Presentation> presentation) const{
     QPdfWriter pdfWriter(filename);
-    auto const pdfLayout = QPageLayout(QPageSize(QSize(160, 90)), QPageLayout::Portrait, QMarginsF(0, 0, 0, 0), QPageLayout::Millimeter);
-    pdfWriter.setPageLayout(pdfLayout);
+    pdfWriter.setPageSize(QPageSize(QSizeF(167.0625, 297), QPageSize::Millimeter));
+    pdfWriter.setPageOrientation(QPageLayout::Landscape);
+    pdfWriter.setPageMargins(QMargins(0, 0, 0, 0));
+    pdfWriter.setTitle(presentation->title());
 
     QPainter painter(&pdfWriter);
-    painter.setWindow(QRect(QPoint(0, 0), presentation->dimensions()));
 
     painter.begin(&pdfWriter);
+    painter.setWindow(QRect(QPoint(0, 0), presentation->dimensions()));
     auto paint = std::make_shared<SlideRenderer>(painter);
     for(auto &slide: presentation->slideList().vector){
         for( int i = 0; i < slide->numberPauses(); i++) {
@@ -37,13 +39,15 @@ void PDFCreator::createPdf(QString filename, std::shared_ptr<Presentation> prese
 
 void PDFCreator::createPdfHandout(QString filename, std::shared_ptr<Presentation> presentation) const{
     QPdfWriter pdfWriter(filename);
-    auto const pdfLayout = QPageLayout(QPageSize(QSize(160, 90)), QPageLayout::Portrait, QMarginsF(0, 0, 0, 0), QPageLayout::Millimeter);
-    pdfWriter.setPageLayout(pdfLayout);
+    pdfWriter.setPageSize(QPageSize(QSizeF(167.0625, 297), QPageSize::Millimeter));
+    pdfWriter.setPageOrientation(QPageLayout::Landscape);
+    pdfWriter.setPageMargins(QMargins(0, 0, 0, 0));
+    pdfWriter.setTitle(presentation->title());
 
     QPainter painter(&pdfWriter);
-    painter.setWindow(QRect(QPoint(0, 0), presentation->dimensions()));
 
     painter.begin(&pdfWriter);
+    painter.setWindow(QRect(QPoint(0, 0), presentation->dimensions()));
     auto paint = std::make_shared<SlideRenderer>(painter);
     for(auto &slide: presentation->slideList().vector){
         paint->paintSlide(slide);

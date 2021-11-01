@@ -272,3 +272,15 @@ std::map<QString, BoxStyle> const Presentation::createMapDefinesClass() const {
     });
     return definitionClass;
 }
+
+QString Presentation::title() const {
+    if(mSlides.empty()) {
+        return "presentation";
+    }
+    auto const& variables = mSlides.lastSlide()->variables();
+    auto const& title = variables.find("%{title}");
+    if(title == variables.end()) {
+        return "presentation";
+    }
+    return title->second;
+}

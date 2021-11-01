@@ -100,6 +100,7 @@ public:
     bool empty() const;
     QSize dimensions() const;
     int numberOfSlides() const;
+    QString title() const;
 
     // Change Geometry of Box only through the presentation in order to
     // save it in the Configuration
