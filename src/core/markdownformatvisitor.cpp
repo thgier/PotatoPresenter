@@ -108,7 +108,9 @@ void MarkdownFormatVisitor::enterText_plain(markdownParser::Text_plainContext *c
 
 void MarkdownFormatVisitor::enterLatex(markdownParser::LatexContext *ctx) {
     int start = mCurrentParagraph.mText.length();
-    auto const svgEntry = loadSvg(QString::fromStdString(ctx->getText()), start);
+    auto text = QString::fromStdString(ctx->getText());
+    text.remove("$");
+    auto const svgEntry = loadSvg(text, start);
     if (!svgEntry.mSvg) {
         return;
     }
@@ -127,7 +129,8 @@ void MarkdownFormatVisitor::exitLatex(markdownParser::LatexContext *) {
 }
 
 void MarkdownFormatVisitor::enterLatex_next_line(markdownParser::Latex_next_lineContext *ctx) {
-    auto const mathExpression = QString::fromStdString(ctx->getText());
+    auto mathExpression = QString::fromStdString(ctx->getText());
+    mathExpression.remove("$");
     auto const equation = cacheManager().getCachedImage(latexInput(mathExpression));
     switch(equation.status){
     case SvgStatus::Error: {
@@ -150,7 +153,7 @@ void MarkdownFormatVisitor::enterLatex_next_line(markdownParser::Latex_next_line
         position.setX(position.x() + 7 * mPainter.fontMetrics().xHeight());
         drawSvg(equation.svg, position, mPainter);
 
-        addYToPosition(0.4 * mLineSpacing);
+        addYToPosition(1.2 * mLineSpacing);
         break;
     }
     mDrawPlainText = false;
