@@ -4,7 +4,7 @@ potato: NEWLINE? box*;
 
 box : command paragraph;
 
-command : BACKSLASH TEXT SPACE? ('[' property_list ']')?;
+command : BACKSLASH TEXT SPACE? ('[' SPACE? property_list ']')?;
 
 property_list: property_entry (';' SPACE? property_entry)*;
 
