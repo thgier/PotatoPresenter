@@ -80,17 +80,32 @@ add_executable(grammartest
 )
 add_test(NAME grammartest COMMAND grammartest)
 
+add_executable(markdowntest
+    src/antlr/markdown/generated/markdownBaseListener.cpp
+    src/antlr/markdown/generated/markdownLexer.cpp
+    src/antlr/markdown/generated/markdownListener.cpp
+    src/antlr/markdown/generated/markdownParser.cpp
+    src/core/markdowntest.cpp
+    src/core/markdownerrorlistener.cpp
+    )
+add_test(NAME markdowntest COMMAND markdowntest)
+
 target_link_libraries(praes PRIVATE Qt5::Widgets KF5::TextEditor KF5::SyntaxHighlighting)
 target_link_libraries(praes PRIVATE Qt5::PrintSupport)
 target_link_libraries(praes PRIVATE Qt5::Svg)
 target_link_libraries(praes PRIVATE antlr4-runtime)
 target_link_libraries(grammartest PRIVATE Qt5::Test)
 target_link_libraries(grammartest PRIVATE antlr4-runtime)
+target_link_libraries(markdowntest PRIVATE Qt5::Test)
+target_link_libraries(markdowntest PRIVATE antlr4-runtime)
 
 target_include_directories(praes PRIVATE src/ui/ src/core/ src/core/boxes/ src/core/antlr src/antlr/markdown/generated src/antlr/potato/generated)
 target_include_directories(praes SYSTEM PRIVATE /usr/include/antlr4-runtime)
 target_include_directories(grammartest PRIVATE src/core/ src/core/antlr src/antlr/potato/generated)
 target_include_directories(grammartest SYSTEM PRIVATE /usr/include/antlr4-runtime)
+target_include_directories(markdowntest PRIVATE src/core/ src/core/antlr src/antlr/markdown/generated)
+target_include_directories(markdowntest SYSTEM PRIVATE /usr/include/antlr4-runtime)
 
 target_compile_definitions(praes PRIVATE -DQT_NO_KEYWORDS)
 target_compile_definitions(grammartest PRIVATE -DQT_NO_KEYWORDS)
+target_compile_definitions(markdowntest PRIVATE -DQT_NO_KEYWORDS)
