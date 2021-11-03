@@ -72,8 +72,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->pagePreview->setItemDelegate(delegate);
     ui->pagePreview->setViewMode(QListView::IconMode);
     QItemSelectionModel *selectionModel = ui->pagePreview->selectionModel();
-    connect(selectionModel, &QItemSelectionModel::currentChanged,
-            this, [this](const QModelIndex &current){mSlideWidget->setCurrentPage(current.row());});
+    connect(selectionModel, &QItemSelectionModel::currentChanged, this,
+            [this](const QModelIndex &current){
+        mSlideWidget->setCurrentPage(current.row());
+                });
 
 
 //    setup Action
@@ -587,8 +589,7 @@ void MainWindow::updateCursorPosition() {
     }
     mSlideWidget->setActiveBox(box ? box->id() : QString(), slide->id());
     auto const index = mSlideModel->index(mSlideWidget->pageNumber());
-    ui->pagePreview->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
-    ui->pagePreview->scrollTo(index);
+    ui->pagePreview->selectionModel()->setCurrentIndex(index, QItemSelectionModel::ClearAndSelect);
 }
 
 QString MainWindow::applicationName() const {
