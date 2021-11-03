@@ -56,7 +56,6 @@ add_executable(praes
     src/core/presentation.cpp
     src/core/template.cpp
     src/core/templatecache.cpp
-    src/core/tokenizer.cpp
     src/core/transformboxundo.cpp
     src/files.qrc
     src/ui/boxtransformation.cpp
@@ -70,11 +69,6 @@ add_executable(praes
     src/ui/templatelistmodel.cpp
     src/ui/utils.cpp
 )
-
-add_executable(testtokenizer
-    src/core/testtokenizer.cpp
-    src/core/tokenizer.cpp)
-add_test(NAME testtokenizer COMMAND testtokenizer)
 
 add_executable(grammartest
     src/antlr/potato/generated/potatoBaseListener.cpp
@@ -90,13 +84,11 @@ target_link_libraries(praes PRIVATE Qt5::Widgets KF5::TextEditor KF5::SyntaxHigh
 target_link_libraries(praes PRIVATE Qt5::PrintSupport)
 target_link_libraries(praes PRIVATE Qt5::Svg)
 target_link_libraries(praes PRIVATE antlr4-runtime)
-target_link_libraries(testtokenizer PRIVATE Qt5::Test)
 target_link_libraries(grammartest PRIVATE Qt5::Test)
 target_link_libraries(grammartest PRIVATE antlr4-runtime)
 
 target_include_directories(praes PRIVATE src/ui/ src/core/ src/core/boxes/ src/core/antlr src/antlr/markdown/generated src/antlr/potato/generated)
 target_include_directories(praes SYSTEM PRIVATE /usr/include/antlr4-runtime)
-target_include_directories(testtokenizer PRIVATE src/ui/ src/core/ src/core/boxes/)
 target_include_directories(grammartest PRIVATE src/core/ src/core/antlr src/antlr/potato/generated)
 target_include_directories(grammartest SYSTEM PRIVATE /usr/include/antlr4-runtime)
 
