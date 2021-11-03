@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>core/generaterLatex.tex</file>
         <file>icons/document-export.svg</file>
         <file>icons/document-open.svg</file>
         <file>icons/document-save-as.svg</file>
