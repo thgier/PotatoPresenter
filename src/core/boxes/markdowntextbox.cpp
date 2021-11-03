@@ -41,7 +41,8 @@ void MarkdownTextBox::drawContent(QPainter& painter, std::map<QString, QString> 
     parser.getInterpreter<antlr4::atn::ParserATNSimulator>()->setPredictionMode(antlr4::atn::PredictionMode::SLL);
     antlr4::tree::ParseTree *tree = parser.markdown();
 
-    auto listener = MarkdownFormatVisitor(painter, geometry().rect(), mStyle);
+    auto const rect = style().paintableRect();
+    auto listener = MarkdownFormatVisitor(painter, rect, style());
     auto walker = antlr4::tree::ParseTreeWalker();
     walker.walk(&listener, tree);
     mTextBoundings = listener.textBoundings();

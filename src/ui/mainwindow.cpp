@@ -187,7 +187,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 //    setup Item model templates in create new from template dialog
-    auto const dirList = std::vector<QString>{"/home/theresa/Documents/praes/templates/blue_line_template",
+    auto const dirList = std::vector<QString>{"/home/theresa/Documents/praes/templates/tutorial",
+                                                "/home/theresa/Documents/praes/templates/blue_line_template",
                                                 "/home/theresa/Documents/praes/templates/blue_brown_template"};
     auto const presentationList = generateTemplatePresentationList(dirList);
     mTemplateModel = new TemplateListModel(this);

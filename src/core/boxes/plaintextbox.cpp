@@ -33,12 +33,12 @@ void PlainTextBox::drawContent(QPainter& painter, std::map<QString, QString> var
             if (!line.isValid()){
                 break;
             }
-            line.setLineWidth(geometry().width());
+            line.setLineWidth(style().paintableRect().width());
             line.setPosition(QPointF(0, y));
             mTextBoundings.lineBoundingRects.push_back(line.naturalTextRect());
             y += linespacing;
         }
         textLayout.endLayout();
-        textLayout.draw(&painter, geometry().topLeft());
+        textLayout.draw(&painter, style().paintableRect().topLeft());
     }
 }

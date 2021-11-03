@@ -43,6 +43,7 @@ struct BoxStyle{
     std::optional<QString> mText;
     BoxGeometry mGeometry;
     std::optional<int> mPadding;
+    std::optional<int> mBorderRadius;
     struct {
         std::optional<int> width;
         std::optional<QString> style;
@@ -114,6 +115,17 @@ struct BoxStyle{
     }
     QString text() const {
         return mText.value_or("");
+    }
+    int padding() const {
+        return mPadding.value_or(0);
+    }
+    int borderRadius() const {
+        return mBorderRadius.value_or(0);
+    }
+
+    QRect paintableRect() const {
+        auto rect = mGeometry.rect().marginsRemoved(QMargins(padding(), padding(), padding(), padding()));
+        return rect;
     }
 };
 

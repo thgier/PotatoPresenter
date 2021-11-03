@@ -95,26 +95,32 @@ void Box::drawManipulationSlide(QPainter &painter, int size){
     pen.setCosmetic(true);
     painter.setPen(pen);
 
-    painter.drawRect(style().mGeometry.rect());
+    auto const rect = geometry().rect();
+    painter.drawRect(rect);
 
-    painter.fillRect(QRect(style().mGeometry.rect().topLeft() + QPoint(-size/2, -size/2), QSize(size, size)), Qt::white);
-    painter.fillRect(QRect(style().mGeometry.rect().topRight() + QPoint(size/2, -size/2), QSize(-size, size)), Qt::white);
-    painter.fillRect(QRect(style().mGeometry.rect().bottomLeft() + QPoint(-size/2, size/2), QSize(size, -size)), Qt::white);
-    painter.fillRect(QRect(style().mGeometry.rect().bottomRight() + QPoint(size/2, size/2), QSize(-size, -size)), Qt::white);
+    painter.fillRect(QRect(rect.topLeft() + QPoint(-size/2, -size/2), QSize(size, size)), Qt::white);
+    painter.fillRect(QRect(rect.topRight() + QPoint(size/2, -size/2), QSize(-size, size)), Qt::white);
+    painter.fillRect(QRect(rect.bottomLeft() + QPoint(-size/2, size/2), QSize(size, -size)), Qt::white);
+    painter.fillRect(QRect(rect.bottomRight() + QPoint(size/2, size/2), QSize(-size, -size)), Qt::white);
 
-    painter.drawRect(QRect(style().mGeometry.rect().topLeft() + QPoint(-size/2, -size/2), QSize(size, size)));
-    painter.drawRect(QRect(style().mGeometry.rect().topRight() + QPoint(size/2, -size/2), QSize(-size, size)));
-    painter.drawRect(QRect(style().mGeometry.rect().bottomLeft() + QPoint(-size/2, size/2), QSize(size, -size)));
-    painter.drawRect(QRect(style().mGeometry.rect().bottomRight() + QPoint(size/2, size/2), QSize(-size, -size)));
-
+    painter.drawRect(QRect(rect.topLeft() + QPoint(-size/2, -size/2), QSize(size, size)));
+    painter.drawRect(QRect(rect.topRight() + QPoint(size/2, -size/2), QSize(-size, size)));
+    painter.drawRect(QRect(rect.bottomLeft() + QPoint(-size/2, size/2), QSize(size, -size)));
+    painter.drawRect(QRect(rect.bottomRight() + QPoint(size/2, size/2), QSize(-size, -size)));
 }
 
 void Box::drawGlobalBoxSettings(QPainter &painter) {
     PainterTransformScope scope(this, painter);
 
-    //background Color
-    if(mStyle.mBackgroundColor.has_value()) {
-        painter.fillRect(geometry().rect(), mStyle.backgroundColor());
+    auto const rect = geometry().rect();
+
+    // background Color
+    if(style().mBackgroundColor) {
+        painter.save();
+        painter.setBrush(mStyle.backgroundColor());
+        painter.setPen(Qt::NoPen);
+        painter.drawRoundedRect(geometry().rect(), style().borderRadius(), style().borderRadius());
+        painter.restore();
     }
 
     // border
@@ -125,19 +131,18 @@ void Box::drawGlobalBoxSettings(QPainter &painter) {
         pen.setWidth(mStyle.borderWidth());
         if(mStyle.borderStyle() == "double") {
             painter.setPen(pen);
-            painter.drawRect(geometry().rect());
+            painter.drawRoundedRect(rect, style().borderRadius(), style().borderRadius());
             auto const borderWidth = 2 * mStyle.borderWidth();
             auto const margins = QMargins(borderWidth, borderWidth, borderWidth, borderWidth);
-            painter.drawRect(geometry().rect().marginsAdded(margins));
+            painter.drawRoundedRect(rect.marginsAdded(margins), style().borderRadius(), style().borderRadius());
         }
         else {
             pen.setStyle(CSSToPenStyle(mStyle.borderStyle()));
             painter.setPen(pen);
-            painter.drawRect(geometry().rect());
+            painter.drawRoundedRect(rect, style().borderRadius(), style().borderRadius());
         }
         painter.restore();
     }
-
 }
 
 bool Box::containsPoint(QPoint point, int margin) const {

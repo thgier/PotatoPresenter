@@ -45,7 +45,7 @@ struct MapSvg{
 
 class MarkdownFormatVisitor: public markdownBaseListener {
 public:
-    MarkdownFormatVisitor(QPainter& painter, QRect rect, BoxStyle style);
+    MarkdownFormatVisitor(QPainter& painter, QRect const& rect, BoxStyle const& style);
 
     void enterText_plain(markdownParser::Text_plainContext *ctx) override;
 

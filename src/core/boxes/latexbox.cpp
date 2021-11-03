@@ -16,8 +16,8 @@ void LaTeXBox::drawContent(QPainter &painter, std::map<QString, QString> variabl
     auto const scaleFactor = 29.7 / 1600 * 10 / style().fontSize();
 
     auto const latexInput = "\\documentclass[10pt]{article}\\usepackage{geometry}\\usepackage[T1]{fontenc}\\geometry{paperwidth="
-            + QString::number(geometry().width() * scaleFactor) + "cm, paperheight="
-            + QString::number(geometry().height() * scaleFactor) +
+            + QString::number(style().paintableRect().width() * scaleFactor) + "cm, paperheight="
+            + QString::number(style().paintableRect().height() * scaleFactor) +
             "cm, margin=0cm}\\pagestyle{empty}\\setlength\\parindent{0pt}\\usepackage{xcolor}\\definecolor{fontColor}{RGB}{"
             + QString::number(style().color().red()) + ", "
             + QString::number(style().color().green()) + ", "
@@ -38,7 +38,7 @@ void LaTeXBox::drawContent(QPainter &painter, std::map<QString, QString> variabl
 
     switch(latex.status){
     case SvgStatus::Error: {
-        painter.drawText(geometry().rect(), "Latex Error");
+        painter.drawText(style().paintableRect(), "Latex Error");
         return;
     }
     case SvgStatus::NotStarted:
@@ -50,6 +50,6 @@ void LaTeXBox::drawContent(QPainter &painter, std::map<QString, QString> variabl
         break;
     }
     latex.svg->setAspectRatioMode(Qt::KeepAspectRatio);
-    latex.svg->render(&painter, geometry().rect());
+    latex.svg->render(&painter, style().paintableRect());
 }
 

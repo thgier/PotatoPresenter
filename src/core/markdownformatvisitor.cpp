@@ -56,7 +56,7 @@ void startLatexConversionProcess(std::string const& formula) {
 
 }
 
-MarkdownFormatVisitor::MarkdownFormatVisitor(QPainter &painter, QRect rect, BoxStyle style)
+MarkdownFormatVisitor::MarkdownFormatVisitor(QPainter &painter, const QRect &rect, const BoxStyle &style)
     : markdownBaseListener()
     , mPainter(painter)
     , mRect(rect)
@@ -108,7 +108,7 @@ void MarkdownFormatVisitor::enterText_plain(markdownParser::Text_plainContext *c
 
 void MarkdownFormatVisitor::enterLatex(markdownParser::LatexContext *ctx) {
     int start = mCurrentParagraph.mText.length();
-    auto const svgEntry = loadSvg(QString::fromStdString(ctx->text()->getText()), start);
+    auto const svgEntry = loadSvg(QString::fromStdString(ctx->getText()), start);
     if (!svgEntry.mSvg) {
         return;
     }
@@ -127,9 +127,8 @@ void MarkdownFormatVisitor::exitLatex(markdownParser::LatexContext *) {
 }
 
 void MarkdownFormatVisitor::enterLatex_next_line(markdownParser::Latex_next_lineContext *ctx) {
-    auto const mathExpression = ctx->text()->getText();
-    auto const hash = QCryptographicHash::hash(QByteArray::fromStdString(mathExpression), QCryptographicHash::Sha1).toHex().left(8);
-    auto const equation = cacheManager().getCachedImage(hash);
+    auto const mathExpression = QString::fromStdString(ctx->getText());
+    auto const equation = cacheManager().getCachedImage(latexInput(mathExpression));
     switch(equation.status){
     case SvgStatus::Error: {
         QTextCharFormat format;
@@ -140,7 +139,7 @@ void MarkdownFormatVisitor::enterLatex_next_line(markdownParser::Latex_next_line
         break;
     }
     case SvgStatus::NotStarted:
-        startLatexConversionProcess(mathExpression);
+        startLatexConversionProcess(mathExpression.toStdString());
         break;
     case SvgStatus::Pending:
          break;
@@ -248,7 +247,7 @@ void MarkdownFormatVisitor::newLine() {
 
 void MarkdownFormatVisitor::drawFormulasInParagraph(QTextLayout &layout) {
     for (auto &formula : mMapSvgs) {
-        auto const glyphrun =layout.glyphRuns(formula.mTextPosition, 1);
+        auto const glyphrun = layout.glyphRuns(formula.mTextPosition, 1);
         if(glyphrun.empty()) {
             return;
         }

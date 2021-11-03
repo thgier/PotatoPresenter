@@ -19,6 +19,8 @@ void CodeBox::drawContent(QPainter& painter, std::map<QString, QString> variable
     auto const text = substituteVariables(style().text(), variables);
     auto const paragraphs = text.split("\n");
     painter.setPen(mStyle.color());
+    auto font = painter.font();
+    font.setStyleHint(font.Monospace);
     auto const linespacing = painter.fontMetrics().leading() + style().linespacing() * painter.fontMetrics().lineSpacing();
 
     CodeHighlighter highlighter(style().language);
@@ -35,13 +37,13 @@ void CodeBox::drawContent(QPainter& painter, std::map<QString, QString> variable
 
         textLayout.beginLayout();
         QTextLine line = textLayout.createLine();
-        line.setLineWidth(geometry().width());
+        line.setLineWidth(style().paintableRect().width());
         line.setPosition(QPointF(0, y));
         mTextBoundings.lineBoundingRects.push_back(line.naturalTextRect());
         y += linespacing;
         textLayout.endLayout();
 
-        textLayout.draw(&painter, geometry().topLeft());
+        textLayout.draw(&painter, style().paintableRect().topLeft());
         lineNumber++;
     }
 }

@@ -1,7 +1,7 @@
 grammar markdown;
 
 markdown
-    : (paragraph | list)+
+    : (paragraph | list | latex_next_line)+
     ;
     
 list
@@ -9,11 +9,11 @@ list
     ;
     
 item_second
-    : ('    *' paragraph?)
+    : ('    ' STAR paragraph?)
     ;
     
 item 
-    : ('*' paragraph?) (enum_item_second* | item_second*)
+    : (STAR paragraph?) (enum_item_second* | item_second*)
     ;
 
 itemize
@@ -33,7 +33,7 @@ enum_item_second
     ;
     
 paragraph
-    : ((text_decorated | text_plain | latex | '_' | '*')+ | latex_next_line) (new_line+ | EOF)
+    : (text_decorated | text_plain | latex | '_')+ (new_line+ | EOF)
     ;
     
 text_decorated
@@ -45,7 +45,7 @@ text_bold
     ;
     
 text_marked
-    : '*' (text_plain | text_italic | text_bold)+ '*'
+    : '*' (text_plain)+ '*'
     ;
     
 text_italic
@@ -53,21 +53,17 @@ text_italic
     ;
 
 latex
-    : '$' text '$'
+    : '$' (text_plain | '_' | STAR)+ '$'
     ;
     
 latex_next_line
-    : '$$'  text '$$'
+    : '$$'  (text_plain | '_' | STAR)+ '$$' (new_line+ | <EOF>)
     ;
     
 new_line
     : '\n'
     ;
     
-text
-    : (text_plain | '_' | '*')+
-    ;
-
 text_plain
     : (TEXT | INT | '.')+
     ;
@@ -75,9 +71,13 @@ text_plain
 UNDERSCORE
     : '_'
     ;
+    
+STAR
+    : '*'
+    ;
 
 INT   
-    : ('0'..'9')+ 
+    : ('0'..'9')+
     ;
 TEXT
     : ~[*$_\n.0123456789]+

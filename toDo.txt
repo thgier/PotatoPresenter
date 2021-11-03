@@ -9,6 +9,4 @@
 - template specific guides
 
 bugs:
-- sometimes templates?
-- pause in template
-- unsaved changes messages when opening and closing the application
+- space after image does not work

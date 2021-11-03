@@ -241,6 +241,9 @@ BoxStyle PotatoFormatVisitor::applyProperty(BoxStyle &boxstyle, QString property
     else if(property == "padding") {
         boxstyle.mPadding = value.toInt(&numberOk);
     }
+    else if(property == "border-radius") {
+        boxstyle.mBorderRadius = value.toInt(&numberOk);
+    }
     else if(property == "border"){
         auto values = QString(value).split(" ");
         if(values.empty()) {
@@ -266,7 +269,7 @@ BoxStyle PotatoFormatVisitor::applyProperty(BoxStyle &boxstyle, QString property
             }
         }
     }
-    else if (property == "highlight") {
+    else if (property == "marker") {
         auto values = QString(value).split(" ");
         if(values.empty()) {
             return {};
@@ -365,10 +368,6 @@ void PotatoFormatVisitor::setVariable(QString text, int line) {
 }
 
 void PotatoFormatVisitor::createNewBox(QString command, QString text, int line) {
-    QString id = mCurrentBoxStyle.id();
-    if(id.isEmpty()) {
-        mCurrentBoxStyle.mId = generateId("text", mCurrentBoxStyle.getClass());
-    }
     if(!text.isEmpty()) {
         mCurrentBoxStyle.mText = text;
     }
@@ -387,8 +386,8 @@ void PotatoFormatVisitor::createNewBox(QString command, QString text, int line) 
     }
     else if(command == "code"){
         box = std::make_shared<CodeBox>();
-        if(!mCurrentBoxStyle.mClass.has_value()) {
-            mCurrentBoxStyle.mClass = "body";
+        if(!mCurrentBoxStyle.mClass) {
+            mCurrentBoxStyle.mClass = "code";
         }
     }
     else if(command == "body"){
@@ -414,6 +413,10 @@ void PotatoFormatVisitor::createNewBox(QString command, QString text, int line) 
         if(!mCurrentBoxStyle.mClass.has_value()) {
             mCurrentBoxStyle.mClass = "body";
         }
+    }
+    QString id = mCurrentBoxStyle.id();
+    if(id.isEmpty()) {
+        mCurrentBoxStyle.mId = generateId(command, mCurrentBoxStyle.getClass());
     }
     mCurrentBoxStyle.mLine = line;
     box->setBoxStyle(mCurrentBoxStyle);

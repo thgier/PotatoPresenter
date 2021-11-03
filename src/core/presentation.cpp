@@ -35,6 +35,10 @@ BoxStyle& setStyleIfNotSet(BoxStyle & appliedStyle, BoxStyle const& modelStyle) 
     assignIfUnset(appliedStyle.mLineSpacing, modelStyle.linespacing());
     assignIfUnset(appliedStyle.mOpacity, modelStyle.opacity());
     assignIfUnset(appliedStyle.mText, modelStyle.text());
+    assignIfUnset(appliedStyle.mPadding, modelStyle.padding());
+    assignIfUnset(appliedStyle.mBorderRadius, modelStyle.borderRadius());
+    assignIfUnset(appliedStyle.mTextMarker.color, modelStyle.markerColor());
+    assignIfUnset(appliedStyle.mTextMarker.fontWeight, modelStyle.markerFontWeight());
 
     return appliedStyle;
 }
@@ -57,6 +61,12 @@ void applyStandardTemplateToBox(Box::Ptr box) {
     }
     else if(style.getClass() == "body") {
         rect = QRect(50, 150, 1500, 650);
+    }
+    else if(style.getClass() == "code") {
+        rect = QRect(50, 150, 1500, 650);
+        if(!style.mFont) {
+            style.mFont = "DejaVu Sans Mono";
+        }
     }
     else if(style.getClass() == "image") {
         rect = QRect(50, 150, 1500, 650);
@@ -106,9 +116,7 @@ void Presentation::applyConfigurationTemplate() {
     if(mTemplate) {
         mTemplate->applyTemplate(mSlides);
     }
-    else {
-        applyStandardTemplate(mSlides);
-    }
+    applyStandardTemplate(mSlides);
     setTitleIfTextUnset(mSlides);
 }
 

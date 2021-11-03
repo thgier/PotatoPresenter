@@ -20,6 +20,7 @@ void ImageBox::drawContent(QPainter& painter, std::map<QString, QString> variabl
     if(!path.startsWith("/home") && variables.find("%{resourcepath}") != variables.end()) {
         path = variables["%{resourcepath}"] + "/" + path;
     }
+    mImagePath = path;
     auto const fileInfo = QFileInfo(path);
     if(fileInfo.suffix() == "svg"){
         auto const transform = painter.combinedTransform();
