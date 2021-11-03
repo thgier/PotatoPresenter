@@ -470,7 +470,8 @@ void MainWindow::openJson() {
         switch (ret) {
         case QMessageBox::Ok:
             resetPresentation();
-            mPresentation->setConfig({jsonFileName()});
+            auto file = QFile(jsonFileName());
+            file.open(QIODevice::WriteOnly);
             break;
         }
     }
