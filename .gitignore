@@ -13,6 +13,8 @@ website/*
 *.AppImage
 presentation_seminar/*
 presentation_seminar
+src/antlr/markdown/generated/*
+src/antlr/potato/generated/*
 website
 *.kate-swp
 *~
