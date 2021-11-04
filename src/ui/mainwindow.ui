@@ -759,11 +759,11 @@
    <addaction name="actionNew"/>
    <addaction name="actionOpen"/>
    <addaction name="actionSave"/>
-   <addaction name="actionSave_as"/>
    <addaction name="actionCreatePDF"/>
    <addaction name="separator"/>
    <addaction name="actionUndo"/>
    <addaction name="actionRedo"/>
+   <addaction name="separator"/>
    <addaction name="actionReset_Position"/>
    <addaction name="actionReset_Angle"/>
    <addaction name="separator"/>
