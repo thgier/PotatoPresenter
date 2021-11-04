@@ -27,8 +27,12 @@ struct SvgEntry{
     std::shared_ptr<QSvgRenderer> svg;
 };
 
+struct DelayedDelete {
+    void operator()(QProcess* p) { p->deleteLater(); }
+};
+
 struct Job {
-    std::unique_ptr<QProcess> mProcess;
+    std::unique_ptr<QProcess, DelayedDelete> mProcess;
     std::unique_ptr<QTemporaryDir> mTempDir;
     QString mInput;
 };
@@ -38,6 +42,7 @@ class LatexCacheManager : public QObject
     Q_OBJECT
 public:
     LatexCacheManager();
+    ~LatexCacheManager();
     void startConversionProcess(QString latexInput);
     SvgEntry getCachedImage(QString latexInput) const;
     void startSvgGeneration();

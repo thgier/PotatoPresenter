@@ -8,8 +8,37 @@
 #include <QDir>
 #include <QThread>
 
+void assertNoNull(std::vector<Job> const& jobs) {
+    auto const hasNull = std::any_of(jobs.begin(), jobs.end(), [](auto const& p) { return !p.mProcess; });
+    if (hasNull)
+        throw;
+}
+
 LatexCacheManager::LatexCacheManager()
 {
+}
+
+LatexCacheManager::~LatexCacheManager()
+{
+    assertNoNull(mRunningLatexJobs);
+    assertNoNull(mRunningDviJobs);
+#if 0
+    for(auto const& job: mRunningLatexJobs) {
+        qDebug() << "process is" << job.mProcess.get();
+        if(job.mProcess->state() != QProcess::NotRunning) {
+            job.mProcess->disconnect(this);
+            job.mProcess->terminate();
+            job.mProcess->waitForFinished();
+        }
+    }
+    for(auto const& job: mRunningDviJobs) {
+        if(job.mProcess->state() != QProcess::NotRunning) {
+            job.mProcess->disconnect(this);
+            job.mProcess->terminate();
+            job.mProcess->waitForFinished();
+        }
+    }
+#endif
 }
 
 LatexCacheManager& cacheManager()
@@ -40,7 +69,7 @@ void LatexCacheManager::startConversionProcess(QString latexInput) {
     arguments << "-halt-on-error" << "-interaction=nonstopmode" << "-output-directory=" + tempDir->path() << inputFile.fileName();
 
     auto& job = mRunningLatexJobs.emplace_back();
-    job.mProcess = std::make_unique<QProcess>();
+    job.mProcess.reset(new QProcess());
     job.mTempDir = std::move(tempDir);
     job.mInput = latexInput;
 
@@ -48,6 +77,8 @@ void LatexCacheManager::startConversionProcess(QString latexInput) {
             this, &LatexCacheManager::startSvgGeneration);
 
     job.mProcess->start(program, arguments);
+    assertNoNull(mRunningLatexJobs);
+    assertNoNull(mRunningDviJobs);
 }
 
 
@@ -67,8 +98,12 @@ std::optional<Job> LatexCacheManager::takeOneFinishedJob(std::vector<Job>& jobs)
     if(latexJob == jobs.end()) {
         return std::nullopt;
     }
+    assertNoNull(mRunningLatexJobs);
+    assertNoNull(mRunningDviJobs);
     auto ret = std::move(*latexJob);
     jobs.erase(latexJob);
+    assertNoNull(mRunningLatexJobs);
+    assertNoNull(mRunningDviJobs);
     return ret;
 }
 
@@ -92,7 +127,7 @@ void LatexCacheManager::startSvgGeneration(){
     }
 
     auto& job = mRunningDviJobs.emplace_back();
-    job.mProcess = std::make_unique<QProcess>();
+    job.mProcess.reset(new QProcess);
     job.mTempDir = std::move(latexJob->mTempDir);
     job.mInput = latexJob->mInput;
 
@@ -104,14 +139,22 @@ void LatexCacheManager::startSvgGeneration(){
     QObject::connect(job.mProcess.get(), QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
                      this, &LatexCacheManager::writeSvgToMap);
     job.mProcess->start(programDvisvgm, argumentsDvisvgm);
+    assertNoNull(mRunningLatexJobs);
+    assertNoNull(mRunningDviJobs);
 }
 
 void LatexCacheManager::writeSvgToMap(){
+    assertNoNull(mRunningLatexJobs);
+    assertNoNull(mRunningDviJobs);
     // find finished Latex job
     auto dviJob = takeOneFinishedJob(mRunningDviJobs);
     if(!dviJob) {
         return;
     }
+    assertNoNull(mRunningLatexJobs);
+    assertNoNull(mRunningDviJobs);
+    if (!dviJob->mTempDir)
+        throw;
 
     auto file = QFile(dviJob->mTempDir->path() + "/input.svg");
     if(!file.open(QIODevice::ReadOnly)) {
@@ -120,4 +163,6 @@ void LatexCacheManager::writeSvgToMap(){
     mCachedImages[dviJob->mInput] = SvgEntry{SvgStatus::Success, std::make_shared<QSvgRenderer>(file.readAll())};
     qWarning() << "status when finished" << mCachedImages[dviJob->mInput].status;
     Q_EMIT conversionFinished();
+    assertNoNull(mRunningLatexJobs);
+    assertNoNull(mRunningDviJobs);
 }
