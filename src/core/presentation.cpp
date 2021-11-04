@@ -279,6 +279,7 @@ void Presentation::deleteNotNeededConfigurations() {
         ids.push_back(box->id());
     });
     mConfig.deleteAllRectsExcept(ids);
+    Q_EMIT slideChanged(0, mSlides.vector.size());
 }
 
 

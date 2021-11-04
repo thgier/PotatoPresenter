@@ -120,9 +120,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionTranslate, &QAction::triggered,
             this, [this](){mSlideWidget->setTransformationType(TransformationType::translate);});
 
-    connect(ui->actionClean_Configurations, &QAction::triggered,
-            mPresentation.get(), &Presentation::deleteNotNeededConfigurations);
-
 //    open Recent
     QSettings settings("Potato", "Potato Presenter");
     updateOpenRecent();
@@ -389,6 +386,8 @@ void MainWindow::openProject(QString path) {
             setWindowTitle(windowTitleNotSaved());
             mIsModified = true;
         }});
+    connect(ui->actionClean_Configurations, &QAction::triggered,
+            mPresentation.get(), &Presentation::deleteNotNeededConfigurations);
     addFileToOpenRecent(path);
     updateOpenRecent();
     addDirectoryToSettings(QFileInfo(filename()).path());
