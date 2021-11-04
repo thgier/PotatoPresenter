@@ -3,8 +3,8 @@
 
 TemplateCache::TemplateCache()
 {
-    mWatcher = new QFileSystemWatcher();
-    QObject::connect(mWatcher, &QFileSystemWatcher::fileChanged,
+    mWatcher = new QFileSystemWatcher(this);
+    connect(mWatcher, &QFileSystemWatcher::fileChanged,
             [this](QString){mTemplate = nullptr;
             Q_EMIT templateChanged();});
 }
