@@ -1,7 +1,7 @@
 grammar potato;
 
 potato
-    : box*
+    : box+
     ;
 
 box 
@@ -28,7 +28,7 @@ oneline_text
     ;
     
 first_word
-    : (WORD | ':' | ';' | ']' | ' ')
+    : (WORD | SPECIAL_CHARACTER | ':' | ';' | ']' | ' ')
     ;
 
 every_letter_word   
@@ -36,7 +36,7 @@ every_letter_word
     ;
     
 property_list
-    : '[' property_entry (';' property_entry)* ']'
+    : '[' property_entry (';' property_entry)* (';' ws*)? ']'
     | '[' ']'
     ;
     
@@ -65,8 +65,12 @@ ws
     : (' ' | '\n')
     ;
     
+SPECIAL_CHARACTER
+    : ~([ \\;:\n] | ']' | '[' | [a-z] | [A-Z] | '-' | [0-9] | '.')+
+    ;
+    
 WORD
-    : ~([ \\;:\n] | ']' | '[')+
+    : ([a-z] | [A-Z] | '-' | [0-9] | '.' | '#')+
     ;
 
 TEXT_BRACKET

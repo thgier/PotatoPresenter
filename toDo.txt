@@ -9,4 +9,4 @@
 - template specific guides
 
 bugs:
-- space after image does not work
+- does not ask to save if you close it with a syntax error?

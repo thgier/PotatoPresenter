@@ -54,6 +54,7 @@ void GrammarTest::testGrammar_data(){
     QTest::newRow("space") << "\\body[value: 30]\n * Cool";
     QTest::newRow("divided property list") << "\\image[\nborder: 1px solid\n]\nimages/createSvg.png \title";
     QTest::newRow("command with property") << "\\title[text-align: center]\n\\body Click here to choose a template: ";
+    QTest::newRow("command with property") << "\\title[text-align: center; ]";
 }
 
 

@@ -5,9 +5,11 @@
 #include "potatoLexer.h"
 #include "potatoParser.h"
 
+#include <QString>
+
 struct SyntaxError {
     size_t line, column;
-    std::string message;
+    QString message;
 };
 
 class PotatoErrorListener : public antlr4::BaseErrorListener
@@ -18,6 +20,7 @@ public:
           const std::string &msg, std::exception_ptr e) override;
     bool success();
     SyntaxError error();
+//    std::vector<std::string>
 
 private:
     SyntaxError mError;

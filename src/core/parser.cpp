@@ -39,7 +39,7 @@ ParserOutput generateSlides(std::string text, QString directory, bool isTemplate
     antlr4::tree::ParseTree *tree = parser.potato();
     if(!errorListener.success()) {
         auto const error = errorListener.error();
-        return ParserError{QString::fromStdString(error.message), int(error.line)-1};
+        return ParserError{error.message, int(error.line)-1};
     }
 
     auto listener = PotatoFormatVisitor();
