@@ -52,6 +52,7 @@ add_executable(praes
     src/core/markdownformatvisitor.cpp
     src/core/parser.cpp
     src/core/pdfcreator.cpp
+    src/core/potatoerrorlistener.cpp
     src/core/potatoformatvisitor.cpp
     src/core/presentation.cpp
     src/core/template.cpp

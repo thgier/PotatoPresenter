@@ -20,6 +20,7 @@
 #include "potatoLexer.h"
 #include "potatoParser.h"
 #include "potatoformatvisitor.h"
+#include "potatoerrorlistener.h"
 
 ParserOutput generateSlides(std::string text, QString directory, bool isTemplate) {
     std::istringstream str(text);
@@ -30,7 +31,16 @@ ParserOutput generateSlides(std::string text, QString directory, bool isTemplate
     tokens.fill();
     potatoParser parser(&tokens);
     parser.getInterpreter<antlr4::atn::ParserATNSimulator>()->setPredictionMode(antlr4::atn::PredictionMode::SLL);
+
+    parser.removeErrorListeners(); // remove ConsoleErrorListener
+    PotatoErrorListener errorListener;
+    parser.addErrorListener(&errorListener); // add ours
+
     antlr4::tree::ParseTree *tree = parser.potato();
+    if(!errorListener.success()) {
+        auto const error = errorListener.error();
+        return ParserError{QString::fromStdString(error.message), int(error.line)-1};
+    }
 
     auto listener = PotatoFormatVisitor();
     listener.setDirectory(directory);

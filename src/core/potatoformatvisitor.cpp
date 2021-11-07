@@ -17,23 +17,35 @@ namespace  {
         return text.contains("\n");
     }
 
+    void removeSpacesAtBack(QString &text) {
+        while(text.back() ==' ') {
+            text.chop(1);
+        }
+    }
+
+    void removeBrackets(QString &text) {
+        text.chop(2);
+        text.remove(0, 2);
+    }
+
 }
 
 PotatoFormatVisitor::PotatoFormatVisitor()
 {
-
 }
 
 void PotatoFormatVisitor::enterCommand(potatoParser::CommandContext *ctx) {
-    mCommand = QString::fromStdString(ctx->TEXT()->getText());
+    mCommand = QString::fromStdString(ctx->WORD()->getText());
 }
 
 void PotatoFormatVisitor::enterText(potatoParser::TextContext * ctx) {
     mText = QString::fromStdString(ctx->getText());
+    removeSpacesAtBack(mText);
 }
 
 void PotatoFormatVisitor::enterText_in_bracket(potatoParser::Text_in_bracketContext * ctx) {
     mText = QString::fromStdString(ctx->getText());
+    removeBrackets(mText);
 }
 
 void PotatoFormatVisitor::PotatoFormatVisitor::exitBox(potatoParser::BoxContext * ctx) {
@@ -100,23 +112,19 @@ void PotatoFormatVisitor::PotatoFormatVisitor::exitBox(potatoParser::BoxContext 
     throw ParserError{QString("Invalid command '%1'").arg(command), line};
 }
 
-void PotatoFormatVisitor::enterProperty(potatoParser::PropertyContext *ctx) {
-    mProperty = QString::fromStdString(ctx->getText());
-}
-
-void PotatoFormatVisitor::enterValue(potatoParser::ValueContext *ctx) {
-    mValue = QString::fromStdString(ctx->getText());
-}
 
 void PotatoFormatVisitor::exitProperty_entry(potatoParser::Property_entryContext * ctx) {
     auto const line = int(ctx->getStart()->getLine()) - 1;
-    if(mProperty.isEmpty()) {
+    auto const property = QString::fromStdString(ctx->property()->WORD()->getText());
+    auto const value = QString::fromStdString(ctx->value()->getText());
+    if(property.isEmpty()) {
         throw ParserError{"Expected property.", line};
     }
+    if(value.isEmpty()) {
+        throw ParserError{"Expected value.", line};
+    }
 
-    mCurrentBoxStyle = applyProperty(mCurrentBoxStyle, mProperty, mValue, line);
-    mValue = "";
-    mProperty = "";
+    mCurrentBoxStyle = applyProperty(mCurrentBoxStyle, property, value, line);
 }
 
 BoxStyle PotatoFormatVisitor::applyProperty(BoxStyle &boxstyle, QString property, QString value, int line) {

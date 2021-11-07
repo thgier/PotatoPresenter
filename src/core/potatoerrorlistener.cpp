@@ -16,3 +16,7 @@ bool PotatoErrorListener::success() {
     return mSuccess;
 }
 
+SyntaxError PotatoErrorListener::error() {
+    return mError;
+}
+

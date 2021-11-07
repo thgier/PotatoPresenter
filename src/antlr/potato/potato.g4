@@ -1,43 +1,74 @@
 grammar potato;
 
-potato: NEWLINE? box*;
+potato
+    : box*
+    ;
 
-box : command paragraph;
+box 
+    : command ws*? property_list? paragraph (' '* '\n'+ | EOF)
+    ;
 
-command : BACKSLASH TEXT SPACE? ('[' SPACE? property_list ']')?;
+paragraph
+    : ws* text_in_bracket
+    | (' ' | ' '* '\n'+) text
+    |
+    ;
 
-property_list: property_entry (';' SPACE? property_entry)*;
+text
+    : oneline_text 
+    | multiline_text
+    ;
 
-property_entry : property SPACE? (':' SPACE? value)?;
+multiline_text 
+    : '\n'*? (oneline_text ' '* '\n'+)+ oneline_text
+    ;
+    
+oneline_text
+    : first_word every_letter_word*
+    ;
+    
+first_word
+    : (WORD | ':' | ';' | ']' | ' ')
+    ;
 
-property: (TEXT | SPACE)*;
+every_letter_word   
+    : first_word | '[' | '\\'
+    ;
+    
+property_list
+    : '[' property_entry (';' property_entry)* ']'
+    | '[' ']'
+    ;
+    
+property_entry
+    : ws*? property ws*? ':' ws*? value ws*?
+    ;
+    
+property
+    : WORD
+    ;
+    
+value
+    : WORD (WORD | ' ')* WORD
+    | WORD
+    ;
+    
+command
+    : '\\' WORD
+    ;
+    
+text_in_bracket
+    : TEXT_BRACKET
+    ;
 
-value: (TEXT | SPACE)*;
+ws
+    : (' ' | '\n')
+    ;
+    
+WORD
+    : ~([ \\;:\n] | ']' | '[')+
+    ;
 
-paragraph: paragraph_bracket | paragraph_without_bracket;
-
-paragraph_without_bracket: (SPACE? NEWLINE? text)? (NEWLINE | NEWLINE? EOF);
-
-paragraph_bracket: SPACE? NEWLINE? BACKSLASH_CURLED_BRACKET_OPEN SPACE? NEWLINE? text_in_bracket SPACE? NEWLINE? BACKSLASH_CURLED_BRACKET_CLOSE (NEWLINE | NEWLINE? EOF);
-
-text : (oneline_text_first (NEWLINE oneline_text)*);
-
-oneline_text_first:  (text_sign| '{' | '}' | SPACE) (text_sign | BACKSLASH | '{' | '}' | SPACE)*;
-
-oneline_text: (text_sign | '{' | '}' | SPACE) (text_sign | BACKSLASH | '{' | '}' | SPACE)*;
-
-text_in_bracket: (text_sign | BACKSLASH | NEWLINE | '{' | '}' | SPACE)+;
-
-text_sign: (TEXT | ';' | '[' | ']' | ':')+;
-
-BACKSLASH : [\\];
-
-BACKSLASH_CURLED_BRACKET_OPEN : BACKSLASH '{';
-
-BACKSLASH_CURLED_BRACKET_CLOSE : BACKSLASH '}';
-
-NEWLINE : '\n'+ ; 
-
-SPACE : ' '+;
-
-TEXT : ~([\][] | [\\] | [\n] | [:;}{] | ' ')+;
+TEXT_BRACKET
+    : '\\{' .*? '\\}'
+    ;
