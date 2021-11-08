@@ -259,8 +259,9 @@ void MainWindow::fileChanged() {
             if (!presentationTemplate) {
                 presentationTemplate = readTemplate(templateName);
                 if(!presentationTemplate) {
-                    mErrorOutput->setText("Line " + QString::number(0) + ": Cannot load template" + " \u26A0");
-                    iface->addMark(0, KTextEditor::MarkInterface::MarkTypes::Error);
+                    mErrorOutput->setText("Line " + QString::number(parserOutput.preamble().line + 1) +
+                                          ": Cannot load template" + " \u26A0");
+                    iface->addMark(parserOutput.preamble().line, KTextEditor::MarkInterface::MarkTypes::Error);
                     return;
                 }
                 mTemplateCache.setTemplate(presentationTemplate, templateName);

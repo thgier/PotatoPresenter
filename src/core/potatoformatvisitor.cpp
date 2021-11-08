@@ -319,7 +319,7 @@ void PotatoFormatVisitor::exitPotato(potatoParser::PotatoContext * /*ctx*/) {
 void PotatoFormatVisitor::readPreambleCommand(QString command, QString text, int line) {
     if(command == "usetemplate") {
         if(!mParsingTemplate) {
-            mPreamble = Preamble{text};
+            mPreamble = Preamble{text, line};
         }
         else {
             throw ParserError{QString("Unexpected command %1 in template.").arg(command), line};

@@ -14,6 +14,7 @@ struct ParserError{
 
 struct Preamble {
     QString templateName;
+    int line;
 };
 
 class PotatoFormatVisitor : public potatoBaseListener
