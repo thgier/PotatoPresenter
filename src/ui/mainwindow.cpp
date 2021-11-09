@@ -188,6 +188,7 @@ MainWindow::MainWindow(QWidget *parent)
 //    setup Item model templates in create new from template dialog
     auto const dirList = std::vector<QString>{"/home/theresa/Documents/praes/templates/tutorial",
                                                 "/home/theresa/Documents/praes/templates/blue_line_template",
+                                                "/home/theresa/Documents/praes/templates/red",
                                                 "/home/theresa/Documents/praes/templates/blue_brown_template"};
     auto const presentationList = generateTemplatePresentationList(dirList);
     mTemplateModel = new TemplateListModel(this);
@@ -200,7 +201,7 @@ MainWindow::MainWindow(QWidget *parent)
                 mTemplatePath = dirList[ui->templateList->currentIndex().row()];
                 openCreatePresentationDialog();
             });
-    connect(ui->emptPresentationButton, &QPushButton::clicked,
+    connect(ui->emptyPresentationButton, &QPushButton::clicked,
             this, [this]{
                 mTemplatePath = "/home/theresa/Documents/praes/templates/empty";
                 openCreatePresentationDialog();
