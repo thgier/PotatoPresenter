@@ -41,6 +41,10 @@ QRect BoxGeometry::rect() const {
     return QRect(mLeft.value_or(0), mTop.value_or(0), mWidth.value_or(300), mHeight.value_or(100));
 }
 
+QRectF BoxGeometry::rectF() const {
+    return QRectF(mLeft.value_or(0), mTop.value_or(0), mWidth.value_or(300), mHeight.value_or(100));
+}
+
 QSize BoxGeometry::size() const {
     return {width(), height()};
 }
@@ -98,6 +102,10 @@ void BoxGeometry::setRect(QRect rect) {
     mTop = rect.top();
     mWidth = rect.width();
     mHeight = rect.height();
+}
+
+void BoxGeometry::setRect(QRectF rect) {
+    setRect(rect);
 }
 
 void BoxGeometry::setAngle(double angle) {
@@ -179,6 +187,14 @@ QTransform BoxGeometry::transform() const {
 }
 
 QTransform BoxGeometry::transform(QPoint rotatingPoint) const {
+    QTransform transform;
+    transform.translate(rotatingPoint.x(), rotatingPoint.y());
+    transform.rotate(mAngle.value());
+    transform.translate(-rotatingPoint.x(), -rotatingPoint.y());
+    return transform;
+}
+
+QTransform BoxGeometry::transform(QPointF rotatingPoint) const {
     QTransform transform;
     transform.translate(rotatingPoint.x(), rotatingPoint.y());
     transform.rotate(mAngle.value());

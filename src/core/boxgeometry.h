@@ -43,6 +43,7 @@ public:
 
     // return value when it is set otherwise some standard value
     QRect rect() const;
+    QRectF rectF() const;
     QSize size() const;
     QPoint topLeft() const;
     double angle() const;
@@ -61,6 +62,7 @@ public:
 
     // set the value
     void setRect(QRect rect);
+    void setRect(QRectF rect);
     void setAngle(double angle);
     void setLeft(int left);
     void setTop(int top);
@@ -76,6 +78,7 @@ public:
     // get transformation of box
     QTransform transform() const;
     QTransform transform(QPoint rotatingPoint) const;
+    QTransform transform(QPointF rotatingPoint) const;
     QTransform rotateTransform() const;
 
     qreal lengthDiagonal() const;

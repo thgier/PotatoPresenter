@@ -38,7 +38,7 @@ BoxGeometry BoxTransformation::doTransformation(QPoint mousePos){
 
 BoxGeometry BoxTransformation::makeScaleTransformation(QPoint mousePos){
     auto geometry = mGeometry;
-    auto rect = geometry.rect();
+    auto rect = geometry.rectF();
     switch (mClassifiedMousePosition) {
         case pointPosition::topLeftCorner:{
             auto const bottomRight = geometry.transform().map(rect.bottomRight());
@@ -245,7 +245,7 @@ BoxGeometry BoxTransformation::makeRotateTransformation(QPoint mousePos){
         rectAngle = mouseAngle - std::numbers::pi + angleCenterEdge;
         break;
     case pointPosition::inBox:{
-        auto rect = geometry.rect();
+        auto rect = geometry.rectF();
         rect.translate(mousePos - mStartMousePosition);
         if(mSnapping && geometry.angle() == 0) {
             rect = makeSnappingTranslating(rect);
@@ -292,7 +292,7 @@ void BoxTransformation::setSnapping(Snapping snapping) {
     mSnapping = snapping;
 }
 
-QRect BoxTransformation::makeSnappingTranslating(QRect rect) {
+QRectF BoxTransformation::makeSnappingTranslating(QRectF rect) {
     auto const leftSnap = mSnapping.value().snapX(rect.left());
     if(leftSnap.has_value()) {
         rect.moveLeft(leftSnap.value());
