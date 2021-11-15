@@ -35,7 +35,7 @@ private:
     BoxGeometry makeScaleTransformation(QPoint mousePos);
     BoxGeometry makeRotateTransformation(QPoint mousePos);
 
-    QRectF makeSnappingTranslating(QRectF rect);
+    QRect makeSnappingTranslating(QRect rect);
 
 private:
     BoxGeometry mGeometry;

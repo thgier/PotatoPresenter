@@ -111,7 +111,6 @@ void Presentation::setData(PresentationData data) {
 
 void Presentation::applyConfigurationTemplate() {
     applyConfiguration();
-    createMapDefinesClass();
     applyDefinedClass(mSlides);
     if(mTemplate) {
         mTemplate->applyTemplate(mSlides);
@@ -180,20 +179,21 @@ void Presentation::applyDefinedClass(const SlideList &slides) {
         if(!box->style().mClass){
             return;
         }
-        BoxStyle definedClassStyle;
-        auto const boxKey = "-" + box->style().mClass.value();
-        if(definedClasses.find(boxKey) != definedClasses.end()) {
-            definedClassStyle = definedClasses.find(boxKey)->second;
+        auto style = box->style();
+        auto const boxKey = box->style().mClass.value();
+        if(definedClasses.find(slideKey + "-" + boxKey) != definedClasses.end()) {
+            auto const definedClassStyle = definedClasses.find(slideKey + "-" + boxKey)->second;
+            applyGeometryIfNotSet(style, definedClassStyle.mGeometry);
+            style = setStyleIfNotSet(style, definedClassStyle);
         }
-        else if(definedClasses.find(slideKey + boxKey) != definedClasses.end()) {
-            definedClassStyle = definedClasses.find(slideKey + boxKey)->second;
+        if(definedClasses.find(boxKey) != definedClasses.end()) {
+            auto const definedClassStyle = definedClasses.find(boxKey)->second;
+            applyGeometryIfNotSet(style, definedClassStyle.mGeometry);
+            style = setStyleIfNotSet(style, definedClassStyle);
         }
         else {
             return;
         }
-        auto style = box->style();
-        applyGeometryIfNotSet(style, definedClassStyle.mGeometry);
-        style = setStyleIfNotSet(style, definedClassStyle);
         box->setBoxStyle(style);
     });
 }
@@ -287,7 +287,11 @@ std::map<QString, BoxStyle> const Presentation::createMapDefinesClass() const {
     std::map<QString, BoxStyle> definitionClass;
     forEachBox(mSlides, [&definitionClass](Slide::Ptr slide, Box::Ptr box){
         if(box->style().mDefineclass) {
-            auto const key = slide->definesClass() + "-" + box->style().mDefineclass.value();
+            if(!slide->definesClass().isEmpty()) {
+                auto const key = slide->definesClass() + "-" + box->style().mDefineclass.value();
+                definitionClass[key] = box->style();
+            }
+            auto const key = box->style().mDefineclass.value();
             definitionClass[key] = box->style();
         }
     });

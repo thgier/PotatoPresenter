@@ -104,10 +104,6 @@ void BoxGeometry::setRect(QRect rect) {
     mHeight = rect.height();
 }
 
-void BoxGeometry::setRect(QRectF rect) {
-    setRect(rect);
-}
-
 void BoxGeometry::setAngle(double angle) {
     mAngle = angle;
     if(mAngle < 0){
