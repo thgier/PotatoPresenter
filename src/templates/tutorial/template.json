@@ -1,0 +1,102 @@
+[
+    {
+        "id": "intern-default-body-body-0",
+        "rect": {
+            "angle": 0,
+            "height": 559,
+            "width": 1374,
+            "xPosition": 114,
+            "yPosition": 244
+        }
+    },
+    {
+        "id": "intern-default-geometry-fullscreen-0",
+        "rect": {
+            "angle": 0,
+            "height": 900,
+            "width": 1600,
+            "xPosition": 0,
+            "yPosition": 0
+        }
+    },
+    {
+        "id": "intern-default-text-default-0",
+        "rect": {
+            "angle": 0,
+            "height": 111,
+            "width": 1398,
+            "xPosition": 100,
+            "yPosition": 77
+        }
+    },
+    {
+        "id": "intern-default-text-default-1",
+        "rect": {
+            "angle": 0,
+            "height": 594,
+            "width": 1402,
+            "xPosition": 100,
+            "yPosition": 222
+        }
+    },
+    {
+        "id": "intern-titlepage-image-fullscreen-0",
+        "rect": {
+            "angle": 0,
+            "height": 900,
+            "width": 1600,
+            "xPosition": 0,
+            "yPosition": 0
+        }
+    },
+    {
+        "id": "intern-titlepage-image-image-0",
+        "rect": {
+            "angle": 0,
+            "height": 409,
+            "width": 528,
+            "xPosition": 1006,
+            "yPosition": 363
+        }
+    },
+    {
+        "id": "intern-titlepage-text-default-0",
+        "rect": {
+            "angle": 0,
+            "height": 135,
+            "width": 1489,
+            "xPosition": 149,
+            "yPosition": 154
+        }
+    },
+    {
+        "id": "intern-titlepage-text-default-1",
+        "rect": {
+            "angle": 0,
+            "height": 100,
+            "width": 1439,
+            "xPosition": 149,
+            "yPosition": 345
+        }
+    },
+    {
+        "id": "intern-titlepage-text-default-2",
+        "rect": {
+            "angle": 0,
+            "height": 100,
+            "width": 1489,
+            "xPosition": 149,
+            "yPosition": 506
+        }
+    },
+    {
+        "id": "intern-titlepage-text-default-3",
+        "rect": {
+            "angle": 0,
+            "height": 410,
+            "width": 534,
+            "xPosition": 982,
+            "yPosition": 52
+        }
+    }
+]

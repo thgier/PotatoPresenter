@@ -1,0 +1,24 @@
+\setvar author Author
+\setvar date 24.03.2021
+\setvar title A Presentation Tool
+\setvar subtitle A Presentation made with that Presentation Tool
+\setvar marker #FF8811
+
+\setvar font Linux Biolinum
+\setvar line-height 1.5
+
+\slide[defineclass: titlepage] titlepage
+\image[class:fullscreen] default.svg
+\geometry
+\text[defineclass:title; font-size:60] %{title}
+\text[color:#555; defineclass: subtitle] %{subtitle}
+\text[font-size:30; color:#ff999999; defineclass: author] %{author}
+\plaintext[color: #555; font: Linux Biolinum; defineclass: date] %{date}
+
+\slide[defineclass: default] default
+\image[class:fullscreen] default.svg
+\text[defineclass:title; font-size: 45; color: white]
+\text[defineclass:body] 
+\text[defineclass: pagenumber; font-size:20; text-align: right; color: white]
+\text[class: pagenumber] %{pagenumber} / %{totalpages}
+\image[defineclass: image]

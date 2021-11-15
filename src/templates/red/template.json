@@ -1,0 +1,322 @@
+[
+    {
+        "id": "body",
+        "rect": {
+            "angle": 0,
+            "height": 620,
+            "width": 1500,
+            "xPosition": 51,
+            "yPosition": 190
+        }
+    },
+    {
+        "id": "body2",
+        "rect": {
+            "angle": 0,
+            "height": 429,
+            "width": 1500,
+            "xPosition": 51,
+            "yPosition": 375
+        }
+    },
+    {
+        "id": "intern-default-image-fullscreen-0",
+        "rect": {
+            "angle": 0,
+            "height": 900,
+            "width": 1600,
+            "xPosition": 0,
+            "yPosition": 0
+        }
+    },
+    {
+        "id": "intern-default-image-image-0",
+        "rect": {
+            "angle": 0,
+            "height": 299,
+            "width": 686,
+            "xPosition": 458,
+            "yPosition": 501
+        }
+    },
+    {
+        "id": "intern-default-text--0",
+        "rect": {
+            "angle": 0,
+            "height": 53,
+            "width": 130,
+            "xPosition": 1430,
+            "yPosition": 825
+        }
+    },
+    {
+        "id": "intern-default-text-default-0",
+        "rect": {
+            "angle": 0,
+            "height": 79,
+            "width": 1403,
+            "xPosition": 37,
+            "yPosition": 34
+        }
+    },
+    {
+        "id": "intern-default-text-default-1",
+        "rect": {
+            "angle": 0,
+            "height": 649,
+            "width": 1528,
+            "xPosition": 37,
+            "yPosition": 169
+        }
+    },
+    {
+        "id": "intern-default-text-default-2",
+        "rect": {
+            "angle": 0,
+            "height": 81,
+            "width": 135,
+            "xPosition": 1422,
+            "yPosition": 34
+        }
+    },
+    {
+        "id": "intern-default-text-default-3",
+        "rect": {
+            "angle": 0,
+            "height": 363,
+            "width": 1401,
+            "xPosition": 100,
+            "yPosition": 495
+        }
+    },
+    {
+        "id": "intern-default-text-fullscreen-0",
+        "rect": {
+            "angle": 0,
+            "height": 900,
+            "width": 1600,
+            "xPosition": 0,
+            "yPosition": 0
+        }
+    },
+    {
+        "id": "intern-default-text-pagenumber-1",
+        "rect": {
+            "angle": 0,
+            "height": 81,
+            "width": 135,
+            "xPosition": 1422,
+            "yPosition": 46
+        }
+    },
+    {
+        "id": "intern-default2-image-fullscreen-0",
+        "rect": {
+            "angle": 0,
+            "height": 900,
+            "width": 1600,
+            "xPosition": 0,
+            "yPosition": 0
+        }
+    },
+    {
+        "id": "intern-default2-image-image-0",
+        "rect": {
+            "angle": 0,
+            "height": 356,
+            "width": 451,
+            "xPosition": 1068,
+            "yPosition": 274
+        }
+    },
+    {
+        "id": "intern-default2-text--0",
+        "rect": {
+            "angle": 0,
+            "height": 53,
+            "width": 130,
+            "xPosition": 1430,
+            "yPosition": 825
+        }
+    },
+    {
+        "id": "intern-default2-text-default-0",
+        "rect": {
+            "angle": 0,
+            "height": 100,
+            "width": 1601,
+            "xPosition": 0,
+            "yPosition": 201
+        }
+    },
+    {
+        "id": "intern-default2-text-default-1",
+        "rect": {
+            "angle": 0,
+            "height": 321,
+            "width": 1315,
+            "xPosition": 143,
+            "yPosition": 381
+        }
+    },
+    {
+        "id": "intern-default2-text-default-2",
+        "rect": {
+            "angle": 0,
+            "height": 335,
+            "width": 469,
+            "xPosition": 1088,
+            "yPosition": 47
+        }
+    },
+    {
+        "id": "intern-default2-text-default-3",
+        "rect": {
+            "angle": 0,
+            "height": 374,
+            "width": 429,
+            "xPosition": 1130,
+            "yPosition": 8
+        }
+    },
+    {
+        "id": "intern-titlepage-geometry-default-0",
+        "rect": {
+            "angle": 0,
+            "height": 4,
+            "width": 1198,
+            "xPosition": 83,
+            "yPosition": 420
+        }
+    },
+    {
+        "id": "intern-titlepage-image-fullscreen-0",
+        "rect": {
+            "angle": 0,
+            "height": 900,
+            "width": 1600,
+            "xPosition": 0,
+            "yPosition": 0
+        }
+    },
+    {
+        "id": "intern-titlepage-plaintext-body-0",
+        "rect": {
+            "angle": 0,
+            "height": 95,
+            "width": 1602,
+            "xPosition": 0,
+            "yPosition": 598
+        }
+    },
+    {
+        "id": "intern-titlepage-plaintext-default-0",
+        "rect": {
+            "angle": 0,
+            "height": 81,
+            "width": 1331,
+            "xPosition": 83,
+            "yPosition": 581
+        }
+    },
+    {
+        "id": "intern-titlepage-text--0",
+        "rect": {
+            "angle": 0,
+            "height": 100,
+            "width": 1601,
+            "xPosition": 1,
+            "yPosition": 499
+        }
+    },
+    {
+        "id": "intern-titlepage-text--1",
+        "rect": {
+            "angle": 0,
+            "height": 100,
+            "width": 300,
+            "xPosition": 651,
+            "yPosition": 598
+        }
+    },
+    {
+        "id": "intern-titlepage-text-default-0",
+        "rect": {
+            "angle": 0,
+            "height": 110,
+            "width": 1517,
+            "xPosition": 83,
+            "yPosition": 284
+        }
+    },
+    {
+        "id": "intern-titlepage-text-default-1",
+        "rect": {
+            "angle": 0,
+            "height": 69,
+            "width": 1329,
+            "xPosition": 83,
+            "yPosition": 439
+        }
+    },
+    {
+        "id": "intern-titlepage-text-default-2",
+        "rect": {
+            "angle": 0,
+            "height": 64,
+            "width": 1339,
+            "xPosition": 83,
+            "yPosition": 506
+        }
+    },
+    {
+        "id": "intern-titlepage-text-default-3",
+        "rect": {
+            "angle": 0,
+            "height": 100,
+            "width": 751,
+            "xPosition": 425,
+            "yPosition": 568
+        }
+    },
+    {
+        "id": "presentationtitle",
+        "rect": {
+            "angle": 0,
+            "height": 100,
+            "width": 1600,
+            "xPosition": 0,
+            "yPosition": 264
+        }
+    },
+    {
+        "id": "subtitle",
+        "rect": {
+            "angle": 0,
+            "height": 100,
+            "width": 1601,
+            "xPosition": -1,
+            "yPosition": 400
+        }
+    },
+    {
+        "id": "title",
+        "rect": {
+            "angle": 0,
+            "height": 100,
+            "width": 1601,
+            "xPosition": 0,
+            "yPosition": 79
+        }
+    },
+    {
+        "id": "title2",
+        "rect": {
+            "angle": 0,
+            "height": 100,
+            "width": 1424,
+            "xPosition": 89,
+            "yPosition": 200
+        }
+    }
+]

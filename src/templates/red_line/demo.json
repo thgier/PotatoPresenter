@@ -1,0 +1,52 @@
+[
+    {
+        "id": "intern-First Slide-title-title-0",
+        "rect": {
+            "angle": 0,
+            "height": 79,
+            "width": 1403,
+            "xPosition": 37,
+            "yPosition": 17
+        }
+    },
+    {
+        "id": "intern-Titlepage-text-author-0",
+        "rect": {
+            "angle": 0,
+            "height": 64,
+            "width": 1339,
+            "xPosition": 52,
+            "yPosition": 474
+        }
+    },
+    {
+        "id": "intern-Titlepage-text-date-0",
+        "rect": {
+            "angle": 0,
+            "height": 81,
+            "width": 1331,
+            "xPosition": 52,
+            "yPosition": 552
+        }
+    },
+    {
+        "id": "intern-Titlepage-text-subtitle-0",
+        "rect": {
+            "angle": 0,
+            "height": 69,
+            "width": 1329,
+            "xPosition": 52,
+            "yPosition": 401
+        }
+    },
+    {
+        "id": "intern-Titlepage-title-title-0",
+        "rect": {
+            "angle": 0,
+            "height": 110,
+            "width": 1417,
+            "xPosition": 52,
+            "yPosition": 221
+        }
+    }
+]

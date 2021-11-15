@@ -18,4 +18,59 @@
         <file>potato_logo.svg</file>
         <file>potato_logo.png</file>
     </qresource>
+    <qresource prefix="/templates">
+        <file>templates/astro/default.svg</file>
+        <file>templates/astro/demo.json</file>
+        <file>templates/astro/demo.txt</file>
+        <file>templates/astro/template.json</file>
+        <file>templates/astro/template.txt</file>
+        <file>templates/astro/titlepage.svg</file>
+        <file>templates/astro/images/milkyway.png</file>
+        <file>templates/astro/images/potato_logo.png</file>
+        <file>templates/green_lines/default.svg</file>
+        <file>templates/green_lines/default2.svg</file>
+        <file>templates/green_lines/demo.json</file>
+        <file>templates/green_lines/demo.txt</file>
+        <file>templates/green_lines/template_titlepage.svg</file>
+        <file>templates/green_lines/template.json</file>
+        <file>templates/green_lines/template.txt</file>
+        <file>templates/green_lines/titlepage.svg</file>
+        <file>templates/green_lines/images/potato_logo.png</file>
+        <file>templates/logo/demo.json</file>
+        <file>templates/logo/demo.txt</file>
+        <file>templates/logo/logo.json</file>
+        <file>templates/logo/logo.txt</file>
+        <file>templates/logo/template.json</file>
+        <file>templates/logo/template.txt</file>
+        <file>templates/logo/images/potatoes.jpg</file>
+        <file>templates/logo/images/your_logo.png</file>
+        <file>templates/red/default.svg</file>
+        <file>templates/red/demo.json</file>
+        <file>templates/red/demo.txt</file>
+        <file>templates/red/potato_logo.png</file>
+        <file>templates/red/template.json</file>
+        <file>templates/red/template.txt</file>
+        <file>templates/red/titlepage.svg</file>
+        <file>templates/red_line/default.svg</file>
+        <file>templates/red_line/default2.svg</file>
+        <file>templates/red_line/demo.json</file>
+        <file>templates/red_line/demo.txt</file>
+        <file>templates/red_line/potato_logo.png</file>
+        <file>templates/red_line/template.json</file>
+        <file>templates/red_line/template.txt</file>
+        <file>templates/red_line/titlepage.svg</file>
+        <file>templates/tutorial/demo.json</file>
+        <file>templates/tutorial/demo.txt</file>
+        <file>templates/tutorial/template.json</file>
+        <file>templates/tutorial/template.txt</file>
+        <file>templates/tutorial/images/arrow_left.png</file>
+        <file>templates/tutorial/images/arrow.png</file>
+        <file>templates/tutorial/images/background.svg</file>
+        <file>templates/tutorial/images/createSvg.png</file>
+        <file>templates/tutorial/images/new.png</file>
+        <file>templates/tutorial/images/potato_logo.png</file>
+        <file>templates/tutorial/images/potato_logo.svg</file>
+        <file>templates/tutorial/images/reset_button.png</file>
+        <file>templates/tutorial/images/rotate_scale_button.png</file>
+    </qresource>
 </RCC>

@@ -1,0 +1,512 @@
+[
+    {
+        "id": "intern-Basic Markdown support-body-body-0",
+        "rect": {
+            "angle": 0,
+            "height": 559,
+            "width": 1374,
+            "xPosition": 114,
+            "yPosition": 244
+        }
+    },
+    {
+        "id": "intern-Manipulate Elements 2-body-body-0",
+        "rect": {
+            "angle": 26.397336943922255,
+            "height": 334,
+            "width": 747,
+            "xPosition": 198,
+            "yPosition": 362
+        }
+    },
+    {
+        "id": "intern-Manipulate Elements 2-image-image-0",
+        "rect": {
+            "angle": 344.576572374745,
+            "height": 256,
+            "width": 457,
+            "xPosition": 1065,
+            "yPosition": 480
+        }
+    },
+    {
+        "id": "intern-Manipulate Elements-body-body-0",
+        "rect": {
+            "angle": 0,
+            "height": 343,
+            "width": 542,
+            "xPosition": 55,
+            "yPosition": 246
+        }
+    },
+    {
+        "id": "intern-Manipulate Elements-body-body-1",
+        "rect": {
+            "angle": 16.403231650255567,
+            "height": 368,
+            "width": 583,
+            "xPosition": 857,
+            "yPosition": 408
+        }
+    },
+    {
+        "id": "intern-Manipulate Elements-image-image-0",
+        "rect": {
+            "angle": 16.1656149741311,
+            "height": 106,
+            "width": 264,
+            "xPosition": 1070,
+            "yPosition": 671
+        }
+    },
+    {
+        "id": "intern-Manipulate Elements-image-image-1",
+        "rect": {
+            "angle": 50.2406773470683,
+            "height": 276,
+            "width": 733,
+            "xPosition": 789,
+            "yPosition": 142
+        }
+    },
+    {
+        "id": "intern-Shapes-body-body-0",
+        "rect": {
+            "angle": 0,
+            "height": 200,
+            "width": 776,
+            "xPosition": 784,
+            "yPosition": 19
+        }
+    },
+    {
+        "id": "intern-Shapes-body-body-1",
+        "rect": {
+            "angle": 0,
+            "height": 86,
+            "width": 904,
+            "xPosition": 667,
+            "yPosition": 793
+        }
+    },
+    {
+        "id": "intern-Shapes-geometry-default-0",
+        "rect": {
+            "angle": 0,
+            "height": 100,
+            "width": 300,
+            "xPosition": 125,
+            "yPosition": 278
+        }
+    },
+    {
+        "id": "intern-Shapes-geometry-default-1",
+        "rect": {
+            "angle": 0,
+            "height": 156,
+            "width": 300,
+            "xPosition": 193,
+            "yPosition": 699
+        }
+    },
+    {
+        "id": "intern-Shapes-geometry-default-2",
+        "rect": {
+            "angle": 0,
+            "height": 100,
+            "width": 300,
+            "xPosition": 421,
+            "yPosition": 439
+        }
+    },
+    {
+        "id": "intern-Shapes-geometry-default-3",
+        "rect": {
+            "angle": 0,
+            "height": 131,
+            "width": 173,
+            "xPosition": 100,
+            "yPosition": 439
+        }
+    },
+    {
+        "id": "intern-Shapes-geometry-default-4",
+        "rect": {
+            "angle": 0,
+            "height": 55,
+            "width": 505,
+            "xPosition": 125,
+            "yPosition": 605
+        }
+    },
+    {
+        "id": "intern-Shapes-image-image-0",
+        "rect": {
+            "angle": 0,
+            "height": 195,
+            "width": 633,
+            "xPosition": 747,
+            "yPosition": 233
+        }
+    },
+    {
+        "id": "intern-Shapes-image-image-1",
+        "rect": {
+            "angle": 0,
+            "height": 291,
+            "width": 621,
+            "xPosition": 839,
+            "yPosition": 467
+        }
+    },
+    {
+        "id": "intern-Still not fancy enough?-latex-body-0",
+        "rect": {
+            "angle": 0,
+            "height": 118,
+            "width": 686,
+            "xPosition": 224,
+            "yPosition": 262
+        }
+    },
+    {
+        "id": "intern-Still not fancy enough?-plaintext-body-0",
+        "rect": {
+            "angle": 0,
+            "height": 117,
+            "width": 912,
+            "xPosition": 635,
+            "yPosition": 665
+        }
+    },
+    {
+        "id": "intern-Still not fancy enough?-title-title-1",
+        "rect": {
+            "angle": 0,
+            "height": 111,
+            "width": 1111,
+            "xPosition": 224,
+            "yPosition": 503
+        }
+    },
+    {
+        "id": "intern-The Basic Concept 2-body-body-0",
+        "rect": {
+            "angle": 0,
+            "height": 107,
+            "width": 814,
+            "xPosition": 74,
+            "yPosition": 244
+        }
+    },
+    {
+        "id": "intern-The Basic Concept 2-body-body-1",
+        "rect": {
+            "angle": 0,
+            "height": 113,
+            "width": 667,
+            "xPosition": 636,
+            "yPosition": 379
+        }
+    },
+    {
+        "id": "intern-The Basic Concept 2-body-body-2",
+        "rect": {
+            "angle": 0,
+            "height": 109,
+            "width": 997,
+            "xPosition": 147,
+            "yPosition": 535
+        }
+    },
+    {
+        "id": "intern-The Basic Concept 2-body-body-3",
+        "rect": {
+            "angle": 0,
+            "height": 109,
+            "width": 1173,
+            "xPosition": 401,
+            "yPosition": 709
+        }
+    },
+    {
+        "id": "intern-The Basic Concept 2-image-image-2",
+        "rect": {
+            "angle": 0,
+            "height": 650,
+            "width": 1500,
+            "xPosition": 76,
+            "yPosition": 269
+        }
+    },
+    {
+        "id": "intern-The Basic Concept-body-body-0",
+        "rect": {
+            "angle": 0,
+            "height": 198,
+            "width": 670,
+            "xPosition": 44,
+            "yPosition": 296
+        }
+    },
+    {
+        "id": "intern-The Basic Concept-body-body-1",
+        "rect": {
+            "angle": 0,
+            "height": 198,
+            "width": 631,
+            "xPosition": 911,
+            "yPosition": 615
+        }
+    },
+    {
+        "id": "intern-The Basic Concept-geometry-fullscreen-0",
+        "rect": {
+            "angle": 0,
+            "height": 900,
+            "width": 1600,
+            "xPosition": 0,
+            "yPosition": 0
+        }
+    },
+    {
+        "id": "intern-The Basic Concept-image-image-0",
+        "rect": {
+            "angle": 0,
+            "height": 308,
+            "width": 853,
+            "xPosition": 533,
+            "yPosition": 272
+        }
+    },
+    {
+        "id": "intern-The Basic Concept-image-image-1",
+        "rect": {
+            "angle": 0,
+            "height": 377,
+            "width": 904,
+            "xPosition": 759,
+            "yPosition": 344
+        }
+    },
+    {
+        "id": "intern-The Basic Concept-text-default-0",
+        "rect": {
+            "angle": 0,
+            "height": 331,
+            "width": 1291,
+            "xPosition": 100,
+            "yPosition": 224
+        }
+    },
+    {
+        "id": "intern-The Idea-geometry-fullscreen-0",
+        "rect": {
+            "angle": 0,
+            "height": 900,
+            "width": 1600,
+            "xPosition": 0,
+            "yPosition": 0
+        }
+    },
+    {
+        "id": "intern-The Idea-image-image-0",
+        "rect": {
+            "angle": 0,
+            "height": 279,
+            "width": 630,
+            "xPosition": 120,
+            "yPosition": 239
+        }
+    },
+    {
+        "id": "intern-The Idea-image-image-1",
+        "rect": {
+            "angle": 0,
+            "height": 606,
+            "width": 549,
+            "xPosition": 1001,
+            "yPosition": 150
+        }
+    },
+    {
+        "id": "intern-The Idea-text-default-0",
+        "rect": {
+            "angle": 0,
+            "height": 234,
+            "width": 1086,
+            "xPosition": 100,
+            "yPosition": 605
+        }
+    },
+    {
+        "id": "intern-The Idea-text-default-1",
+        "rect": {
+            "angle": 0,
+            "height": 253,
+            "width": 697,
+            "xPosition": 57,
+            "yPosition": 270
+        }
+    },
+    {
+        "id": "intern-The Idea-text-default-2",
+        "rect": {
+            "angle": 0,
+            "height": 219,
+            "width": 537,
+            "xPosition": 923,
+            "yPosition": 362
+        }
+    },
+    {
+        "id": "intern-The Idea-text-default-3",
+        "rect": {
+            "angle": 0,
+            "height": 248,
+            "width": 591,
+            "xPosition": 959,
+            "yPosition": 552
+        }
+    },
+    {
+        "id": "intern-The Idea-text-default-4",
+        "rect": {
+            "angle": 0,
+            "height": 248,
+            "width": 471,
+            "xPosition": 1079,
+            "yPosition": 552
+        }
+    },
+    {
+        "id": "intern-Variables-body-body-0",
+        "rect": {
+            "angle": 0,
+            "height": 580,
+            "width": 1446,
+            "xPosition": 78,
+            "yPosition": 246
+        }
+    },
+    {
+        "id": "intern-Want to create your own presentation?-body-body-0",
+        "rect": {
+            "angle": 0,
+            "height": 109,
+            "width": 857,
+            "xPosition": 114,
+            "yPosition": 392
+        }
+    },
+    {
+        "id": "intern-Want to create your own presentation?-body-body-1",
+        "rect": {
+            "angle": 0,
+            "height": 131,
+            "width": 1374,
+            "xPosition": 114,
+            "yPosition": 599
+        }
+    },
+    {
+        "id": "intern-Want to create your own presentation?-image-image-0",
+        "rect": {
+            "angle": 0,
+            "height": 165,
+            "width": 209,
+            "xPosition": 1094,
+            "yPosition": 374
+        }
+    },
+    {
+        "id": "intern-Want to create your own presentation?-plaintext-body-0",
+        "rect": {
+            "angle": 0,
+            "height": 111,
+            "width": 673,
+            "xPosition": 114,
+            "yPosition": 647
+        }
+    },
+    {
+        "id": "intern-Want to create your own presentation?-title-title-0",
+        "rect": {
+            "angle": 0,
+            "height": 253,
+            "width": 1398,
+            "xPosition": 102,
+            "yPosition": 78
+        }
+    },
+    {
+        "id": "intern-Want to show your code?-code-body-0",
+        "rect": {
+            "angle": 0,
+            "height": 632,
+            "width": 1374,
+            "xPosition": 114,
+            "yPosition": 221
+        }
+    },
+    {
+        "id": "intern-Want to show your code?-code-code-0",
+        "rect": {
+            "angle": 0,
+            "height": 621,
+            "width": 1374,
+            "xPosition": 114,
+            "yPosition": 244
+        }
+    },
+    {
+        "id": "intern-Your Elements do not look fancy enough?-body-body-0",
+        "rect": {
+            "angle": 0,
+            "height": 107,
+            "width": 371,
+            "xPosition": 114,
+            "yPosition": 244
+        }
+    },
+    {
+        "id": "intern-Your Elements do not look fancy enough?-body-body-1",
+        "rect": {
+            "angle": 0,
+            "height": 342,
+            "width": 728,
+            "xPosition": 794,
+            "yPosition": 267
+        }
+    },
+    {
+        "id": "intern-Your Elements do not look fancy enough?-body-body-2",
+        "rect": {
+            "angle": 0,
+            "height": 177,
+            "width": 353,
+            "xPosition": 98,
+            "yPosition": 492
+        }
+    },
+    {
+        "id": "intern-Your Elements do not look fancy enough?-body-body-3",
+        "rect": {
+            "angle": 0,
+            "height": 102,
+            "width": 270,
+            "xPosition": 547,
+            "yPosition": 710
+        }
+    },
+    {
+        "id": "intern-Your Elements do not look fancy enough?-title-title-0",
+        "rect": {
+            "angle": 0,
+            "height": 124,
+            "width": 1601,
+            "xPosition": 50,
+            "yPosition": 72
+        }
+    }
+]

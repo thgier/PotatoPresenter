@@ -1,0 +1,29 @@
+\setvar author Author
+\setvar date 24.03.2021
+\setvar title A Presentation Tool
+\setvar subtitle A Presentation made with that Presentation Tool
+
+\setvar logo your_logo.png
+\setvar line-height 1.5
+\setvar font-size 20
+
+\slide[defineclass: titlepage] titlepage
+\text[defineclass:title; font-size:50; font-weight: bold] %{title}
+\text[color:#555; font-size:25; defineclass: subtitle] %{subtitle}
+\text[font-size:25; color:#555; defineclass: author] %{author}
+\plaintext[color: #555; defineclass: date; font-size:25] %{date}
+\image[defineclass: logo] %{logo}
+\image[class: logo]
+
+\slide[defineclass: default] default
+\text[defineclass:title; font-size: 45; font-weight: bold]
+\text[defineclass:body; left: 50; width: 1500] 
+\text[defineclass: pagenumber; font-size:20; text-align: right]
+\text[class: pagenumber] %{pagenumber} / %{totalpages}
+\image[defineclass: image]
+\code[defineclass: code; class: body; font: Dejavu Sans Mono]
+\text[class: body; defineclass: right_column; width: 700; left: 850]
+\text[class: body; defineclass: left_column; width: 700]
+\image[class: logo]
+
+\slide[defineclass: empty] empty

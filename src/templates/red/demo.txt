@@ -1,0 +1,18 @@
+\usetemplate template
+
+\setvar title Impossible Stuff
+\setvar author Chuck Norris
+\setvar subtitle Chuck Norris
+
+\slide[class: titlepage] Titlepage
+\title
+\text[class: author]
+\text[class: date]
+\text[class: subtitle]
+
+\slide First Slide
+\title
+\body * Time waits for no man. Unless that man is Chuck Norris.
+* If you spell Chuck Norris in Scrabble, you win. Forever.
+\image potato_logo.png
+\code[defineclass: code; class: body; font: Hack]

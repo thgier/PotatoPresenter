@@ -1,0 +1,49 @@
+\usetemplate template
+
+\setvar title My Company
+\setvar author The Potato Company
+\setvar subtitle How to get many potatos
+\setvar date 01.01.2000
+\setvar logo images/your_logo.png
+
+\slide[class: titlepage] Titlepage
+\title
+\text[class: author]
+\text[class: date]
+\text[class: subtitle]
+
+\slide How to plant
+\title
+\body 
+1. You take a potato and put it into the earth.
+2. A plant will grow.
+3. The plant will develop more potatoes.
+4. You harvest your potatoes.
+\image images/potatoes.jpg
+
+\slide How too cook
+\title
+\text[class: left_column] Worldwide 368 million tonnes potato are produced!
+
+So what to do with them?
+\pause
+\text[class: right_column] 
+* Potatoes
+* Chips
+* Gnocchi
+* Croquette
+* and many more!
+
+\slide Code
+\title
+\code[language: Python]
+def is_even(x):
+    print("Hello World!")
+    if x // 2 == 0:
+        return True
+    return False
+    
+\slide[class: empty] Last Slide
+\title[text-align: center] Thank you for your attention
+\image[class: logo]
+

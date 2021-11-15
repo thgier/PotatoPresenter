@@ -1,0 +1,35 @@
+\setvar author Author
+\setvar date 24.03.2021
+\setvar title A Presentation Tool
+\setvar subtitle A Presentation made with that Presentation Tool
+\setvar marker #FF8811
+\setvar background_image milkyway.png
+
+\setvar line-height 1.5
+
+\slide[defineclass: titlepage] titlepage
+\image[class:fullscreen] %{background_image}
+\geometry[defineclass: whitebackgound; color: white]
+\geometry[class: whitebackgound]
+\text[defineclass:title; font-size:50] %{title}
+\text[color:#555; defineclass: subtitle] %{subtitle}
+\text[font-size:30; color:#ff999999; defineclass: author] %{author}
+\plaintext[color: #555; defineclass: date] %{date}
+
+\slide[defineclass: default] default
+\image[class:fullscreen] %{background_image}
+\geometry[class: whitebackgound]
+\text[defineclass:title; font-size: 45; color: white]
+\text[defineclass:body] 
+\text[defineclass: pagenumber; font-size:20; text-align: right; color: white]
+\text[class: pagenumber] %{pagenumber} / %{totalpages}
+\image[defineclass: image]
+\code[defineclass: code; class: body; font: Dejavu Sans Mono]
+\text[class: right_column; ]
+
+
+\slide[defineclass: end] The End
+\image[class:fullscreen] %{background_image}
+\title[defineclass: title; font-size: 60]
+
+\slide[defineclass: empty] empty
