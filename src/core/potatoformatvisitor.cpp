@@ -163,7 +163,7 @@ BoxStyle PotatoFormatVisitor::applyProperty(BoxStyle &boxstyle, QString property
             throw ParserError{"Invalid value for 'font-weight' (possible values: bold, normal)", line};
         }
     }
-    else if(property == "font"){
+    else if(property == "font-family"){
         boxstyle.mFont = QString(value);
     }
     else if(property == "id"){
