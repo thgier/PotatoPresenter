@@ -3,7 +3,7 @@
 \setvar title A Presentation Tool
 \setvar subtitle A Presentation made with that Presentation Tool
 \setvar marker #FF8811
-\setvar background_image milkyway.png
+\setvar background_image images/milkyway.png
 
 \setvar line-height 1.5
 
@@ -20,12 +20,13 @@
 \image[class:fullscreen] %{background_image}
 \geometry[class: whitebackgound]
 \text[defineclass:title; font-size: 45; color: white]
-\text[defineclass:body] 
+\text[defineclass:body; left: 50; width: 1500] 
 \text[defineclass: pagenumber; font-size:20; text-align: right; color: white]
 \text[class: pagenumber] %{pagenumber} / %{totalpages}
 \image[defineclass: image]
-\code[defineclass: code; class: body; font: Dejavu Sans Mono]
-\text[class: right_column; ]
+\code[defineclass: code; class: body; font-family: Dejavu Sans Mono]
+\text[class: body; defineclass: left_column; width: 700;]
+\text[class: body; defineclass: right_column; width: 700; left: 850]
 
 
 \slide[defineclass: end] The End

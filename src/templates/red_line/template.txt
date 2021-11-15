@@ -4,7 +4,7 @@
 \setvar subtitle A Presentation made with that Presentation Tool
 \setvar marker #FF8811
 
-\setvar font Linux Biolinum
+\setvar font-family Linux Biolinum
 \setvar color #444
 \setvar line-height 1.5
 
@@ -13,12 +13,15 @@
 \text[defineclass:title; font-size:60] %{title}
 \text[color:#555; defineclass: subtitle] %{subtitle}
 \text[font-size:30; color:#ff999999; defineclass: author] %{author}
-\plaintext[color: #555; font: Linux Biolinum; defineclass: date] %{date}
+\plaintext[color: #555; defineclass: date] %{date}
 
 \slide[defineclass: default] default
 \image[class:fullscreen] default.svg
 \text[defineclass:title; font-size: 45]
-\text[defineclass:body] 
+\text[defineclass:body; left: 50; width: 1500] 
 \text[color:#ff999999; font-size:20; background: white; text-align: right; defineclass: pagenumber] 
 \text[class: pagenumber] %{pagenumber} / %{totalpages}
 \image[defineclass: image]
+\code[defineclass: code; class: body; font-family: Hack]
+\text[class: body; defineclass: left_column; width: 700]
+\text[class: body; defineclass: right_column; width: 700; left: 850]

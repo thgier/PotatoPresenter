@@ -1,4 +1,4 @@
-\setvar font Liberation Sans
+\setvar font-family Liberation Sans
 \setvar font-size 30
 
 \slide[defineclass: titlepage] titlepage
@@ -12,4 +12,4 @@
 \image[class: fullscreen] images/background.svg
 \text[defineclass: title; font-size: 50; color: #333]
 \body[defineclass: body; background: white; padding: 20; border-radius: 10; border: 1px solid; marker: #5994bb]
-\text[class: body; defineclass: code; font: DejaVu Sans Mono]
+\text[class: body; defineclass: code; font-family: DejaVu Sans Mono]

@@ -34,19 +34,19 @@
         "rect": {
             "angle": 0,
             "height": 79,
-            "width": 1403,
-            "xPosition": 37,
-            "yPosition": 16
+            "width": 1390,
+            "xPosition": 50,
+            "yPosition": 18
         }
     },
     {
         "id": "intern-default-text-default-1",
         "rect": {
             "angle": 0,
-            "height": 649,
+            "height": 644,
             "width": 1528,
             "xPosition": 37,
-            "yPosition": 138
+            "yPosition": 155
         }
     },
     {

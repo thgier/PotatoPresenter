@@ -52,7 +52,7 @@ $$F = ma$$
 
 \slide Still not fancy enough?
 \title
-\latex[font: DejaVu Sans] \{Just use \textbf{the} \LaTeX{} \color{green}B\color{red}ox!
+\latex[font-family: DejaVu Sans] \{Just use \textbf{the} \LaTeX{} \color{green}B\color{red}ox!
 \}
 \title[font-size: 30] Do you have problems with special signs?
 \plaintext[class: body] * __Use the__ \plaintext command

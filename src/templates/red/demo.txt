@@ -15,4 +15,3 @@
 \body * Time waits for no man. Unless that man is Chuck Norris.
 * If you spell Chuck Norris in Scrabble, you win. Forever.
 \image potato_logo.png
-\code[defineclass: code; class: body; font: Hack]

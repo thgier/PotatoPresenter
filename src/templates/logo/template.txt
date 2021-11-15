@@ -21,7 +21,7 @@
 \text[defineclass: pagenumber; font-size:20; text-align: right]
 \text[class: pagenumber] %{pagenumber} / %{totalpages}
 \image[defineclass: image]
-\code[defineclass: code; class: body; font: Dejavu Sans Mono]
+\code[defineclass: code; class: body; font-family: Dejavu Sans Mono]
 \text[class: body; defineclass: right_column; width: 700; left: 850]
 \text[class: body; defineclass: left_column; width: 700]
 \image[class: logo]
