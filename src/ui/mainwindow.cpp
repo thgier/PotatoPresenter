@@ -200,12 +200,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->templateList->setItemDelegate(delegateTemplate);
     connect(ui->templateList, &QListView::clicked,
             this, [this, dirList]{
-                mTemplatePath = dirList[ui->templateList->currentIndex().row()];
+                mTemplatePath = dirList[ui->templateList->currentIndex().row() + 1];
                 openCreatePresentationDialog();
             });
     connect(ui->emptyPresentationButton, &QPushButton::clicked,
             this, [this]{
-                mTemplatePath = "/home/theresa/Documents/praes/templates/empty";
+                mTemplatePath = ":/templates/templates/empty";
                 openCreatePresentationDialog();
             });
 
