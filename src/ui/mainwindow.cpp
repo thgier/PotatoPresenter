@@ -347,7 +347,7 @@ void MainWindow::openFile() {
         return;
     }
     auto const newFile = QFileDialog::getOpenFileName(this,
-        tr("Open File"), filename());
+        tr("Open File"), guessSavingDirectory(), filename());
     if(newFile.isEmpty()){
         return;
     }
