@@ -1,0 +1,32 @@
+[
+    {
+        "id": "intern-First Slide-image-image-0",
+        "rect": {
+            "angle": 5.5345357224579885,
+            "height": 299,
+            "width": 686,
+            "xPosition": 458,
+            "yPosition": 501
+        }
+    },
+    {
+        "id": "intern-fd-geometry-default-0",
+        "rect": {
+            "angle": 0,
+            "height": 562,
+            "width": 213,
+            "xPosition": 738,
+            "yPosition": 160
+        }
+    },
+    {
+        "id": "intern-fd-text-default-0",
+        "rect": {
+            "angle": 0,
+            "height": 453,
+            "width": 300,
+            "xPosition": 776,
+            "yPosition": 57
+        }
+    }
+]

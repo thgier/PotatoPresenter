@@ -191,7 +191,8 @@ MainWindow::MainWindow(QWidget *parent)
             ":/templates/templates/logo",
             ":/templates/templates/red",
             ":/templates/templates/red_line",
-            ":/templates/templates/astro"};
+            ":/templates/templates/astro",
+            ":/templates/templates/astro2"};
     auto const presentationList = generateTemplatePresentationList(dirList);
     mTemplateModel = new TemplateListModel(this);
     mTemplateModel->setPresentationList(presentationList);

@@ -1,0 +1,33 @@
+\usetemplate template
+
+\setvar title Impossible Stuff
+\setvar author Chuck Norris
+\setvar subtitle Chuck Norris
+\setvar background_image images/milkyway.png
+
+\slide[class: titlepage] Titlepage
+\title
+\text[class: author]
+\text[class: date]
+\text[class: subtitle]
+
+\setvar section Introduction
+\slide First Slide
+\title
+\body * Time waits for no man. Unless that man is Chuck Norris.
+* If you spell Chuck Norris in Scrabble, you win. Forever.
+\image images/potato_logo.png
+
+\setvar section Content
+\slide Code
+\title
+\code[language: Python]
+def is_even(x):
+    print("Hello World!")
+    if x // 2 == 0:
+        return True
+    return False
+    
+\slide[class: end] The End
+\title
+
