@@ -17,6 +17,7 @@
         <file>icons/snap-nodes-cusp.svg</file>
         <file>potato_logo.svg</file>
         <file>potato_logo.png</file>
+        <file>icons/rotate.png</file>
     </qresource>
     <qresource prefix="/templates">
         <file>templates/astro/default.svg</file>
@@ -74,5 +75,13 @@
         <file>templates/empty/demo.txt</file>
         <file>templates/empty/template.json</file>
         <file>templates/empty/template.txt</file>
+        <file>templates/astro2/default.svg</file>
+        <file>templates/astro2/demo.json</file>
+        <file>templates/astro2/demo.txt</file>
+        <file>templates/astro2/template.json</file>
+        <file>templates/astro2/template.txt</file>
+        <file>templates/astro2/titlepage.svg</file>
+        <file>templates/astro2/images/milkyway.png</file>
+        <file>templates/astro2/images/potato_logo.png</file>
     </qresource>
 </RCC>

@@ -448,16 +448,16 @@ void SlideWidget::cursorApperance(QPoint mousePosition) {
     case TransformationType::rotate:
         switch (posMouseBox) {
         case pointPosition::topLeftCorner:
-            cursor.setShape(Qt::CrossCursor);
+            cursor = QCursor({":/icons/rotate.png"});
             break;
         case pointPosition::bottomRightCorner:
-            cursor.setShape(Qt::CrossCursor);
+            cursor = QCursor({":/icons/rotate.png"});
             break;
         case pointPosition::topRightCorner:
-            cursor.setShape(Qt::CrossCursor);
+            cursor = QCursor({":/icons/rotate.png"});
             break;
         case pointPosition::bottomLeftCorner:
-            cursor.setShape(Qt::CrossCursor);
+            cursor = QCursor({":/icons/rotate.png"});
             break;
         case pointPosition::inBox:
             cursor.setShape(Qt::SizeAllCursor);
