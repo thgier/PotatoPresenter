@@ -13,8 +13,8 @@ website/*
 *.AppImage
 presentation_seminar/*
 presentation_seminar
-src/antlr/markdown/generated/*
-src/antlr/potato/generated/*
+# src/antlr/markdown/generated/*
+# src/antlr/potato/generated/*
 build/*
 *.kdev4
 website
