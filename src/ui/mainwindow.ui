@@ -959,7 +959,7 @@
   </action>
   <action name="actionReset_Angle">
    <property name="icon">
-    <iconset theme="chronometer-reset">
+    <iconset theme="view-refresh">
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">

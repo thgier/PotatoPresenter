@@ -18,6 +18,7 @@
         <file>potato_logo.svg</file>
         <file>potato_logo.png</file>
         <file>icons/rotate.png</file>
+        <file>icons/view-refresh.svg</file>
     </qresource>
     <qresource prefix="/templates">
         <file>templates/astro/default.svg</file>
