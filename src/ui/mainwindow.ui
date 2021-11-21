@@ -959,8 +959,8 @@
   </action>
   <action name="actionReset_Angle">
    <property name="icon">
-    <iconset theme="view-refresh">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset resource="../files.qrc">
+     <normaloff>:/icons/view-refresh.svg</normaloff>:/icons/view-refresh.svg</iconset>
    </property>
    <property name="text">
     <string>Reset Rotation</string>
