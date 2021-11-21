@@ -186,8 +186,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 //    setup Item model templates in create new from template dialog
-    auto const dirList = std::vector<QString>{":/templates/templates/tutorial",
-            ":/templates/templates/green_line",
+    auto const dirList = std::vector<QString>{
+            ":/templates/templates/tutorial",
+            ":/templates/templates/green_lines",
             ":/templates/templates/logo",
             ":/templates/templates/red",
             ":/templates/templates/red_line",
@@ -201,7 +202,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->templateList->setItemDelegate(delegateTemplate);
     connect(ui->templateList, &QListView::clicked,
             this, [this, dirList]{
-                mTemplatePath = dirList[ui->templateList->currentIndex().row() + 1];
+                mTemplatePath = dirList[ui->templateList->currentIndex().row()];
                 openCreatePresentationDialog();
             });
     connect(ui->emptyPresentationButton, &QPushButton::clicked,
@@ -704,7 +705,7 @@ void MainWindow::createProjectFromTemplate() {
 
 //    copy template and demo into project folder and rename it
     if(!copyDirectory(mTemplatePath, assembleProjectDirectory(projectname))) {
-        QMessageBox::information(this, tr("Copy of template failed."), tr("Copy of template faield. Source directory: %1. Destination Directory: %2").arg(mTemplatePath, assembleProjectDirectory(projectname)),
+        QMessageBox::information(this, tr("Copy of template failed."), tr("Copy of template failed. Source directory: %1. Destination Directory: %2").arg(mTemplatePath, assembleProjectDirectory(projectname)),
                                  QMessageBox::Ok);
         return;
     }
