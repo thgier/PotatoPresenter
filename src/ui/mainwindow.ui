@@ -893,7 +893,7 @@
   <action name="actionRedo">
    <property name="icon">
     <iconset resource="../files.qrc">
-     <normaloff>:/icons/edit-reset.svg</normaloff>:/icons/edit-reset.svg</iconset>
+     <normaloff>:/icons/edit-redo.svg</normaloff>:/icons/edit-redo.svg</iconset>
    </property>
    <property name="text">
     <string>Redo</string>
