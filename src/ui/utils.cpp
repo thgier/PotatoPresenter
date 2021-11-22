@@ -23,6 +23,7 @@ bool copyDirectory(QString sourceFolder, QString destFolder) {
         if(!success) {
             return false;
         }
+        QFile::setPermissions(destName, QFileDevice::WriteOwner | QFileDevice::ReadOwner | QFileDevice::ReadGroup);
     }
 
     files.clear();
