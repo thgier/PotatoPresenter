@@ -294,7 +294,7 @@ std::shared_ptr<Template> MainWindow::readTemplate(QString templateName) const {
     if(templateName.isEmpty()) {
         return {};
     }
-    auto file = QFile(templateName + ".txt");
+    auto file = QFile(templateName + ".potato");
     if(!file.open(QIODevice::ReadOnly)){
         mErrorOutput->setText(tr("Cannot load template %1.").arg(file.fileName()));
         return {};
@@ -459,8 +459,8 @@ QString MainWindow::jsonFileName() const {
 }
 
 QString MainWindow::jsonFileName(QString textPath) const {
-    if(textPath.endsWith(".txt")) {
-        return textPath.section('.', 0, -2) + ".json";
+    if(textPath.endsWith(".potato")) {
+        return textPath.section('.', 0, 0) + ".json";
     }
     return textPath + ".json";
 }
@@ -635,7 +635,7 @@ bool MainWindow::closeDocument() {
 }
 
 Presentation::Ptr MainWindow::generateTemplatePresentation(QString directory) const {
-    QFile file(directory + "/demo.txt");
+    QFile file(directory + "/demo.potato");
     if (!file.open(QIODevice::ReadOnly)) {
         return {};
     }
@@ -674,7 +674,7 @@ Presentation::List MainWindow::generateTemplatePresentationList(std::vector<QStr
 }
 
 void MainWindow::insertTextInEditor(QString path) {
-    QFile file(path + "/demo.txt");
+    QFile file(path + "/demo.potato");
     if (!file.open(QIODevice::ReadOnly)) {
         return;
     }
@@ -710,7 +710,7 @@ void MainWindow::createProjectFromTemplate() {
         return;
     }
     auto const projectName = ui->project_name_lineEdit->text();
-    auto inputFile = QFile(assembleProjectDirectory(projectname) + "/demo.txt");
+    auto inputFile = QFile(assembleProjectDirectory(projectname) + "/demo.potato");
     auto jsonFile = QFile(assembleProjectDirectory(projectname) + "/demo.json");
     qInfo() << inputFile.fileName() << inputFile.exists() << projectName;
     if(!(inputFile.rename(assembleProjectPathInputFile(projectname)) && jsonFile.rename(assembleProjectPathJsonFile(projectname)))) {
@@ -722,7 +722,7 @@ void MainWindow::createProjectFromTemplate() {
 }
 
 QString MainWindow::assembleProjectPathInputFile(QString projectname) const {
-    return assembleProjectDirectory(projectname) + "/" + projectname + ".txt";
+    return assembleProjectDirectory(projectname) + "/" + projectname + ".potato";
 }
 
 QString MainWindow::assembleProjectPathJsonFile(QString projectname) const {
