@@ -10,7 +10,7 @@ box
 
 paragraph
     : ws* text_in_bracket
-    | (' ' | ' '* '\n'+) text
+    | ws* text
     |
     ;
 
@@ -20,7 +20,7 @@ text
     ;
 
 multiline_text 
-    : '\n'*? (oneline_text ' '* '\n'+)+ oneline_text
+    : (oneline_text ' '* '\n'+)+ oneline_text
     ;
     
 oneline_text

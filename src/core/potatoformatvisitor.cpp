@@ -18,7 +18,7 @@ namespace  {
     }
 
     void removeSpacesAtBack(QString &text) {
-        while(text.back() ==' ') {
+        while(!text.isEmpty() && text.back() ==' ') {
             text.chop(1);
         }
     }
