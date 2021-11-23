@@ -1,6 +1,8 @@
 - highlighting
-- sections
+- section
+- seperators in menu
 
+- border of shapes
 - maybe better pause
 - path to font
 - color choser
@@ -9,4 +11,8 @@
 - template specific guides
 
 bugs:
-- does not ask to save if you close it with a syntax error?
+- space newline newline after command does not work
+- svg scale when rotated
+- no error when border is wrong given
+- two editors when error message while opening
+- properly closed
