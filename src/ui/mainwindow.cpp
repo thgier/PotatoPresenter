@@ -367,10 +367,10 @@ void MainWindow::openProject(QString path) {
     }
     ui->mainWidget->setCurrentIndex(0);
 
-    // recover if file was not probably closed and autosave still exists
+    // recover if file was not properly closed and autosave still exists
     if(QFile::exists(autosaveTextFile(path)) || QFile::exists(autosaveJsonFile(path))) {
         auto const ret = QMessageBox::information(this, tr("File was not probably closed."),
-                        tr("File was not probably closed. Do you want to recover?"),
+                        tr("File was not properly closed. Do you want to recover?"),
                         QMessageBox::Ok, QMessageBox::Cancel);
         switch(ret) {
         case QMessageBox::Cancel:
