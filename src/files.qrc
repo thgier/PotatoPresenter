@@ -21,6 +21,7 @@
         <file>icons/view-refresh.svg</file>
         <file>icons/document-open-recent.svg</file>
         <file>icons/go-previous.svg</file>
+        <file>icons/application-exit.svg</file>
     </qresource>
     <qresource prefix="/templates">
         <file>templates/astro/default.svg</file>

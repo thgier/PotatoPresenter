@@ -79,6 +79,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 //    setup Action
+    connect(ui->actionQuit, &QAction::triggered,
+            this, &MainWindow::close);
     connect(ui->actionNew, &QAction::triggered,
             this, [this](){
                 if(!closeDocument()) return;

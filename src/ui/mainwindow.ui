@@ -724,12 +724,16 @@
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
     <addaction name="menuOpen_Recent"/>
+    <addaction name="separator"/>
     <addaction name="actionSave"/>
     <addaction name="actionSave_as"/>
+    <addaction name="separator"/>
     <addaction name="actionCreatePDF"/>
     <addaction name="actionExport_PDF_as"/>
     <addaction name="actionExport_PDF_Handout"/>
     <addaction name="actionExport_PDF_Handout_as"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -955,6 +959,21 @@
    </property>
    <property name="toolTip">
     <string>Reset rotation of an element</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="icon">
+    <iconset resource="../files.qrc">
+     <normaloff>:/icons/application-exit.svg</normaloff>:/icons/application-exit.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Quit</string>
+   </property>
+   <property name="toolTip">
+    <string>Quit application</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
    </property>
   </action>
  </widget>
