@@ -361,11 +361,29 @@ void MainWindow::openFile() {
 void MainWindow::openProject(QString path) {
     // check if file exists
     if(!QFile(path).exists()) {
-        QMessageBox::information(this, tr("File does not exist"), tr("File does not exist"),
+        QMessageBox::information(this, tr("File does not exist"), tr("File does not exist."),
                                          QMessageBox::Ok);
         return;
     }
-    ui->mainWidget->setCurrentIndex(0);
+    if(QFileInfo(path).suffix() != "potato") {
+        QMessageBox::information(this, tr("Cannot open file."), tr("Cannot open file. Please choose a .potato file."),
+                                 QMessageBox::Ok);
+        return;
+    }
+    if(!QFile::exists(jsonFileName(path))){
+        int ret = QMessageBox::information(this, tr("Failed to open File"), tr("Failed to find %1. Genereate a new empty Configuration File").arg(jsonFileName()),
+                                 QMessageBox::Ok | QMessageBox::Cancel);
+        switch (ret) {
+        case QMessageBox::Cancel: {
+            return;
+        }
+        case QMessageBox::Ok: {
+            auto file = QFile(jsonFileName(path));
+            file.open(QIODevice::WriteOnly);
+            break;
+        }
+        }
+    }
 
     // recover if file was not properly closed and autosave still exists
     if(QFile::exists(autosaveTextFile(path)) || QFile::exists(autosaveJsonFile(path))) {
@@ -382,9 +400,12 @@ void MainWindow::openProject(QString path) {
             break;
         }
     }
+    ui->mainWidget->setCurrentIndex(0);
+    resetPresentation();
     newDocument();
     openInputFile(path);
-    openJson();
+    mPresentation->setConfig({jsonFileName()});
+    mSlideWidget->setPresentation(mPresentation);
     mPdfFile = "";
     fileChanged();
     setWindowTitle(windowTitle());
@@ -470,22 +491,6 @@ QString MainWindow::jsonFileName(QString textPath) const {
 void MainWindow::saveJson() {
     mPresentation->configuration().saveConfig(jsonFileName());
     QFile::remove(autosaveJsonFile());
-}
-
-void MainWindow::openJson() {
-    if(!QFile::exists(jsonFileName())){
-        int ret = QMessageBox::information(this, tr("Failed to open File"), tr("Failed to find %1. Genereate a new empty Configuration File").arg(jsonFileName()),
-                                 QMessageBox::Ok);
-        switch (ret) {
-        case QMessageBox::Ok:
-            resetPresentation();
-            auto file = QFile(jsonFileName());
-            file.open(QIODevice::WriteOnly);
-            break;
-        }
-    }
-    mPresentation->setConfig({jsonFileName()});
-    mSlideWidget->setPresentation(mPresentation);
 }
 
 QString MainWindow::filename() const {
