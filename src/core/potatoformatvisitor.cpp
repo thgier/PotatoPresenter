@@ -253,28 +253,43 @@ BoxStyle PotatoFormatVisitor::applyProperty(BoxStyle &boxstyle, QString property
         boxstyle.mBorderRadius = value.toInt(&numberOk);
     }
     else if(property == "border"){
+        auto const borderStyles = std::set<QString>{"solid", "dashed", "dotted", "double"};
+        bool borderOk = true;
         auto values = QString(value).split(" ");
         if(values.empty()) {
             return {};
         }
-        if(values[0].endsWith("px") && values.length() >= 2) {
+        if (values[0].endsWith("px") && values.length() >= 2) {
             auto value = values[0];
             value.chop(2);
-            bool ok;
-            boxstyle.mBorder.width = value.toInt(&ok);
-            if(!ok) {
-                throw ParserError{"Invalid width value for 'border'", line};
+            boxstyle.mBorder.width = value.toInt(&borderOk);
+            if(borderStyles.find(values[1]) != borderStyles.end()) {
+                boxstyle.mBorder.style = values[1];
             }
-            boxstyle.mBorder.style = values[1];
-            if(values.length() >= 3) {
-                boxstyle.mBorder.color = QColor(QString(values[2]));
+            else {
+                borderOk = false;
+            }
+            if (values.length() >= 3) {
+                auto const color = QColor(QString(values[2]));
+                borderOk = borderOk && color.isValid();
+                boxstyle.mBorder.color = color;
             }
         }
         else {
-            boxstyle.mBorder.style = values[0];
-            if(values.length() >= 2) {
-                boxstyle.mBorder.color = QColor(QString(values[1]));
+            if(borderStyles.find(values[0]) != borderStyles.end()) {
+                boxstyle.mBorder.style = values[0];
             }
+            else {
+                borderOk = false;
+            }
+            if(values.length() >= 2) {
+                auto const color = QColor(QString(values[1]));
+                borderOk = borderOk && color.isValid();
+                boxstyle.mBorder.color = color;
+            }
+        }
+        if(!borderOk) {
+            throw ParserError{"Give border in format: \"border: border-width px border-style (required) border color\", e.g. \"4px solid red\"", line};
         }
     }
     else if (property == "marker") {

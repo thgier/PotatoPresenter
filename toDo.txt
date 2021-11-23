@@ -12,5 +12,4 @@
 
 bugs:
 - svg scale when rotated
-- no error when border is wrong given
 - two editors when error message while opening
