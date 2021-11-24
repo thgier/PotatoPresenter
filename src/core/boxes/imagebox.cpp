@@ -23,9 +23,7 @@ void ImageBox::drawContent(QPainter& painter, std::map<QString, QString> variabl
     mImagePath = path;
     auto const fileInfo = QFileInfo(path);
     if(fileInfo.suffix() == "svg"){
-        auto const transform = painter.combinedTransform();
-        auto const size = transform.mapRect(geometry().rect()).size();
-        drawPixmap(loadSvg(path, size), painter);
+        drawPixmap(loadSvg(path, geometry().rect().size()), painter);
     }
     else{
         drawImage(loadImage(path), painter);
