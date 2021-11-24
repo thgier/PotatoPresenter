@@ -13,17 +13,24 @@
 #include "cachemanager.h"
 
 
-void ImageBox::drawContent(QPainter& painter, std::map<QString, QString> variables){
+void ImageBox::drawContent(QPainter& painter, std::map<QString, QString> const& variables, PresentationRenderHints hints){
     PainterTransformScope scope(this, painter);
     drawGlobalBoxSettings(painter);
     auto path = substituteVariables(style().text(), variables);
     if(!path.startsWith("/home") && variables.find("%{resourcepath}") != variables.end()) {
-        path = variables["%{resourcepath}"] + "/" + path;
+        path = variables.at("%{resourcepath}") + "/" + path;
     }
     mImagePath = path;
     auto const fileInfo = QFileInfo(path);
     if(fileInfo.suffix() == "svg"){
-        drawPixmap(loadSvg(path, geometry().rect().size()), painter);
+        if(static_cast<PresentationRenderHints>(hints) == PresentationRenderHints::TargetIsVectorSurface) {
+            auto svg = QSvgRenderer(path);
+            svg.setAspectRatioMode(Qt::KeepAspectRatio);
+            svg.render(&painter, geometry().rect());
+        }
+        else {
+            drawPixmap(loadSvg(path, geometry().rect().size()), painter);
+        }
     }
     else{
         drawImage(loadImage(path), painter);

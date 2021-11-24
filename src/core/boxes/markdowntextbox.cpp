@@ -26,7 +26,7 @@ std::shared_ptr<TextBox> MarkdownTextBox::clone() {
     return std::make_shared<MarkdownTextBox>(*this);
 }
 
-void MarkdownTextBox::drawContent(QPainter& painter, std::map<QString, QString> variables) {
+void MarkdownTextBox::drawContent(QPainter& painter, std::map<QString, QString> const& variables, PresentationRenderHints hints) {
     PainterTransformScope scope(this, painter);
     drawGlobalBoxSettings(painter);
     auto const text = substituteVariables(style().text(), variables);

@@ -26,6 +26,7 @@ void PDFCreator::createPdf(QString filename, std::shared_ptr<Presentation> prese
     painter.begin(&pdfWriter);
     painter.setWindow(QRect(QPoint(0, 0), presentation->dimensions()));
     auto paint = std::make_shared<SlideRenderer>(painter);
+    paint->setRenderHints(PresentationRenderHints::TargetIsVectorSurface);
     for(auto &slide: presentation->slideList().vector){
         for( int i = 0; i < slide->numberPauses(); i++) {
             paint->paintSlide(slide, i);

@@ -75,7 +75,7 @@ QPainterPath painterPath(QString shape, QRect rect) {
 }
 }
 
-void GeometryBox::drawContent(QPainter& painter, std::map<QString, QString>){
+void GeometryBox::drawContent(QPainter& painter, std::map<QString, QString> const&, PresentationRenderHints hints){
     auto const rect = style().paintableRect();
     mPainterPath = painterPath(style().text(), rect);
     PainterTransformScope scope(this, painter);

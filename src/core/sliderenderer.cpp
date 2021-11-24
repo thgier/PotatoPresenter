@@ -22,7 +22,7 @@ void SlideRenderer::paintSlide(Slide::Ptr slide, int pauseCount) const {
     auto const templateBoxes = slide->templateBoxes();
     auto const variables = slide->variables();
     for(auto const& box: templateBoxes){
-        box->drawContent(mPainter, variables);
+        box->drawContent(mPainter, variables, mRenderHints);
     }
     auto const& boxes = slide->boxes();
     for(auto const& box: boxes){
@@ -42,11 +42,15 @@ void SlideRenderer::paintSlide(Slide::Ptr slide, int pauseCount) const {
                 break;
         }
         if(boxGetPainted) {
-            box->drawContent(mPainter, variables);
+            box->drawContent(mPainter, variables, mRenderHints);
         }
     }
 }
 
 QPainter& SlideRenderer::painter() const {
     return mPainter;
+}
+
+void SlideRenderer::setRenderHints(PresentationRenderHints hints) {
+    mRenderHints = hints;
 }

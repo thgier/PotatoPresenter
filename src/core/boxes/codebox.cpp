@@ -12,7 +12,7 @@ std::shared_ptr<TextBox> CodeBox::clone() {
     return std::make_shared<CodeBox>(*this);
 }
 
-void CodeBox::drawContent(QPainter& painter, std::map<QString, QString> variables) {
+void CodeBox::drawContent(QPainter& painter, std::map<QString, QString> const& variables, PresentationRenderHints hints) {
     PainterTransformScope scope(this, painter);
     drawGlobalBoxSettings(painter);
 

@@ -21,10 +21,13 @@ public:
     void paintSlide(Slide::Ptr slide) const;
     void paintSlide(Slide::Ptr slide, int pauseCount) const;
 
+    void setRenderHints(PresentationRenderHints hints);
+
     QPainter& painter() const;
 
 private:
     QPainter& mPainter;
+    PresentationRenderHints mRenderHints = NoRenderHints;
 };
 
 #endif // PAINTER_H

@@ -2,7 +2,7 @@
 #include "latexcachemanager.h"
 #include <QSvgRenderer>
 
-void LaTeXBox::drawContent(QPainter &painter, std::map<QString, QString> variables) {
+void LaTeXBox::drawContent(QPainter &painter, std::map<QString, QString> const& variables, PresentationRenderHints hints) {
     auto additionalPreamble = QString();
     auto  font = style().font();
     if(font == "DejaVu Sans") {

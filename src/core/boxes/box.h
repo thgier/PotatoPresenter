@@ -14,6 +14,12 @@
 
 using Variables = std::map<QString, QString>;
 
+enum PresentationRenderHints {
+    NoRenderHints = 1,
+    TargetIsVectorSurface = 2,
+    NoPreviewRendering = 4
+};
+
 enum FontWeight{
     normal,
     bold
@@ -137,7 +143,7 @@ public:
     using List = std::vector<Ptr>;
 
     // Implement this in child classes to draw the box's contents given the passed @p variables
-    virtual void drawContent(QPainter& painter, std::map<QString, QString> variables) = 0;
+    virtual void drawContent(QPainter& painter, std::map<QString, QString> const& variables, PresentationRenderHints hints = PresentationRenderHints::NoRenderHints) = 0;
     void drawManipulationSlide(QPainter& painter, int size);
     // e.g. Border, background
     void drawGlobalBoxSettings(QPainter& painter);

@@ -13,7 +13,7 @@ class CodeBox : public TextBox
 {
 public:
     std::shared_ptr<TextBox> clone() override;
-    void drawContent(QPainter& painter, std::map<QString, QString> variables) override;
+    void drawContent(QPainter& painter, std::map<QString, QString> const& variables, PresentationRenderHints hints = PresentationRenderHints::NoRenderHints) override;
 };
 
 #endif // CODEBOX_H
