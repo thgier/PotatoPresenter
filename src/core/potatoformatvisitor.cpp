@@ -491,5 +491,5 @@ void PotatoFormatVisitor::applyPause(QString text) {
 
     lastTextBox->setConfigId(lastTextBox->id());
     lastTextBox->setPauseMode(PauseDisplayMode::onlyInPause);
-    lastTextBox->setId(generateId("text", lastTextBox->style().getClass()));
+    lastTextBox->setId(lastTextBox->id() + "-" + mPauseCount);
 }
