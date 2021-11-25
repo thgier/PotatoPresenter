@@ -231,7 +231,6 @@ MainWindow::MainWindow(QWidget *parent)
     newDocument();
 
 //    open create new from template dialog
-    ui->mainWidget->setCurrentIndex(1);
     connect(ui->mainWidget, &QStackedWidget::currentChanged,
             this, [this](auto const index){
         if (index == 0) {
@@ -241,6 +240,7 @@ MainWindow::MainWindow(QWidget *parent)
             setActionenEnabled(false);
         }
     });
+    ui->mainWidget->setCurrentIndex(1);
 }
 
 MainWindow::~MainWindow()
@@ -360,7 +360,7 @@ void MainWindow::openFile() {
         return;
     }
     auto const newFile = QFileDialog::getOpenFileName(this,
-        tr("Open File"), guessSavingDirectory(), filename());
+        tr("Open File"), guessSavingDirectory(), tr("Potato Files (*.potato)"));
     if(newFile.isEmpty()){
         return;
     }
