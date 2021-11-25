@@ -7,7 +7,6 @@
 #include "markdownformatvisitor.h"
 #include <algorithm>
 #include <QCryptographicHash>
-#include "latexcachemanager.h"
 #include "textbox.h"
 
 namespace {
@@ -49,9 +48,9 @@ QString latexInput(QString const& formula) {
     "$\\end{document}";
 }
 
-void startLatexConversionProcess(std::string const& formula) {
+void startLatexConversionProcess(std::string const& formula, ConversionType latexConversionType = NoBreak) {
     auto const input = latexInput(QString::fromStdString(formula));
-    cacheManager().startConversionProcess(input);
+    cacheManager().startConversionProcess(input, latexConversionType);
 }
 
 }
@@ -270,7 +269,7 @@ void MarkdownFormatVisitor::drawFormulasInParagraph(QTextLayout &layout) {
 
 MapSvg MarkdownFormatVisitor::loadSvg(QString mathExpression, int start) {
     auto const input = latexInput(mathExpression).toUtf8();
-    auto const equation = cacheManager().getCachedImage(input);
+    auto equation = cacheManager().getCachedImage(input);
     switch(equation.status){
     case SvgStatus::Error: {
         QTextCharFormat format;
@@ -281,22 +280,36 @@ MapSvg MarkdownFormatVisitor::loadSvg(QString mathExpression, int start) {
         return {};
     }
     case SvgStatus::NotStarted:
-        startLatexConversionProcess(mathExpression.toStdString());
-        return {};
+        if(mLatexConversionType == BreakUntillFinished) {
+            startLatexConversionProcess(mathExpression.toStdString(), ConversionType::BreakUntillFinished);
+            equation = cacheManager().getCachedImage(input);
+            if(equation.status == Error) {
+                return {};
+            }
+            break;
+        }
+        else {
+            startLatexConversionProcess(mathExpression.toStdString());
+            return {};
+        }
     case SvgStatus::Pending:
         return {};
     case SvgStatus::Success:
-        auto const defaultSize = equation.svg->defaultSize();
-        qInfo() << "default Size" << defaultSize;
-        auto const ascent = 6.861476;
-        auto const scale = mPainter.fontMetrics().ascent() / ascent;
-        auto const height = 1.0 * defaultSize.height() * scale;
-        auto const width = 1.0 * defaultSize.width() * scale;
-        return {start, equation.svg, QSizeF(width, height)};
+        break;
     }
-    return {};
+    auto const defaultSize = equation.svg->defaultSize();
+    qInfo() << "default Size" << defaultSize;
+    auto const ascent = 6.861476;
+    auto const scale = mPainter.fontMetrics().ascent() / ascent;
+    auto const height = 1.0 * defaultSize.height() * scale;
+    auto const width = 1.0 * defaultSize.width() * scale;
+    return {start, equation.svg, QSizeF(width, height)};
 }
 
 TextBoundings MarkdownFormatVisitor::textBoundings() const {
     return mTextBoundings;
+}
+
+void MarkdownFormatVisitor::setLatexConversionFlags(ConversionType latexConversionType) {
+    mLatexConversionType = latexConversionType;
 }

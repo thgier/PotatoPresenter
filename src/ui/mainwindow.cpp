@@ -460,6 +460,7 @@ void MainWindow::newDocument() {
     setWindowTitle(windowTitle());
     mIsModified = false;
     mLastAutosave = QDateTime::currentDateTime();
+    cacheManager().resetCache();
 }
 
 bool MainWindow::save() {

@@ -32,7 +32,7 @@ void LaTeXBox::drawContent(QPainter &painter, std::map<QString, QString> const& 
     f.open(QIODevice::WriteOnly);
     f.write(latexInput.toUtf8());
 
-    auto const latex = cacheManager().getCachedImage(latexInput);
+    auto latex = cacheManager().getCachedImage(latexInput);
     PainterTransformScope scope(this, painter);
     drawGlobalBoxSettings(painter);
 
@@ -42,10 +42,20 @@ void LaTeXBox::drawContent(QPainter &painter, std::map<QString, QString> const& 
         return;
     }
     case SvgStatus::NotStarted:
-        cacheManager().startConversionProcess(latexInput);
-        return;
+        if(hints & PresentationRenderHints::NoPreviewRendering) {
+            cacheManager().startConversionProcess(latexInput, ConversionType::BreakUntillFinished);
+            latex = cacheManager().getCachedImage(latexInput);
+            if(latex.status == Error) {
+                return;
+            }
+            break;
+        }
+        else {
+            cacheManager().startConversionProcess(latexInput);
+            return;
+        }
     case SvgStatus::Pending:
-        return;;
+        return;
     case SvgStatus::Success:
         break;
     }

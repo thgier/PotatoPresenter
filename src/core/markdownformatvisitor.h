@@ -9,6 +9,7 @@
 #include "markdownBaseListener.h"
 #include "box.h"
 #include "textbox.h"
+#include "latexcachemanager.h"
 
 #include <QPainter>
 #include <QTextLayout>
@@ -75,6 +76,8 @@ public:
 
     TextBoundings textBoundings() const;
 
+    void setLatexConversionFlags(ConversionType latexConversionType);
+
 private:
     void addXToPosition(qreal dx);
     void addYToPosition(qreal dy);
@@ -96,6 +99,7 @@ private:
     std::vector<MapSvg> mMapSvgs;
 
     TextBoundings mTextBoundings;
+    ConversionType mLatexConversionType = NoBreak;
 
 };
 

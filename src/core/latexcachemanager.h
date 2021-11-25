@@ -22,6 +22,11 @@ enum SvgStatus{
     NotStarted,
 };
 
+enum ConversionType {
+    NoBreak,
+    BreakUntillFinished
+};
+
 struct SvgEntry{
     SvgStatus status;
     std::shared_ptr<QSvgRenderer> svg;
@@ -35,6 +40,7 @@ struct Job {
     std::unique_ptr<QProcess, DelayedDelete> mProcess;
     std::unique_ptr<QTemporaryDir> mTempDir;
     QString mInput;
+    ConversionType mConversionType = NoBreak;
 };
 
 class LatexCacheManager : public QObject
@@ -43,10 +49,11 @@ class LatexCacheManager : public QObject
 public:
     LatexCacheManager();
     ~LatexCacheManager();
-    void startConversionProcess(QString latexInput);
+    void startConversionProcess(QString latexInput, ConversionType conversionType = NoBreak);
     SvgEntry getCachedImage(QString latexInput) const;
     void startSvgGeneration();
     void writeSvgToMap();
+    void resetCache();
 
 Q_SIGNALS:
     void conversionFinished();
