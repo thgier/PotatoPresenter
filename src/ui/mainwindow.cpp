@@ -450,6 +450,7 @@ void MainWindow::newDocument() {
             autosave();});
     setWindowTitle(windowTitle());
     mIsModified = false;
+    cacheManager().resetCache();
 }
 
 bool MainWindow::save() {

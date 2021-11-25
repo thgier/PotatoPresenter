@@ -42,7 +42,7 @@ void LaTeXBox::drawContent(QPainter &painter, std::map<QString, QString> const& 
         return;
     }
     case SvgStatus::NotStarted:
-        if(static_cast<PresentationRenderHints>(hints) == PresentationRenderHints::NoPreviewRendering) {
+        if(hints & PresentationRenderHints::NoPreviewRendering) {
             cacheManager().startConversionProcess(latexInput, ConversionType::BreakUntillFinished);
             latex = cacheManager().getCachedImage(latexInput);
             if(latex.status == Error) {

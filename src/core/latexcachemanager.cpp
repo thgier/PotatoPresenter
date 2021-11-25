@@ -53,6 +53,7 @@ void LatexCacheManager::startConversionProcess(QString latexInput, ConversionTyp
         return;
     }
     inputFile.write(latexInput.toUtf8());
+    inputFile.close();
 
     QString program = "/usr/bin/pdflatex";
     QStringList arguments;
@@ -111,7 +112,7 @@ void LatexCacheManager::startSvgGeneration(){
         auto out = latexJob->mProcess->readAllStandardOutput();
         qWarning() << "latex error " << error << exitCode << out;
         mCachedImages[latexJob->mInput].status = SvgStatus::Error;
-        Q_EMIT conversionFinished(latexJob->mInput);
+        Q_EMIT conversionFinished();
         return;
     }
 
@@ -150,5 +151,9 @@ void LatexCacheManager::writeSvgToMap(){
     }
     mCachedImages[dviJob->mInput] = SvgEntry{SvgStatus::Success, std::make_shared<QSvgRenderer>(file.readAll())};
     qWarning() << "status when finished" << mCachedImages[dviJob->mInput].status;
-    Q_EMIT conversionFinished(dviJob->mInput);
+    Q_EMIT conversionFinished();
+}
+
+void LatexCacheManager::resetCache() {
+    mCachedImages.clear();
 }

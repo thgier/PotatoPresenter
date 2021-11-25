@@ -53,9 +53,10 @@ public:
     SvgEntry getCachedImage(QString latexInput) const;
     void startSvgGeneration();
     void writeSvgToMap();
+    void resetCache();
 
 Q_SIGNALS:
-    void conversionFinished(QString latexInput);
+    void conversionFinished();
 
 private:
     std::optional<Job> takeOneFinishedJob(std::vector<Job>& jobs);

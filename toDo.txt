@@ -9,6 +9,3 @@
 - shrink to boundings
 - textbox with border, ellipse, rect
 - template specific guides
-
-bugs:
-- svg scale when rotated
