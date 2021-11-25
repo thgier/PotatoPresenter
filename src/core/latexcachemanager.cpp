@@ -37,7 +37,7 @@ LatexCacheManager& cacheManager()
     return instance;
 }
 
-void LatexCacheManager::startConversionProcess(QString latexInput) {
+void LatexCacheManager::startConversionProcess(QString latexInput, ConversionType conversionType) {
     if(mRunningLatexJobs.size() + mRunningDviJobs.size() > QThread::idealThreadCount()){
         mCachedImages[latexInput] = SvgEntry{SvgStatus::NotStarted, nullptr};
         return;
@@ -62,11 +62,16 @@ void LatexCacheManager::startConversionProcess(QString latexInput) {
     job.mProcess.reset(new QProcess());
     job.mTempDir = std::move(tempDir);
     job.mInput = latexInput;
+    job.mConversionType = conversionType;
 
     connect(job.mProcess.get(), QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
             this, &LatexCacheManager::startSvgGeneration);
 
     job.mProcess->start(program, arguments);
+
+    if(conversionType == BreakUntillFinished) {
+        job.mProcess->waitForFinished(-1);
+    }
 }
 
 
@@ -106,7 +111,7 @@ void LatexCacheManager::startSvgGeneration(){
         auto out = latexJob->mProcess->readAllStandardOutput();
         qWarning() << "latex error " << error << exitCode << out;
         mCachedImages[latexJob->mInput].status = SvgStatus::Error;
-        Q_EMIT conversionFinished();
+        Q_EMIT conversionFinished(latexJob->mInput);
         return;
     }
 
@@ -114,6 +119,7 @@ void LatexCacheManager::startSvgGeneration(){
     job.mProcess.reset(new QProcess);
     job.mTempDir = std::move(latexJob->mTempDir);
     job.mInput = latexJob->mInput;
+    job.mConversionType = latexJob->mConversionType;
 
     QString programDvisvgm = "/usr/bin/dvisvgm";
     QStringList argumentsDvisvgm;
@@ -123,6 +129,10 @@ void LatexCacheManager::startSvgGeneration(){
     QObject::connect(job.mProcess.get(), QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
                      this, &LatexCacheManager::writeSvgToMap);
     job.mProcess->start(programDvisvgm, argumentsDvisvgm);
+
+    if(job.mConversionType == BreakUntillFinished) {
+        job.mProcess->waitForFinished(-1);
+    }
 }
 
 void LatexCacheManager::writeSvgToMap(){
@@ -140,5 +150,5 @@ void LatexCacheManager::writeSvgToMap(){
     }
     mCachedImages[dviJob->mInput] = SvgEntry{SvgStatus::Success, std::make_shared<QSvgRenderer>(file.readAll())};
     qWarning() << "status when finished" << mCachedImages[dviJob->mInput].status;
-    Q_EMIT conversionFinished();
+    Q_EMIT conversionFinished(dviJob->mInput);
 }

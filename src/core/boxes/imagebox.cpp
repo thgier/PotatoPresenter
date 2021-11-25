@@ -23,7 +23,7 @@ void ImageBox::drawContent(QPainter& painter, std::map<QString, QString> const& 
     mImagePath = path;
     auto const fileInfo = QFileInfo(path);
     if(fileInfo.suffix() == "svg"){
-        if(static_cast<PresentationRenderHints>(hints) == PresentationRenderHints::TargetIsVectorSurface) {
+        if(hints & PresentationRenderHints::TargetIsVectorSurface) {
             auto svg = QSvgRenderer(path);
             svg.setAspectRatioMode(Qt::KeepAspectRatio);
             svg.render(&painter, geometry().rect());
