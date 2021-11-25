@@ -130,7 +130,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 //    setup CacheManager
     connect(&cacheManager(), &LatexCacheManager::conversionFinished,
-            this, &MainWindow::fileChanged);
+            mSlideWidget, QOverload<>::of(&SlideWidget::update));
 
     CacheManager<QImage>::instance().setCallback([this](QString){mSlideWidget->update();});
     CacheManager<QSvgRenderer>::instance().setCallback([this](QString){mSlideWidget->update();});
