@@ -545,6 +545,9 @@ void MainWindow::exportPDFAs() {
     mPdfFile = dialog.getSaveFileName(this, tr("Export PDF"),
                                mPdfFile,
                                tr("pdf (*.pdf)"));
+    if(QFileInfo(mPdfFile).suffix() != "pdf") {
+        mPdfFile += ".pdf";
+    }
     writePDF();
 }
 
