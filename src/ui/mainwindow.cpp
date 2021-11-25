@@ -232,6 +232,15 @@ MainWindow::MainWindow(QWidget *parent)
 
 //    open create new from template dialog
     ui->mainWidget->setCurrentIndex(1);
+    connect(ui->mainWidget, &QStackedWidget::currentChanged,
+            this, [this](auto const index){
+        if (index == 0) {
+            setActionenEnabled(true);
+        }
+        else {
+            setActionenEnabled(false);
+        }
+    });
 }
 
 MainWindow::~MainWindow()
@@ -844,4 +853,21 @@ QString MainWindow::autosaveJsonFile(QString jsonFile) const {
 
 QString MainWindow::autosaveJsonFile() const {
     return autosaveJsonFile(jsonFileName());
+}
+
+void MainWindow::setActionenEnabled(bool enabled) {
+    ui->actionClean_Configurations->setEnabled(enabled);
+    ui->actionCreatePDF->setEnabled(enabled);
+    ui->actionExport_PDF_Handout->setEnabled(enabled);
+    ui->actionExport_PDF_Handout_as->setEnabled(enabled);
+    ui->actionExport_PDF_as->setEnabled(enabled);
+    ui->actionRedo->setEnabled(enabled);
+    ui->actionReload_Resources->setEnabled(enabled);
+    ui->actionReset_Angle->setEnabled(enabled);
+    ui->actionReset_Position->setEnabled(enabled);
+    ui->actionRotate->setEnabled(enabled);
+    ui->actionSave->setEnabled(enabled);
+    ui->actionSave_as->setEnabled(enabled);
+    ui->actionTranslate->setEnabled(enabled);
+    ui->actionUndo->setEnabled(enabled);
 }

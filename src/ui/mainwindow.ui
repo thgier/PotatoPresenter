@@ -18,7 +18,7 @@
     <item>
      <widget class="QStackedWidget" name="mainWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="page">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -146,8 +146,8 @@
                  <string>Browse...</string>
                 </property>
                 <property name="icon">
-                 <iconset theme="document-open">
-                  <normaloff>.</normaloff>.</iconset>
+                 <iconset resource="../files.qrc">
+                  <normaloff>:/icons/document-open.svg</normaloff>:/icons/document-open.svg</iconset>
                 </property>
                 <property name="toolButtonStyle">
                  <enum>Qt::ToolButtonTextBesideIcon</enum>
@@ -268,8 +268,8 @@
                     <string>Empty presentation</string>
                    </property>
                    <property name="icon">
-                    <iconset theme="document-new">
-                     <normaloff>.</normaloff>.</iconset>
+                    <iconset resource="../files.qrc">
+                     <normaloff>:/icons/document-new.svg</normaloff>:/icons/document-new.svg</iconset>
                    </property>
                    <property name="toolButtonStyle">
                     <enum>Qt::ToolButtonTextBesideIcon</enum>

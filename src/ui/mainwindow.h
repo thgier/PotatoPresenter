@@ -110,6 +110,8 @@ private:
     void addFileToOpenRecent(QString path);
     void updateOpenRecent();
 
+    // enable / disable action, when project is opened / not opened
+    void setActionenEnabled(bool enabled);
 
 private:
     Ui::MainWindow *ui;
