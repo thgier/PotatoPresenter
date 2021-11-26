@@ -100,6 +100,8 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::exportPDFHandout);
     connect(ui->actionExport_PDF_Handout_as, &QAction::triggered,
             this, &MainWindow::exportPDFHandoutAs);
+    connect(ui->actionReload_Resources, &QAction::triggered,
+            this, &MainWindow::resetCacheManager);
 
     connect(ui->actionUndo, &QAction::triggered,
             mSlideWidget, &SlideWidget::undo);
@@ -483,7 +485,7 @@ void MainWindow::newDocument() {
     mIsModified = false;
     mLastAutosave = QDateTime::currentDateTime();
     fileChanged();
-    cacheManager().resetCache();
+    resetCacheManager();
 }
 
 bool MainWindow::save() {
@@ -897,4 +899,11 @@ void MainWindow::setActionenEnabled(bool enabled) {
     ui->actionSave_as->setEnabled(enabled);
     ui->actionTranslate->setEnabled(enabled);
     ui->actionUndo->setEnabled(enabled);
+}
+
+void MainWindow::resetCacheManager() {
+    CacheManager<QImage>::instance().deleteAllResources();
+    CacheManager<QSvgRenderer>::instance().deleteAllResources();
+    CacheManager<PixMapVector>::instance().deleteAllResources();
+    cacheManager().resetCache();
 }

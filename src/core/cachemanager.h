@@ -59,6 +59,7 @@ public:
     void setCallback(std::function<void(QString)> dataChangedCallback);
     static CacheManager<T>& instance ();
     void deleteFile(QString const &path);
+    void deleteAllResources();
 
 private:
     CacheManager();
@@ -66,7 +67,6 @@ private:
     void updateFile(QString const &path);
     void removeFailed(QString path);
     void addFailedToWatcher(QFileInfo file);
-    void deleteAllResources();
 
     std::map<QString, DataEntry<T>> mCachedData;
     QFileSystemWatcher *mWatcher;

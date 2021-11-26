@@ -115,6 +115,8 @@ private:
     // enable / disable action, when project is opened / not opened
     void setActionenEnabled(bool enabled);
 
+    void resetCacheManager();
+
 private:
     Ui::MainWindow *ui;
     KTextEditor::Editor* mEditor;
