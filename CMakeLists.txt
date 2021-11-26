@@ -48,7 +48,7 @@ add_executable(praes
     src/core/latexcachemanager.cpp
     src/core/slide.cpp
     src/core/sliderenderer.cpp
-    src/core/main.cpp
+    src/ui/main.cpp
     src/core/markdownformatvisitor.cpp
     src/core/parser.cpp
     src/core/pdfcreator.cpp
