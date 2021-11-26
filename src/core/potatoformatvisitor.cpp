@@ -1,3 +1,9 @@
+/*
+    SPDX-FileCopyrightText: 2020-2021 Theresa Gier <theresa@fam-gier.de>
+
+    SPDX-License-Identifier: LGPL-2.1-or-later
+*/
+
 #include "potatoformatvisitor.h"
 #include "box.h"
 #include "imagebox.h"
