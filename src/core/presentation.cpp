@@ -131,6 +131,7 @@ void Presentation::setBoxGeometry(const QString &boxId, BoxGeometry const& rect,
     box->setGeometry(rect);
     mConfig.addRect(rect.toValue(), boxId);
     Q_EMIT slideChanged(pageNumber, pageNumber);
+    Q_EMIT boxGeometryChanged();
 }
 
 void Presentation::deleteBoxGeometry(const QString &boxId, int pageNumber) {
@@ -138,6 +139,7 @@ void Presentation::deleteBoxGeometry(const QString &boxId, int pageNumber) {
     findBox(boxId)->setGeometry(BoxGeometry());
     applyConfigurationTemplate();
     Q_EMIT slideChanged(pageNumber, pageNumber);
+    Q_EMIT boxGeometryChanged();
 }
 
 void Presentation::deleteBoxAngle(const QString &boxId, int pageNumber) {
@@ -147,6 +149,7 @@ void Presentation::deleteBoxAngle(const QString &boxId, int pageNumber) {
     findBox(boxId)->setGeometry(BoxGeometry(rect, 0));
     applyConfigurationTemplate();
     Q_EMIT slideChanged(pageNumber, pageNumber);
+    Q_EMIT boxGeometryChanged();
 }
 
 const ConfigBoxes &Presentation::configuration() const {

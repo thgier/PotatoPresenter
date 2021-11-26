@@ -131,6 +131,7 @@ Q_SIGNALS:
     // emited if the position of a box on a slide is changed
     void slideChanged(int pageNumberFront, int pageNumberBack);
     void rebuildNeeded();
+    void boxGeometryChanged();
 
 private:
     // apply Configuration in json file to mSlides

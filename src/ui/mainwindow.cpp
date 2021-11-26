@@ -432,8 +432,9 @@ void MainWindow::openProject(QString path) {
     mPresentation->setConfig({jsonFileName()});
     mSlideWidget->setPresentation(mPresentation);
     mPdfFile = "";
-    connect(mPresentation.get(), &Presentation::slideChanged,
-            this, [this]{if(!mIsModified) {
+    connect(mPresentation.get(), &Presentation::boxGeometryChanged,
+            this, [this]{
+        if(!mIsModified) {
             setWindowTitle(windowTitleNotSaved());
             mIsModified = true;
         }});
@@ -443,6 +444,8 @@ void MainWindow::openProject(QString path) {
     addFileToOpenRecent(path);
     updateOpenRecent();
     addDirectoryToSettings(QFileInfo(filename()).path());
+    mIsModified = false;
+    setWindowTitle(windowTitle());
     askToRecoverAutosave(path);
 }
 
@@ -453,10 +456,14 @@ void MainWindow::newDocument() {
     mViewTextDoc = mDoc->createView(this);
     ui->editor->addWidget(mViewTextDoc);
     connect(mDoc, &KTextEditor::Document::textChanged,
-                     this, &MainWindow::fileChanged);
+                     this, [this](){
+        fileChanged();
+        if(!mIsModified) {
+        setWindowTitle(windowTitleNotSaved());
+        mIsModified = true;
+    }});
     setupFileActionsFromKPart();
     resetPresentation();
-    fileChanged();
     mViewTextDoc->setFocus();
     mDoc->setHighlightingMode("LaTeX");
     mPdfFile = "";
@@ -475,6 +482,7 @@ void MainWindow::newDocument() {
     setWindowTitle(windowTitle());
     mIsModified = false;
     mLastAutosave = QDateTime::currentDateTime();
+    fileChanged();
     cacheManager().resetCache();
 }
 
