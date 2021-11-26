@@ -57,12 +57,12 @@ add_executable(praes
     src/core/presentation.cpp
     src/core/template.cpp
     src/core/templatecache.cpp
-    src/core/transformboxundo.cpp
     src/files.qrc
     src/ui/boxtransformation.cpp
     src/ui/slidelistdelegate.cpp
     src/ui/slidelistmodel.cpp
     src/ui/slidewidget.cpp
+    src/ui/transformboxundo.cpp
     src/ui/mainwindow.cpp
     src/ui/mainwindow.ui
     src/ui/snapping.cpp
