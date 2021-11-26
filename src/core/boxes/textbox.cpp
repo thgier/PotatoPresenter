@@ -12,6 +12,10 @@ bool TextBox::containsPoint(QPoint point, int margin) const {
 }
 
 void TextBox::appendText(QString const& text) {
+    if(!mStyle.mText) {
+        mStyle.mText = text;
+        return;
+    }
     mStyle.mText->append(text);
 }
 
