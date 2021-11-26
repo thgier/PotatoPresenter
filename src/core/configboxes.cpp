@@ -21,7 +21,6 @@ ConfigBoxes::ConfigBoxes(QString filename)
     auto doc = QJsonDocument::fromJson(val);
     loadConfigFromJson(doc);
     file.close();
-    mPath = filename;
 }
 
 void ConfigBoxes::saveJsonConfigurations(QJsonObject &json, const JsonConfig config) const {

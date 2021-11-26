@@ -46,7 +46,6 @@ private:
 
 private:
     std::map<QString, JsonConfig> mConfigMap;
-    QString mPath;
 };
 
 #endif // CONFIGBOXES_H

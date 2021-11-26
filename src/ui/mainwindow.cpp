@@ -38,6 +38,7 @@
 #include "pdfcreator.h"
 #include "utils.h"
 #include "potatoformatvisitor.h"
+#include "transformboxundo.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -347,12 +348,42 @@ void MainWindow::openInputFile(QString filename) {
     mDoc->setHighlightingMode("LaTeX");
 }
 
+void MainWindow::askToRecoverAutosave(QString path) {
+    // recover if file was not properly closed and autosave still exists
+    if(QFile::exists(autosaveTextFile(path)) || QFile::exists(autosaveJsonFile(path))) {
+        auto const ret = QMessageBox::information(this, tr("File was not probably closed."),
+                        tr("File was not properly closed. Do you want to recover?"),
+                        QMessageBox::Ok, QMessageBox::Cancel);
+        switch(ret) {
+        case QMessageBox::Cancel:
+            break;
+        case QMessageBox::Ok:
+            recoverAutosave(path);
+            break;
+        default:
+            break;
+        }
+        deleteAutosave(path);
+    }
+}
+
 void MainWindow::recoverAutosave(QString path) {
-    QFile::remove(path);
-    QFile::rename(autosaveTextFile(path), path);
+    auto file = QFile(autosaveTextFile(path));
+    if(file.open(QIODevice::ReadOnly)) {
+        mDoc->setText(file.readAll());
+    }
+    file.close();
     auto const jsonname = jsonFileName(path);
-    QFile::remove(jsonname);
-    QFile::rename(autosaveJsonFile(jsonname), jsonname);
+    auto const lastConfig = mPresentation->configuration();
+    mPresentation->setConfig({jsonname});
+    auto transform = new TransformBoxUndo(mPresentation, lastConfig, mPresentation->configuration());
+    mSlideWidget->undoStack().push(transform);
+}
+
+void MainWindow::deleteAutosave(QString path) {
+    QFile::remove(autosaveTextFile(path));
+    auto const jsonname = jsonFileName(path);
+    QFile::remove(autosaveJsonFile(jsonname));
 }
 
 void MainWindow::openFile() {
@@ -389,36 +420,18 @@ void MainWindow::openProject(QString path) {
         case QMessageBox::Ok: {
             auto file = QFile(jsonFileName(path));
             file.open(QIODevice::WriteOnly);
+            file.close();
             break;
         }
         }
     }
 
-    // recover if file was not properly closed and autosave still exists
-    if(QFile::exists(autosaveTextFile(path)) || QFile::exists(autosaveJsonFile(path))) {
-        auto const ret = QMessageBox::information(this, tr("File was not probably closed."),
-                        tr("File was not properly closed. Do you want to recover?"),
-                        QMessageBox::Ok, QMessageBox::Cancel);
-        switch(ret) {
-        case QMessageBox::Cancel:
-            break;
-        case QMessageBox::Ok:
-            recoverAutosave(path);
-            break;
-        default:
-            break;
-        }
-    }
     ui->mainWidget->setCurrentIndex(0);
-    resetPresentation();
     newDocument();
     openInputFile(path);
     mPresentation->setConfig({jsonFileName()});
     mSlideWidget->setPresentation(mPresentation);
     mPdfFile = "";
-    fileChanged();
-    setWindowTitle(windowTitle());
-    mIsModified = false;
     connect(mPresentation.get(), &Presentation::slideChanged,
             this, [this]{if(!mIsModified) {
             setWindowTitle(windowTitleNotSaved());
@@ -426,15 +439,17 @@ void MainWindow::openProject(QString path) {
         }});
     connect(ui->actionClean_Configurations, &QAction::triggered,
             mPresentation.get(), &Presentation::deleteNotNeededConfigurations);
+    fileChanged();
     addFileToOpenRecent(path);
     updateOpenRecent();
     addDirectoryToSettings(QFileInfo(filename()).path());
+    askToRecoverAutosave(path);
 }
 
 void MainWindow::newDocument() {
     ui->mainWidget->setCurrentIndex(0);
     mDoc = mEditor->createDocument(this);
-    mViewTextDoc->deleteLater();
+    delete mViewTextDoc;
     mViewTextDoc = mDoc->createView(this);
     ui->editor->addWidget(mViewTextDoc);
     connect(mDoc, &KTextEditor::Document::textChanged,
@@ -469,7 +484,7 @@ bool MainWindow::save() {
     }
     QFile::remove(autosaveTextFile());
     saveJson();
-    ui->statusbar->showMessage(tr("Saved File to  \"%1\".").arg(mDoc->url().toString()), 10000);
+    ui->statusbar->showMessage(tr("Saved File to  \"%1\".").arg(mDoc->url().toLocalFile()), 10000);
     setWindowTitle(windowTitle());
     mIsModified = false;
     return true;
@@ -482,7 +497,7 @@ bool MainWindow::saveAs(){
     QFile::remove(autosaveTextFile());
     saveJson();
     fileChanged();
-    ui->statusbar->showMessage(tr("Saved File to  \"%1\".").arg(mDoc->url().toString()), 10000);
+    ui->statusbar->showMessage(tr("Saved File to  \"%1\".").arg(mDoc->url().toLocalFile()), 10000);
     setWindowTitle(windowTitle());
     mIsModified = false;
     return true;

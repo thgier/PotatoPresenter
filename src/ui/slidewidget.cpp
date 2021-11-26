@@ -620,3 +620,7 @@ QString SlideWidget::absoluteImagePath(QString imagePath) const {
     }
     return imagePath;
 }
+
+QUndoStack& SlideWidget::undoStack() {
+    return mUndoStack;
+}

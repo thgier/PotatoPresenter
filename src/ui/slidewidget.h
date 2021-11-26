@@ -55,6 +55,7 @@ public:
     // trigger undo / redo actions
     void undo();
     void redo();
+    QUndoStack & undoStack();
 
 Q_SIGNALS:
     void selectionChanged(Slide::Ptr);

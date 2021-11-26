@@ -81,7 +81,9 @@ private:
     void closeEvent(QCloseEvent *event) override;
 
     void autosave();
+    void askToRecoverAutosave(QString path);
     void recoverAutosave(QString path);
+    void deleteAutosave(QString path);
     QString autosaveTextFile() const;
     QString autosaveTextFile(QString inputFile) const;
     QString autosaveJsonFile() const;
