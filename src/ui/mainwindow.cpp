@@ -432,6 +432,7 @@ void MainWindow::openProject(QString path) {
     mPresentation->setConfig({jsonFileName()});
     mSlideWidget->setPresentation(mPresentation);
     mPdfFile = "";
+    fileChanged();
     connect(mPresentation.get(), &Presentation::boxGeometryChanged,
             this, [this]{
         if(!mIsModified) {
@@ -440,7 +441,6 @@ void MainWindow::openProject(QString path) {
         }});
     connect(ui->actionClean_Configurations, &QAction::triggered,
             mPresentation.get(), &Presentation::deleteNotNeededConfigurations);
-    fileChanged();
     addFileToOpenRecent(path);
     updateOpenRecent();
     addDirectoryToSettings(QFileInfo(filename()).path());
