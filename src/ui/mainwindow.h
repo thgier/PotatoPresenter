@@ -76,6 +76,7 @@ private:
     QString completeBaseName() const;
     QString applicationName() const;
     QString windowTitle() const;
+    QString windowTitle(QString filename) const;
     QString windowTitleNotSaved() const;
     bool closeDocument();
     void closeEvent(QCloseEvent *event) override;

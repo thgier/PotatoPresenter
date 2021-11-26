@@ -85,6 +85,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionNew, &QAction::triggered,
             this, [this](){
                 if(!closeDocument()) return;
+                setWindowTitle(windowTitle("Untitled"));
                 ui->mainWidget->setCurrentIndex(1);});
     connect(ui->actionOpen, &QAction::triggered,
             this, &MainWindow::openFile);
@@ -648,7 +649,11 @@ QString MainWindow::applicationName() const {
 }
 
 QString MainWindow::windowTitle() const {
-    return completeBaseName() + " \u2014 " + applicationName();
+    return windowTitle(completeBaseName());
+}
+
+QString MainWindow::windowTitle(QString filename) const {
+    return filename + " \u2014 " + applicationName();
 }
 
 QString MainWindow::windowTitleNotSaved() const {
@@ -667,8 +672,10 @@ bool MainWindow::closeDocument() {
         if(!save()) {
             return false;
         }
+        mIsModified = false;
         break;
       case QMessageBox::Discard:
+        mIsModified = false;
         break;
       case QMessageBox::Cancel:
         return false;
