@@ -10,6 +10,76 @@
         }
     },
     {
+        "id": "intern-Do you need more shapes?-body-body-0",
+        "rect": {
+            "angle": 0,
+            "height": 185,
+            "width": 499,
+            "xPosition": 71,
+            "yPosition": 248
+        }
+    },
+    {
+        "id": "intern-Do you need more shapes?-body-body-1",
+        "rect": {
+            "angle": 0,
+            "height": 185,
+            "width": 503,
+            "xPosition": 976,
+            "yPosition": 627
+        }
+    },
+    {
+        "id": "intern-Do you need more shapes?-body-body-2",
+        "rect": {
+            "angle": 0,
+            "height": 190,
+            "width": 436,
+            "xPosition": 100,
+            "yPosition": 627
+        }
+    },
+    {
+        "id": "intern-Do you need more shapes?-geometry-default-0",
+        "rect": {
+            "angle": 0,
+            "height": 91,
+            "width": 269,
+            "xPosition": 640,
+            "yPosition": 313
+        }
+    },
+    {
+        "id": "intern-Do you need more shapes?-geometry-default-1",
+        "rect": {
+            "angle": 180,
+            "height": 103,
+            "width": 275,
+            "xPosition": 597,
+            "yPosition": 668
+        }
+    },
+    {
+        "id": "intern-Do you need more shapes?-geometry-default-2",
+        "rect": {
+            "angle": 90,
+            "height": 95,
+            "width": 154,
+            "xPosition": 1159,
+            "yPosition": 494
+        }
+    },
+    {
+        "id": "intern-Do you need more shapes?-image-image-0",
+        "rect": {
+            "angle": 0,
+            "height": 219,
+            "width": 528,
+            "xPosition": 976,
+            "yPosition": 230
+        }
+    },
+    {
         "id": "intern-Manipulate Elements 2-body-body-0",
         "rect": {
             "angle": 26.397336943922255,
@@ -92,21 +162,21 @@
     {
         "id": "intern-Shapes-geometry-default-0",
         "rect": {
-            "angle": 0,
+            "angle": 31.990277545498305,
             "height": 100,
             "width": 300,
-            "xPosition": 125,
-            "yPosition": 278
+            "xPosition": 338,
+            "yPosition": 330
         }
     },
     {
         "id": "intern-Shapes-geometry-default-1",
         "rect": {
-            "angle": 0,
+            "angle": 344.0225893252551,
             "height": 156,
             "width": 300,
-            "xPosition": 193,
-            "yPosition": 699
+            "xPosition": 714,
+            "yPosition": 515
         }
     },
     {
@@ -115,8 +185,8 @@
             "angle": 0,
             "height": 100,
             "width": 300,
-            "xPosition": 421,
-            "yPosition": 439
+            "xPosition": 1066,
+            "yPosition": 603
         }
     },
     {
@@ -135,8 +205,8 @@
             "angle": 0,
             "height": 55,
             "width": 505,
-            "xPosition": 125,
-            "yPosition": 605
+            "xPosition": 799,
+            "yPosition": 263
         }
     },
     {
@@ -393,10 +463,10 @@
         "id": "intern-Want to create your own presentation?-body-body-0",
         "rect": {
             "angle": 0,
-            "height": 109,
+            "height": 179,
             "width": 857,
             "xPosition": 114,
-            "yPosition": 392
+            "yPosition": 374
         }
     },
     {
@@ -413,9 +483,9 @@
         "id": "intern-Want to create your own presentation?-image-image-0",
         "rect": {
             "angle": 0,
-            "height": 165,
-            "width": 209,
-            "xPosition": 1094,
+            "height": 182,
+            "width": 214,
+            "xPosition": 1089,
             "yPosition": 374
         }
     },

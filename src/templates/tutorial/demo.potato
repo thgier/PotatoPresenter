@@ -76,10 +76,16 @@ fibonacci([0, 1])
 \geometry[color: blue] circle
 \geometry[color: orange] square
 \geometry[color: red] rext
-\body Or generate a svg with your favorite shape in inkscape.
-\image[border: solid] generatedSvg.svg
-\image[border: 1px solid] images/createSvg.png
-\body[font-size: 18] The svg will be updated when you click save in inkscape.
+
+\slide Do you need more shapes?
+\title
+\body[font-size: 20] Write *\image* __newShape.svg__ in the editor to get an empty image.
+\geometry[color: white] arrow
+\body[font-size: 20] Select the image on the preview and click *Create SVG and open in inkscape*.
+\geometry[color: white] arrow
+\image[border: solid] newShape.svg
+\geometry[color: white] arrow
+\body[font-size: 20] The svg will be updated when you click save in inkscape.
 
 \setvar tomato potato
 \setvar font Linux Biolinum
@@ -97,6 +103,7 @@ And use them:
 
 \slide Want to create your own presentation?
 \title[text-align: center]
-\body Click here to choose a template: 
+\body Click on this button in the toolbar to choose a template: 
 \image images/new.png
 \plaintext[class: body] www.potato-presenter.de
+
