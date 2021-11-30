@@ -166,6 +166,9 @@ void MarkdownFormatVisitor::enterNew_line(markdownParser::New_lineContext * /*ct
 }
 
 void MarkdownFormatVisitor::exitParagraph(markdownParser::ParagraphContext * ctx) {
+    if(mCurrentParagraph.mText.at(0) == ' ') {
+        mCurrentParagraph.mText.remove(0, 1);
+    }
     QTextLayout textLayout(mCurrentParagraph.mText);
     textLayout.setTextOption(QTextOption(mBoxStyle.alignment()));
     textLayout.setFont(mPainter.font());
@@ -202,7 +205,7 @@ void MarkdownFormatVisitor::enterItem(markdownParser::ItemContext *) {
     auto middleItem = mStartOfLine;
     middleItem.setY(middleItem.y() + mPainter.fontMetrics().height() / 2);
     drawItemMarker(mPainter, mRect.topLeft() + middleItem, markerSize, mBoxStyle.color());
-    addXToPosition(2 * markerSize);
+    addXToPosition(2 * markerSize + mPainter.fontMetrics().horizontalAdvance(" "));
 }
 
 void MarkdownFormatVisitor::enterList(markdownParser::ListContext * /*ctx*/) {
@@ -218,7 +221,7 @@ void MarkdownFormatVisitor::enterItem_second(markdownParser::Item_secondContext 
     auto middleItem = mStartOfLine;
     middleItem.setY(middleItem.y() + mPainter.fontMetrics().height() / 2);
     drawItemCircle(mPainter, mRect.topLeft() + middleItem, markerSize);
-    addXToPosition(2 * markerSize);
+    addXToPosition(2 * markerSize + mPainter.fontMetrics().horizontalAdvance(" "));
 }
 
 void MarkdownFormatVisitor::enterEnum_item(markdownParser::Enum_itemContext *ctx) {
