@@ -30,7 +30,7 @@ void LaTeXBox::drawContent(QPainter &painter, std::map<QString, QString> const& 
             + QString::number(style().color().blue()) +
             "}\\usepackage{"
             + font +
-            "}" + additionalPreamble +
+            "}\\usepackage{amsmath}\\usepackage{amssymb}\\usepackage{stmaryrd}\\usepackage{braket}" + additionalPreamble +
             "\\begin{document}\\textcolor{fontColor}{"
             + style().text() +
             "}\\end{document}";

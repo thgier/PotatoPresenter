@@ -43,7 +43,7 @@ double drawSvg(std::shared_ptr<QSvgRenderer> image, QPointF position, QPainter& 
 }
 
 QString latexInput(QString const& formula) {
-    return "\\documentclass{standalone}\\usepackage{DejaVuSans}\\usepackage[T1]{fontenc}\\usepackage{xcolor}\\usepackage{siunitx}\\usepackage{mathabx}\\usepackage{braket}\\begin{document}$"
+    return "\\documentclass{standalone}\\usepackage{DejaVuSans}\\usepackage[T1]{fontenc}\\usepackage{xcolor}\\usepackage{siunitx}\\usepackage{amsmath}\\usepackage{amssymb}\\usepackage{stmaryrd}\\usepackage{braket}\\begin{document}$"
     + formula +
     "$\\end{document}";
 }
