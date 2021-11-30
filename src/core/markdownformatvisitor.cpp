@@ -166,6 +166,9 @@ void MarkdownFormatVisitor::enterNew_line(markdownParser::New_lineContext * /*ct
 }
 
 void MarkdownFormatVisitor::exitParagraph(markdownParser::ParagraphContext * ctx) {
+    if(mCurrentParagraph.mText.isEmpty()) {
+        return;
+    }
     if(mCurrentParagraph.mText.at(0) == ' ') {
         mCurrentParagraph.mText.remove(0, 1);
     }
