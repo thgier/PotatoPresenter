@@ -1,5 +1,5 @@
 
-// Generated from markdown.g4 by ANTLR 4.9.2
+// Generated from markdown.g4 by ANTLR 4.9.3
 
 #pragma once
 
@@ -22,17 +22,17 @@ public:
   virtual void enterList(markdownParser::ListContext * /*ctx*/) override { }
   virtual void exitList(markdownParser::ListContext * /*ctx*/) override { }
 
+  virtual void enterItemization(markdownParser::ItemizationContext * /*ctx*/) override { }
+  virtual void exitItemization(markdownParser::ItemizationContext * /*ctx*/) override { }
+
+  virtual void enterEnumeration(markdownParser::EnumerationContext * /*ctx*/) override { }
+  virtual void exitEnumeration(markdownParser::EnumerationContext * /*ctx*/) override { }
+
   virtual void enterItem_second(markdownParser::Item_secondContext * /*ctx*/) override { }
   virtual void exitItem_second(markdownParser::Item_secondContext * /*ctx*/) override { }
 
   virtual void enterItem(markdownParser::ItemContext * /*ctx*/) override { }
   virtual void exitItem(markdownParser::ItemContext * /*ctx*/) override { }
-
-  virtual void enterItemize(markdownParser::ItemizeContext * /*ctx*/) override { }
-  virtual void exitItemize(markdownParser::ItemizeContext * /*ctx*/) override { }
-
-  virtual void enterEnumeration(markdownParser::EnumerationContext * /*ctx*/) override { }
-  virtual void exitEnumeration(markdownParser::EnumerationContext * /*ctx*/) override { }
 
   virtual void enterEnum_item(markdownParser::Enum_itemContext * /*ctx*/) override { }
   virtual void exitEnum_item(markdownParser::Enum_itemContext * /*ctx*/) override { }
@@ -60,9 +60,6 @@ public:
 
   virtual void enterLatex_next_line(markdownParser::Latex_next_lineContext * /*ctx*/) override { }
   virtual void exitLatex_next_line(markdownParser::Latex_next_lineContext * /*ctx*/) override { }
-
-  virtual void enterNew_line(markdownParser::New_lineContext * /*ctx*/) override { }
-  virtual void exitNew_line(markdownParser::New_lineContext * /*ctx*/) override { }
 
   virtual void enterText_plain(markdownParser::Text_plainContext * /*ctx*/) override { }
   virtual void exitText_plain(markdownParser::Text_plainContext * /*ctx*/) override { }

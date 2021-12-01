@@ -1,39 +1,39 @@
 grammar markdown;
 
 markdown
-    : (paragraph | list | latex_next_line)+
+    : ((paragraph | list | latex_next_line) '\n' )* (paragraph | list | latex_next_line) '\n'* EOF
     ;
     
 list
-    : itemize | enumeration
+    : itemization | enumeration
     ;
     
-item_second
-    : ('    ' STAR paragraph?)
-    ;
-    
-item 
-    : (STAR paragraph?) (enum_item_second* | item_second*)
-    ;
-
-itemize
-    : item+
+itemization
+    : item ('\n' item)*
     ;
     
 enumeration
-    : enum_item+ 
+    : enum_item ('\n' enum_item)*
+    ;
+    
+item_second
+    : ('\n' '    ' STAR paragraph)
+    ;
+    
+item 
+    : (STAR paragraph) (enum_item_second* | item_second*)
     ;
     
 enum_item
-    : (INT '.') paragraph? (enum_item_second* | item_second*)
+    : (INT '.') paragraph (enum_item_second* | item_second*)
     ;
 
 enum_item_second
-    : ('    ' INT '.') paragraph?
+    : ('\n' '    ' INT '.') paragraph
     ;
     
 paragraph
-    : (text_decorated | text_plain | latex | '_')+ (new_line+ | EOF)
+    : (text_decorated | text_plain | latex | '_')* 
     ;
     
 text_decorated
@@ -57,11 +57,7 @@ latex
     ;
     
 latex_next_line
-    : '$$'  (text_plain | '_' | STAR)+ '$$' (new_line+ | <EOF>)
-    ;
-    
-new_line
-    : '\n'
+    : '$$'  (text_plain | '_' | STAR)+ '$$'
     ;
     
 text_plain

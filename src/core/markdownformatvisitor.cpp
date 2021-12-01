@@ -130,6 +130,7 @@ void MarkdownFormatVisitor::exitLatex(markdownParser::LatexContext *) {
 void MarkdownFormatVisitor::enterLatex_next_line(markdownParser::Latex_next_lineContext *ctx) {
     auto mathExpression = QString::fromStdString(ctx->getText());
     mathExpression.remove("$");
+    qInfo() << "latex next line" << mathExpression;
     auto const equation = cacheManager().getCachedImage(latexInput(mathExpression));
     switch(equation.status){
     case SvgStatus::Error: {
@@ -162,9 +163,6 @@ void MarkdownFormatVisitor::exitLatex_next_line(markdownParser::Latex_next_lineC
     mDrawPlainText = true;
 }
 
-void MarkdownFormatVisitor::enterNew_line(markdownParser::New_lineContext * /*ctx*/) {
-}
-
 void MarkdownFormatVisitor::exitParagraph(markdownParser::ParagraphContext * ctx) {
     if(mCurrentParagraph.mText.isEmpty()) {
         return;
@@ -188,11 +186,6 @@ void MarkdownFormatVisitor::exitParagraph(markdownParser::ParagraphContext * ctx
         mTextBoundings.lineBoundingRects.push_back(line.naturalTextRect());
         newLine();
     }
-    if(ctx->new_line().size() > 1) {
-        for(auto i = 1; i < int(ctx->new_line().size()); i++)  {
-            newLine();
-        }
-    }
     textLayout.endLayout();
     textLayout.draw(&mPainter, mRect.topLeft());
     mStartOfLine.setX(0);
@@ -209,12 +202,6 @@ void MarkdownFormatVisitor::enterItem(markdownParser::ItemContext *) {
     middleItem.setY(middleItem.y() + mPainter.fontMetrics().height() / 2);
     drawItemMarker(mPainter, mRect.topLeft() + middleItem, markerSize, mBoxStyle.color());
     addXToPosition(2 * markerSize + mPainter.fontMetrics().horizontalAdvance(" "));
-}
-
-void MarkdownFormatVisitor::enterList(markdownParser::ListContext * /*ctx*/) {
-}
-
-void MarkdownFormatVisitor::exitItemize(markdownParser::ItemizeContext *) {
 }
 
 void MarkdownFormatVisitor::enterItem_second(markdownParser::Item_secondContext * /*ctx*/) {

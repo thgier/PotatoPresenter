@@ -1,5 +1,5 @@
 
-// Generated from markdown.g4 by ANTLR 4.9.2
+// Generated from markdown.g4 by ANTLR 4.9.3
 
 #pragma once
 
@@ -20,17 +20,17 @@ public:
   virtual void enterList(markdownParser::ListContext *ctx) = 0;
   virtual void exitList(markdownParser::ListContext *ctx) = 0;
 
+  virtual void enterItemization(markdownParser::ItemizationContext *ctx) = 0;
+  virtual void exitItemization(markdownParser::ItemizationContext *ctx) = 0;
+
+  virtual void enterEnumeration(markdownParser::EnumerationContext *ctx) = 0;
+  virtual void exitEnumeration(markdownParser::EnumerationContext *ctx) = 0;
+
   virtual void enterItem_second(markdownParser::Item_secondContext *ctx) = 0;
   virtual void exitItem_second(markdownParser::Item_secondContext *ctx) = 0;
 
   virtual void enterItem(markdownParser::ItemContext *ctx) = 0;
   virtual void exitItem(markdownParser::ItemContext *ctx) = 0;
-
-  virtual void enterItemize(markdownParser::ItemizeContext *ctx) = 0;
-  virtual void exitItemize(markdownParser::ItemizeContext *ctx) = 0;
-
-  virtual void enterEnumeration(markdownParser::EnumerationContext *ctx) = 0;
-  virtual void exitEnumeration(markdownParser::EnumerationContext *ctx) = 0;
 
   virtual void enterEnum_item(markdownParser::Enum_itemContext *ctx) = 0;
   virtual void exitEnum_item(markdownParser::Enum_itemContext *ctx) = 0;
@@ -58,9 +58,6 @@ public:
 
   virtual void enterLatex_next_line(markdownParser::Latex_next_lineContext *ctx) = 0;
   virtual void exitLatex_next_line(markdownParser::Latex_next_lineContext *ctx) = 0;
-
-  virtual void enterNew_line(markdownParser::New_lineContext *ctx) = 0;
-  virtual void exitNew_line(markdownParser::New_lineContext *ctx) = 0;
 
   virtual void enterText_plain(markdownParser::Text_plainContext *ctx) = 0;
   virtual void exitText_plain(markdownParser::Text_plainContext *ctx) = 0;

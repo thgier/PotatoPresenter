@@ -58,9 +58,10 @@ void MarkdownTest::testMarkdown_data(){
 
     QTest::newRow("enumeration") << "And use them: \n1. The tomato is a %{tomato}\n2. The date is %{date}\n    1. The current pagenumber is %{pagenumber} of %{totalpages}";
 
-    QTest::newRow("Formula inline") << "And use them &\\pi& dsds";
-    QTest::newRow("Formula next line") << "And use them \n&&\\pi&&\n dsds";
-    QTest::newRow("Formula next line 2") << "And use them \n&&\\pi&&";
+    QTest::newRow("Formula inline") << "And use them $\\pi$ dsds";
+    QTest::newRow("Formula next line") << "And use them \n$$\\pi$$\n dsds";
+    QTest::newRow("Formula next line 2") << "And use them \n$$\\pi$$";
+    QTest::newRow("Formula next line with newlines") << "$$\\pi$$\n\nHello";
 
 }
 
