@@ -28,6 +28,7 @@ void GrammarTest::testGrammar() {
 
     tokens.fill();
     potatoParser parser(&tokens);
+    parser.getInterpreter<antlr4::atn::ParserATNSimulator>()->setPredictionMode(antlr4::atn::PredictionMode::SLL);
     parser.removeErrorListeners(); // remove ConsoleErrorListener
     PotatoErrorListener errorListener;
     parser.addErrorListener(&errorListener); // add ours
