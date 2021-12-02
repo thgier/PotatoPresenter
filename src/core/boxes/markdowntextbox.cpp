@@ -38,6 +38,7 @@ void MarkdownTextBox::drawContent(QPainter& painter, std::map<QString, QString> 
 
     tokens.fill();
     markdownParser parser(&tokens);
+    // TODO: some markdown does not work with SLL
     parser.getInterpreter<antlr4::atn::ParserATNSimulator>()->setPredictionMode(antlr4::atn::PredictionMode::SLL);
     antlr4::tree::ParseTree *tree = parser.markdown();
 

@@ -108,7 +108,8 @@ void MarkdownFormatVisitor::enterText_plain(markdownParser::Text_plainContext *c
 void MarkdownFormatVisitor::enterLatex(markdownParser::LatexContext *ctx) {
     int start = mCurrentParagraph.mText.length();
     auto text = QString::fromStdString(ctx->getText());
-    text.remove("$");
+    text.remove(0, 1);
+    text.remove(text.size()-1, 1);
     auto const svgEntry = loadSvg(text, start);
     if (!svgEntry.mSvg) {
         return;
@@ -165,10 +166,9 @@ void MarkdownFormatVisitor::exitLatex_next_line(markdownParser::Latex_next_lineC
 
 void MarkdownFormatVisitor::exitParagraph(markdownParser::ParagraphContext * ctx) {
     if(mCurrentParagraph.mText.isEmpty()) {
+        newLine();
+        mStartOfLine.setX(0);
         return;
-    }
-    if(mCurrentParagraph.mText.at(0) == ' ') {
-        mCurrentParagraph.mText.remove(0, 1);
     }
     QTextLayout textLayout(mCurrentParagraph.mText);
     textLayout.setTextOption(QTextOption(mBoxStyle.alignment()));
@@ -222,8 +222,8 @@ void MarkdownFormatVisitor::enterEnum_item(markdownParser::Enum_itemContext *ctx
 }
 
 void MarkdownFormatVisitor::enterEnum_item_second(markdownParser::Enum_item_secondContext *ctx) {
-    if(!ctx->INT()) {return;}
-    mCurrentParagraph.mText += QString::fromStdString(ctx->INT()->getText()) + '.';
+    if(!ctx->ENUM_SECOND_INTRO()) {return;}
+    mCurrentParagraph.mText += QString::fromStdString(ctx->ENUM_SECOND_INTRO()->getText());
     addYToPosition(mPainter.fontMetrics().lineSpacing() * 0.15);
     mStartOfLine.setX(mPainter.fontMetrics().xHeight() * 5);
 }

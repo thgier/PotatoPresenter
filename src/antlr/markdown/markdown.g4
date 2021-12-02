@@ -1,7 +1,7 @@
 grammar markdown;
 
 markdown
-    : ((paragraph | list | latex_next_line) '\n' )* (paragraph | list | latex_next_line) '\n'* EOF
+    : ((paragraph | list | latex_next_line) '\n' )* EOF
     ;
     
 list
@@ -17,23 +17,23 @@ enumeration
     ;
     
 item_second
-    : ('\n' '    ' STAR paragraph)
+    : ITEM_SECOND_INTRO paragraph
     ;
     
 item 
-    : (STAR paragraph) (enum_item_second* | item_second*)
+    : ('*' ' ' paragraph) (enum_item_second+ | item_second+)?
     ;
     
 enum_item
-    : (INT '.') paragraph (enum_item_second* | item_second*)
+    : INT '.' ' ' paragraph (enum_item_second+ | item_second+)?
     ;
 
 enum_item_second
-    : ('\n' '    ' INT '.') paragraph
+    : ENUM_SECOND_INTRO paragraph
     ;
     
 paragraph
-    : (text_decorated | text_plain | latex | '_')* 
+    : (text_decorated | text_plain | latex | '_' )*
     ;
     
 text_decorated
@@ -60,8 +60,17 @@ latex_next_line
     : '$$'  (text_plain | '_' | STAR)+ '$$'
     ;
     
+    
 text_plain
-    : (TEXT | INT | '.')+
+    : (TEXT | ' ' | '.')+ (TEXT | ' ' | '.' | INT)*
+    ;
+    
+ITEM_SECOND_INTRO
+    : '\n' '    ' STAR ' '
+    ;
+    
+ENUM_SECOND_INTRO
+    : '\n' '    ' INT '.' ' '
     ;
     
 UNDERSCORE
@@ -76,7 +85,7 @@ INT
     : ('0'..'9')+
     ;
 TEXT
-    : ~[*$_\n.0123456789]+
+    : ~[*$_\n.0123456789 ]+
     ;
 
 
