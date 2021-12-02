@@ -571,12 +571,11 @@ void SlideWidget::openInInkscape(){
     QStringList arguments;
     arguments << absoluteImagePath(image->ImagePath());
     QProcess *inkscapeProcess = new QProcess(this);
-    inkscapeProcess->start(program, arguments);
-    connect(inkscapeProcess, &QProcess::errorOccurred,
-            this, [this](){
+    auto success = inkscapeProcess->startDetached(program, arguments);
+    if(!success) {
         QMessageBox::information(this, tr("Cannot open Inkscape."), tr("Cannot open Inkscape. Make sure Inkscape is installed."),
                                          QMessageBox::Ok);
-    });
+    }
 }
 
 void SlideWidget::createAndOpenSvg(){
