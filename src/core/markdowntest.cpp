@@ -54,6 +54,7 @@ void MarkdownTest::testMarkdown_data(){
 
     QTest::newRow("itemization") << "And use them: \n* The tomato is a %{tomato}\n* The date is %{date}\n* The current pagenumber is %{pagenumber} of %{totalpages}\n";
     QTest::newRow("itemization at start") << "* The tomato is a %{tomato}\n* The date is %{date}\n* The current pagenumber is %{pagenumber} of %{totalpages}\n";
+    QTest::newRow("itemization one item") << "* The tomato is a %{tomato}\n";
     QTest::newRow("itemization with text at end") << "* The tomato is a %{tomato}\n* The date is %{date}\nThe current pagenumber is %{pagenumber} of %{totalpages}\n";
     QTest::newRow("itemization subitems") << "* The tomato is a %{tomato}\n    * The date is %{date}\nThe current pagenumber is %{pagenumber} of %{totalpages}\n";
     QTest::newRow("itemization subitems 2") << "* jkjk\n    * fdfd\n";

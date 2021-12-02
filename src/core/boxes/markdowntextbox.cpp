@@ -29,7 +29,8 @@ std::shared_ptr<TextBox> MarkdownTextBox::clone() {
 void MarkdownTextBox::drawContent(QPainter& painter, std::map<QString, QString> const& variables, PresentationRenderHints hints) {
     PainterTransformScope scope(this, painter);
     drawGlobalBoxSettings(painter);
-    auto const text = substituteVariables(style().text(), variables);
+    auto text = substituteVariables(style().text(), variables);
+    text.append("\n");
 
     std::istringstream str(text.toStdString());
     antlr4::ANTLRInputStream input(str);
@@ -38,7 +39,6 @@ void MarkdownTextBox::drawContent(QPainter& painter, std::map<QString, QString> 
 
     tokens.fill();
     markdownParser parser(&tokens);
-    // TODO: some markdown does not work with SLL
     parser.getInterpreter<antlr4::atn::ParserATNSimulator>()->setPredictionMode(antlr4::atn::PredictionMode::SLL);
     antlr4::tree::ParseTree *tree = parser.markdown();
 
