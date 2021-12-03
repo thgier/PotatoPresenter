@@ -36,7 +36,8 @@ namespace  {
 
 }
 
-PotatoFormatVisitor::PotatoFormatVisitor()
+PotatoFormatVisitor::PotatoFormatVisitor(potatoParser &parser)
+    : mParser(parser)
 {
 }
 
@@ -45,12 +46,12 @@ void PotatoFormatVisitor::enterCommand(potatoParser::CommandContext *ctx) {
 }
 
 void PotatoFormatVisitor::enterText(potatoParser::TextContext * ctx) {
-    mText = QString::fromStdString(ctx->getText());
+    mText = QString::fromStdString(mParser.getTokenStream()->getText(ctx));
     removeSpacesAtBack(mText);
 }
 
 void PotatoFormatVisitor::enterText_in_bracket(potatoParser::Text_in_bracketContext * ctx) {
-    mText = QString::fromStdString(ctx->getText());
+    mText = QString::fromStdString(mParser.getTokenStream()->getText(ctx));
     removeBrackets(mText);
 }
 

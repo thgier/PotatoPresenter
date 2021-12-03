@@ -42,7 +42,7 @@ ParserOutput generateSlides(std::string text, QString directory, bool isTemplate
         return ParserError{error.message, int(error.line)-1};
     }
 
-    auto listener = PotatoFormatVisitor();
+    auto listener = PotatoFormatVisitor(parser);
     listener.setDirectory(directory);
     listener.setParseTemplate(isTemplate);
     try {

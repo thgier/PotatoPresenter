@@ -26,7 +26,7 @@ struct Preamble {
 class PotatoFormatVisitor : public potatoBaseListener
 {
 public:
-    PotatoFormatVisitor();
+    PotatoFormatVisitor(potatoParser& parser);
 
     void enterCommand(potatoParser::CommandContext * /*ctx*/) override;
     void enterText(potatoParser::TextContext * ctx) override;
@@ -77,6 +77,8 @@ private:
     BoxStyle mCurrentBoxStyle;
     BoxStyle mStandardBoxStyle;
     std::map<QString, QString> mVariables;
+
+    potatoParser& mParser;
 };
 
 #endif // POTATOFORMATVISITOR_H
