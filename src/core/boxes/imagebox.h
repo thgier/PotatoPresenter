@@ -21,10 +21,9 @@ public:
     QString ImagePath() const;
 
 private:
-    std::shared_ptr<QImage> loadImage(QString path) const;
+    std::shared_ptr<QPixmap> loadImage(QString path, QSize size);
     std::shared_ptr<QPixmap> loadSvg(QString path, QSize size);
     std::shared_ptr<QSvgRenderer> loadPdf(QString path) const;
-    void drawImage(std::shared_ptr<QImage> image, QPainter& painter);
     void drawPixmap(std::shared_ptr<QPixmap> pixmap, QPainter& painter);
 
 private:

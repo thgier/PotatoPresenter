@@ -136,8 +136,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(&cacheManager(), &LatexCacheManager::conversionFinished,
             mSlideWidget, QOverload<>::of(&SlideWidget::update));
 
-    CacheManager<QImage>::instance().setCallback([this](QString){mSlideWidget->update();});
+    CacheManager<QPixmap>::instance().setCallback([this](QString){mSlideWidget->update();});
     CacheManager<QSvgRenderer>::instance().setCallback([this](QString){mSlideWidget->update();});
+    CacheManager<PixMapVector>::instance().setCallback([this](QString){mSlideWidget->update();});
 
 
 //    setup bar with error messages, snapping and couple button
@@ -909,7 +910,7 @@ void MainWindow::setActionenEnabled(bool enabled) {
 }
 
 void MainWindow::resetCacheManager() {
-    CacheManager<QImage>::instance().deleteAllResources();
+    CacheManager<QPixmap>::instance().deleteAllResources();
     CacheManager<QSvgRenderer>::instance().deleteAllResources();
     CacheManager<PixMapVector>::instance().deleteAllResources();
     cacheManager().resetCache();

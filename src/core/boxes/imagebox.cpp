@@ -5,11 +5,14 @@
 */
 
 #include "imagebox.h"
-#include<filesystem>
+
+#include <filesystem>
 #include <string>
+
 #include <QProcess>
-#include<QDebug>
+#include <QDebug>
 #include <QTemporaryFile>
+
 #include "cachemanager.h"
 
 
@@ -29,25 +32,42 @@ void ImageBox::drawContent(QPainter& painter, std::map<QString, QString> const& 
             svg.render(&painter, geometry().rect());
         }
         else {
-            drawPixmap(loadSvg(path, geometry().rect().size()), painter);
+            drawPixmap(loadSvg(path, geometry().size()), painter);
         }
     }
     else{
-        drawImage(loadImage(path), painter);
+        drawPixmap(loadImage(path, geometry().size()), painter);
     }
 }
 
-std::shared_ptr<QImage> ImageBox::loadImage(QString path) const{
-    auto const imageEntry = CacheManager<QImage>::instance().getData(path);
-    if(imageEntry.data){
-        if(imageEntry.status == FileLoadStatus::failed){
-            return {};
-        }
-        return imageEntry.data;
+std::shared_ptr<QPixmap> ImageBox::loadImage(QString path, QSize size) {
+    auto pixmapVector = CacheManager<PixMapVector>::instance().getData(path);
+    if(pixmapVector.data && pixmapVector.data->findPixMap(size)) {
+        return pixmapVector.data->findPixMap(size);
     }
-    auto const image = std::make_shared<QImage>(path);
-    CacheManager<QImage>::instance().setData(path, image);
-    return image;
+    if(pixmapVector.status == FileLoadStatus::failed){
+        return {};
+    }
+
+    auto newPixmap = std::make_shared<QPixmap>(size);
+    newPixmap->fill(Qt::transparent);
+    QPainter painter(newPixmap.get());
+
+    auto const image = QPixmap(path);
+    auto const paintImage = image.scaled(geometry().size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    auto const source = paintImage.size();
+    auto const x = (geometry().width() - source.width()) / 2;
+    auto const y = (geometry().height() - source.height()) / 2;
+    mBoundingBox = QRect(QPoint(geometry().left() + x, geometry().top() + y), source);
+    painter.drawPixmap({{x, y}, source}, paintImage);
+
+    auto newPixMapVector = std::make_shared<PixMapVector>();
+    if(pixmapVector.data) {
+        newPixMapVector = pixmapVector.data;
+    }
+    newPixMapVector->insertPixmap(newPixmap);
+    CacheManager<PixMapVector>::instance().setData(path, newPixMapVector);
+    return newPixmap;
 }
 
 std::shared_ptr<QPixmap> ImageBox::loadSvg(QString path, QSize size) {
@@ -113,18 +133,6 @@ std::shared_ptr<QSvgRenderer> ImageBox::loadPdf(QString path) const{
     auto const svg = std::make_shared<QSvgRenderer>(tmpFile.fileName());
     CacheManager<QSvgRenderer>::instance().setData(path, svg);
     return svg;
-}
-
-void ImageBox::drawImage(std::shared_ptr<QImage> image, QPainter& painter) {
-    if(!image){
-        return;
-    } 
-    auto const paintImage = image->scaled(geometry().size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    auto const source = paintImage.size();
-    auto const x = geometry().left() + (geometry().width() - source.width()) / 2;
-    auto const y = geometry().top() + (geometry().height() - source.height()) / 2;
-    mBoundingBox = QRect(QPoint(x, y), source);
-    painter.drawImage(mBoundingBox, paintImage);
 }
 
 void ImageBox::drawPixmap(std::shared_ptr<QPixmap> pixmap, QPainter& painter) {
