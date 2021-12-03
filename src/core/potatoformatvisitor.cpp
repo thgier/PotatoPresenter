@@ -94,7 +94,7 @@ void PotatoFormatVisitor::PotatoFormatVisitor::exitBox(potatoParser::BoxContext 
         mLastCommandSetVariable = false;
     }
     qInfo() << "command" << command;
-    auto const boxInstructions = std::set<QString>{"text", "image", "body", "title", "blindtext", "plaintext", "code", "geometry", "latex"};
+    static auto const boxInstructions = std::set<QString>{"text", "image", "body", "title", "blindtext", "plaintext", "code", "geometry", "latex"};
     if(boxInstructions.find(command) != boxInstructions.end()) {
         if(mLastCommandSetVariable) {
             throw ParserError{"Command \\setvar only valid outside a slide.", line};

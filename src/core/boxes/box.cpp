@@ -157,7 +157,7 @@ QString Box::substituteVariables(QString text, std::map<QString, QString> variab
     if(variables.empty()){
         return text;
     }
-    QRegularExpression re("%{[^}]*}");
+    static QRegularExpression re("%{[^}]*}");
     QRegularExpressionMatchIterator i = re.globalMatch(text);
     QString newText = "";
     int position = 0;
