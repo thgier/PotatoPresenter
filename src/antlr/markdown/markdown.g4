@@ -62,7 +62,7 @@ latex_next_line
     
     
 text_plain
-    : (TEXT | ' ' | '.')+ (TEXT | ' ' | '.' | INT)*
+    : (TEXT | ' ' | '.' | INT)+
     ;
     
 ITEM_SECOND_INTRO
