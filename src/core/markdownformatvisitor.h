@@ -68,7 +68,6 @@ public:
 
     void enterItem(markdownParser::ItemContext * /*ctx*/) override;
     void enterItem_second(markdownParser::Item_secondContext * /*ctx*/) override;
-    void enterEnum_item(markdownParser::Enum_itemContext *ctx) override;
     void enterEnum_item_second(markdownParser::Enum_item_secondContext *ctx) override;
 
     TextBoundings textBoundings() const;

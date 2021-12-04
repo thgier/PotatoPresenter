@@ -5,15 +5,11 @@ markdown
     ;
     
 list
-    : itemization | enumeration
+    : itemization
     ;
     
 itemization
     : item ('\n' item)*
-    ;
-    
-enumeration
-    : enum_item ('\n' enum_item)*
     ;
     
 item_second
@@ -22,10 +18,6 @@ item_second
     
 item 
     : ('*' ' ' paragraph) (enum_item_second+ | item_second+)?
-    ;
-    
-enum_item
-    : INT '.' ' ' paragraph (enum_item_second+ | item_second+)?
     ;
 
 enum_item_second

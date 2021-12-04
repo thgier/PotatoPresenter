@@ -25,17 +25,11 @@ public:
   virtual void enterItemization(markdownParser::ItemizationContext * /*ctx*/) override { }
   virtual void exitItemization(markdownParser::ItemizationContext * /*ctx*/) override { }
 
-  virtual void enterEnumeration(markdownParser::EnumerationContext * /*ctx*/) override { }
-  virtual void exitEnumeration(markdownParser::EnumerationContext * /*ctx*/) override { }
-
   virtual void enterItem_second(markdownParser::Item_secondContext * /*ctx*/) override { }
   virtual void exitItem_second(markdownParser::Item_secondContext * /*ctx*/) override { }
 
   virtual void enterItem(markdownParser::ItemContext * /*ctx*/) override { }
   virtual void exitItem(markdownParser::ItemContext * /*ctx*/) override { }
-
-  virtual void enterEnum_item(markdownParser::Enum_itemContext * /*ctx*/) override { }
-  virtual void exitEnum_item(markdownParser::Enum_itemContext * /*ctx*/) override { }
 
   virtual void enterEnum_item_second(markdownParser::Enum_item_secondContext * /*ctx*/) override { }
   virtual void exitEnum_item_second(markdownParser::Enum_item_secondContext * /*ctx*/) override { }

@@ -23,17 +23,11 @@ public:
   virtual void enterItemization(markdownParser::ItemizationContext *ctx) = 0;
   virtual void exitItemization(markdownParser::ItemizationContext *ctx) = 0;
 
-  virtual void enterEnumeration(markdownParser::EnumerationContext *ctx) = 0;
-  virtual void exitEnumeration(markdownParser::EnumerationContext *ctx) = 0;
-
   virtual void enterItem_second(markdownParser::Item_secondContext *ctx) = 0;
   virtual void exitItem_second(markdownParser::Item_secondContext *ctx) = 0;
 
   virtual void enterItem(markdownParser::ItemContext *ctx) = 0;
   virtual void exitItem(markdownParser::ItemContext *ctx) = 0;
-
-  virtual void enterEnum_item(markdownParser::Enum_itemContext *ctx) = 0;
-  virtual void exitEnum_item(markdownParser::Enum_itemContext *ctx) = 0;
 
   virtual void enterEnum_item_second(markdownParser::Enum_item_secondContext *ctx) = 0;
   virtual void exitEnum_item_second(markdownParser::Enum_item_secondContext *ctx) = 0;

@@ -18,10 +18,10 @@ public:
   };
 
   enum {
-    RuleMarkdown = 0, RuleList = 1, RuleItemization = 2, RuleEnumeration = 3, 
-    RuleItem_second = 4, RuleItem = 5, RuleEnum_item = 6, RuleEnum_item_second = 7, 
-    RuleParagraph = 8, RuleText_decorated = 9, RuleText_bold = 10, RuleText_marked = 11, 
-    RuleText_italic = 12, RuleLatex = 13, RuleLatex_next_line = 14, RuleText_plain = 15
+    RuleMarkdown = 0, RuleList = 1, RuleItemization = 2, RuleItem_second = 3, 
+    RuleItem = 4, RuleEnum_item_second = 5, RuleParagraph = 6, RuleText_decorated = 7, 
+    RuleText_bold = 8, RuleText_marked = 9, RuleText_italic = 10, RuleLatex = 11, 
+    RuleLatex_next_line = 12, RuleText_plain = 13
   };
 
   explicit markdownParser(antlr4::TokenStream *input);
@@ -37,10 +37,8 @@ public:
   class MarkdownContext;
   class ListContext;
   class ItemizationContext;
-  class EnumerationContext;
   class Item_secondContext;
   class ItemContext;
-  class Enum_itemContext;
   class Enum_item_secondContext;
   class ParagraphContext;
   class Text_decoratedContext;
@@ -75,7 +73,6 @@ public:
     ListContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     ItemizationContext *itemization();
-    EnumerationContext *enumeration();
 
     virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
     virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
@@ -97,20 +94,6 @@ public:
   };
 
   ItemizationContext* itemization();
-
-  class  EnumerationContext : public antlr4::ParserRuleContext {
-  public:
-    EnumerationContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    std::vector<Enum_itemContext *> enum_item();
-    Enum_itemContext* enum_item(size_t i);
-
-    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
-    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
-   
-  };
-
-  EnumerationContext* enumeration();
 
   class  Item_secondContext : public antlr4::ParserRuleContext {
   public:
@@ -143,24 +126,6 @@ public:
   };
 
   ItemContext* item();
-
-  class  Enum_itemContext : public antlr4::ParserRuleContext {
-  public:
-    Enum_itemContext(antlr4::ParserRuleContext *parent, size_t invokingState);
-    virtual size_t getRuleIndex() const override;
-    antlr4::tree::TerminalNode *INT();
-    ParagraphContext *paragraph();
-    std::vector<Enum_item_secondContext *> enum_item_second();
-    Enum_item_secondContext* enum_item_second(size_t i);
-    std::vector<Item_secondContext *> item_second();
-    Item_secondContext* item_second(size_t i);
-
-    virtual void enterRule(antlr4::tree::ParseTreeListener *listener) override;
-    virtual void exitRule(antlr4::tree::ParseTreeListener *listener) override;
-   
-  };
-
-  Enum_itemContext* enum_item();
 
   class  Enum_item_secondContext : public antlr4::ParserRuleContext {
   public:
