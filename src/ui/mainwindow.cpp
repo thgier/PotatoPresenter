@@ -39,6 +39,7 @@
 #include "utils.h"
 #include "potatoformatvisitor.h"
 #include "transformboxundo.h"
+#include "version.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -646,7 +647,7 @@ void MainWindow::updateCursorPosition() {
 }
 
 QString MainWindow::applicationName() const {
-    return "Potato Presenter";
+    return QString("Potato Presenter") + " " + PROJECT_VER;
 }
 
 QString MainWindow::windowTitle() const {

@@ -61,7 +61,7 @@ void MarkdownTest::testMarkdown_data(){
 
     QTest::newRow("Tab at start of line") << "* jkjk\n    \nfdfd\n";
 
-    QTest::newRow("enumeration") << "And use them: \n1. The tomato is a %{tomato}\n2. The date is %{date}\n    1. The current pagenumber is %{pagenumber} of %{totalpages}\n";
+     QTest::newRow("enumeration") << "And use them: \n1. The tomato is a %{tomato}\n2. The date is %{date}\n    1. The current pagenumber is %{pagenumber} of %{totalpages}\n";
 
     QTest::newRow("Formula inline") << "And use them $\\pi$ dsds\n";
     QTest::newRow("Formula next line") << "And use them \n$$\\pi$$\n dsds\n";

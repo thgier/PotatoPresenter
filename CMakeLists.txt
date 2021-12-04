@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(praes LANGUAGES CXX)
+project(praes LANGUAGES CXX
+    VERSION 1.0.0)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -23,6 +24,8 @@ find_package(Qt5Svg REQUIRED)
 find_package(Qt5Test REQUIRED)
 
 enable_testing(true)
+
+configure_file(src/version.h.in version.h)
 
 add_executable(praes
     src/antlr/markdown/generated/markdownBaseListener.cpp
