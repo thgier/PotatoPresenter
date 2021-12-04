@@ -55,6 +55,12 @@ Commands | Functionality
 ```\usetemplate``` | Sets template.
 ```\pause``` | Generates an additional slide with only the content in front of the pause. (only in PDF)
 
+### Mouse interaction
+On the right side of the application, a preview is generated.
+On this you can move and scale the object.
+To rotate objects click on the _Rotate_ button in the toolbar.  
+You can reset the elements position and rotation by selecting the element and then clicking on the buttons _Reset Position_ or _Reset Rotation_.
+
 
 ### Arguments after Commands
 
@@ -67,19 +73,24 @@ List of supported arguments:
 Argument | Functionality | Example Values
 ------------ | ------------------ | -------------
 color | Color of font, arrow, line. | blue, #aa55ff
-font | Font name. | Hack
-font-size | Font-size. | 50
+font-family | Font name. | Hack
+font-size | Font-size. | 20
 text-align | Text alignment. | left, right, center, justify
 line-height | Fraction of line height. | 1.5
 font-weight | Font weight. | bold, normal
 opacity | Opacity of whole element. | 0.7
 background | Background color of element. | red, #aa55ff
+background-color | Background color of element. | red, #aa55ff
 border | Creates a border around the element. | 2px solid blue
 left | Sets the position of the element left. | 100
 top | Sets the position of the element top. | 100
 width | Sets the position of the element width. | 100
 height | Sets the position of the element height. | 100
 angle | Sets the rotation angle in degree. | 180
+padding | Sets padding of a box. | 20
+border-radius | Sets the border-radius of the box.  | 10
+marker | Sets the marker of the markdown. | red bold, #eee
+language | Sets the language (in Code Boxes). | Python
 movable | Element cannot manipulate with the mouse. | false, true
 id | ID of element. | see section ID
 class | Class of element. | see section Class
@@ -115,5 +126,4 @@ You can define an ID to a Box with the argument ```id```.
 
 Implemented with C++ and the Qt5 Framework. Uses the KTextEditor, Antlr4 and the Breeze icons.  
 
-Work in progress, application is not finished yet.  
-Formula support needs: LaTeX, dvisvgm.
+Formula support needs: LaTeX, dvisvgm.  
