@@ -491,7 +491,8 @@ void PotatoFormatVisitor::applyPause(QString text) {
     }
 
     auto box = lastTextBox->clone();
-    text.insert(0, '\n');
+    if(!text.isEmpty())
+        text.insert(0, '\n');
     box->appendText(text);
     box->setPauseCounter(mPauseCount);
     mSlideList.vector.back()->appendBox(box);
