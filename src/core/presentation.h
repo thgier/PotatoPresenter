@@ -114,7 +114,7 @@ public:
 
     // creating and applying of a map of the boxes that defines
     // a class e.g. has the argument defineclass
-    const std::map<QString, BoxStyle> createMapDefinesClass() const;
+    std::map<QString, BoxStyle> createMapDefinesClass() const;
     void applyDefinedClass(SlideList const& slides);
     void setTitleIfTextUnset(SlideList const& slides);
 

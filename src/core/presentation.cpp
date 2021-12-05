@@ -286,7 +286,7 @@ void Presentation::deleteNotNeededConfigurations() {
 }
 
 
-std::map<QString, BoxStyle> const Presentation::createMapDefinesClass() const {
+std::map<QString, BoxStyle> Presentation::createMapDefinesClass() const {
     std::map<QString, BoxStyle> definitionClass;
     forEachBox(mSlides, [&definitionClass](Slide::Ptr slide, Box::Ptr box){
         if(box->style().mDefineclass) {
