@@ -45,24 +45,45 @@ Commands | Functionality
 ------------ | -------------
 ```\slide``` | Creates a new Slide.
 ```\text``` | Creates a new text element.
-```\image``` | Creates an image from the given path.
-```\code``` | Creates a Code box with highlighting given by the argument ```language```.
-```\arrow``` | Creates an arrow.
-```\line``` | Creates a line.
 ```\title``` | Same as ```\text[class: title]``` (see below).
 ```\body``` | Same as ```\text[class: body]``` (see below).
-```\setvar``` | Sets variable.
-```\usetemplate``` | Sets template.
+```\image``` | Creates an image from the given path.
+```\code``` | Creates a Code box with highlighting given by the argument ```language```.
+```\geometry``` | Creates a shape, e.g. ```\geometry arrow```.
+```\latex``` | The input is given to a LaTeX process and the outcome is shown as element.
+```\setvar``` | Sets a variable.
+```\usetemplate``` | Sets a template.
 ```\pause``` | Generates an additional slide with only the content in front of the pause. (only in PDF)
+
+Behind commands and an optional property list (see behind) a text can be given.  
+For example, the text given behind ```\body``` is interpreted as markdown and is rendered on the slide preview.
+The text behind ```\image``` whereas is interpreted as a path to an image.
+If you do not write anything behind ```\title``` the slide id is taken as title of the page.
+Otherwise, the text behind ```\title``` is taken.  
+
+The text can be given directly without any signs.
+But in some cases the program will have problem to understand where the text starts and ends.
+For this you can use optional brackets ```\{``` and ```\}```, e.g.  
+
+```\body \{Hello World!\}```
+
 
 ### Mouse interaction
 On the right side of the application, a preview is generated.
-On this you can move and scale the object.
+On this you can move and scale the objects.
 To rotate objects click on the _Rotate_ button in the toolbar.  
-You can reset the elements position and rotation by selecting the element and then clicking on the buttons _Reset Position_ or _Reset Rotation_.
 
+You can reset the elements position and rotation by selecting the element and then clicking on the buttons _Reset Position_ or _Reset Rotation_.  
 
-### Arguments after Commands
+You can snap elements in the center of the slide by moving them close to the center.
+Also, you can align an element to the top or left side of another element with the help of a snapping mechanism.
+To turn off the snapping feature, use the small button atop of the slide preview.  
+
+If you select an element on the slide preview the cursor in the editor jumps to the code created that element.
+Also, if you change the position of the cursor in the editor the selection at the slide preview will change.
+To turn off this behavior use the other small button atop the slide preview.
+
+### Property after Commands
 
 You can give arguments in square brackets after a commands that are similar to the CSS Properties:
 
@@ -97,6 +118,20 @@ class | Class of element. | see section Class
 defineclass | Defines a class. | see section Class
 
 
+### Resources
+
+If you include a resource files to your presentation, e.g. an image, you can give the path to it relative to your presentation file.
+For example, you can make a directory in your project folder with the name _images_ and put it there.
+In the application, you write then:  
+```\image``` _/images/myPicture.png_  
+
+You can also gives full paths starting with ```/home/...```.  
+To change the default path of your resources you can type at the top of your potato file:  
+```\setvar resourcepath``` _myResourcePath_.  
+
+The program automatically reloads your resources if you change them on your hard disk.
+Nevertheless, if you want to reload them, click _Menu->Edit->Reload Resources_.
+
 ### Classes
 
 Elements can have a class given by the argument ```class```.
@@ -111,6 +146,16 @@ Have a look at the example:
 ```\text[defineclass: myClass; color: green] Hello ```  
 ```\text[class: myClass] I am green.```  
 Here the second element would have the color green and will be rendered at the same position as the first element.
+
+### Geometry
+
+To create a geometry use the command ```\geometry``` _shape_.  
+At the moment supported geometries are:  
+* arrow
+* rect
+* square
+* circle
+* ellipse
 
 
 ### ID 
