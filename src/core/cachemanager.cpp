@@ -12,21 +12,7 @@
 template <class T>
 CacheManager<T>::CacheManager()
 {
-    mWatcher = new QFileSystemWatcher();
-    mFileTimer.setSingleShot(true);
-    QObject::connect(mWatcher, &QFileSystemWatcher::fileChanged,
-            [this](QString path){mFileTimer.start(200);
-                                       mLastPath = path;});
-    QObject::connect(&mFileTimer, &QTimer::timeout,
-            [this](){deleteFile(mLastPath);});
-
-    mDirTimer.setSingleShot(true);
-    QObject::connect(mWatcher, &QFileSystemWatcher::directoryChanged,
-            [this](QString path){mDirTimer.start(200);
-                                mLastPathDir = path;});
-    QObject::connect(&mDirTimer, &QTimer::timeout,
-            [this](){removeFailed(mLastPathDir);});
-
+    deleteAllResources();
 }
 
 template<class T>
@@ -103,6 +89,19 @@ template <class T>
 void CacheManager<T>::deleteAllResources(){
     mCachedData.clear();
     mWatcher = new QFileSystemWatcher();
+    mFileTimer.setSingleShot(true);
+    QObject::connect(mWatcher, &QFileSystemWatcher::fileChanged,
+            [this](QString path){mFileTimer.start(200);
+                                       mLastPath = path;});
+    QObject::connect(&mFileTimer, &QTimer::timeout,
+            [this](){deleteFile(mLastPath);});
+
+    mDirTimer.setSingleShot(true);
+    QObject::connect(mWatcher, &QFileSystemWatcher::directoryChanged,
+            [this](QString path){mDirTimer.start(200);
+                                mLastPathDir = path;});
+    QObject::connect(&mDirTimer, &QTimer::timeout,
+            [this](){removeFailed(mLastPathDir);});
     if(mDataChangedCallback){
         mDataChangedCallback(QString());
     }
