@@ -10,11 +10,6 @@
 
 void LaTeXBox::drawContent(QPainter &painter, std::map<QString, QString> const& variables, PresentationRenderHints hints) {
     auto additionalPreamble = QString();
-    auto  font = style().font();
-    if(font == "DejaVu Sans") {
-        font = "DejaVuSans";
-        additionalPreamble += "\\renewcommand*\\familydefault{\\sfdefault}";
-    }
     // scale factor for geometry of the box
     // physical length of document: 20cm, number of pixels: 1600
     // 10pt diveded by the font size gives the scale factor
@@ -28,9 +23,7 @@ void LaTeXBox::drawContent(QPainter &painter, std::map<QString, QString> const& 
             + QString::number(style().color().red()) + ", "
             + QString::number(style().color().green()) + ", "
             + QString::number(style().color().blue()) +
-            "}\\usepackage{"
-            + font +
-            "}\\usepackage{amsmath}\\usepackage{amssymb}\\usepackage{stmaryrd}\\usepackage{braket}" + additionalPreamble +
+            "} \\usepackage{amsmath}\\usepackage{amssymb}\\usepackage{stmaryrd}\\usepackage{braket}\\renewcommand*\\familydefault{\\sfdefault}" + additionalPreamble +
             "\\begin{document}\\textcolor{fontColor}{"
             + style().text() +
             "}\\end{document}";
