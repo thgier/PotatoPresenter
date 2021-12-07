@@ -416,7 +416,7 @@ void MainWindow::openProject(QString path) {
         return;
     }
     if(!QFile::exists(jsonFileName(path))){
-        int ret = QMessageBox::information(this, tr("Failed to open File"), tr("Failed to find %1. Genereate a new empty Configuration File").arg(jsonFileName()),
+        int ret = QMessageBox::information(this, tr("Failed to open File"), tr("Failed to find %1. Genereate a new empty Configuration File").arg(jsonFileName(path)),
                                  QMessageBox::Ok | QMessageBox::Cancel);
         switch (ret) {
         case QMessageBox::Cancel: {
