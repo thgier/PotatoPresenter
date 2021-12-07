@@ -768,7 +768,9 @@ void MainWindow::createProjectFromTemplate() {
     auto inputFile = QFile(assembleProjectDirectory(projectname) + "/demo.potato");
     auto jsonFile = QFile(assembleProjectDirectory(projectname) + "/demo.json");
     qInfo() << inputFile.fileName() << inputFile.exists() << projectName;
-    if(!(inputFile.rename(assembleProjectPathInputFile(projectname)) && jsonFile.rename(assembleProjectPathJsonFile(projectname)))) {
+    if(projectname != "demo"
+        && !(inputFile.rename(assembleProjectPathInputFile(projectname))
+        && jsonFile.rename(assembleProjectPathJsonFile(projectname)))) {
         QMessageBox::information(this, tr("Rename failed."), tr("Rename failed."),
                                  QMessageBox::Ok);
         return;
