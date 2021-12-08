@@ -19,6 +19,7 @@ public:
 
     Template::Ptr getTemplate(QString path) const;
     void setTemplate(Template::Ptr newTemplate, QString path);
+    void resetTemplate();
 
 Q_SIGNALS:
     void templateChanged();
