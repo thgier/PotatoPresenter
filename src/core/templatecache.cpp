@@ -9,10 +9,7 @@
 
 TemplateCache::TemplateCache()
 {
-    mWatcher = new QFileSystemWatcher(this);
-    connect(mWatcher, &QFileSystemWatcher::fileChanged,
-            [this](QString){mTemplate = nullptr;
-            Q_EMIT templateChanged();});
+    resetTemplate();
 }
 
 Template::Ptr TemplateCache::getTemplate(QString path) const {
@@ -27,4 +24,14 @@ void TemplateCache::setTemplate(Template::Ptr newTemplate, QString path) {
     mTemplate = newTemplate;
     mWatcher->addPath(path + ".txt");
     mWatcher->addPath(path + ".json");
+}
+
+void TemplateCache::resetTemplate() {
+    mWatcher = new QFileSystemWatcher(this);
+    mPath = "";
+    mTemplate.reset();
+    connect(mWatcher, &QFileSystemWatcher::fileChanged,
+            [this](QString){
+            Q_EMIT templateChanged();
+    });
 }

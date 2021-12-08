@@ -63,7 +63,10 @@ MainWindow::MainWindow(QWidget *parent)
     mSlideWidget = ui->slideWidget;
     mSlideWidget->setPresentation(mPresentation);
     connect(&mTemplateCache, &TemplateCache::templateChanged,
-            this, &MainWindow::fileChanged);
+            this, [this](){
+        mTemplateCache.resetTemplate();
+        fileChanged();
+    });
 
 
 //    setup Item model
@@ -913,6 +916,7 @@ void MainWindow::setActionenEnabled(bool enabled) {
 }
 
 void MainWindow::resetCacheManager() {
+    mTemplateCache.resetTemplate();
     CacheManager<QPixmap>::instance().deleteAllResources();
     CacheManager<QSvgRenderer>::instance().deleteAllResources();
     CacheManager<PixMapVector>::instance().deleteAllResources();
