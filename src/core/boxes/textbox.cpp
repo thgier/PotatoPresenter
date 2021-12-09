@@ -8,6 +8,9 @@
 
 
 bool TextBox::containsPoint(QPoint point, int margin) const {
+    if(text().isEmpty()) {
+        return geometry().rect().contains(point);
+    }
     return mTextBoundings.contains(point, margin, geometry());
 }
 
