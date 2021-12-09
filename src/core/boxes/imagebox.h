@@ -7,6 +7,7 @@
 #ifndef PICTURE_H
 #define PICTURE_H
 #include "box.h"
+#include "cachemanager.h"
 #include <QSvgRenderer>
 
 
@@ -21,10 +22,10 @@ public:
     QString ImagePath() const;
 
 private:
-    std::shared_ptr<QPixmap> loadImage(QString path, QSize size);
-    std::shared_ptr<QPixmap> loadSvg(QString path, QSize size);
+    PixMapElement loadImage(QString path, QSize size) const;
+    PixMapElement loadSvg(QString path, QSize size) const;
     std::shared_ptr<QSvgRenderer> loadPdf(QString path) const;
-    void drawPixmap(std::shared_ptr<QPixmap> pixmap, QPainter& painter);
+    void drawPixmap(PixMapElement pixmapElement, QPainter& painter);
 
 private:
     QString mImagePath;

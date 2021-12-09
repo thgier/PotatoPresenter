@@ -9,7 +9,11 @@
 
 TemplateCache::TemplateCache()
 {
-    resetTemplate();
+    mWatcher = new QFileSystemWatcher(this);
+    connect(mWatcher, &QFileSystemWatcher::fileChanged,
+            [this](QString){
+            Q_EMIT templateChanged();
+        });
 }
 
 Template::Ptr TemplateCache::getTemplate(QString path) const {
@@ -27,11 +31,9 @@ void TemplateCache::setTemplate(Template::Ptr newTemplate, QString path) {
 }
 
 void TemplateCache::resetTemplate() {
-    mWatcher = new QFileSystemWatcher(this);
+    if(!mPath.isEmpty()) {
+        mWatcher->removePath(mPath);
+    }
     mPath = "";
     mTemplate.reset();
-    connect(mWatcher, &QFileSystemWatcher::fileChanged,
-            [this](QString){
-            Q_EMIT templateChanged();
-    });
 }

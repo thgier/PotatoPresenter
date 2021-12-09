@@ -24,20 +24,25 @@ enum FileLoadStatus{
     failed
 };
 
-struct PixMapVector {
-    std::vector<std::shared_ptr<QPixmap>> mPixmaps;
+struct PixMapElement {
+    std::shared_ptr<QPixmap> mPixmap;
+    QRect mBoundingBox;
+};
 
-    void insertPixmap(std::shared_ptr<QPixmap> pixmap) {
+struct PixMapVector {
+    std::vector<PixMapElement> mPixmaps;
+
+    void insertPixmap(PixMapElement pixmap) {
         mPixmaps.insert(mPixmaps.begin(), pixmap);
         if(mPixmaps.size() > 2) {
             mPixmaps.pop_back();
         }
     };
 
-    std::shared_ptr<QPixmap> findPixMap(QSize size) {
-        for (auto const& pixmap : mPixmaps) {
-            if(pixmap->size() == size) {
-                return pixmap;
+    PixMapElement findPixMap(QSize size) {
+        for (auto const& pixmapElement : mPixmaps) {
+            if(pixmapElement.mPixmap->size() == size) {
+                return pixmapElement;
             }
         }
         return {};

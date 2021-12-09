@@ -13,8 +13,6 @@
 #include <QDebug>
 #include <QTemporaryFile>
 
-#include "cachemanager.h"
-
 
 void ImageBox::drawContent(QPainter& painter, std::map<QString, QString> const& variables, PresentationRenderHints hints){
     PainterTransformScope scope(this, painter);
@@ -40,9 +38,9 @@ void ImageBox::drawContent(QPainter& painter, std::map<QString, QString> const& 
     }
 }
 
-std::shared_ptr<QPixmap> ImageBox::loadImage(QString path, QSize size) {
+PixMapElement ImageBox::loadImage(QString path, QSize size) const {
     auto pixmapVector = CacheManager<PixMapVector>::instance().getData(path);
-    if(pixmapVector.data && pixmapVector.data->findPixMap(size)) {
+    if(pixmapVector.data && pixmapVector.data->findPixMap(size).mPixmap) {
         return pixmapVector.data->findPixMap(size);
     }
     if(pixmapVector.status == FileLoadStatus::failed){
@@ -58,21 +56,21 @@ std::shared_ptr<QPixmap> ImageBox::loadImage(QString path, QSize size) {
     auto const source = paintImage.size();
     auto const x = (geometry().width() - source.width()) / 2;
     auto const y = (geometry().height() - source.height()) / 2;
-    mBoundingBox = QRect(QPoint(geometry().left() + x, geometry().top() + y), source);
+    auto const boundingBox = QRect(QPoint(x, y), source);
     painter.drawPixmap({{x, y}, source}, paintImage);
 
     auto newPixMapVector = std::make_shared<PixMapVector>();
     if(pixmapVector.data) {
         newPixMapVector = pixmapVector.data;
     }
-    newPixMapVector->insertPixmap(newPixmap);
+    newPixMapVector->insertPixmap({newPixmap, boundingBox});
     CacheManager<PixMapVector>::instance().setData(path, newPixMapVector);
-    return newPixmap;
+    return {newPixmap, boundingBox};
 }
 
-std::shared_ptr<QPixmap> ImageBox::loadSvg(QString path, QSize size) {
+PixMapElement ImageBox::loadSvg(QString path, QSize size) const {
     auto pixmapVector = CacheManager<PixMapVector>::instance().getData(path);
-    if(pixmapVector.data && pixmapVector.data->findPixMap(size)) {
+    if(pixmapVector.data && pixmapVector.data->findPixMap(size).mPixmap) {
         return pixmapVector.data->findPixMap(size);
     }
     if(pixmapVector.status == FileLoadStatus::failed){
@@ -90,27 +88,27 @@ std::shared_ptr<QPixmap> ImageBox::loadSvg(QString path, QSize size) {
     if(viewBox.isEmpty()) {
         return {};
     }
-    mBoundingBox = geometry().rect();
+    auto boundingBox = QRect({0, 0}, geometry().rect().size());
     if(geometry().height() == 0) {
         return {};
     }
     if(geometry().width() / geometry().height() > viewBox.width() / viewBox.height()) {
         auto const svgWidth = viewBox.width()  * geometry().height() / (1.0 * viewBox.height());
-        mBoundingBox.setLeft(geometry().left() + (geometry().width() - svgWidth) / 2);
-        mBoundingBox.setWidth(svgWidth);
+        boundingBox.setLeft((geometry().width() - svgWidth) / 2);
+        boundingBox.setWidth(svgWidth);
     }
     else {
         auto const svgHeight = viewBox.height()  * geometry().width() / (1.0 * viewBox.width());
-        mBoundingBox.setTop(geometry().top() + (geometry().height() - svgHeight) / 2);
-        mBoundingBox.setHeight(svgHeight);
+        boundingBox.setTop((geometry().height() - svgHeight) / 2);
+        boundingBox.setHeight(svgHeight);
     }
     auto newPixMapVector = std::make_shared<PixMapVector>();
     if(pixmapVector.data) {
         newPixMapVector = pixmapVector.data;
     }
-    newPixMapVector->insertPixmap(newPixMap);
+    newPixMapVector->insertPixmap({newPixMap, boundingBox});
     CacheManager<PixMapVector>::instance().setData(path, newPixMapVector);
-    return newPixMap;
+    return {newPixMap, boundingBox};
 }
 
 std::shared_ptr<QSvgRenderer> ImageBox::loadPdf(QString path) const{
@@ -135,13 +133,16 @@ std::shared_ptr<QSvgRenderer> ImageBox::loadPdf(QString path) const{
     return svg;
 }
 
-void ImageBox::drawPixmap(std::shared_ptr<QPixmap> pixmap, QPainter& painter) {
+void ImageBox::drawPixmap(PixMapElement pixmapElement, QPainter& painter) {
     PainterTransformScope scope(this, painter);
     drawGlobalBoxSettings(painter);
-    if(!pixmap){
+    if(!pixmapElement.mPixmap){
+        mBoundingBox = geometry().rect();
         return;
     }
-    painter.drawPixmap(geometry().rect(), *pixmap, {{0, 0}, pixmap->size()});
+    painter.drawPixmap(geometry().rect(), *pixmapElement.mPixmap, {{0, 0}, pixmapElement.mPixmap->size()});
+    mBoundingBox = pixmapElement.mBoundingBox;
+    mBoundingBox.translate(geometry().topLeft());
 }
 
 bool ImageBox::containsPoint(QPoint point, int) const {
