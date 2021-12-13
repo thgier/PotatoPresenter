@@ -46,55 +46,35 @@ QRectF BoxGeometry::rectF() const {
 }
 
 QSize BoxGeometry::size() const {
-    return {width(), height()};
+    return {widthDisplay(), heightDisplay()};
 }
 
 QPoint BoxGeometry::topLeft() const {
-    return {left(), top()};
+    return {leftDisplay(), topDisplay()};
 }
 
-double BoxGeometry::angle() const {
+double BoxGeometry::angleDisplay() const {
     return mAngle.value_or(0);
 }
 
-int BoxGeometry::left() const {
+int BoxGeometry::leftDisplay() const {
     return mLeft.value_or(0);
 }
 
-int BoxGeometry::top() const {
+int BoxGeometry::topDisplay() const {
     return mTop.value_or(0);
 }
 
-int BoxGeometry::width() const {
+int BoxGeometry::widthDisplay() const {
     return mWidth.value_or(300);
 }
 
-int BoxGeometry::height() const {
+int BoxGeometry::heightDisplay() const {
     return mHeight.value_or(100);
 }
 
 MemberBoxGeometry BoxGeometry::toValue() const {
-    return {angle(), QRect(left(), top(), width(), height())};
-}
-
-void BoxGeometry::setLeftIfNotSet(int left) {
-    mLeft = mLeft.value_or(left);
-}
-
-void BoxGeometry::setTopIfNotSet(int top) {
-    mTop = mTop.value_or(top);
-}
-
-void BoxGeometry::setWidthIfNotSet(int width) {
-    mWidth = mWidth.value_or(width);
-}
-
-void BoxGeometry::setHeightIfNotSet(int height) {
-    mHeight = mHeight.value_or(height);
-}
-
-void BoxGeometry::setAngleIfNotSet(double angle) {
-    mAngle = mAngle.value_or(angle);
+    return {angleDisplay(), QRect(leftDisplay(), topDisplay(), widthDisplay(), heightDisplay())};
 }
 
 void BoxGeometry::setRect(QRect rect) {
@@ -211,4 +191,24 @@ qreal BoxGeometry::lengthDiagonal() const {
 
 bool BoxGeometry::empty() const {
     return !(mLeft.has_value() || mTop.has_value() || mWidth.has_value() || mHeight.has_value() || mAngle.has_value());
+}
+
+std::optional<double> BoxGeometry::angle() const {
+    return mAngle;
+}
+
+std::optional<int> BoxGeometry::left() const {
+    return mLeft;
+}
+
+std::optional<int> BoxGeometry::top() const {
+    return mTop;
+}
+
+std::optional<int> BoxGeometry::width() const {
+    return mWidth;
+}
+
+std::optional<int> BoxGeometry::height() const {
+    return mHeight;
 }

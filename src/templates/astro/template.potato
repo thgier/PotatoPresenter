@@ -7,6 +7,11 @@
 
 \setvar line-height 1.5
 
+\slide definitions
+\image[defineclass: background; class:fullscreen] %{background_image}
+\geometry[defineclass: whitebackgound; color: white]
+\text[defineclass: pagenumber; font-size:20; text-align: right; color: white] %{pagenumber} / %{totalpages}
+
 \slide[defineclass: titlepage] titlepage
 \image[class:fullscreen] %{background_image}
 \geometry[defineclass: whitebackgound; color: white]
@@ -21,8 +26,7 @@
 \geometry[class: whitebackgound]
 \text[defineclass:title; font-size: 45; color: white]
 \text[defineclass:body; left: 50; width: 1500] 
-\text[defineclass: pagenumber; font-size:20; text-align: right; color: white]
-\text[class: pagenumber] %{pagenumber} / %{totalpages}
+\text[class: pagenumber]
 \image[defineclass: image]
 \code[defineclass: code; class: body; font-family: Dejavu Sans Mono]
 \text[class: body; defineclass: left_column; width: 700;]

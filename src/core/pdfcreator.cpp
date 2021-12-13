@@ -28,9 +28,9 @@ void PDFCreator::createPdf(QString filename, std::shared_ptr<Presentation> prese
     auto paint = std::make_shared<SlideRenderer>(painter);
     paint->setRenderHints(static_cast<PresentationRenderHints>(static_cast<int>(TargetIsVectorSurface) | static_cast<int>(NoPreviewRendering)));
     for(auto &slide: presentation->slideList().vector){
-        for( int i = 0; i < slide->numberPauses(); i++) {
+        for( int i = 0; i <= slide->numberPauses(); i++) {
             paint->paintSlide(slide, i);
-            if(!(slide == presentation->slideList().vector.back() && i == slide->numberPauses() - 1)){
+            if(!(slide == presentation->slideList().vector.back() && i == slide->numberPauses())){
                 pdfWriter.newPage();
             }
         }

@@ -40,7 +40,7 @@ const QString Box::id() const {
     return style().id();
 }
 
-void Box::setId(QString const& id) {
+void Box::setId(QString id) {
     mStyle.mId = id;
 }
 
@@ -61,11 +61,11 @@ void Box::startDraw(QPainter &painter) {
 
     // geometry
     auto rect = style().mGeometry.rect();
-    rect.moveLeft(mStyle.mGeometry.left());
-    rect.moveTop(mStyle.mGeometry.top());
-    rect.setWidth(mStyle.mGeometry.width());
-    rect.setHeight(mStyle.mGeometry.height());
-    style().mGeometry.setAngle(mStyle.mGeometry.angle());
+    rect.moveLeft(mStyle.mGeometry.leftDisplay());
+    rect.moveTop(mStyle.mGeometry.topDisplay());
+    rect.setWidth(mStyle.mGeometry.widthDisplay());
+    rect.setHeight(mStyle.mGeometry.heightDisplay());
+    style().mGeometry.setAngle(mStyle.mGeometry.angleDisplay());
 
     painter.setTransform(style().mGeometry.transform());
     painter.setRenderHint(QPainter::Antialiasing);
@@ -178,7 +178,7 @@ QString Box::substituteVariables(QString text, std::map<QString, QString> variab
 }
 
 void Box::setPauseCounter(int counter) {
-    mPauseCounter = counter;
+    mPause.mCount = counter;
 }
 
 void Box::setGeometry(const BoxGeometry &geometry) {
@@ -190,9 +190,33 @@ void Box::setGeometry(const MemberBoxGeometry &geometry) {
 }
 
 void Box::setPauseMode(PauseDisplayMode mode) {
-    mPauseMode = mode;
+    mPause.mDisplayMode = mode;
 }
 
-std::pair<int, PauseDisplayMode> Box::pauseCounter() const {
-    return std::pair(mPauseCounter, mPauseMode);
+Pause Box::pauseCounter() const {
+    return mPause;
+}
+
+BoxStyle const& Box::properties() const  {
+    return mProperty;
+}
+
+BoxStyle& Box::properties()  {
+    return mProperty;
+}
+
+void Box::setProperties(BoxStyle properties) {
+    mProperty = properties;
+}
+
+void Box::setClass(const std::optional<QString> &boxClass) {
+    mStyle.mClass = boxClass;
+}
+
+void Box::setDefinesClass(const std::optional<QString> &definesClass) {
+    mStyle.mDefineclass = definesClass;
+}
+
+void Box::setLine(int line) {
+    mStyle.mLine = line;
 }

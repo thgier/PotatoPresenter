@@ -46,19 +46,17 @@ public:
     QRectF rectF() const;
     QSize size() const;
     QPoint topLeft() const;
-    double angle() const;
-    int left() const;
-    int top() const;
-    int width() const;
-    int height() const;
+    double angleDisplay() const;
+    int leftDisplay() const;
+    int topDisplay() const;
+    int widthDisplay() const;
+    int heightDisplay() const;
+    std::optional<double> angle() const;
+    std::optional<int> left() const;
+    std::optional<int> top() const;
+    std::optional<int> width() const;
+    std::optional<int> height() const;
     MemberBoxGeometry toValue() const;
-
-    // set only value if std::optional has no value
-    void setAngleIfNotSet(double angle);
-    void setLeftIfNotSet(int left);
-    void setTopIfNotSet(int top);
-    void setWidthIfNotSet(int width);
-    void setHeightIfNotSet(int height);
 
     // set the value
     void setRect(QRect rect);

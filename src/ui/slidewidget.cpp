@@ -22,7 +22,7 @@ namespace {
 std::vector<int> boxesToXGuides(Box::List boxes) {
     std::vector<int> guides;
     for(auto const& box: boxes) {
-        guides.push_back(box->geometry().left());
+        guides.push_back(box->geometry().leftDisplay());
     }
     return guides;
 }
@@ -30,7 +30,7 @@ std::vector<int> boxesToXGuides(Box::List boxes) {
 std::vector<int> boxesToYGuides(Box::List boxes) {
     std::vector<int> guides;
     for(auto const& box: boxes) {
-        guides.push_back(box->geometry().top());
+        guides.push_back(box->geometry().topDisplay());
     }
     return guides;
 }
@@ -410,7 +410,7 @@ void SlideWidget::cursorApperance(QPoint mousePosition) {
     cursor.setShape(Qt::ArrowCursor);
     auto const rect = activeBox->geometry();
     auto const posMouseBox = rect.classifyPoint(mousePosition, mDiffToMouse);
-    auto angle = rect.angle();
+    auto angle = rect.angleDisplay();
     switch(mTransform){
     case(TransformationType::translate):
         switch(posMouseBox){

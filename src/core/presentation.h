@@ -118,6 +118,7 @@ public:
     void applyDefinedClass(SlideList const& slides);
     void setTitleIfTextUnset(SlideList const& slides);
 
+
     // applys first the values that are given by the variables
     // e.g. \setvar font Hack
     // then apply standard values for the geometry
@@ -135,10 +136,14 @@ Q_SIGNALS:
 
 private:
     // apply Configuration in json file to mSlides
-    void applyConfiguration();
+    void applyJSONGeometries();
+    void applyJSONToBox(Slide::Ptr slide, Box::Ptr box) const;
+
+    void applyCSSProperties(SlideList const& slides);
+    Box::Ptr applyCSSPropertiesToBox(Slide::Ptr slide, Box::Ptr box) const;
 
     // call to apply all configuration, template etc. to mSlides
-    void applyConfigurationTemplate();
+    void applyConfiguration();
 
 private:
     SlideList mSlides;

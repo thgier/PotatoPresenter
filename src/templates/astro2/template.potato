@@ -7,9 +7,16 @@
 
 \setvar line-height 1.5
 
-\slide[defineclass: titlepage] titlepage
-\image[class:fullscreen] %{background_image}
+\slide definitions
+\image[defineclass: background; class:fullscreen] %{background_image}
 \geometry[defineclass: whitebackgound; color: white]
+\text[defineclass: presentationtitle; font-size: 18; color: white] %{title}
+\text[defineclass: section; font-size: 18; color: white] %{section}
+\text[defineclass: author; font-size: 18; color: white] %{author}, %{date}
+\text[defineclass: pagenumber; font-size:20; text-align: right; color: white] %{pagenumber} / %{totalpages}
+
+\slide[defineclass: titlepage] titlepage
+\image[class: background]
 \geometry[class: whitebackgound]
 \text[defineclass:title; font-size:50] %{title}
 \text[color:#555; defineclass: subtitle] %{subtitle}
@@ -18,19 +25,15 @@
 
 \setvar section Introduction
 \slide[defineclass: default] default
-\image[class:fullscreen] %{background_image}
+\image[class:background] %{background_image}
 \geometry[class: whitebackgound]
 \text[defineclass:title; font-size: 45; color: white; text-align: center]
 \text[defineclass:body; left: 50; width: 1500] 
-\text[defineclass: pagenumber; font-size:20; text-align: right; color: white]
-\text[class: pagenumber] %{pagenumber} / %{totalpages}
+\text[class: pagenumber]
 \image[defineclass: image]
 \code[defineclass: code; class: body; font-family: Dejavu Sans Mono]
 \text[class: body; defineclass: left_column; width: 700;]
 \text[class: body; defineclass: right_column; width: 700; left: 850]
-\text[defineclass: presentationtitle; font-size: 18; color: white] %{title}
-\text[defineclass: section; font-size: 18; color: white] %{section}
-\text[defineclass: author; font-size: 18; color: white] %{author}, %{date}
 \text[class: presentationtitle]
 \text[class: section]
 \text[class: author]

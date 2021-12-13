@@ -54,8 +54,8 @@ PixMapElement ImageBox::loadImage(QString path, QSize size) const {
     auto const image = QPixmap(path);
     auto const paintImage = image.scaled(geometry().size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
     auto const source = paintImage.size();
-    auto const x = (geometry().width() - source.width()) / 2;
-    auto const y = (geometry().height() - source.height()) / 2;
+    auto const x = (geometry().widthDisplay() - source.width()) / 2;
+    auto const y = (geometry().heightDisplay() - source.height()) / 2;
     auto const boundingBox = QRect(QPoint(x, y), source);
     painter.drawPixmap({{x, y}, source}, paintImage);
 
@@ -92,14 +92,14 @@ PixMapElement ImageBox::loadSvg(QString path, QSize size) const {
     if(geometry().height() == 0) {
         return {};
     }
-    if(geometry().width() / geometry().height() > viewBox.width() / viewBox.height()) {
-        auto const svgWidth = viewBox.width()  * geometry().height() / (1.0 * viewBox.height());
-        boundingBox.setLeft((geometry().width() - svgWidth) / 2);
+    if(geometry().widthDisplay() / geometry().heightDisplay() > viewBox.width() / viewBox.height()) {
+        auto const svgWidth = viewBox.width()  * geometry().heightDisplay() / (1.0 * viewBox.height());
+        boundingBox.setLeft((geometry().widthDisplay() - svgWidth) / 2);
         boundingBox.setWidth(svgWidth);
     }
     else {
-        auto const svgHeight = viewBox.height()  * geometry().width() / (1.0 * viewBox.width());
-        boundingBox.setTop((geometry().height() - svgHeight) / 2);
+        auto const svgHeight = viewBox.height()  * geometry().widthDisplay() / (1.0 * viewBox.width());
+        boundingBox.setTop((geometry().heightDisplay() - svgHeight) / 2);
         boundingBox.setHeight(svgHeight);
     }
     auto newPixMapVector = std::make_shared<PixMapVector>();

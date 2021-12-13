@@ -6,6 +6,26 @@
 
 #include "sliderenderer.h"
 
+namespace {
+
+bool boxGetPainted(Pause boxPause, int currentPauseCounter) {
+    switch(boxPause.mDisplayMode) {
+        case PauseDisplayMode::fromPauseOn:
+            if(boxPause.mCount <= currentPauseCounter) {
+                return true;
+            }
+            break;
+        case PauseDisplayMode::onlyInPause:
+            if(boxPause.mCount == currentPauseCounter) {
+                return true;
+            }
+            break;
+    }
+    return false;
+};
+
+};
+
 SlideRenderer::SlideRenderer(QPainter& painter)
     : mPainter(painter)
 {
@@ -26,22 +46,10 @@ void SlideRenderer::paintSlide(Slide::Ptr slide, int pauseCount) const {
     }
     auto const& boxes = slide->boxes();
     for(auto const& box: boxes){
-        bool boxGetPainted = false;
         // boxes get only painted when pause counter conform
-        auto const [boxPauseCounter, boxPauseMode] = box->pauseCounter();
-        switch(boxPauseMode) {
-            case PauseDisplayMode::fromPauseOn:
-                if(boxPauseCounter <= pauseCount) {
-                    boxGetPainted = true;
-                }
-                break;
-            case PauseDisplayMode::onlyInPause:
-                if(boxPauseCounter == pauseCount) {
-                    boxGetPainted = true;
-                }
-                break;
-        }
-        if(boxGetPainted) {
+        auto const pause = box->pauseCounter();
+
+        if(boxGetPainted(pause, pauseCount)) {
             box->drawContent(mPainter, variables, mRenderHints);
         }
     }

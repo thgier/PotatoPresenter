@@ -60,6 +60,16 @@
         }
     },
     {
+        "id": "intern-default-text-pagenumber-0",
+        "rect": {
+            "angle": 0,
+            "height": 65,
+            "width": 304,
+            "xPosition": 1262,
+            "yPosition": 32
+        }
+    },
+    {
         "id": "intern-default-text-right_column-0",
         "rect": {
             "angle": 0,
@@ -67,6 +77,66 @@
             "width": 714,
             "xPosition": 830,
             "yPosition": 138
+        }
+    },
+    {
+        "id": "intern-definitions-geometry-default-0",
+        "rect": {
+            "angle": 0,
+            "height": 689,
+            "width": 1601,
+            "xPosition": 0,
+            "yPosition": 111
+        }
+    },
+    {
+        "id": "intern-definitions-image-fullscreen-0",
+        "rect": {
+            "angle": 0,
+            "height": 900,
+            "width": 1600,
+            "xPosition": 1,
+            "yPosition": 0
+        }
+    },
+    {
+        "id": "intern-definitions-plaintext-default-0",
+        "rect": {
+            "angle": 0,
+            "height": 100,
+            "width": 300,
+            "xPosition": 418,
+            "yPosition": 169
+        }
+    },
+    {
+        "id": "intern-definitions-text-default-0",
+        "rect": {
+            "angle": 0,
+            "height": 65,
+            "width": 304,
+            "xPosition": 1262,
+            "yPosition": 24
+        }
+    },
+    {
+        "id": "intern-definitions-text-default-1",
+        "rect": {
+            "angle": 0,
+            "height": 100,
+            "width": 300,
+            "xPosition": 397,
+            "yPosition": 579
+        }
+    },
+    {
+        "id": "intern-definitions-text-default-2",
+        "rect": {
+            "angle": 0,
+            "height": 100,
+            "width": 300,
+            "xPosition": 530,
+            "yPosition": 333
         }
     },
     {

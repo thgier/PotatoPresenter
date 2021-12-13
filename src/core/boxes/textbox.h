@@ -16,7 +16,7 @@ struct TextBoundings {
         point = geometry.transform().inverted().map(point);
         bool inbox = false;
         for(auto const& lineRect: lineBoundingRects) {
-            auto rect = lineRect.translated(geometry.left(), geometry.top());
+            auto rect = lineRect.translated(geometry.leftDisplay(), geometry.topDisplay());
             rect = rect.marginsAdded(QMargins(margin, margin, margin, margin));
             if(rect.contains(point)) {
                 inbox = true;

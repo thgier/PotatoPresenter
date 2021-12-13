@@ -7,13 +7,16 @@
 \setvar line-height 1.5
 \setvar font-size 20
 
+\slide definitions
+\image[defineclass: logo] %{logo}
+
 \slide[defineclass: titlepage] titlepage
 \text[defineclass:title; font-size:50; font-weight: bold] %{title}
 \text[color:#555; font-size:25; defineclass: subtitle] %{subtitle}
 \text[font-size:25; color:#555; defineclass: author] %{author}
 \plaintext[color: #555; defineclass: date; font-size:25] %{date}
-\image[defineclass: logo] %{logo}
 \image[class: logo]
+\image[defineclass: image]
 
 \slide[defineclass: default] default
 \text[defineclass:title; font-size: 45; font-weight: bold]

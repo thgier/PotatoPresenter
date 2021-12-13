@@ -72,7 +72,7 @@ void PotatoFormatVisitor::PotatoFormatVisitor::exitBox(potatoParser::BoxContext 
         newSlide(text, line);
         mLastCommandSetVariable = false;
         mInPreamble = false;
-        mCurrentBoxStyle = mStandardBoxStyle;
+        mPropertyStyle = BoxStyle();
         return;
     }
 
@@ -102,7 +102,7 @@ void PotatoFormatVisitor::PotatoFormatVisitor::exitBox(potatoParser::BoxContext 
         }
 
         createNewBox(command, text, line);
-        mCurrentBoxStyle = mStandardBoxStyle;
+        mPropertyStyle = BoxStyle();
         return;
     }
 
@@ -131,7 +131,7 @@ void PotatoFormatVisitor::exitProperty_entry(potatoParser::Property_entryContext
         throw ParserError{"Expected value.", line};
     }
 
-    mCurrentBoxStyle = applyProperty(mCurrentBoxStyle, property, value, line);
+    mPropertyStyle = applyProperty(mPropertyStyle, property, value, line);
 }
 
 BoxStyle PotatoFormatVisitor::applyProperty(BoxStyle &boxstyle, QString property, QString value, int line) {
@@ -368,10 +368,11 @@ void PotatoFormatVisitor::newSlide(QString id, int line) {
         throw ParserError{QString("Slide id %1 already exists.").arg(id), line};
     }
     mSlideList.appendSlide(std::make_shared<Slide>(id, line));
-    mSlideList.lastSlide()->setSlideClass(mCurrentBoxStyle.getClass());
+    mSlideList.lastSlide()->setSlideClass(mPropertyStyle.getClass());
 
-    mSlideList.lastSlide()->setDefinesClass(mCurrentBoxStyle.mDefineclass.value_or(""));
-
+    if (mPropertyStyle.mDefineclass) {
+        mSlideList.lastSlide()->setDefinesClass(mPropertyStyle.mDefineclass.value());
+    }
     // set variables
     mSlideList.lastSlide()->setVariables(mVariables);
     mSlideList.lastSlide()->setVariable("%{pagenumber}", QString::number(mSlideList.vector.size()));
@@ -381,6 +382,7 @@ void PotatoFormatVisitor::newSlide(QString id, int line) {
     if(mVariables.find("%{resourcepath}") == mVariables.end()){
         mSlideList.lastSlide()->setVariable("%{resourcepath}", mResourcepath);
     }
+    mPropertyStyle = BoxStyle();
 }
 
 void PotatoFormatVisitor::setVariable(QString text, int line) {
@@ -392,14 +394,14 @@ void PotatoFormatVisitor::setVariable(QString text, int line) {
     try {
         mStandardBoxStyle = applyProperty(mStandardBoxStyle, variable, value, line);
     }  catch (ParserError) {
-        mVariables[addBracketsToVariable(variable)] = value;
     }
+    mVariables[addBracketsToVariable(variable)] = value;
 
 }
 
 void PotatoFormatVisitor::createNewBox(QString command, QString text, int line) {
     if(!text.isEmpty()) {
-        mCurrentBoxStyle.mText = text;
+        mPropertyStyle.mText = text;
     }
     std::shared_ptr<Box> box;
     if(command == "text"){
@@ -410,23 +412,23 @@ void PotatoFormatVisitor::createNewBox(QString command, QString text, int line) 
             throw ParserError {"One line text expected.", line};
         }
         box = std::make_shared<ImageBox>();
-        if(!mCurrentBoxStyle.mClass.has_value()) {
-            mCurrentBoxStyle.mClass = "image";
+        if(!mPropertyStyle.mClass.has_value()) {
+            mPropertyStyle.mClass = "image";
         }
     }
     else if(command == "code"){
         box = std::make_shared<CodeBox>();
-        if(!mCurrentBoxStyle.mClass) {
-            mCurrentBoxStyle.mClass = "code";
+        if(!mPropertyStyle.mClass) {
+            mPropertyStyle.mClass = "code";
         }
     }
     else if(command == "body"){
         box = std::make_shared<MarkdownTextBox>();
-        mCurrentBoxStyle.mClass = "body";
+        mPropertyStyle.mClass = "body";
     }
     else if(command == "title"){
         box = std::make_shared<MarkdownTextBox>();
-        mCurrentBoxStyle.mClass = "title";
+        mPropertyStyle.mClass = "title";
     }
     else if (command == "blindtext") {
         text = "Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
@@ -440,19 +442,31 @@ void PotatoFormatVisitor::createNewBox(QString command, QString text, int line) 
     }
     else if (command == "latex") {
         box = std::make_shared<LaTeXBox>();
-        if(!mCurrentBoxStyle.mClass.has_value()) {
-            mCurrentBoxStyle.mClass = "body";
+        if(!mPropertyStyle.mClass.has_value()) {
+            mPropertyStyle.mClass = "body";
         }
     }
-    QString id = mCurrentBoxStyle.id();
+
+    auto id = mPropertyStyle.id();
     if(id.isEmpty()) {
-        mCurrentBoxStyle.mId = generateId(command, mCurrentBoxStyle.getClass());
+        id = generateId(command, mPropertyStyle.getClass());
     }
-    mCurrentBoxStyle.mLine = line;
-    box->setBoxStyle(mCurrentBoxStyle);
+
+    box->setProperties(mPropertyStyle);
+    box->setBoxStyle(mStandardBoxStyle);
+
+    box->setId(id);
+    box->setLine(line);
+    box->setClass(mPropertyStyle.mClass);
+    box->setDefinesClass(mPropertyStyle.mDefineclass);
     box->setPauseCounter(mPauseCount);
+    if(mPropertyStyle.mText) {
+        box->style().mText = mPropertyStyle.text();
+    }
+
     mSlideList.lastSlide()->appendBox(box);
 }
+
 
 QString PotatoFormatVisitor::generateId(QString type, QString boxclass) {
     auto const slideId = mSlideList.lastSlide()->id();
@@ -485,19 +499,24 @@ void PotatoFormatVisitor::setParseTemplate(bool isTemplate) {
 void PotatoFormatVisitor::applyPause(QString text) {
     mPauseCount++;
 
+    if(mSlideList.lastSlide()->boxes().empty()) {
+        return;
+    }
     auto const lastTextBox = std::dynamic_pointer_cast<TextBox>(mSlideList.lastSlide()->boxes().back());
     if(!lastTextBox) {
         return;
     }
+    lastTextBox->setPauseMode(PauseDisplayMode::onlyInPause);
 
     auto box = lastTextBox->clone();
-    if(!text.isEmpty())
+    auto testText = box->text();
+    if(!text.isEmpty() && !box->text().isEmpty())
         text.insert(0, '\n');
-    box->appendText(text);
+    box->properties().mText = lastTextBox->text() + text;
+    box->style().mText = lastTextBox->text() + text;
     box->setPauseCounter(mPauseCount);
+    lastTextBox->setId(lastTextBox->configId() + "-" + mPauseCount);
+    lastTextBox->setConfigId(box->id());
+    box->setPauseMode(PauseDisplayMode::fromPauseOn);
     mSlideList.vector.back()->appendBox(box);
-
-    lastTextBox->setConfigId(lastTextBox->id());
-    lastTextBox->setPauseMode(PauseDisplayMode::onlyInPause);
-    lastTextBox->setId(lastTextBox->id() + "-" + mPauseCount);
 }

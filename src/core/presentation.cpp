@@ -18,44 +18,57 @@ void forEachBox(auto const& slides, auto func) {
             func(slide, box);
 }
 
-BoxStyle& setStyleIfNotSet(BoxStyle & appliedStyle, BoxStyle const& modelStyle) {
-    auto const assignIfUnset = [](auto& value, auto const& standard) {
-        if(!value) {
+void setStyleToBoxIfSetInModel(Box::Ptr box, BoxStyle const& modelStyle) {
+    auto const assignIfSet = [](auto& value, auto const& standard) {
+        if(standard) {
             value = standard;
         }
     };
 
-    // set style to standartstyle if not set by property
-    assignIfUnset(appliedStyle.mFont, modelStyle.font());
-    assignIfUnset(appliedStyle.mFontSize, modelStyle.fontSize());
-    assignIfUnset(appliedStyle.mFontWeight, modelStyle.fontWeight());
-    assignIfUnset(appliedStyle.mColor, modelStyle.color());
-    assignIfUnset(appliedStyle.mBackgroundColor, modelStyle.mBackgroundColor);
-    assignIfUnset(appliedStyle.mAlignment, modelStyle.alignment());
-    assignIfUnset(appliedStyle.mLineSpacing, modelStyle.linespacing());
-    assignIfUnset(appliedStyle.mOpacity, modelStyle.opacity());
-    assignIfUnset(appliedStyle.mText, modelStyle.text());
-    assignIfUnset(appliedStyle.mPadding, modelStyle.padding());
-    assignIfUnset(appliedStyle.mBorderRadius, modelStyle.borderRadius());
-    assignIfUnset(appliedStyle.mTextMarker.color, modelStyle.markerColor());
-    assignIfUnset(appliedStyle.mTextMarker.fontWeight, modelStyle.markerFontWeight());
-
-    return appliedStyle;
+    assignIfSet(box->style().mFont, modelStyle.mFont);
+    assignIfSet(box->style().mFontSize, modelStyle.mFontSize);
+    assignIfSet(box->style().mFontWeight, modelStyle.mFontWeight);
+    assignIfSet(box->style().mColor, modelStyle.mColor);
+    assignIfSet(box->style().mBackgroundColor, modelStyle.mBackgroundColor);
+    assignIfSet(box->style().mAlignment, modelStyle.mAlignment);
+    assignIfSet(box->style().mLineSpacing, modelStyle.mLineSpacing);
+    assignIfSet(box->style().mOpacity, modelStyle.mOpacity);
+    assignIfSet(box->style().mPadding, modelStyle.mPadding);
+    assignIfSet(box->style().mBorderRadius, modelStyle.mBorderRadius);
+    assignIfSet(box->style().mTextMarker.color, modelStyle.mTextMarker.color);
+    assignIfSet(box->style().mTextMarker.fontWeight, modelStyle.mTextMarker.fontWeight);
+    assignIfSet(box->style().mBorder.width, modelStyle.mBorder.width);
+    assignIfSet(box->style().mBorder.style, modelStyle.mBorder.style);
+    assignIfSet(box->style().mBorder.color, modelStyle.mBorder.color);
+    if(modelStyle.mText && !modelStyle.mText->isEmpty()) {
+        box->style().mText = modelStyle.mText;
+    }
 }
 
-void applyGeometryIfNotSet(BoxStyle &appliedStyle, const BoxGeometry &rect) {
-    appliedStyle.mGeometry.setLeftIfNotSet(rect.left());
-    appliedStyle.mGeometry.setTopIfNotSet(rect.top());
-    appliedStyle.mGeometry.setWidthIfNotSet(rect.width());
-    appliedStyle.mGeometry.setHeightIfNotSet(rect.height());
-    appliedStyle.mGeometry.setAngleIfNotSet(rect.angle());
+void applyGeometryToBoxIfSetInModel(Box::Ptr box, const BoxGeometry &modelGeometry) {
+
+    if(modelGeometry.left()) {
+        box->geometry().setLeft(modelGeometry.leftDisplay());
+    }
+    if(modelGeometry.top()) {
+        box->geometry().setTop(modelGeometry.topDisplay());
+    }
+    if(modelGeometry.width()) {
+        box->geometry().setWidth(modelGeometry.widthDisplay());
+    }
+    if(modelGeometry.height()) {
+        box->geometry().setHeight(modelGeometry.heightDisplay());
+    }
+    if(modelGeometry.angle()) {
+        box->geometry().setAngle(modelGeometry.angleDisplay());
+    }
 }
 
 void applyStandardTemplateToBox(Box::Ptr box) {
     QRect rect;
     auto style = box->style();
 
-    // set standart geometry
+    // set standard geometry
     if(style.getClass() == "title") {
         rect = QRect(50, 40, 1500, 100);
     }
@@ -84,8 +97,7 @@ void applyStandardTemplateToBox(Box::Ptr box) {
         rect = QRect(50, 200, 300, 100);
     }
 
-    applyGeometryIfNotSet(style, BoxGeometry(rect, 0));
-    box->setBoxStyle(style);
+    applyGeometryToBoxIfSetInModel(box, BoxGeometry(rect, 0));
 }
 
 Box::Ptr findBoxCondition(std::vector<Slide::Ptr> slides, auto func) {
@@ -95,7 +107,6 @@ Box::Ptr findBoxCondition(std::vector<Slide::Ptr> slides, auto func) {
                 return box;
     return {};
 }
-
 }
 
 Presentation::Presentation() : QObject()
@@ -105,18 +116,20 @@ Presentation::Presentation() : QObject()
 void Presentation::setData(PresentationData data) {
     mSlides = data.mSlideList;
     mTemplate = data.mTemplate;
-    applyConfigurationTemplate();
+    applyConfiguration();
     Q_EMIT slideChanged(0, mSlides.numberSlides());
 }
 
-void Presentation::applyConfigurationTemplate() {
-    applyConfiguration();
-    applyDefinedClass(mSlides);
+void Presentation::applyConfiguration() {
+    applyStandardTemplate(mSlides);
     if(mTemplate) {
         mTemplate->applyTemplate(mSlides);
     }
-    applyStandardTemplate(mSlides);
+    applyDefinedClass(mSlides);
+
     setTitleIfTextUnset(mSlides);
+    applyJSONGeometries();
+    applyCSSProperties(mSlides);
 }
 
 const SlideList &Presentation::slideList() const {
@@ -137,7 +150,7 @@ void Presentation::setBoxGeometry(const QString &boxId, BoxGeometry const& rect,
 void Presentation::deleteBoxGeometry(const QString &boxId, int pageNumber) {
     mConfig.deleteRect(boxId);
     findBox(boxId)->setGeometry(BoxGeometry());
-    applyConfigurationTemplate();
+    applyConfiguration();
     Q_EMIT slideChanged(pageNumber, pageNumber);
     Q_EMIT boxGeometryChanged();
 }
@@ -147,7 +160,7 @@ void Presentation::deleteBoxAngle(const QString &boxId, int pageNumber) {
     auto const box = findBox(boxId);
     auto const rect = box->geometry().rect();
     findBox(boxId)->setGeometry(BoxGeometry(rect, 0));
-    applyConfigurationTemplate();
+    applyConfiguration();
     Q_EMIT slideChanged(pageNumber, pageNumber);
     Q_EMIT boxGeometryChanged();
 }
@@ -161,18 +174,22 @@ void Presentation::setConfig(ConfigBoxes config) {
     Q_EMIT rebuildNeeded();
 }
 
-void Presentation::applyConfiguration() {
+void Presentation::applyJSONGeometries() {
     forEachBox(mSlides, [this](Slide::Ptr slide, Box::Ptr box){
-        auto const config = mConfig.getRect(box->configId());
-        if(config.empty()) {
-            return;
-        }
-        box->geometry().setLeftIfNotSet(config.rect.left());
-        box->geometry().setTopIfNotSet(config.rect.top());
-        box->geometry().setWidthIfNotSet(config.rect.width());
-        box->geometry().setHeightIfNotSet(config.rect.height());
-        box->geometry().setAngleIfNotSet(config.angle);
+        applyJSONToBox(slide, box);
     });
+}
+
+void Presentation::applyJSONToBox(Slide::Ptr slide, Box::Ptr box) const {
+    auto const config = mConfig.getRect(box->configId());
+    if(config.empty()) {
+        return;
+    }
+    box->geometry().setLeft(config.rect.left());
+    box->geometry().setTop(config.rect.top());
+    box->geometry().setWidth(config.rect.width());
+    box->geometry().setHeight(config.rect.height());
+    box->geometry().setAngle(config.angle);
 }
 
 void Presentation::applyDefinedClass(const SlideList &slides) {
@@ -182,22 +199,20 @@ void Presentation::applyDefinedClass(const SlideList &slides) {
         if(!box->style().mClass){
             return;
         }
-        auto style = box->style();
         auto const boxKey = box->style().mClass.value();
-        if(definedClasses.find(slideKey + "-" + boxKey) != definedClasses.end()) {
-            auto const definedClassStyle = definedClasses.find(slideKey + "-" + boxKey)->second;
-            applyGeometryIfNotSet(style, definedClassStyle.mGeometry);
-            style = setStyleIfNotSet(style, definedClassStyle);
-        }
         if(definedClasses.find(boxKey) != definedClasses.end()) {
             auto const definedClassStyle = definedClasses.find(boxKey)->second;
-            applyGeometryIfNotSet(style, definedClassStyle.mGeometry);
-            style = setStyleIfNotSet(style, definedClassStyle);
+            applyGeometryToBoxIfSetInModel(box, definedClassStyle.mGeometry);
+            setStyleToBoxIfSetInModel(box, definedClassStyle);
+        }
+        if(definedClasses.find(slideKey + "-" + boxKey) != definedClasses.end()) {
+            auto const definedClassStyle = definedClasses.find(slideKey + "-" + boxKey)->second;
+            applyGeometryToBoxIfSetInModel(box, definedClassStyle.mGeometry);
+            setStyleToBoxIfSetInModel(box, definedClassStyle);
         }
         else {
             return;
         }
-        box->setBoxStyle(style);
     });
 }
 
@@ -224,10 +239,6 @@ QSize Presentation::dimensions() const {
 
 int Presentation::numberOfSlides() const {
     return mSlides.numberSlides();
-}
-
-namespace  {
-
 }
 
 Box::Ptr Presentation::findBox(const QString &id) const {
@@ -288,13 +299,15 @@ void Presentation::deleteNotNeededConfigurations() {
 
 std::map<QString, BoxStyle> Presentation::createMapDefinesClass() const {
     std::map<QString, BoxStyle> definitionClass;
-    forEachBox(mSlides, [&definitionClass](Slide::Ptr slide, Box::Ptr box){
+    forEachBox(mSlides, [&definitionClass, this](Slide::Ptr slide, Box::Ptr box){
         if(box->style().mDefineclass) {
+            applyJSONToBox(slide, box);
+            setStyleToBoxIfSetInModel(box, box->properties());
+            QString key = "";
             if(!slide->definesClass().isEmpty()) {
-                auto const key = slide->definesClass() + "-" + box->style().mDefineclass.value();
-                definitionClass[key] = box->style();
+                key = slide->definesClass() + "-" ;
             }
-            auto const key = box->style().mDefineclass.value();
+            key.append(box->style().mDefineclass.value());
             definitionClass[key] = box->style();
         }
     });
@@ -311,4 +324,11 @@ QString Presentation::title() const {
         return "presentation";
     }
     return title->second;
+}
+
+void Presentation::applyCSSProperties(const SlideList &slides) {
+    auto lambda = [](auto slide, auto box){
+        setStyleToBoxIfSetInModel(box, box->properties());
+    };
+    forEachBox(mSlides, lambda);
 }

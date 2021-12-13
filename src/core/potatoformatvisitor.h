@@ -74,8 +74,11 @@ private:
     QString mText;
     QString mCommand;
 
-    BoxStyle mCurrentBoxStyle;
+    // style set by the properties in the squared brackets
+    BoxStyle mPropertyStyle;
+    // style set by the setvalue command
     BoxStyle mStandardBoxStyle;
+    // varaibles set by setvalue
     std::map<QString, QString> mVariables;
 
     potatoParser& mParser;

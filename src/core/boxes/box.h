@@ -30,6 +30,12 @@ enum PauseDisplayMode {
     fromPauseOn
 };
 
+struct Pause {
+    PauseDisplayMode mDisplayMode;
+    int mCount;
+};
+
+// when adding properties here, add them in PotatoFormateVisitor and Presentation
 struct BoxStyle{
     QString mId = "";
     std::optional<QString> mClass;
@@ -117,7 +123,7 @@ struct BoxStyle{
         return mLine;
     }
     QString configId() const {
-        return mConfigId.value_or(mId);
+        return mConfigId.value_or(id());
     }
     QString text() const {
         return mText.value_or("");
@@ -132,6 +138,9 @@ struct BoxStyle{
     QRect paintableRect() const {
         auto rect = mGeometry.rect().marginsRemoved(QMargins(padding(), padding(), padding(), padding()));
         return rect;
+    }
+    BoxGeometry const& geometry() const {
+        return mGeometry;
     }
 };
 
@@ -156,12 +165,20 @@ public:
     BoxStyle& style();
     BoxGeometry& geometry();
 
+    // boxstyle of properties set in the sqared brackets
+    BoxStyle const& properties() const;
+    BoxStyle& properties();
+    void setProperties(BoxStyle properties);
+
     void setBoxStyle(BoxStyle style);
     void setGeometry(BoxGeometry const& geometry);
     void setGeometry(MemberBoxGeometry const& geometry);
 
     const QString id() const;
-    void setId(QString const& id);
+    void setId(QString id);
+
+    void setClass(std::optional<QString> const& boxClass);
+    void setDefinesClass(std::optional<QString> const& definesClass);
 
     // line in input file where box is defined
     int line() const;
@@ -171,11 +188,12 @@ public:
 //    void setConfigId(QString configId);
     QString configId() const;
     void setConfigId(QString configId);
+    void setLine(int line);
 
     // box is only shown on one pause counter or on different
     void setPauseMode(PauseDisplayMode mode);
     void setPauseCounter(int counter);
-    std::pair<int, PauseDisplayMode> pauseCounter() const;
+    Pause pauseCounter() const;
 
 protected:
     // Call this in child classes when implemting drawContent to substitute variables (e.g. page number)
@@ -204,6 +222,6 @@ private:
     void endDraw(QPainter& painter) const;
 
 private:
-    int mPauseCounter = 0;
-    PauseDisplayMode mPauseMode = PauseDisplayMode::fromPauseOn;
+    Pause mPause = {PauseDisplayMode::fromPauseOn, 0};
+    BoxStyle mProperty;
 };

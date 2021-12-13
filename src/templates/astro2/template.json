@@ -100,6 +100,56 @@
         }
     },
     {
+        "id": "intern-definitions-geometry-default-0",
+        "rect": {
+            "angle": 0,
+            "height": 670,
+            "width": 1658,
+            "xPosition": 0,
+            "yPosition": 130
+        }
+    },
+    {
+        "id": "intern-definitions-text-default-0",
+        "rect": {
+            "angle": 0,
+            "height": 100,
+            "width": 1448,
+            "xPosition": 36,
+            "yPosition": 21
+        }
+    },
+    {
+        "id": "intern-definitions-text-default-1",
+        "rect": {
+            "angle": 0,
+            "height": 53,
+            "width": 997,
+            "xPosition": 36,
+            "yPosition": 78
+        }
+    },
+    {
+        "id": "intern-definitions-text-default-2",
+        "rect": {
+            "angle": 0,
+            "height": 55,
+            "width": 1513,
+            "xPosition": 36,
+            "yPosition": 846
+        }
+    },
+    {
+        "id": "intern-definitions-text-default-3",
+        "rect": {
+            "angle": 0,
+            "height": 58,
+            "width": 119,
+            "xPosition": 1447,
+            "yPosition": 21
+        }
+    },
+    {
         "id": "intern-titlepage-geometry-default-0",
         "rect": {
             "angle": 0,

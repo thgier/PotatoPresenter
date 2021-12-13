@@ -61,7 +61,7 @@ private:
     Variables mVariables;
     QString mClass;
     int mLine;
-    BoxStyle mStandardStyle;
+    BoxStyle mDefaultStyle;
     QString mDefinesClass;
 };
 

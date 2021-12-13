@@ -100,6 +100,16 @@
         }
     },
     {
+        "id": "intern-definitions-image-image-0",
+        "rect": {
+            "angle": 0,
+            "height": 161,
+            "width": 195,
+            "xPosition": 1341,
+            "yPosition": 30
+        }
+    },
+    {
         "id": "intern-titlepage-geometry-default-0",
         "rect": {
             "angle": 0,
@@ -123,10 +133,10 @@
         "id": "intern-titlepage-image-image-0",
         "rect": {
             "angle": 0,
-            "height": 140,
-            "width": 182,
-            "xPosition": 1377,
-            "yPosition": 22
+            "height": 559,
+            "width": 678,
+            "xPosition": 858,
+            "yPosition": 210
         }
     },
     {
