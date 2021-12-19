@@ -16,12 +16,12 @@ QVariant SlideListModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    if (index.row() >= int(mPresentation->slideList().vector.size()))
+    if (index.row() >= mPresentation->numberOfSlides())
         return QVariant();
 
     if (role == Qt::DisplayRole){
         QVariant var;
-        auto slide = mPresentation->slideList().vector[index.row()];
+        auto slide = mPresentation->slideListDefaultApplied().vector[index.row()];
         var.setValue(slide);
         return var;
     }

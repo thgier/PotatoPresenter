@@ -292,7 +292,13 @@ void MainWindow::fileChanged() {
                 mTemplateCache.setTemplate(presentationTemplate, templateName);
             }
         }
-        mPresentation->setData({slides, presentationTemplate});
+        try {
+            mPresentation->setData({slides, presentationTemplate});
+        }  catch (PorpertyConversionError error) {
+            mErrorOutput->setText("Line " + QString::number(error.line + 1) + ": " + error.message + " \u26A0");
+            iface->addMark(error.line, KTextEditor::MarkInterface::MarkTypes::Error);
+            return;
+        }
         mErrorOutput->setText("Conversion succeeded \u2714");
     }
     else {
@@ -331,7 +337,12 @@ std::shared_ptr<Template> MainWindow::readTemplate(QString templateName) const {
 
     if(parserOutput.successfull()) {
         auto const slides = parserOutput.slideList();
-        thisTemplate->setSlides(slides);
+        try {
+            thisTemplate->setSlides(slides);
+        }  catch (PorpertyConversionError & error) {
+            mErrorOutput->setText("Cannot load template: Line " + QString::number(error.line + 1) + ": " + error.message + " \u26A0");
+            return {};
+        }
         return thisTemplate;
     }
     else {
@@ -711,7 +722,11 @@ Presentation::Ptr MainWindow::generateTemplatePresentation(QString directory) co
             templateName = directory + "/" + templateName;
         }
         auto const presentationTemplate = readTemplate(templateName);
-        presentation->setData({slides, presentationTemplate});
+        try {
+            presentation->setData({slides, presentationTemplate});
+        }  catch (PorpertyConversionError) {
+            return {};
+        }
         return presentation;
     }
     else {

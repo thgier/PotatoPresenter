@@ -197,16 +197,20 @@ Pause Box::pauseCounter() const {
     return mPause;
 }
 
-BoxStyle const& Box::properties() const  {
-    return mProperty;
+const Box::Properties &Box::properties() const  {
+    return mProperties;
 }
 
-BoxStyle& Box::properties()  {
-    return mProperty;
+Box::Properties& Box::properties()  {
+    return mProperties;
 }
 
-void Box::setProperties(BoxStyle properties) {
-    mProperty = properties;
+void Box::setProperties(Box::Properties properties) {
+    mProperties = properties;
+}
+
+void Box::setProperty(const QString &property, PropertyEntry const& entry) {
+    mProperties[property] = entry;
 }
 
 void Box::setClass(const std::optional<QString> &boxClass) {

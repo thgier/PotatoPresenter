@@ -133,7 +133,7 @@ void SlideWidget::paintEvent(QPaintEvent*)
     painter.setClipRect(QRect(QPoint(0, 0), mSize));
 
     SlideRenderer paint(painter);
-    auto const slide = mPresentation->slideList().slideAt(mPageNumber);
+    auto const slide = mPresentation->slideListDefaultApplied().slideAt(mPageNumber);
     paint.paintSlide(slide);
     mCurrentSlideId = slide->id();
 

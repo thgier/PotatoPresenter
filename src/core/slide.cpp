@@ -95,6 +95,10 @@ Variables const& Slide::variables() const{
     return mVariables;
 }
 
+Variables& Slide::variables() {
+    return mVariables;
+}
+
 void Slide::setVariable(QString const& name, QString const& value){
     mVariables[name] = value;
 }
@@ -115,7 +119,10 @@ void Slide::setSlideClass(QString const& slideClass) {
     mClass = slideClass;
 }
 
-const QString &Slide::slideClass() const {
+QString Slide::slideClass() const {
+    if(mClass.isEmpty()) {
+        return "default";
+    }
     return mClass;
 }
 

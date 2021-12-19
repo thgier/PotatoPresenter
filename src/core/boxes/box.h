@@ -20,6 +20,11 @@ enum PresentationRenderHints {
     NoPreviewRendering = 4
 };
 
+struct PropertyEntry {
+    QString mValue;
+    int mLine;
+};
+
 enum FontWeight{
     normal,
     bold
@@ -33,6 +38,11 @@ enum PauseDisplayMode {
 struct Pause {
     PauseDisplayMode mDisplayMode;
     int mCount;
+};
+
+struct PorpertyConversionError {
+    QString message;
+    int line;
 };
 
 // when adding properties here, add them in PotatoFormateVisitor and Presentation
@@ -144,12 +154,12 @@ struct BoxStyle{
     }
 };
 
-
 class Box
 {
 public:
     using Ptr = std::shared_ptr<Box>;
     using List = std::vector<Ptr>;
+    using Properties = std::unordered_map<QString, PropertyEntry>;
 
     // Implement this in child classes to draw the box's contents given the passed @p variables
     virtual void drawContent(QPainter& painter, std::map<QString, QString> const& variables, PresentationRenderHints hints = PresentationRenderHints::NoRenderHints) = 0;
@@ -166,9 +176,10 @@ public:
     BoxGeometry& geometry();
 
     // boxstyle of properties set in the sqared brackets
-    BoxStyle const& properties() const;
-    BoxStyle& properties();
-    void setProperties(BoxStyle properties);
+    Box::Properties const& properties() const;
+    Box::Properties& properties();
+    void setProperties(Box::Properties properties);
+    void setProperty(QString const& property, const PropertyEntry &entry);
 
     void setBoxStyle(BoxStyle style);
     void setGeometry(BoxGeometry const& geometry);
@@ -223,5 +234,5 @@ private:
 
 private:
     Pause mPause = {PauseDisplayMode::fromPauseOn, 0};
-    BoxStyle mProperty;
+    Box::Properties mProperties;
 };

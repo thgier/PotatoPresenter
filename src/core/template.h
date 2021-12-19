@@ -31,11 +31,13 @@ public:
     // apply template to a slide list
     void applyTemplate(SlideList& slideList);
 
+    Variables const& variables();
+
 private:
     Box::List getTemplateSlide(QString slideId) const;
 
 private:
     Presentation mPresentation;
-    std::map<QString, QString> mVariables;
     std::map<QString, Slide> mTemplateSlides;
+    Variables mVariables;
 };

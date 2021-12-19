@@ -37,7 +37,6 @@ public:
 
     void setDirectory(QString directory);
     void applyPause(QString text);
-    BoxStyle applyProperty(BoxStyle &boxstyle, QString property, QString value, int line);
 
 //    acess varibles
     SlideList slides() const;
@@ -75,9 +74,7 @@ private:
     QString mCommand;
 
     // style set by the properties in the squared brackets
-    BoxStyle mPropertyStyle;
-    // style set by the setvalue command
-    BoxStyle mStandardBoxStyle;
+    Box::Properties mProperties;
     // varaibles set by setvalue
     std::map<QString, QString> mVariables;
 

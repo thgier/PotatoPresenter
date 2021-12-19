@@ -5,8 +5,19 @@
 */
 
 #include "template.h"
+#include "utils.h"
 #include <QFile>
 #include <algorithm>
+
+namespace  {
+void addVariableIfNotExist(Variables & variables, Variables const& addedVariables) {
+    for(auto const& addedVariable: addedVariables) {
+        if(variables.find(addedVariable.first) == variables.end()) {
+            variables[addedVariable.first] = addedVariable.second;
+        }
+    }
+}
+}
 
 Template::Template()
 {
@@ -36,14 +47,20 @@ Box::List Template::getTemplateSlide(QString slideId) const {
 
 void Template::setSlides(SlideList slides) {
     mPresentation.setData({slides, nullptr});
+    mVariables = slides.lastSlide()->variables();
 }
 
 void Template::applyTemplate(SlideList& slideList) {
     mPresentation.applyDefinedClass(slideList);
     for(auto const& slide: slideList.vector) {
         auto const slideclass = slide->slideClass();
-        Box::List boxlist;
-        boxlist = getTemplateSlide(slideclass);
-        slide->setTemplateBoxes(boxlist);
+        auto const boxlist = getTemplateSlide(slideclass);
+        slide->setTemplateBoxes(copy(boxlist));
+        addVariableIfNotExist(slide->variables(), mVariables);
     }
+}
+
+
+Variables const& Template::variables() {
+    return mVariables;
 }

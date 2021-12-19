@@ -34,6 +34,19 @@ namespace  {
         text.remove(0, 2);
     }
 
+    void setClassIfEmpty(QString const& boxClass, PropertyEntry const& defaultClassEntry, Box::Properties & properties) {
+        if(boxClass.isEmpty()) {
+            properties["class"] = defaultClassEntry;
+        }
+    }
+
+    QString getValueAsQStringForProperty(QString const& property, Box::Properties & properties) {
+        if(properties.find(property) != properties.end()) {
+            return properties.find(property)->second.mValue;
+        }
+        return {};
+    }
+
 }
 
 PotatoFormatVisitor::PotatoFormatVisitor(potatoParser &parser)
@@ -72,7 +85,7 @@ void PotatoFormatVisitor::PotatoFormatVisitor::exitBox(potatoParser::BoxContext 
         newSlide(text, line);
         mLastCommandSetVariable = false;
         mInPreamble = false;
-        mPropertyStyle = BoxStyle();
+        mProperties.clear();
         return;
     }
 
@@ -102,7 +115,7 @@ void PotatoFormatVisitor::PotatoFormatVisitor::exitBox(potatoParser::BoxContext 
         }
 
         createNewBox(command, text, line);
-        mPropertyStyle = BoxStyle();
+        mProperties.clear();
         return;
     }
 
@@ -130,229 +143,7 @@ void PotatoFormatVisitor::exitProperty_entry(potatoParser::Property_entryContext
     if(value.isEmpty()) {
         throw ParserError{"Expected value.", line};
     }
-
-    mPropertyStyle = applyProperty(mPropertyStyle, property, value, line);
-}
-
-BoxStyle PotatoFormatVisitor::applyProperty(BoxStyle &boxstyle, QString property, QString value, int line) {
-    bool numberOk = true;
-
-    if(property == "defineclass") {
-        boxstyle.mDefineclass = value;
-    }
-    else if(property == "color"){
-        QColor color;
-        color.setNamedColor(QString(value));
-        if(!color.isValid()) {
-            throw ParserError{QString("Invalid color '%1'").arg(QString(value)), line};
-        }
-        boxstyle.mColor = color;
-    }
-    else if(property == "opacity"){
-        boxstyle.mOpacity = value.toDouble(&numberOk);
-    }
-    else if(property == "font-size"){
-        boxstyle.mFontSize = value.toInt(&numberOk);
-    }
-    else if(property == "line-height"){
-        if(value.toDouble() != 0){
-            boxstyle.mLineSpacing = value.toDouble(&numberOk);
-        }
-    }
-    else if(property == "font-weight"){
-        if(QString(value) == "bold"){
-            boxstyle.mFontWeight = FontWeight::bold;
-        }
-        else if(QString(value) == "normal"){
-            boxstyle.mFontWeight = FontWeight::normal;
-        }
-        else{
-            throw ParserError{"Invalid value for 'font-weight' (possible values: bold, normal)", line};
-        }
-    }
-    else if(property == "font-family"){
-        boxstyle.mFont = QString(value);
-    }
-    else if(property == "id"){
-        boxstyle.mId = value;
-        if(value.startsWith("intern")) {
-            throw ParserError{"User defined box IDs must not start with \"intern\"", line};
-        }
-        if(mBoxIds.find(value) != mBoxIds.end()) {
-            throw ParserError{"Duplicate box ID", line};
-        }
-        mBoxIds.insert(value);
-    }
-    else if(property == "left"){
-        boxstyle.mGeometry.setLeft(value.toInt(&numberOk));
-        boxstyle.movable = false;
-    }
-    else if(property == "top"){
-        boxstyle.mGeometry.setTop(value.toInt(&numberOk));
-        boxstyle.movable = false;
-    }
-    else if(property == "width"){
-        boxstyle.mGeometry.setWidth(value.toInt(&numberOk));
-        boxstyle.movable = false;
-    }
-    else if(property == "height"){
-        boxstyle.mGeometry.setHeight(value.toInt(&numberOk));
-        boxstyle.movable = false;
-    }
-    else if(property == "angle"){
-        boxstyle.mGeometry.setAngle(value.toDouble(&numberOk));
-        boxstyle.movable = false;
-    }
-    else if(property == "movable"){
-        if(value == "true") {
-            boxstyle.movable = true;
-        }
-        else if(value == "false") {
-            boxstyle.movable = false;
-        }
-        else {
-            throw ParserError{"Invalid value for 'movable' (possible values: true, false)", line};
-        }
-    }
-    else if(property == "text-align"){
-        if(value == "left") {
-            boxstyle.mAlignment = Qt::AlignLeft;
-        }
-        else if(value == "right") {
-            boxstyle.mAlignment = Qt::AlignRight;
-        }
-        else if(value == "center") {
-            boxstyle.mAlignment = Qt::AlignCenter;
-        }
-        else if(value == "justify") {
-            boxstyle.mAlignment = Qt::AlignJustify;
-        }
-        else {
-            throw ParserError{"Invalid value for 'text-align' (possible values: left, right, center, justify)", line};
-        }
-    }
-    else if(property == "class"){
-        boxstyle.mClass = value;
-    }
-    else if(property == "language"){
-        boxstyle.language = QString(value);
-    }
-    else if(property == "background"){
-        QColor color;
-        color.setNamedColor(value);
-        if(!color.isValid()) {
-            throw ParserError{"Invalid color", line};
-        }
-        boxstyle.mBackgroundColor = color;
-    }
-    else if(property == "background-color"){
-        QColor color;
-        color.setNamedColor(value);
-        if(!color.isValid()) {
-            throw ParserError{"Invalid color", line};
-        }
-        boxstyle.mBackgroundColor = color;
-    }
-    else if(property == "padding") {
-        boxstyle.mPadding = value.toInt(&numberOk);
-    }
-    else if(property == "border-radius") {
-        boxstyle.mBorderRadius = value.toInt(&numberOk);
-    }
-    else if(property == "border"){
-        auto const borderStyles = std::set<QString>{"solid", "dashed", "dotted", "double"};
-        bool borderOk = true;
-        auto values = QString(value).split(" ");
-        if(values.empty()) {
-            return {};
-        }
-        if (values[0].endsWith("px") && values.length() >= 2) {
-            auto value = values[0];
-            value.chop(2);
-            boxstyle.mBorder.width = value.toInt(&borderOk);
-            if(borderStyles.find(values[1]) != borderStyles.end()) {
-                boxstyle.mBorder.style = values[1];
-            }
-            else {
-                borderOk = false;
-            }
-            if (values.length() >= 3) {
-                auto const color = QColor(QString(values[2]));
-                borderOk = borderOk && color.isValid();
-                boxstyle.mBorder.color = color;
-            }
-        }
-        else {
-            if(borderStyles.find(values[0]) != borderStyles.end()) {
-                boxstyle.mBorder.style = values[0];
-            }
-            else {
-                borderOk = false;
-            }
-            if(values.length() >= 2) {
-                auto const color = QColor(QString(values[1]));
-                borderOk = borderOk && color.isValid();
-                boxstyle.mBorder.color = color;
-            }
-        }
-        if(!borderOk) {
-            throw ParserError{"Give border in format: \"border: border-width px border-style (required) border color\", e.g. \"4px solid red\"", line};
-        }
-    }
-    else if (property == "marker") {
-        auto values = QString(value).split(" ");
-        if(values.empty()) {
-            return {};
-        }
-        if(values[0] == "bold") {
-            boxstyle.mTextMarker.fontWeight = FontWeight::bold;
-        }
-        else if(values[0] == "normal") {
-            boxstyle.mTextMarker.fontWeight = FontWeight::normal;
-        }
-        else {
-            boxstyle.mTextMarker.color = QColor(QString(values[0]));
-            if(values.length() > 1) {
-                if(values[1] == "bold") {
-                    boxstyle.mTextMarker.fontWeight = FontWeight::bold;
-                }
-                else if(values[1] == "normal") {
-                    boxstyle.mTextMarker.fontWeight = FontWeight::normal;
-                }
-            }
-        }
-    }
-    else {
-        throw ParserError{QString("Invalid Argument %1.").arg(property), line};
-    }
-    if(!numberOk) {
-        throw ParserError{"Invalid number", line};
-    }
-    return boxstyle;
-}
-
-void PotatoFormatVisitor::exitPotato(potatoParser::PotatoContext * /*ctx*/) {
-    auto const totalNumberOfPages = mSlideList.numberSlides();
-    for (auto const & slide : mSlideList.vector) {
-        slide->setVariable("%{totalpages}", QString::number(totalNumberOfPages));
-    }
-}
-
-void PotatoFormatVisitor::readPreambleCommand(QString command, QString text, int line) {
-    if(command == "usetemplate") {
-        if(!mParsingTemplate) {
-            mPreamble = Preamble{text, line};
-        }
-        else {
-            throw ParserError{QString("Unexpected command %1 in template.").arg(command), line};
-        }
-    }
-    else if(command == "setvar") {
-        setVariable(text, line);
-    }
-    else {
-        throw ParserError{QString("Unexpected command %1.").arg(command), line};
-    }
+    mProperties[property] = {value, line};
 }
 
 void PotatoFormatVisitor::newSlide(QString id, int line) {
@@ -368,10 +159,11 @@ void PotatoFormatVisitor::newSlide(QString id, int line) {
         throw ParserError{QString("Slide id %1 already exists.").arg(id), line};
     }
     mSlideList.appendSlide(std::make_shared<Slide>(id, line));
-    mSlideList.lastSlide()->setSlideClass(mPropertyStyle.getClass());
-
-    if (mPropertyStyle.mDefineclass) {
-        mSlideList.lastSlide()->setDefinesClass(mPropertyStyle.mDefineclass.value());
+    if(mProperties.find("class") != mProperties.end()) {
+        mSlideList.lastSlide()->setSlideClass(mProperties.find("class")->second.mValue);
+    }
+    if (mProperties.find("defineclass") != mProperties.end()) {
+        mSlideList.lastSlide()->setDefinesClass(mProperties.find("defineclass")->second.mValue);
     }
     // set variables
     mSlideList.lastSlide()->setVariables(mVariables);
@@ -382,7 +174,7 @@ void PotatoFormatVisitor::newSlide(QString id, int line) {
     if(mVariables.find("%{resourcepath}") == mVariables.end()){
         mSlideList.lastSlide()->setVariable("%{resourcepath}", mResourcepath);
     }
-    mPropertyStyle = BoxStyle();
+    mProperties.clear();
 }
 
 void PotatoFormatVisitor::setVariable(QString text, int line) {
@@ -391,19 +183,19 @@ void PotatoFormatVisitor::setVariable(QString text, int line) {
     list.removeFirst();
     auto const value = list.join(" ");
     // try if the value is a property if not a Parser error get thrown, in this case append to variables
-    try {
-        mStandardBoxStyle = applyProperty(mStandardBoxStyle, variable, value, line);
-    }  catch (ParserError) {
-    }
     mVariables[addBracketsToVariable(variable)] = value;
 
 }
 
 void PotatoFormatVisitor::createNewBox(QString command, QString text, int line) {
     if(!text.isEmpty()) {
-        mPropertyStyle.mText = text;
+        mProperties["text"] = {text, line};
     }
     std::shared_ptr<Box> box;
+    QString boxClass;
+    if(mProperties.find("class") != mProperties.end()) {
+        boxClass = mProperties.find("class")->second.mValue;
+    }
     if(command == "text"){
         box = std::make_shared<MarkdownTextBox>();
     }
@@ -412,23 +204,19 @@ void PotatoFormatVisitor::createNewBox(QString command, QString text, int line) 
             throw ParserError {"One line text expected.", line};
         }
         box = std::make_shared<ImageBox>();
-        if(!mPropertyStyle.mClass.has_value()) {
-            mPropertyStyle.mClass = "image";
-        }
+        setClassIfEmpty(boxClass, {"image", line}, mProperties);
     }
     else if(command == "code"){
         box = std::make_shared<CodeBox>();
-        if(!mPropertyStyle.mClass) {
-            mPropertyStyle.mClass = "code";
-        }
+        setClassIfEmpty(boxClass, {"code", line}, mProperties);
     }
     else if(command == "body"){
         box = std::make_shared<MarkdownTextBox>();
-        mPropertyStyle.mClass = "body";
+        mProperties["class"] = {"body", line};
     }
     else if(command == "title"){
         box = std::make_shared<MarkdownTextBox>();
-        mPropertyStyle.mClass = "title";
+        mProperties["class"] = {"title", line};
     }
     else if (command == "blindtext") {
         text = "Lorem ipsum dolor sit amet, consectetur adipisici elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquid ex ea commodi consequat. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
@@ -442,26 +230,31 @@ void PotatoFormatVisitor::createNewBox(QString command, QString text, int line) 
     }
     else if (command == "latex") {
         box = std::make_shared<LaTeXBox>();
-        if(!mPropertyStyle.mClass.has_value()) {
-            mPropertyStyle.mClass = "body";
-        }
+        setClassIfEmpty(boxClass, {"body", line}, mProperties);
     }
 
-    auto id = mPropertyStyle.id();
+    auto newBoxClass = getValueAsQStringForProperty("class", mProperties);
+    if(newBoxClass.isEmpty()) {
+        newBoxClass = "default";
+    }
+    auto id = getValueAsQStringForProperty("id", mProperties);
     if(id.isEmpty()) {
-        id = generateId(command, mPropertyStyle.getClass());
+        id = generateId(command, newBoxClass);
+    }
+    else if (mBoxIds.find(id) != mBoxIds.end()) {
+        throw ParserError {"Duplicated box ID.", line};
     }
 
-    box->setProperties(mPropertyStyle);
-    box->setBoxStyle(mStandardBoxStyle);
+    box->setProperties(mProperties);
 
     box->setId(id);
     box->setLine(line);
-    box->setClass(mPropertyStyle.mClass);
-    box->setDefinesClass(mPropertyStyle.mDefineclass);
+    if(mProperties.find("defineclass") != mProperties.end()) {
+        box->setDefinesClass(mProperties.find("defineclass")->second.mValue);
+    }
     box->setPauseCounter(mPauseCount);
-    if(mPropertyStyle.mText) {
-        box->style().mText = mPropertyStyle.text();
+    if(!getValueAsQStringForProperty("text", mProperties).isEmpty()) {
+        box->style().mText = getValueAsQStringForProperty("text", mProperties);
     }
 
     mSlideList.lastSlide()->appendBox(box);
@@ -509,14 +302,37 @@ void PotatoFormatVisitor::applyPause(QString text) {
     lastTextBox->setPauseMode(PauseDisplayMode::onlyInPause);
 
     auto box = lastTextBox->clone();
-    auto testText = box->text();
     if(!text.isEmpty() && !box->text().isEmpty())
         text.insert(0, '\n');
-    box->properties().mText = lastTextBox->text() + text;
+    box->setProperty("text", {lastTextBox->text() + text, box->line()});
     box->style().mText = lastTextBox->text() + text;
     box->setPauseCounter(mPauseCount);
     lastTextBox->setId(lastTextBox->configId() + "-" + mPauseCount);
     lastTextBox->setConfigId(box->id());
     box->setPauseMode(PauseDisplayMode::fromPauseOn);
     mSlideList.vector.back()->appendBox(box);
+}
+
+void PotatoFormatVisitor::exitPotato(potatoParser::PotatoContext * /*ctx*/) {
+    auto const totalNumberOfPages = mSlideList.numberSlides();
+    for (auto const & slide : mSlideList.vector) {
+        slide->setVariable("%{totalpages}", QString::number(totalNumberOfPages));
+    }
+}
+
+void PotatoFormatVisitor::readPreambleCommand(QString command, QString text, int line) {
+    if(command == "usetemplate") {
+        if(!mParsingTemplate) {
+            mPreamble = Preamble{text, line};
+        }
+        else {
+            throw ParserError{QString("Unexpected command %1 in template.").arg(command), line};
+        }
+    }
+    else if(command == "setvar") {
+        setVariable(text, line);
+    }
+    else {
+        throw ParserError{QString("Unexpected command %1.").arg(command), line};
+    }
 }

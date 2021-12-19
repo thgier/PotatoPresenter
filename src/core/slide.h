@@ -47,9 +47,10 @@ public:
     void setVariables(Variables const& variables);
     void setVariable(QString const& name, QString const& value);
     Variables const& variables() const;
+    Variables& variables();
 
     void setSlideClass(QString const& slideClass);
-    QString const& slideClass() const;
+    QString slideClass() const;
 
     void setDefinesClass(QString definesClass);
     QString definesClass() const;

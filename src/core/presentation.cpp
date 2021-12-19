@@ -6,6 +6,8 @@
 
 #include "presentation.h"
 #include "template.h"
+#include "src/core/utils.h"
+
 #include <QFileInfo>
 #include <QDir>
 #include <QBuffer>
@@ -17,10 +19,42 @@ void forEachBox(auto const& slides, auto func) {
         for (auto const& box: slide->boxes())
             func(slide, box);
 }
+void forEachTemplateBox(auto const& slides, auto func) {
+    for (auto const& slide: slides.vector)
+        for (auto const& box: slide->templateBoxes())
+            func(slide, box);
+}
 
 void setStyleToBoxIfSetInModel(Box::Ptr box, BoxStyle const& modelStyle) {
     auto const assignIfSet = [](auto& value, auto const& standard) {
         if(standard) {
+            value = standard;
+        }
+    };
+
+    assignIfSet(box->style().mFont, modelStyle.mFont);
+    assignIfSet(box->style().mFontSize, modelStyle.mFontSize);
+    assignIfSet(box->style().mFontWeight, modelStyle.mFontWeight);
+    assignIfSet(box->style().mColor, modelStyle.mColor);
+    assignIfSet(box->style().mBackgroundColor, modelStyle.mBackgroundColor);
+    assignIfSet(box->style().mAlignment, modelStyle.mAlignment);
+    assignIfSet(box->style().mLineSpacing, modelStyle.mLineSpacing);
+    assignIfSet(box->style().mOpacity, modelStyle.mOpacity);
+    assignIfSet(box->style().mPadding, modelStyle.mPadding);
+    assignIfSet(box->style().mBorderRadius, modelStyle.mBorderRadius);
+    assignIfSet(box->style().mTextMarker.color, modelStyle.mTextMarker.color);
+    assignIfSet(box->style().mTextMarker.fontWeight, modelStyle.mTextMarker.fontWeight);
+    assignIfSet(box->style().mBorder.width, modelStyle.mBorder.width);
+    assignIfSet(box->style().mBorder.style, modelStyle.mBorder.style);
+    assignIfSet(box->style().mBorder.color, modelStyle.mBorder.color);
+    if(modelStyle.mText && !modelStyle.mText->isEmpty()) {
+        box->style().mText = modelStyle.mText;
+    }
+}
+
+void setStyleToBoxIfNotSettedAndSetInModel(Box::Ptr box, BoxStyle const& modelStyle) {
+    auto const assignIfSet = [](auto& value, auto const& standard) {
+        if(standard && !value) {
             value = standard;
         }
     };
@@ -107,6 +141,33 @@ Box::Ptr findBoxCondition(std::vector<Slide::Ptr> slides, auto func) {
                 return box;
     return {};
 }
+
+void applyClassIDDefinclass(SlideList & slides) {
+    forEachBox(slides, [](Slide::Ptr slide, Box::Ptr box) {
+        if(box->properties().find("class") != box->properties().end()) {
+            box->style().mClass = box->properties().find("class")->second.mValue;
+        }
+        if(box->properties().find("id") != box->properties().end()) {
+            box->style().mId = box->properties().find("id")->second.mValue;
+        }
+        if(box->properties().find("defineclass") != box->properties().end()) {
+            box->style().mDefineclass = box->properties().find("defineclass")->second.mValue;
+        }
+    });
+}
+
+void applyStandardVariables(SlideList & slides) {
+    forEachBox(slides, [](auto const& slide, auto const& box){
+        auto const boxStyle = variablesToBoxStyle(slide->variables());
+        setStyleToBoxIfNotSettedAndSetInModel(box, boxStyle);
+    });
+
+    forEachTemplateBox(slides, [](auto const& slide, auto const& box){
+        auto const boxStyle = variablesToBoxStyle(slide->variables());
+        setStyleToBoxIfNotSettedAndSetInModel(box, boxStyle);
+    });
+}
+
 }
 
 Presentation::Presentation() : QObject()
@@ -121,6 +182,7 @@ void Presentation::setData(PresentationData data) {
 }
 
 void Presentation::applyConfiguration() {
+    applyClassIDDefinclass(mSlides);
     applyStandardTemplate(mSlides);
     if(mTemplate) {
         mTemplate->applyTemplate(mSlides);
@@ -133,6 +195,11 @@ void Presentation::applyConfiguration() {
 }
 
 const SlideList &Presentation::slideList() const {
+    return mSlides;
+}
+
+const SlideList &Presentation::slideListDefaultApplied() {
+    applyStandardVariables(mSlides);
     return mSlides;
 }
 
@@ -227,7 +294,7 @@ void Presentation::setTitleIfTextUnset(const SlideList &slides) {
 }
 
 
-void Presentation::applyStandardTemplate(SlideList &slides) const {
+void Presentation::applyStandardTemplate(SlideList &slides) {
     forEachBox(slides, [](Slide::Ptr slide, Box::Ptr box){
         applyStandardTemplateToBox(box);
     });
@@ -302,7 +369,7 @@ std::map<QString, BoxStyle> Presentation::createMapDefinesClass() const {
     forEachBox(mSlides, [&definitionClass, this](Slide::Ptr slide, Box::Ptr box){
         if(box->style().mDefineclass) {
             applyJSONToBox(slide, box);
-            setStyleToBoxIfSetInModel(box, box->properties());
+            setStyleToBoxIfSetInModel(box, propertyMapToBoxStyle(box->properties()));
             QString key = "";
             if(!slide->definesClass().isEmpty()) {
                 key = slide->definesClass() + "-" ;
@@ -328,7 +395,8 @@ QString Presentation::title() const {
 
 void Presentation::applyCSSProperties(const SlideList &slides) {
     auto lambda = [](auto slide, auto box){
-        setStyleToBoxIfSetInModel(box, box->properties());
+        setStyleToBoxIfSetInModel(box, propertyMapToBoxStyle(box->properties()));
     };
     forEachBox(mSlides, lambda);
 }
+

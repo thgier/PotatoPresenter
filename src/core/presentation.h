@@ -91,6 +91,7 @@ public:
 
     // Access contained Slides
     SlideList const& slideList() const;
+    SlideList const& slideListDefaultApplied();
 
     // access to contained box
     Box::Ptr findBox(QString const& id) const;
@@ -122,7 +123,7 @@ public:
     // applys first the values that are given by the variables
     // e.g. \setvar font Hack
     // then apply standard values for the geometry
-    void applyStandardTemplate(SlideList &slides) const;
+    void applyStandardTemplate(SlideList &slides);
 
     // deletes the configuration entries from boxes that do not exist
     // in the presentation at the moment
