@@ -6,6 +6,7 @@
 
 #include "src/core/utils.h"
 #include <set>
+#include <algorithm>
 
 BoxStyle propertyMapToBoxStyle(const Box::Properties &properties) {
     BoxStyle boxStyle;
@@ -260,10 +261,8 @@ void applyProperty(QString const& property, PropertyEntry const& entry, BoxStyle
 }
 
 Box::List copy(Box::List const& input) {
-    Box::List copiedList;
-    for(auto const& element: input) {
-        copiedList.push_back(std::make_shared<Box>(element));
-    }
+    Box::List copiedList(input.size());
+    std::ranges::transform(input.begin(), input.end(), copiedList.begin(), [](auto const& element) { return element->clone(); });
     return copiedList;
 }
 

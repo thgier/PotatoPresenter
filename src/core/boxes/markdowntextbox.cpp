@@ -22,7 +22,7 @@
 #include "markdownParser.h"
 #include "markdownformatvisitor.h"
 
-std::shared_ptr<TextBox> MarkdownTextBox::clone() {
+std::shared_ptr<Box> MarkdownTextBox::clone() {
     return std::make_shared<MarkdownTextBox>(*this);
 }
 

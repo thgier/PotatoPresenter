@@ -19,6 +19,8 @@ public:
     void drawContent(QPainter& painter, std::map<QString, QString> const& variables, PresentationRenderHints hints = PresentationRenderHints::NoRenderHints) override;
     bool containsPoint(QPoint point, int) const override;
 
+    std::shared_ptr<Box> clone() override;
+
 private:
     // ths shape is set when constructed,
     // the path changes by every redraw and is saved for the function containsPoint

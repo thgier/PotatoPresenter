@@ -301,7 +301,7 @@ void PotatoFormatVisitor::applyPause(QString text) {
     }
     lastTextBox->setPauseMode(PauseDisplayMode::onlyInPause);
 
-    auto box = lastTextBox->clone();
+    auto box = std::static_pointer_cast<TextBox>(lastTextBox->clone());
     if(!text.isEmpty() && !box->text().isEmpty())
         text.insert(0, '\n');
     box->setProperty("text", {lastTextBox->text() + text, box->line()});

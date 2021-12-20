@@ -167,6 +167,8 @@ public:
     // e.g. Border, background
     void drawGlobalBoxSettings(QPainter& painter);
 
+    virtual std::shared_ptr<Box> clone() = 0;
+
     // override this if the selectable area should be another than the boxGeometry
     virtual bool containsPoint(QPoint point, int margin) const;
 

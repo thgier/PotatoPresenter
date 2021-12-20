@@ -9,7 +9,7 @@
 #include <QTextLayout>
 #include <QTextDocument>
 
-std::shared_ptr<TextBox> PlainTextBox::clone() {
+std::shared_ptr<Box> PlainTextBox::clone() {
     return std::make_shared<PlainTextBox>(*this);
 }
 

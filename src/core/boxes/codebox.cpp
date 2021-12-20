@@ -8,7 +8,7 @@
 #include <QTextLayout>
 #include "codehighlighter.h"
 
-std::shared_ptr<TextBox> CodeBox::clone() {
+std::shared_ptr<Box> CodeBox::clone() {
     return std::make_shared<CodeBox>(*this);
 }
 

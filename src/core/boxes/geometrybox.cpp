@@ -81,6 +81,10 @@ QPainterPath painterPath(QString shape, QRect rect) {
 }
 }
 
+std::shared_ptr<Box> GeometryBox::clone() {
+    return std::make_shared<GeometryBox>(*this);
+}
+
 void GeometryBox::drawContent(QPainter& painter, std::map<QString, QString> const&, PresentationRenderHints hints){
     auto const rect = style().paintableRect();
     mPainterPath = painterPath(style().text(), rect);

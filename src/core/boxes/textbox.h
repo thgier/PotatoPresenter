@@ -29,7 +29,6 @@ struct TextBoundings {
 class TextBox : public Box
 {
 public:
-    virtual std::shared_ptr<TextBox> clone() = 0;
 
     bool containsPoint(QPoint point, int margin) const override;
 

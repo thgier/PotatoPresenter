@@ -13,6 +13,9 @@
 #include <QDebug>
 #include <QTemporaryFile>
 
+std::shared_ptr<Box> ImageBox::clone() {
+    return std::make_shared<ImageBox>(*this);
+}
 
 void ImageBox::drawContent(QPainter& painter, std::map<QString, QString> const& variables, PresentationRenderHints hints){
     PainterTransformScope scope(this, painter);
