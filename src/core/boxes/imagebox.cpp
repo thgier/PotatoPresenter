@@ -5,6 +5,7 @@
 */
 
 #include "imagebox.h"
+#include "cachemanager.h"
 
 #include <filesystem>
 #include <string>
@@ -12,6 +13,15 @@
 #include <QProcess>
 #include <QDebug>
 #include <QTemporaryFile>
+
+namespace  {
+QRect boundingBox(QSize const& imageSize, QRect const& boxRect) {
+    auto const scaledSize = imageSize.scaled(boxRect.width(), boxRect.height(), Qt::KeepAspectRatio);
+    auto const x = (boxRect.width() - scaledSize.width()) / 2;
+    auto const y = (boxRect.height() - scaledSize.height()) / 2;
+    return QRect(QPoint(boxRect.left() + x, boxRect.top() + y), scaledSize);
+};
+}
 
 std::shared_ptr<Box> ImageBox::clone() {
     return std::make_shared<ImageBox>(*this);
@@ -37,7 +47,13 @@ void ImageBox::drawContent(QPainter& painter, std::map<QString, QString> const& 
         }
     }
     else{
-        drawPixmap(loadImage(path, geometry().size()), painter);
+        if(hints & PresentationRenderHints::TargetIsVectorSurface) {
+            auto image = QImage(path);
+            painter.drawImage(boundingBox(image.size(), geometry().rect()), image);
+        }
+        else {
+            drawPixmap(loadImage(path, geometry().size()), painter);
+        }
     }
 }
 
