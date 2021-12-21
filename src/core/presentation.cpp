@@ -38,6 +38,7 @@ void setStyleToBoxIfSetInModel(Box::Ptr box, BoxStyle const& modelStyle) {
     assignIfSet(box->style().mColor, modelStyle.mColor);
     assignIfSet(box->style().mBackgroundColor, modelStyle.mBackgroundColor);
     assignIfSet(box->style().mAlignment, modelStyle.mAlignment);
+    assignIfSet(box->style().mLanguage, modelStyle.mLanguage);
     assignIfSet(box->style().mLineSpacing, modelStyle.mLineSpacing);
     assignIfSet(box->style().mOpacity, modelStyle.mOpacity);
     assignIfSet(box->style().mPadding, modelStyle.mPadding);
@@ -65,6 +66,7 @@ void setStyleToBoxIfNotSettedAndSetInModel(Box::Ptr box, BoxStyle const& modelSt
     assignIfSet(box->style().mColor, modelStyle.mColor);
     assignIfSet(box->style().mBackgroundColor, modelStyle.mBackgroundColor);
     assignIfSet(box->style().mAlignment, modelStyle.mAlignment);
+    assignIfSet(box->style().mLanguage, modelStyle.mLanguage);
     assignIfSet(box->style().mLineSpacing, modelStyle.mLineSpacing);
     assignIfSet(box->style().mOpacity, modelStyle.mOpacity);
     assignIfSet(box->style().mPadding, modelStyle.mPadding);

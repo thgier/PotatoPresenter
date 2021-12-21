@@ -51,7 +51,7 @@ struct BoxStyle{
     std::optional<QString> mClass;
     int mLine = 0;
     std::optional<QString> mConfigId;
-    QString language;
+    std::optional<QString> mLanguage;
     bool movable = true;
     std::optional<QColor> mColor;
     std::optional<QColor> mBackgroundColor;
@@ -151,6 +151,10 @@ struct BoxStyle{
     }
     BoxGeometry const& geometry() const {
         return mGeometry;
+    }
+
+    QString language() const {
+        return mLanguage.value_or("");
     }
 };
 

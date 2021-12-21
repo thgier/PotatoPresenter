@@ -23,7 +23,7 @@ void CodeBox::drawContent(QPainter& painter, std::map<QString, QString> const& v
     font.setStyleHint(font.Monospace);
     auto const linespacing = painter.fontMetrics().leading() + style().linespacing() * painter.fontMetrics().lineSpacing();
 
-    CodeHighlighter highlighter(style().language);
+    CodeHighlighter highlighter(style().language());
     auto const formats = highlighter.highlightLines(paragraphs);
 
     double y = 0;

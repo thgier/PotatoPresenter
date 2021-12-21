@@ -146,7 +146,7 @@ void applyProperty(QString const& property, const QString &value, int line, BoxS
         }
     }
     else if(property == "language") {
-        boxstyle.language = QString(value);
+        boxstyle.mLanguage = QString(value);
     }
     else if(property == "background") {
         QColor color;
