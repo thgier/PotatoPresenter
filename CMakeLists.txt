@@ -116,5 +116,5 @@ target_compile_definitions(grammartest PRIVATE -DQT_NO_KEYWORDS)
 target_compile_definitions(markdowntest PRIVATE -DQT_NO_KEYWORDS)
 
 install(TARGETS praes DESTINATION bin)
-install(FILES potatoPresenter.desktop share/applications)
-install(FILES potato_logo.svg share/icons/hicolor/64x64/apps)
+install(FILES potatoPresenter.desktop DESTINATION share/applications)
+install(FILES potato_logo.svg DESTINATION share/icons/hicolor/64x64/apps)
