@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
 project(praes LANGUAGES CXX
-    VERSION 1.0.0)
+    VERSION 1.0.1)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -113,3 +113,7 @@ target_include_directories(markdowntest SYSTEM PRIVATE /usr/include/antlr4-runti
 target_compile_definitions(praes PRIVATE -DQT_NO_KEYWORDS)
 target_compile_definitions(grammartest PRIVATE -DQT_NO_KEYWORDS)
 target_compile_definitions(markdowntest PRIVATE -DQT_NO_KEYWORDS)
+
+install(TARGETS praes DESTINATION bin)
+install(FILES potatoPresenter.desktop share/applications)
+install(FILES potato_logo.svg share/icons/hicolor/64x64/apps)
