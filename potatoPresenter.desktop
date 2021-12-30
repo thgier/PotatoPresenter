@@ -4,7 +4,7 @@ Name=Potato Presenter
 Version=1.0
 Comment=Tool to create presentation slides
 Exec=bin/praes
-Icon=icons/hicolor/64x64/apps/potato_logo
+Icon=potato_logo
 
 Categories=Office;
 
