@@ -27,10 +27,10 @@ void PDFCreator::createPdf(QString filename, std::shared_ptr<Presentation> prese
     painter.setWindow(QRect(QPoint(0, 0), presentation->dimensions()));
     auto paint = std::make_shared<SlideRenderer>(painter);
     paint->setRenderHints(static_cast<PresentationRenderHints>(static_cast<int>(TargetIsVectorSurface) | static_cast<int>(NoPreviewRendering)));
-    for(auto &slide: presentation->slideListDefaultApplied().vector){
+    for(auto &slide: presentation->data().slideListDefaultApplied().vector){
         for( int i = 0; i <= slide->numberPauses(); i++) {
             paint->paintSlide(slide, i);
-            if(!(slide == presentation->slideListDefaultApplied().vector.back() && i == slide->numberPauses())){
+            if(!(slide == presentation->data().slideListDefaultApplied().vector.back() && i == slide->numberPauses())){
                 pdfWriter.newPage();
             }
         }
@@ -50,9 +50,9 @@ void PDFCreator::createPdfHandout(QString filename, std::shared_ptr<Presentation
     painter.begin(&pdfWriter);
     painter.setWindow(QRect(QPoint(0, 0), presentation->dimensions()));
     auto paint = std::make_shared<SlideRenderer>(painter);
-    for(auto &slide: presentation->slideListDefaultApplied().vector){
+    for(auto &slide: presentation->data().slideListDefaultApplied().vector){
         paint->paintSlide(slide);
-        if(slide != presentation->slideListDefaultApplied().vector.back()){
+        if(slide != presentation->data().slideListDefaultApplied().vector.back()){
             pdfWriter.newPage();
         }
     }

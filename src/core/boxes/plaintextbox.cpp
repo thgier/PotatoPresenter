@@ -13,11 +13,11 @@ std::shared_ptr<Box> PlainTextBox::clone() {
     return std::make_shared<PlainTextBox>(*this);
 }
 
-void PlainTextBox::drawContent(QPainter& painter, std::map<QString, QString> const& variables, PresentationRenderHints hints) {
+void PlainTextBox::drawContent(QPainter& painter, const PresentationContext &context, PresentationRenderHints hints) {
     PainterTransformScope scope(this, painter);
     drawGlobalBoxSettings(painter);
 
-    auto const text = substituteVariables(style().text(), variables);
+    auto const text = substituteVariables(style().text(), context.mVariables);
     auto const paragraphs = text.split("\n");
 
     auto const linespacing = painter.fontMetrics().leading() + mStyle.linespacing() * painter.fontMetrics().lineSpacing();

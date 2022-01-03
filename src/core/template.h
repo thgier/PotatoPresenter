@@ -9,7 +9,7 @@
 #include <QPainter>
 #include "slide.h"
 #include "configboxes.h"
-#include "presentation.h"
+#include "presentationdata.h"
 
 struct TemplateError{
     QString message;
@@ -19,14 +19,12 @@ class Template
 {
 public:
     using Ptr = std::shared_ptr<Template>;
-    using variablesMap = std::shared_ptr<std::map<QString, QString>>;
 
-    Template();
-    Template(SlideList slides);
+    Template() = default;
+    Template(SlideList const& slides);
 
-    // set data
-    void setSlides(SlideList slides);
     void setConfig(ConfigBoxes config);
+    void setData(PresentationData data);
 
     // apply template to a slide list
     void applyTemplate(SlideList& slideList);
@@ -37,7 +35,7 @@ private:
     Box::List getTemplateSlide(QString slideId) const;
 
 private:
-    Presentation mPresentation;
+    PresentationData mData;
     std::map<QString, Slide> mTemplateSlides;
-    Variables mVariables;
+    ConfigBoxes mConfig;
 };

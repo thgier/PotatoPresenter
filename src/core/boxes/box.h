@@ -45,6 +45,25 @@ struct PorpertyConversionError {
     int line;
 };
 
+struct Section {
+    QString name;
+    int startPage;
+};
+
+struct TableOfContent {
+    std::vector<Section> sections;
+    QString currentSectionName() const {
+        return sections.empty() ? QString() : sections.back().name;
+    }
+};
+
+struct PresentationContext {
+    Variables mVariables;
+    int mPagenumber;
+    int mTotalnumberofPages = 0;
+    TableOfContent mTableOfContent = {};
+};
+
 // when adding properties here, add them in PotatoFormateVisitor and Presentation
 struct BoxStyle{
     QString mId = "";
@@ -166,7 +185,7 @@ public:
     using Properties = std::unordered_map<QString, PropertyEntry>;
 
     // Implement this in child classes to draw the box's contents given the passed @p variables
-    virtual void drawContent(QPainter& painter, std::map<QString, QString> const& variables, PresentationRenderHints hints = PresentationRenderHints::NoRenderHints) = 0;
+    virtual void drawContent(QPainter& painter, PresentationContext const& context, PresentationRenderHints hints = PresentationRenderHints::NoRenderHints) = 0;
     void drawManipulationSlide(QPainter& painter, int size);
     // e.g. Border, background
     void drawGlobalBoxSettings(QPainter& painter);

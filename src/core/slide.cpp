@@ -18,9 +18,9 @@ Slide::Slide(const QString &id, int line)
 {
 }
 
-Slide::Slide(const QString &id, const std::map<QString, QString> &variables, int line)
+Slide::Slide(const QString &id, const PresentationContext &context, int line)
     : mId{id}
-    , mVariables{variables}
+    , mContext{context}
     , mLine{line}
 {
 }
@@ -88,19 +88,19 @@ Box::List Slide::templateBoxes() const{
 }
 
 void Slide::setVariables(Variables const& variables){
-    mVariables = variables;
+    mContext.mVariables = variables;
 }
 
 Variables const& Slide::variables() const{
-    return mVariables;
+    return mContext.mVariables;
 }
 
 Variables& Slide::variables() {
-    return mVariables;
+    return mContext.mVariables;
 }
 
 void Slide::setVariable(QString const& name, QString const& value){
-    mVariables[name] = value;
+    mContext.mVariables[name] = value;
 }
 
 int Slide::numberPauses() const {
@@ -132,4 +132,34 @@ void Slide::setDefinesClass(QString definesClass) {
 
 QString Slide::definesClass() const {
     return mDefinesClass;
+}
+
+QString Slide::valueOfVariable(const QString &variable) const {
+    auto const value = variables().find(variable);
+    if(value != variables().end()) {
+        return value->second;
+    }
+    return {};
+}
+
+int Slide::pagenumber() const {
+    return mContext.mPagenumber;
+}
+
+void Slide::setTotalNumberPages(int pages) {
+    mContext.mTotalnumberofPages = pages;
+    mContext.mVariables["%{totalpages}"] = QString::number(pages);
+}
+
+void Slide::setPagenumber(int pagenumber) {
+    mContext.mPagenumber = pagenumber;
+    mContext.mVariables["%{pagenumber}"] = QString::number(pagenumber);
+}
+
+void Slide::setTableOfContents(TableOfContent tableofcontent) {
+    mContext.mTableOfContent = tableofcontent;
+}
+
+PresentationContext const& Slide::context() const {
+    return mContext;
 }

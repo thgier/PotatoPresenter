@@ -8,7 +8,7 @@
 #include "presentation.h"
 
 int SlideListModel::rowCount(const QModelIndex &) const {
-    return int(mPresentation->slideList().vector.size());
+    return int(mPresentation->slideList().numberSlides());
 }
 
 QVariant SlideListModel::data(const QModelIndex &index, int role) const
@@ -21,7 +21,7 @@ QVariant SlideListModel::data(const QModelIndex &index, int role) const
 
     if (role == Qt::DisplayRole){
         QVariant var;
-        auto slide = mPresentation->slideListDefaultApplied().vector[index.row()];
+        auto slide = mPresentation->slideList().vector[index.row()];
         var.setValue(slide);
         return var;
     }

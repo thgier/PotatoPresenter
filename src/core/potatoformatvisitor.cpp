@@ -99,7 +99,12 @@ void PotatoFormatVisitor::PotatoFormatVisitor::exitBox(potatoParser::BoxContext 
         return;
     }
 
-    if(command == "setvar"){
+    if(command == "section") {
+        mLastCommandSetVariable = true;
+        setSection(text, line);
+        return;
+    }
+    else if(command == "setvar"){
         mLastCommandSetVariable = true;
         setVariable(text, line);
         return;
@@ -108,7 +113,7 @@ void PotatoFormatVisitor::PotatoFormatVisitor::exitBox(potatoParser::BoxContext 
         mLastCommandSetVariable = false;
     }
     qInfo() << "command" << command;
-    static auto const boxInstructions = std::set<QString>{"text", "image", "body", "title", "blindtext", "plaintext", "code", "geometry", "latex"};
+    static auto const boxInstructions = std::set<QString>{"text", "image", "body", "title", "blindtext", "plaintext", "code", "geometry", "latex", "tableofcontents"};
     if(boxInstructions.find(command) != boxInstructions.end()) {
         if(mLastCommandSetVariable) {
             throw ParserError{"Command \\setvar only valid outside a slide.", line};
@@ -167,7 +172,7 @@ void PotatoFormatVisitor::newSlide(QString id, int line) {
     }
     // set variables
     mSlideList.lastSlide()->setVariables(mVariables);
-    mSlideList.lastSlide()->setVariable("%{pagenumber}", QString::number(mSlideList.vector.size()));
+    mSlideList.lastSlide()->setPagenumber(mSlideList.vector.size());
     if(mVariables.find("%{date}") == mVariables.end()){
         mSlideList.lastSlide()->setVariable("%{date}", QDate::currentDate().toString());
     }
@@ -184,7 +189,10 @@ void PotatoFormatVisitor::setVariable(QString text, int line) {
     auto const value = list.join(" ");
     // try if the value is a property if not a Parser error get thrown, in this case append to variables
     mVariables[addBracketsToVariable(variable)] = value;
+}
 
+void PotatoFormatVisitor::setSection(QString section, int line) {
+    mVariables[addBracketsToVariable("section")] = section;
 }
 
 void PotatoFormatVisitor::createNewBox(QString command, QString text, int line) {
@@ -231,6 +239,10 @@ void PotatoFormatVisitor::createNewBox(QString command, QString text, int line) 
     else if (command == "latex") {
         box = std::make_shared<LaTeXBox>();
         setClassIfEmpty(boxClass, {"body", line}, mProperties);
+    }
+    else if (command == "tableofcontents") {
+        box = std::make_shared<MarkdownTextBox>();
+        mProperties["class"] = {"tableofcontents", line};
     }
 
     auto newBoxClass = getValueAsQStringForProperty("class", mProperties);
@@ -316,7 +328,7 @@ void PotatoFormatVisitor::applyPause(QString text) {
 void PotatoFormatVisitor::exitPotato(potatoParser::PotatoContext * /*ctx*/) {
     auto const totalNumberOfPages = mSlideList.numberSlides();
     for (auto const & slide : mSlideList.vector) {
-        slide->setVariable("%{totalpages}", QString::number(totalNumberOfPages));
+        slide->setTotalNumberPages(totalNumberOfPages);
     }
 }
 

@@ -12,11 +12,11 @@ std::shared_ptr<Box> CodeBox::clone() {
     return std::make_shared<CodeBox>(*this);
 }
 
-void CodeBox::drawContent(QPainter& painter, std::map<QString, QString> const& variables, PresentationRenderHints hints) {
+void CodeBox::drawContent(QPainter& painter, PresentationContext const& context, PresentationRenderHints hints) {
     PainterTransformScope scope(this, painter);
     drawGlobalBoxSettings(painter);
 
-    auto const text = substituteVariables(style().text(), variables);
+    auto const text = substituteVariables(style().text(), context.mVariables);
     auto const paragraphs = text.split("\n");
     painter.setPen(mStyle.color());
     auto font = painter.font();

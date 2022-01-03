@@ -15,7 +15,7 @@ public:
     LaTeXBox() = default;
 
     std::shared_ptr<Box> clone() override;
-    void drawContent(QPainter& painter, std::map<QString, QString> const& variables, PresentationRenderHints hints = PresentationRenderHints::NoRenderHints) override;
+    void drawContent(QPainter& painter, PresentationContext const& context, PresentationRenderHints hints = PresentationRenderHints::NoRenderHints) override;
 };
 
 #endif // LATEXBOX_H

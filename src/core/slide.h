@@ -17,7 +17,7 @@ public:
 
     Slide();
     Slide(QString const& id, int line);
-    Slide(QString const& id, std::map<QString, QString> const& variables, int line);
+    Slide(QString const& id, PresentationContext const& variables, int line);
 
     // Access contained boxes
     void setBoxes(std::vector<std::shared_ptr<Box>> boxes);
@@ -48,6 +48,11 @@ public:
     void setVariable(QString const& name, QString const& value);
     Variables const& variables() const;
     Variables& variables();
+    QString valueOfVariable(QString const& variable) const;
+
+    int pagenumber() const;
+    void setPagenumber(int pagenumber);
+    void setTotalNumberPages(int pages);
 
     void setSlideClass(QString const& slideClass);
     QString slideClass() const;
@@ -55,11 +60,14 @@ public:
     void setDefinesClass(QString definesClass);
     QString definesClass() const;
 
+    void setTableOfContents(TableOfContent tableofcontent);
+    PresentationContext const& context() const;
+
 private:
     Box::List mBoxes;
     Box::List mTemplateBoxes;
     QString mId;
-    Variables mVariables;
+    PresentationContext mContext;
     QString mClass;
     int mLine;
     BoxStyle mDefaultStyle;

@@ -27,12 +27,12 @@ std::shared_ptr<Box> ImageBox::clone() {
     return std::make_shared<ImageBox>(*this);
 }
 
-void ImageBox::drawContent(QPainter& painter, std::map<QString, QString> const& variables, PresentationRenderHints hints){
+void ImageBox::drawContent(QPainter& painter, const PresentationContext &context, PresentationRenderHints hints){
     PainterTransformScope scope(this, painter);
     drawGlobalBoxSettings(painter);
-    auto path = substituteVariables(style().text(), variables);
-    if(!path.startsWith("/home") && variables.find("%{resourcepath}") != variables.end()) {
-        path = variables.at("%{resourcepath}") + "/" + path;
+    auto path = substituteVariables(style().text(), context.mVariables);
+    if(!path.startsWith("/home") && context.mVariables.find("%{resourcepath}") != context.mVariables.end()) {
+        path = context.mVariables.at("%{resourcepath}") + "/" + path;
     }
     mImagePath = path;
     auto const fileInfo = QFileInfo(path);

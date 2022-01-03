@@ -12,7 +12,7 @@ std::shared_ptr<Box> LaTeXBox::clone() {
     return std::make_shared<LaTeXBox>(*this);
 }
 
-void LaTeXBox::drawContent(QPainter &painter, std::map<QString, QString> const& variables, PresentationRenderHints hints) {
+void LaTeXBox::drawContent(QPainter &painter, const PresentationContext &context, PresentationRenderHints hints) {
     auto additionalPreamble = QString();
     // scale factor for geometry of the box
     // physical length of document: 20cm, number of pixels: 1600

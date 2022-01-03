@@ -26,10 +26,10 @@ std::shared_ptr<Box> MarkdownTextBox::clone() {
     return std::make_shared<MarkdownTextBox>(*this);
 }
 
-void MarkdownTextBox::drawContent(QPainter& painter, std::map<QString, QString> const& variables, PresentationRenderHints hints) {
+void MarkdownTextBox::drawContent(QPainter& painter, const PresentationContext &context, PresentationRenderHints hints) {
     PainterTransformScope scope(this, painter);
     drawGlobalBoxSettings(painter);
-    auto text = substituteVariables(style().text(), variables);
+    auto text = substituteVariables(style().text(), context.mVariables);
     text.append("\n");
 
     std::istringstream str(text.toStdString());

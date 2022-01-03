@@ -43,6 +43,7 @@ add_executable(praes
     src/core/boxes/latexbox.cpp
     src/core/boxes/markdowntextbox.cpp
     src/core/boxes/plaintextbox.cpp
+    src/core/boxes/tableofcontentsbox.cpp
     src/core/boxes/textbox.cpp
     src/core/boxgeometry.cpp
     src/core/cachemanager.cpp
@@ -59,6 +60,7 @@ add_executable(praes
     src/core/potatoerrorlistener.cpp
     src/core/potatoformatvisitor.cpp
     src/core/presentation.cpp
+    src/core/presentationdata.cpp
     src/core/template.cpp
     src/core/templatecache.cpp
     src/files.qrc

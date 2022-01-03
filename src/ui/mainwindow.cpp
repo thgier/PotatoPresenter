@@ -338,7 +338,7 @@ std::shared_ptr<Template> MainWindow::readTemplate(QString templateName) const {
     if(parserOutput.successfull()) {
         auto const slides = parserOutput.slideList();
         try {
-            thisTemplate->setSlides(slides);
+            thisTemplate->setData(slides);
         }  catch (PorpertyConversionError & error) {
             mErrorOutput->setText("Cannot load template: Line " + QString::number(error.line + 1) + ": " + error.message + " \u26A0");
             return {};

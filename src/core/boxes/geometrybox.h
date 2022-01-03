@@ -16,7 +16,7 @@ class GeometryBox : public Box
 public:
     GeometryBox() = default;
 
-    void drawContent(QPainter& painter, std::map<QString, QString> const& variables, PresentationRenderHints hints = PresentationRenderHints::NoRenderHints) override;
+    void drawContent(QPainter& painter, PresentationContext const& context, PresentationRenderHints hints = PresentationRenderHints::NoRenderHints) override;
     bool containsPoint(QPoint point, int) const override;
 
     std::shared_ptr<Box> clone() override;

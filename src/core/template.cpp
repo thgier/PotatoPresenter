@@ -19,22 +19,18 @@ void addVariableIfNotExist(Variables & variables, Variables const& addedVariable
 }
 }
 
-Template::Template()
+Template::Template(const SlideList &slides)
+    : mData{slides}
 {
-
-}
-
-Template::Template(SlideList slides)
-{
-    setSlides(slides);
 }
 
 void Template::setConfig(ConfigBoxes config) {
-    mPresentation.setConfig(config);
+    mData.applyConfiguration(config);
+    mConfig = config;
 }
 
 Box::List Template::getTemplateSlide(QString slideId) const {
-    auto slide = mPresentation.slideList().findDefiningSlide(slideId);
+    auto slide = mData.slides().findDefiningSlide(slideId);
     if(!slide){
         return {};
     }
@@ -44,23 +40,22 @@ Box::List Template::getTemplateSlide(QString slideId) const {
     return boxes;
 }
 
-
-void Template::setSlides(SlideList slides) {
-    mPresentation.setData({slides, nullptr});
-    mVariables = slides.lastSlide()->variables();
-}
-
 void Template::applyTemplate(SlideList& slideList) {
-    mPresentation.applyDefinedClass(slideList);
+    mData.applyDefinedClass(slideList, mConfig);
     for(auto const& slide: slideList.vector) {
         auto const slideclass = slide->slideClass();
         auto const boxlist = getTemplateSlide(slideclass);
         slide->setTemplateBoxes(copy(boxlist));
-        addVariableIfNotExist(slide->variables(), mVariables);
+        addVariableIfNotExist(slide->variables(), variables());
     }
 }
 
 
 Variables const& Template::variables() {
-    return mVariables;
+    return mData.slides().lastSlide()->variables();
+}
+
+void Template::setData(PresentationData data) {
+    mData = data;
+    mData.applyConfiguration(mConfig);
 }

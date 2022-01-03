@@ -40,9 +40,9 @@ void SlideRenderer::paintSlide(Slide::Ptr slide, int pauseCount) const {
         return;
     }
     auto const templateBoxes = slide->templateBoxes();
-    auto const variables = slide->variables();
+    auto const context = slide->context();
     for(auto const& box: templateBoxes){
-        box->drawContent(mPainter, variables, mRenderHints);
+        box->drawContent(mPainter, context, mRenderHints);
     }
     auto const& boxes = slide->boxes();
     for(auto const& box: boxes){
@@ -50,7 +50,7 @@ void SlideRenderer::paintSlide(Slide::Ptr slide, int pauseCount) const {
         auto const pause = box->pauseCounter();
 
         if(boxGetPainted(pause, pauseCount)) {
-            box->drawContent(mPainter, variables, mRenderHints);
+            box->drawContent(mPainter, context, mRenderHints);
         }
     }
 }

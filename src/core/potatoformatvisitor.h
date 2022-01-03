@@ -54,6 +54,7 @@ private:
     void createNewBox(QString command, QString text, int line);
 
     void setVariable(QString text, int line);
+    void setSection(QString section, int line);
     QString generateId(QString type, QString boxclass);
 
 private:
