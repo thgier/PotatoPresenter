@@ -12,6 +12,7 @@
 #include "codebox.h"
 #include "geometrybox.h"
 #include "latexbox.h"
+#include "tableofcontentsbox.h"
 
 namespace  {
 
@@ -104,6 +105,11 @@ void PotatoFormatVisitor::PotatoFormatVisitor::exitBox(potatoParser::BoxContext 
         setSection(text, line);
         return;
     }
+    if(command == "subsection") {
+        mLastCommandSetVariable = true;
+        setSubsection(text, line);
+        return;
+    }
     else if(command == "setvar"){
         mLastCommandSetVariable = true;
         setVariable(text, line);
@@ -179,6 +185,9 @@ void PotatoFormatVisitor::newSlide(QString id, int line) {
     if(mVariables.find("%{resourcepath}") == mVariables.end()){
         mSlideList.lastSlide()->setVariable("%{resourcepath}", mResourcepath);
     }
+    if(mVariables.find(addBracketsToVariable("section")) == mVariables.end()) {
+        mVariables[addBracketsToVariable("section")] = "";
+    }
     mProperties.clear();
 }
 
@@ -193,6 +202,10 @@ void PotatoFormatVisitor::setVariable(QString text, int line) {
 
 void PotatoFormatVisitor::setSection(QString section, int line) {
     mVariables[addBracketsToVariable("section")] = section;
+}
+
+void PotatoFormatVisitor::setSubsection(QString subsection, int line) {
+    mVariables[addBracketsToVariable("subsection")] = subsection;
 }
 
 void PotatoFormatVisitor::createNewBox(QString command, QString text, int line) {
@@ -241,7 +254,7 @@ void PotatoFormatVisitor::createNewBox(QString command, QString text, int line) 
         setClassIfEmpty(boxClass, {"body", line}, mProperties);
     }
     else if (command == "tableofcontents") {
-        box = std::make_shared<MarkdownTextBox>();
+        box = std::make_shared<TableofContentsBox>();
         mProperties["class"] = {"tableofcontents", line};
     }
 

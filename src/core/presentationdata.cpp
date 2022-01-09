@@ -105,6 +105,7 @@ void setStyleToBoxIfSetInModel(Box::Ptr box, BoxStyle const& modelStyle) {
     assignIfSet(box->style().mBackgroundColor, modelStyle.mBackgroundColor);
     assignIfSet(box->style().mAlignment, modelStyle.mAlignment);
     assignIfSet(box->style().mLanguage, modelStyle.mLanguage);
+    assignIfSet(box->style().mHighlight, modelStyle.mHighlight);
     assignIfSet(box->style().mLineSpacing, modelStyle.mLineSpacing);
     assignIfSet(box->style().mOpacity, modelStyle.mOpacity);
     assignIfSet(box->style().mPadding, modelStyle.mPadding);
@@ -133,6 +134,7 @@ void setStyleToBoxIfNotSettedAndSetInModel(Box::Ptr box, BoxStyle const& modelSt
     assignIfSet(box->style().mBackgroundColor, modelStyle.mBackgroundColor);
     assignIfSet(box->style().mAlignment, modelStyle.mAlignment);
     assignIfSet(box->style().mLanguage, modelStyle.mLanguage);
+    assignIfSet(box->style().mHighlight, modelStyle.mHighlight);
     assignIfSet(box->style().mLineSpacing, modelStyle.mLineSpacing);
     assignIfSet(box->style().mOpacity, modelStyle.mOpacity);
     assignIfSet(box->style().mPadding, modelStyle.mPadding);
@@ -163,16 +165,26 @@ TableOfContent createTableOfContent(SlideList const& slides) {
     TableOfContent newTableOfContent;
     for(auto const& slide : slides.vector) {
         auto sectionVar = slide->valueOfVariable("%{section}");
+        auto subsectionVar = slide->valueOfVariable("%{subsection}");
+
+        // look for section in variables
         if(sectionVar.isEmpty()) {
             continue;
         }
-        if(sectionVar == newTableOfContent.currentSectionName()) {
-            continue;
+        if(sectionVar != newTableOfContent.currentSectionName()) {
+            newTableOfContent.sections.push_back({
+                sectionVar,
+                slide->pagenumber()
+            });
         }
-        newTableOfContent.sections.push_back({
-            sectionVar,
-            slide->pagenumber()
-        });
+
+        // look for subsection in variables
+        if(subsectionVar != newTableOfContent.currentSubsectionName()) {
+            newTableOfContent.sections.back().subsection.push_back({
+                subsectionVar,
+                slide->pagenumber()
+            });
+        }
     }
     return newTableOfContent;
 }

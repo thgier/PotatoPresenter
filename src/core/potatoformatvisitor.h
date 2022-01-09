@@ -55,6 +55,7 @@ private:
 
     void setVariable(QString text, int line);
     void setSection(QString section, int line);
+    void setSubsection(QString subsection, int line);
     QString generateId(QString type, QString boxclass);
 
 private:

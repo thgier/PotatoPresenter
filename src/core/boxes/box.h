@@ -45,15 +45,24 @@ struct PorpertyConversionError {
     int line;
 };
 
+struct Subsection {
+    QString name;
+    int startPage;
+};
+
 struct Section {
     QString name;
     int startPage;
+    std::vector<Subsection> subsection;
 };
 
 struct TableOfContent {
     std::vector<Section> sections;
     QString currentSectionName() const {
         return sections.empty() ? QString() : sections.back().name;
+    }
+    QString currentSubsectionName() const {
+        return sections.empty() || sections.back().subsection.empty() ? QString() : sections.back().subsection.back().name;
     }
 };
 
@@ -85,6 +94,7 @@ struct BoxStyle{
     BoxGeometry mGeometry;
     std::optional<int> mPadding;
     std::optional<int> mBorderRadius;
+    std::optional<bool> mHighlight;
     struct {
         std::optional<int> width;
         std::optional<QString> style;
@@ -174,6 +184,10 @@ struct BoxStyle{
 
     QString language() const {
         return mLanguage.value_or("");
+    }
+
+    bool highlight() const {
+        return mHighlight.value_or(true);
     }
 };
 

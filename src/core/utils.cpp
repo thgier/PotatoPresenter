@@ -148,6 +148,20 @@ void applyProperty(QString const& property, const QString &value, int line, BoxS
     else if(property == "language") {
         boxstyle.mLanguage = QString(value);
     }
+    else if(property == "highlight") {
+        if(value == "false") {
+            boxstyle.mHighlight = false;
+        }
+        else if(value == "true") {
+            boxstyle.mHighlight = true;
+        }
+        else {
+            throw PorpertyConversionError {
+                "Invalid value for 'highlight' (possible values: true, false)",
+                line
+            };
+        }
+    }
     else if(property == "background") {
         QColor color;
         color.setNamedColor(value);
