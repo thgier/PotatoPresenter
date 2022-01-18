@@ -172,17 +172,45 @@ TableOfContent createTableOfContent(SlideList const& slides) {
             continue;
         }
         if(sectionVar != newTableOfContent.currentSectionName()) {
+            // correct length of last section
+            if(!newTableOfContent.sections.empty()) {
+                auto & lastSection = newTableOfContent.sections.back();
+                lastSection.length = slide->pagenumber() - lastSection.startPage;
+                if(!lastSection.subsection.empty()) {
+                    auto lastSubsection = lastSection.subsection.back();
+                    lastSubsection.length = slide->pagenumber() - lastSubsection.startPage;
+                }
+            }
+
+            // insert new entry
             newTableOfContent.sections.push_back({
                 sectionVar,
-                slide->pagenumber()
+                slide->pagenumber(),
+                slides.numberSlides() + 1 - slide->pagenumber()
             });
         }
 
         // look for subsection in variables
         if(subsectionVar != newTableOfContent.currentSubsectionName()) {
+            // if sections is empty push back empty entry
+            if(newTableOfContent.sections.empty()) {
+                newTableOfContent.sections.push_back({
+                    "",
+                    slide->pagenumber(),
+                    slides.numberSlides() + 1 - slide->pagenumber()
+                });
+            }
+
+            // correct length of last subsection
+            if (!newTableOfContent.sections.back().subsection.empty()) {
+                auto& lastSubection = newTableOfContent.sections.back().subsection.back();
+                lastSubection.length = slide->pagenumber() - lastSubection.startPage;
+            }
+
             newTableOfContent.sections.back().subsection.push_back({
                 subsectionVar,
-                slide->pagenumber()
+                slide->pagenumber(),
+                slides.numberSlides() - slide->pagenumber()
             });
         }
     }

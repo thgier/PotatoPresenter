@@ -13,6 +13,7 @@
 #include "geometrybox.h"
 #include "latexbox.h"
 #include "tableofcontentsbox.h"
+#include "sectionpreviewbox.h"
 
 namespace  {
 
@@ -119,7 +120,7 @@ void PotatoFormatVisitor::PotatoFormatVisitor::exitBox(potatoParser::BoxContext 
         mLastCommandSetVariable = false;
     }
     qInfo() << "command" << command;
-    static auto const boxInstructions = std::set<QString>{"text", "image", "body", "title", "blindtext", "plaintext", "code", "geometry", "latex", "tableofcontents"};
+    static auto const boxInstructions = std::set<QString>{"text", "image", "body", "title", "blindtext", "plaintext", "code", "geometry", "latex", "tableofcontents", "sectionpreview"};
     if(boxInstructions.find(command) != boxInstructions.end()) {
         if(mLastCommandSetVariable) {
             throw ParserError{"Command \\setvar only valid outside a slide.", line};
@@ -256,6 +257,10 @@ void PotatoFormatVisitor::createNewBox(QString command, QString text, int line) 
     else if (command == "tableofcontents") {
         box = std::make_shared<TableofContentsBox>();
         mProperties["class"] = {"tableofcontents", line};
+    }
+    else if (command == "sectionpreview") {
+        box = std::make_shared<SectionPreviewBox>();
+        mProperties["class"] = {"sectionpreview", line};
     }
 
     auto newBoxClass = getValueAsQStringForProperty("class", mProperties);

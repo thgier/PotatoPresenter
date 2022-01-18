@@ -48,11 +48,13 @@ struct PorpertyConversionError {
 struct Subsection {
     QString name;
     int startPage;
+    int length;
 };
 
 struct Section {
     QString name;
     int startPage;
+    int length;
     std::vector<Subsection> subsection;
 };
 
