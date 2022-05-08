@@ -268,9 +268,8 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 void MainWindow::fileChanged() {
     auto iface = qobject_cast<KTextEditor::MarkInterface*>(mDoc);
     iface->clearMarks();
-    auto file = QFileInfo(filename()).absolutePath();
     auto const text = mDoc->text().toUtf8().toStdString();
-    auto const parserOutput = generateSlides(text, file);
+    auto const parserOutput = generateSlides(text, fileDirectory());
     if(parserOutput.successfull()) {
         auto const slides = parserOutput.slideList();
         auto const preamble = parserOutput.preamble();
@@ -278,7 +277,7 @@ void MainWindow::fileChanged() {
         Template::Ptr presentationTemplate = nullptr;
         if(!templateName.isEmpty()) {
             if (!templateName.startsWith("/home")) {
-                templateName = file + "/" + templateName;
+                templateName = fileDirectory() + "/" + templateName;
             }
             presentationTemplate = mTemplateCache.getTemplate(templateName);
             if (!presentationTemplate) {
@@ -356,9 +355,9 @@ void MainWindow::openInputFile(QString filename) {
     mDoc->setHighlightingMode("LaTeX");
 }
 
-void MainWindow::askToRecoverAutosave(QString path) {
+void MainWindow::askToRecoverAutosave() {
     // recover if file was not properly closed and autosave still exists
-    if(QFile::exists(autosaveTextFile(path)) || QFile::exists(autosaveJsonFile(path))) {
+    if(QFile::exists(autosaveTextFile()) || QFile::exists(autosaveJsonFile())) {
         auto const ret = QMessageBox::information(this, tr("File was not probably closed."),
                         tr("File was not properly closed. Do you want to recover?"),
                         QMessageBox::Ok, QMessageBox::Cancel);
@@ -366,32 +365,30 @@ void MainWindow::askToRecoverAutosave(QString path) {
         case QMessageBox::Cancel:
             break;
         case QMessageBox::Ok:
-            recoverAutosave(path);
+            recoverAutosave();
             break;
         default:
             break;
         }
-        deleteAutosave(path);
+        deleteAutosave();
     }
 }
 
-void MainWindow::recoverAutosave(QString path) {
-    auto file = QFile(autosaveTextFile(path));
+void MainWindow::recoverAutosave() {
+    auto file = QFile(autosaveTextFile());
     if(file.open(QIODevice::ReadOnly)) {
         mDoc->setText(file.readAll());
     }
     file.close();
-    auto const jsonname = jsonFileName(path);
     auto const lastConfig = mPresentation->configuration();
-    mPresentation->setConfig({jsonname});
+    mPresentation->setConfig({autosaveJsonFile()});
     auto transform = new TransformBoxUndo(mPresentation, lastConfig, mPresentation->configuration());
     mSlideWidget->undoStack().push(transform);
 }
 
-void MainWindow::deleteAutosave(QString path) {
-    QFile::remove(autosaveTextFile(path));
-    auto const jsonname = jsonFileName(path);
-    QFile::remove(autosaveJsonFile(jsonname));
+void MainWindow::deleteAutosave() {
+    QFile::remove(autosaveTextFile());
+    QFile::remove(autosaveJsonFile());
 }
 
 void MainWindow::openFile() {
@@ -451,10 +448,10 @@ void MainWindow::openProject(QString path) {
             mPresentation.get(), &Presentation::deleteNotNeededConfigurations);
     addFileToOpenRecent(path);
     updateOpenRecent();
-    addDirectoryToSettings(QFileInfo(filename()).path());
+    addDirectoryToSettings(workingDirectory());
     mIsModified = false;
     setWindowTitle(windowTitle());
-    askToRecoverAutosave(path);
+    askToRecoverAutosave();
 }
 
 void MainWindow::newDocument() {
@@ -519,37 +516,49 @@ bool MainWindow::saveAs(){
     return true;
 }
 
+QFileInfo MainWindow::fileInfo() const {
+    auto const url = mDoc->url().toString(QUrl::PreferLocalFile);
+    if (url.isEmpty()) {
+        return QFileInfo("Untitled");
+    }
+    return QFileInfo(url);
+}
+
+QString MainWindow::absoluteFilePath() const {
+    return fileInfo().absoluteFilePath();
+}
+
+QString MainWindow::completeBaseName() const {
+    return fileInfo().completeBaseName();
+}
+
+QString MainWindow::pathWithBaseName() const {
+    return fileInfo().dir().path() + "/" + completeBaseName();
+}
+
+
 QString MainWindow::jsonFileName() const {
-    return jsonFileName(filename());
+    return pathWithBaseName() + ".json";
+}
+
+QString MainWindow::fileDirectory() const {
+    return fileInfo().dir().absolutePath();
+}
+
+QString MainWindow::workingDirectory() const {
+    auto dir = QDir(fileDirectory());
+    dir.cdUp();
+    return dir.absolutePath();
 }
 
 QString MainWindow::jsonFileName(QString textPath) const {
-    if(textPath.endsWith(".potato")) {
-        return textPath.section('.', 0, 0) + ".json";
-    }
-    return textPath + ".json";
+    auto const fileInfo = QFileInfo(textPath);
+    return fileInfo.path() + "/" + fileInfo.completeBaseName() + ".json";
 }
 
 void MainWindow::saveJson() {
     mPresentation->configuration().saveConfig(jsonFileName());
     QFile::remove(autosaveJsonFile());
-}
-
-QString MainWindow::filename() const {
-    return mDoc->url().toString(QUrl::PreferLocalFile);
-}
-
-QString MainWindow::filenameWithoutSuffix() const {
-    auto const file = QFileInfo(mDoc->url().toString(QUrl::PreferLocalFile));
-    return file.absolutePath() + "/" + file.baseName();
-}
-
-QString MainWindow::completeBaseName() const {
-    auto name = QFileInfo(filename()).completeBaseName();
-    if(name.isEmpty()) {
-        return "Untitled";
-    }
-    return name;
 }
 
 void MainWindow::resetPresentation() {
@@ -616,15 +625,15 @@ void MainWindow::writePDFHandout() const {
 }
 
 QString MainWindow::getConfigFilename(QUrl inputUrl) {
-    return inputUrl.toLocalFile().section('.', 0, -2) + ".json";
+    return completeBaseName() + ".json";
 }
 
 QString MainWindow::getPdfFilename() {
-    return mDoc->url().toLocalFile().section('.', 0, -2) + ".pdf";
+    return completeBaseName() + ".pdf";
 }
 
 QString MainWindow::getPdfFilenameHandout() {
-    return mDoc->url().toLocalFile().section('.', 0, -2) + "_handout.pdf";
+    return completeBaseName() + "_handout.pdf";
 }
 
 QAction* MainWindow::deleteShortcutOfKDocAction(const char* name){
@@ -670,7 +679,7 @@ bool MainWindow::closeDocument() {
         return true;
     }
     int ret = QMessageBox::information(this, tr("Unsaved changes"), tr("The document %1 has been modified. "
-                          "Do you want to save your changes or discard them?").arg(filenameWithoutSuffix()),
+                          "Do you want to save your changes or discard them?").arg(completeBaseName()),
                           QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
     switch (ret) {
     case QMessageBox::Save:
@@ -794,8 +803,6 @@ QString MainWindow::assembleProjectDirectory(QString projectname) const {
 }
 
 QString MainWindow::guessSavingDirectory() const {
-    QCoreApplication::setOrganizationName("Potato");
-    QCoreApplication::setApplicationName("Potato Presenter");
     QSettings settings;
     auto const dir = settings.value("directory").toString();
     if(dir.isEmpty()) {
@@ -806,8 +813,6 @@ QString MainWindow::guessSavingDirectory() const {
 
 void MainWindow::addFileToOpenRecent(QString path) {
     auto const maxEntries = 8;
-    QCoreApplication::setOrganizationName("Potato");
-    QCoreApplication::setApplicationName("Potato Presenter");
     QSettings settings;
     auto list = readOpenRecentArrayFromSettings(settings);
     auto const rm = std::ranges::remove(list, path);
@@ -820,8 +825,6 @@ void MainWindow::addFileToOpenRecent(QString path) {
 }
 
 void MainWindow::updateOpenRecent() {
-    QCoreApplication::setOrganizationName("Potato");
-    QCoreApplication::setApplicationName("Potato Presenter");
     QSettings settings;
     auto const openRecentList = readOpenRecentArrayFromSettings(settings);
     ui->menuOpen_Recent->clear();
@@ -834,7 +837,7 @@ void MainWindow::updateOpenRecent() {
         ui->menuOpen_Recent->addAction(openAct);
 
 //        add to new from template dialog
-        auto const filename = QFileInfo(entry).baseName();
+        auto const filename = QFileInfo(entry).completeBaseName();
         qInfo() << "open recent filename" << filename;
         QListWidgetItem *newItem = new QListWidgetItem;
         newItem->setText(filename);
@@ -844,12 +847,9 @@ void MainWindow::updateOpenRecent() {
 }
 
 void MainWindow::addDirectoryToSettings(QString directory) const {
-    QCoreApplication::setOrganizationName("Potato");
-    QCoreApplication::setApplicationName("Potato Presenter");
     QSettings settings;
-    auto dir = QDir(directory);
-    dir.cdUp();
-    settings.setValue("directory", dir.path());
+    settings.setValue("directory", directory);
+    settings.sync();
 }
 
 void MainWindow::openCreatePresentationDialog() {
@@ -881,17 +881,15 @@ void MainWindow::autosave() {
 }
 
 QString MainWindow::autosaveTextFile(QString inputFile) const {
-    auto const fileInfo = QFileInfo(inputFile);
-    return fileInfo.absolutePath() + "/." + fileInfo.fileName() + ".autosave";
+    return inputFile + ".autosave";
 }
 
 QString MainWindow::autosaveTextFile() const {
-    return autosaveTextFile(filename());
+    return autosaveTextFile(absoluteFilePath());
 }
 
 QString MainWindow::autosaveJsonFile(QString jsonFile) const {
-    auto const jsonInfo = QFileInfo(jsonFile);
-    return jsonInfo.absolutePath() + "/." + jsonInfo.fileName() + ".autosave";
+    return jsonFile + ".autosave";
 }
 
 QString MainWindow::autosaveJsonFile() const {

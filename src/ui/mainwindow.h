@@ -61,6 +61,23 @@ private:
     void exportPDFHandout();
     void exportPDFHandoutAs();
 
+    // function to get the location of the file
+    QFileInfo fileInfo() const;
+    // full path with name and suffix
+    QString absoluteFilePath() const;
+    // only base name
+    // e.g. /home/project/test.h/test.h.potato -> test.h
+    QString completeBaseName() const;
+    // the same like absoluteFilePath() without suffix
+    // e.g. /home/project/test.h/test.h.potato -> /home/project/test.h/test.h
+    QString pathWithBaseName() const;
+    // only directory
+    // e.g. /home/project/test.h/test.h.potato -> /home/project/test.h
+    QString fileDirectory() const;
+    // directory where the project lies
+    // e.g. /home/project/test.h/test.h.potato -> /home/project
+    QString workingDirectory() const;
+
     void writePDF() const;
     void writePDFHandout() const;
     QString getConfigFilename(QUrl inputUrl);
@@ -71,9 +88,6 @@ private:
     QString jsonFileName(QString textPath) const;
     void saveJson();
     void openJson();
-    QString filename() const;
-    QString filenameWithoutSuffix() const;
-    QString completeBaseName() const;
     QString applicationName() const;
     QString windowTitle() const;
     QString windowTitle(QString filename) const;
@@ -82,9 +96,9 @@ private:
     void closeEvent(QCloseEvent *event) override;
 
     void autosave();
-    void askToRecoverAutosave(QString path);
-    void recoverAutosave(QString path);
-    void deleteAutosave(QString path);
+    void askToRecoverAutosave();
+    void recoverAutosave();
+    void deleteAutosave();
     QString autosaveTextFile() const;
     QString autosaveTextFile(QString inputFile) const;
     QString autosaveJsonFile() const;
