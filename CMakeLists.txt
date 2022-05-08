@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(PotatoPresenter LANGUAGES CXX
-    VERSION 1.0.1)
+project(praes LANGUAGES CXX
+    VERSION 1.0.2)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
