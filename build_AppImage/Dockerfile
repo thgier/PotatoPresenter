@@ -12,7 +12,7 @@ WORKDIR /antlr4
 RUN apt-get install -y unzip && wget http://www.antlr.org/download/antlr4-cpp-runtime-4.7.2-source.zip && unzip antlr4-cpp-runtime-4.7.2-source.zip && mkdir build && cd build && cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_CXX_FLAGS="-static-libstdc++ -static-libgcc" ..  && make -j2 install 
 
 WORKDIR /linuxdeployqt
-RUN wget https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage && chmod a+x linuxdeployqt-continuous-x86_64.AppImage
+RUN wget https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage && chmod a+x linuxdeployqt-continuous-x86_64.AppImage && sed '0,/AI\x02/{s|AI\x02|\x00\x00\x00|}' -i linuxdeployqt-continuous-x86_64.AppImage
 
 RUN apt-get install -y git gettext fuse
 

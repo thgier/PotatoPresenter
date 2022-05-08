@@ -1,4 +1,5 @@
 To build the AppImage:
 
 - install docker
+- systemctl start docker
 - run ./build.sh <git_branch>, where <git_branch> is e.g release-1.0

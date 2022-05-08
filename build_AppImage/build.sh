@@ -2,8 +2,8 @@
 
 set -xe
 
-sudo docker build -t ubuntu .
-containerID=$(sudo docker run -dti --device /dev/fuse --cap-add SYS_ADMIN potatoPresenter_ubuntu /bin/bash)
+sudo docker build -t potatopresenter_ubuntu .
+containerID=$(sudo docker run -dti --device /dev/fuse --cap-add SYS_ADMIN potatopresenter_ubuntu /bin/bash)
 
 function finish {
     sudo docker stop $containerID
