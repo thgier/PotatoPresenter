@@ -276,7 +276,7 @@ void MainWindow::fileChanged() {
         auto templateName = preamble.templateName;
         Template::Ptr presentationTemplate = nullptr;
         if(!templateName.isEmpty()) {
-            if (!templateName.startsWith("/home")) {
+            if (!QDir::isAbsolutePath(templateName)) {
                 templateName = fileDirectory() + "/" + templateName;
             }
             presentationTemplate = mTemplateCache.getTemplate(templateName);
@@ -727,7 +727,7 @@ Presentation::Ptr MainWindow::generateTemplatePresentation(QString directory) co
         auto const slides = parserOutput.slideList();
         auto const preamble = parserOutput.preamble();
         auto templateName = preamble.templateName;
-        if (!templateName.startsWith("/home")) {
+        if (!QDir::isAbsolutePath(templateName)) {
             templateName = directory + "/" + templateName;
         }
         auto const presentationTemplate = readTemplate(templateName);

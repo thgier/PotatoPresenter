@@ -13,6 +13,7 @@
 #include <QProcess>
 #include <QDebug>
 #include <QTemporaryFile>
+#include <QDir>
 
 namespace  {
 QRect boundingBox(QSize const& imageSize, QRect const& boxRect) {
@@ -31,7 +32,7 @@ void ImageBox::drawContent(QPainter& painter, const PresentationContext &context
     PainterTransformScope scope(this, painter);
     drawGlobalBoxSettings(painter);
     auto path = substituteVariables(style().text(), context.mVariables);
-    if(!path.startsWith("/home") && context.mVariables.find("%{resourcepath}") != context.mVariables.end()) {
+    if(!QDir::isAbsolutePath(path) && context.mVariables.find("%{resourcepath}") != context.mVariables.end()) {
         path = context.mVariables.at("%{resourcepath}") + "/" + path;
     }
     mImagePath = path;

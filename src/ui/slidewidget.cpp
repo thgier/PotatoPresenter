@@ -610,7 +610,7 @@ void SlideWidget::setSnapping(bool snapping) {
 }
 
 QString SlideWidget::absoluteImagePath(QString imagePath) const {
-    if(!imagePath.startsWith("/home")) {
+    if(!QDir::isAbsolutePath(imagePath)) {
         auto variables = mPresentation->slideList().vector[mPageNumber]->variables();
         auto it = variables.find("%{resourcepath}");
         if(it != variables.end()) {
