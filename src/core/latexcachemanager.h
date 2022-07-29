@@ -64,7 +64,7 @@ private:
 private:
     std::unordered_map<QString, SvgEntry> mCachedImages;
     std::vector<Job> mRunningLatexJobs;
-    std::vector<Job> mRunningDviJobs;
+    std::vector<Job> mRunningPdfToSvgJobs;
 };
 
 LatexCacheManager& cacheManager();

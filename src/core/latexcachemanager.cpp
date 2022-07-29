@@ -22,7 +22,7 @@ LatexCacheManager::~LatexCacheManager()
             job.mProcess->waitForFinished();
         }
     }
-    for(auto const& job: mRunningDviJobs) {
+    for(auto const& job: mRunningPdfToSvgJobs) {
         if(job.mProcess->state() != QProcess::NotRunning) {
             job.mProcess->disconnect(this);
             job.mProcess->terminate();
@@ -38,7 +38,7 @@ LatexCacheManager& cacheManager()
 }
 
 void LatexCacheManager::startConversionProcess(QString latexInput, ConversionType conversionType) {
-    if(mRunningLatexJobs.size() + mRunningDviJobs.size() > QThread::idealThreadCount()){
+    if(mRunningLatexJobs.size() + mRunningPdfToSvgJobs.size() > QThread::idealThreadCount()){
         mCachedImages[latexInput] = SvgEntry{SvgStatus::NotStarted, nullptr};
         return;
     }
@@ -116,16 +116,16 @@ void LatexCacheManager::startSvgGeneration(){
         return;
     }
 
-    auto& job = mRunningDviJobs.emplace_back();
+    auto& job = mRunningPdfToSvgJobs.emplace_back();
     job.mProcess.reset(new QProcess);
     job.mTempDir = std::move(latexJob->mTempDir);
     job.mInput = latexJob->mInput;
     job.mConversionType = latexJob->mConversionType;
 
-    QString programDvisvgm = "/usr/bin/dvisvgm";
+    QString programDvisvgm = "/usr/bin/pdftocairo";
     QStringList argumentsDvisvgm;
 
-    argumentsDvisvgm << "--pdf" << "-o " + job.mTempDir->path() + "/input.svg" << job.mTempDir->path() + "/input.pdf";
+    argumentsDvisvgm << "-svg" << job.mTempDir->path() + "/input.pdf" << job.mTempDir->path() + "/input.svg" ;
 
     QObject::connect(job.mProcess.get(), QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
                      this, &LatexCacheManager::writeSvgToMap);
@@ -138,7 +138,7 @@ void LatexCacheManager::startSvgGeneration(){
 
 void LatexCacheManager::writeSvgToMap(){
     // find finished Latex job
-    auto dviJob = takeOneFinishedJob(mRunningDviJobs);
+    auto dviJob = takeOneFinishedJob(mRunningPdfToSvgJobs);
     if(!dviJob) {
         return;
     }
