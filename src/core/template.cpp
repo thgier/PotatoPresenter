@@ -58,4 +58,11 @@ Variables const& Template::variables() {
 void Template::setData(PresentationData data) {
     mData = data;
     mData.applyConfiguration(mConfig);
+    for(auto const& slide: mData.slides().vector) {
+        auto path = slide->removeVariable("{resourcepath}");
+        if(!path) {
+            continue;
+        }
+        slide->setVariable("%{templateresourcepath}", path.value());
+    }
 }

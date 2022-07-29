@@ -142,6 +142,16 @@ QString Slide::valueOfVariable(const QString &variable) const {
     return {};
 }
 
+std::optional<QString> Slide::removeVariable(QString const& variable) {
+    auto itVariable = mContext.mVariables.find(variable);
+    if(itVariable == mContext.mVariables.end()) {
+        return {};
+    }
+    auto value = itVariable->second;
+    mContext.mVariables.erase(itVariable);
+    return value;
+}
+
 int Slide::pagenumber() const {
     return mContext.mPagenumber;
 }

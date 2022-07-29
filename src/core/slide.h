@@ -49,6 +49,7 @@ public:
     Variables const& variables() const;
     Variables& variables();
     QString valueOfVariable(QString const& variable) const;
+    std::optional<QString> removeVariable(QString const& variable);
 
     int pagenumber() const;
     void setPagenumber(int pagenumber);

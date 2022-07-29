@@ -22,6 +22,16 @@ QRect boundingBox(QSize const& imageSize, QRect const& boxRect) {
     auto const y = (boxRect.height() - scaledSize.height()) / 2;
     return QRect(QPoint(boxRect.left() + x, boxRect.top() + y), scaledSize);
 };
+
+QString absolutePath(QString &path, PresentationContext const& context) {
+    if(context.mVariables.find("%{templateresourcepath}") != context.mVariables.end()) {
+        return context.mVariables.at("%{templateresourcepath}") + "/" + path;
+    }
+    if(context.mVariables.find("%{resourcepath}") != context.mVariables.end()) {
+        return context.mVariables.at("%{resourcepath}") + "/" + path;
+    }
+    return path;
+}
 }
 
 std::shared_ptr<Box> ImageBox::clone() {
@@ -33,7 +43,7 @@ void ImageBox::drawContent(QPainter& painter, const PresentationContext &context
     drawGlobalBoxSettings(painter);
     auto path = substituteVariables(style().text(), context.mVariables);
     if(!QDir::isAbsolutePath(path) && context.mVariables.find("%{resourcepath}") != context.mVariables.end()) {
-        path = context.mVariables.at("%{resourcepath}") + "/" + path;
+        path = absolutePath(path, context);
     }
     mImagePath = path;
     auto const fileInfo = QFileInfo(path);
