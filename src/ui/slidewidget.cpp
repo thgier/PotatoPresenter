@@ -528,7 +528,7 @@ QString const& SlideWidget::currentSlideId() const {
 }
 
 QPoint SlideWidget::ScaledMousePos(QMouseEvent *event) const{
-    return mGeometryDetail.mWidgetToSlideTransform.map(event->pos());
+    return mGeometryDetail.mWidgetToSlideTransform.map(event->pos() * devicePixelRatio());
 }
 
 void SlideWidget::createActions(){
