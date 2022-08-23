@@ -309,6 +309,7 @@ void MainWindow::fileChanged() {
 
     mSlideWidget->updateSlideId();
     mSlideWidget->update();
+    mSlideModel->setPresentation(mPresentation);
     auto const index = mSlideModel->index(mSlideWidget->pageNumber());
     ui->pagePreview->selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
     ui->pagePreview->scrollTo(index);
